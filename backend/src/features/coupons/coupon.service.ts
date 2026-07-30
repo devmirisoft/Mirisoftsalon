@@ -10,6 +10,7 @@ import {
 } from "../audit-logs/audit-log.service.js";
 import { CouponModel } from "./coupon.model.js";
 import { CustomerModel } from "../customers/customer.model.js";
+import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
 import type {
   CreateCouponInput,
   UpdateCouponInput,
@@ -359,6 +360,73 @@ const invoiceTaxPercent = (
       )
     : new Prisma.Decimal(0);
 
+const recalculateDraftGst = async (
+  tx: Prisma.TransactionClient,
+  invoice: Invoice & {
+    items: Array<{
+      id: string;
+      itemType: string;
+      quantity: number;
+      unitPrice: Prisma.Decimal;
+      taxPercent: Prisma.Decimal;
+    }>;
+    salon: {
+      gstEnabled: boolean;
+      gstNumber: string | null;
+      gstLegalName: string | null;
+      gstStateCode: string | null;
+      serviceGstRate: Prisma.Decimal;
+      productGstRate: Prisma.Decimal;
+    };
+  },
+  couponDiscountAmount = invoice.couponDiscountAmount
+) => {
+  const fallbackRate = invoice.items.reduce(
+    (highest, item) => (item.taxPercent.gt(highest) ? item.taxPercent : highest),
+    new Prisma.Decimal(0)
+  );
+  const settings =
+    !invoice.salon.gstEnabled &&
+    invoice.invoiceType === "GST_INVOICE" &&
+    fallbackRate.gt(0)
+      ? {
+          ...invoice.salon,
+          gstEnabled: true,
+          serviceGstRate: fallbackRate,
+          productGstRate: fallbackRate,
+        }
+      : invoice.salon;
+  const calculation = calculateInvoiceGst(
+    {
+      invoiceType: invoice.invoiceType,
+      discountAmount: invoice.discountAmount,
+      couponDiscountAmount,
+      processingFeeAmount: invoice.processingFeeAmount,
+      items: invoice.items,
+    },
+    settings
+  );
+
+  for (const [index, item] of invoice.items.entries()) {
+    const line = calculation.lines[index];
+    if (!line) continue;
+    await tx.invoiceItem.update({
+      where: { id: item.id },
+      data: {
+        taxableAmount: line.taxableAmount,
+        gstRateSnapshot: line.gstRateSnapshot,
+        gstAmount: line.gstAmount,
+        totalWithTax: line.totalWithTax,
+        taxPercent: line.taxPercent,
+        taxAmount: line.taxAmount,
+        lineTotal: line.lineTotal,
+      },
+    });
+  }
+
+  return calculation;
+};
+
 const updateCustomerLedgerForTotalChange = async (
   tx: Prisma.TransactionClient,
   invoice: Invoice,
@@ -437,7 +505,19 @@ export const applyCouponToInvoice = async (input: {
         id: input.invoiceId,
         ...(input.salonId ? { salonId: input.salonId } : {}),
       },
-      include: { items: true },
+      include: {
+        items: true,
+        salon: {
+          select: {
+            gstEnabled: true,
+            gstNumber: true,
+            gstLegalName: true,
+            gstStateCode: true,
+            serviceGstRate: true,
+            productGstRate: true,
+          },
+        },
+      },
     });
     if (!invoice) {
       throw new CouponServiceError("Invoice not found", 404);
@@ -482,17 +562,13 @@ export const applyCouponToInvoice = async (input: {
         .toDecimalPlaces(2),
       eligibleAmount
     );
-    const taxableAmount = Prisma.Decimal.max(
-      eligibleAmount
-        .minus(couponDiscountAmount)
-        .plus(invoice.processingFeeAmount),
-      0
+    const calculation = await recalculateDraftGst(
+      tx,
+      invoice,
+      couponDiscountAmount
     );
-    const taxAmount = taxableAmount
-      .mul(invoiceTaxPercent(invoice.invoiceType, invoice.items))
-      .div(100)
-      .toDecimalPlaces(2);
-    const totalAmount = taxableAmount.plus(taxAmount).toDecimalPlaces(2);
+    const taxAmount = calculation.totalGstAmount;
+    const totalAmount = calculation.totalAmount;
     const balanceAmount = totalAmount
       .minus(invoice.paidAmount)
       .toDecimalPlaces(2);
@@ -509,6 +585,15 @@ export const applyCouponToInvoice = async (input: {
         couponId: coupon.id,
         couponCodeSnapshot: coupon.couponCode,
         couponDiscountAmount,
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount,
         totalAmount,
         balanceAmount,
@@ -558,7 +643,19 @@ export const removeCouponFromInvoice = async (input: {
         id: input.invoiceId,
         ...(input.salonId ? { salonId: input.salonId } : {}),
       },
-      include: { items: true },
+      include: {
+        items: true,
+        salon: {
+          select: {
+            gstEnabled: true,
+            gstNumber: true,
+            gstLegalName: true,
+            gstStateCode: true,
+            serviceGstRate: true,
+            productGstRate: true,
+          },
+        },
+      },
     });
     if (!invoice) {
       throw new CouponServiceError("Invoice not found", 404);
@@ -581,14 +678,13 @@ export const removeCouponFromInvoice = async (input: {
       invoice.subtotalAmount.minus(invoice.discountAmount),
       0
     ).toDecimalPlaces(2);
-    const taxableAmount = eligibleAmount
-      .plus(invoice.processingFeeAmount)
-      .toDecimalPlaces(2);
-    const taxAmount = taxableAmount
-      .mul(invoiceTaxPercent(invoice.invoiceType, invoice.items))
-      .div(100)
-      .toDecimalPlaces(2);
-    const totalAmount = taxableAmount.plus(taxAmount).toDecimalPlaces(2);
+    const calculation = await recalculateDraftGst(
+      tx,
+      invoice,
+      new Prisma.Decimal(0)
+    );
+    const taxAmount = calculation.totalGstAmount;
+    const totalAmount = calculation.totalAmount;
     const balanceAmount = totalAmount
       .minus(invoice.paidAmount)
       .toDecimalPlaces(2);
@@ -607,6 +703,15 @@ export const removeCouponFromInvoice = async (input: {
         couponId: null,
         couponCodeSnapshot: null,
         couponDiscountAmount: 0,
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount,
         totalAmount,
         balanceAmount,
@@ -656,6 +761,19 @@ export const issueInvoice = async (input: {
         id: input.invoiceId,
         ...(input.salonId ? { salonId: input.salonId } : {}),
       },
+      include: {
+        items: true,
+        salon: {
+          select: {
+            gstEnabled: true,
+            gstNumber: true,
+            gstLegalName: true,
+            gstStateCode: true,
+            serviceGstRate: true,
+            productGstRate: true,
+          },
+        },
+      },
     });
     if (!invoice) {
       throw new CouponServiceError("Invoice not found", 404);
@@ -704,9 +822,24 @@ export const issueInvoice = async (input: {
       });
     }
 
+    const calculation = await recalculateDraftGst(tx, invoice);
     const updated = await tx.invoice.update({
       where: { id: invoice.id },
-      data: { status: "ISSUED" },
+      data: {
+        status: "ISSUED",
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
+        taxAmount: calculation.totalGstAmount,
+        totalAmount: calculation.totalAmount,
+        balanceAmount: calculation.totalAmount.minus(invoice.paidAmount).toDecimalPlaces(2),
+      },
       include: { items: true, payments: true, coupon: true },
     });
     const ledgerExists = await tx.customerTransaction.findFirst({
@@ -723,7 +856,7 @@ export const issueInvoice = async (input: {
           salonId: updated.salonId,
           invoiceId: updated.id,
           billNo: updated.invoiceCode,
-          amount: Number(updated.totalAmount),
+          amount: updated.totalAmount,
           narration: `Invoice issued: ${updated.invoiceCode}`,
         },
         tx
@@ -745,6 +878,12 @@ export const issueInvoice = async (input: {
         status: updated.status,
         couponId: updated.couponId,
         couponCode: updated.couponCodeSnapshot,
+        serviceTaxableAmount: updated.serviceTaxableAmount,
+        productTaxableAmount: updated.productTaxableAmount,
+        serviceGstAmount: updated.serviceGstAmount,
+        productGstAmount: updated.productGstAmount,
+        totalGstAmount: updated.totalGstAmount,
+        gstEnabledSnapshot: updated.gstEnabledSnapshot,
       },
       ipAddress: input.ipAddress,
       userAgent: input.userAgent,

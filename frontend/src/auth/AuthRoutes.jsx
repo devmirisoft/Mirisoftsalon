@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Spinner } from "reactstrap";
+import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "./AuthContext";
 
 const SessionLoader = () => (
   <div className="min-vh-100 d-flex align-items-center justify-content-center">
-    <div className="d-flex align-items-center gap-2 text-primary">
-      <Spinner size="sm" />
+    <div className="d-flex flex-column align-items-center gap-2 text-primary">
+      <LoaderOne label="Checking your session" />
       <span>Checking your session...</span>
     </div>
   </div>

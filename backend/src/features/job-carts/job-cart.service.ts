@@ -778,6 +778,7 @@ export const getJobCartReferences = async (
     where: {
       salonId,
       status: "ACTIVE",
+      type: "STANDARD",
       ...(branchId ? { OR: [{ branchId: null }, { branchId }] } : {}),
     },
     include: {
@@ -1043,6 +1044,9 @@ export const createJobCart = async (
       (sum, service) => sum + durationMinutes(service),
       0
     );
+    if (input.startTime < new Date()) {
+      throw new JobCartError(400, "Job cart start time cannot be in the past");
+    }
     const endTime = new Date(
       input.startTime.getTime() + Math.max(duration, 30) * 60_000
     );
@@ -1245,6 +1249,9 @@ export const updateJobCart = async (
       staffId
     );
     const startTime = input.startTime ?? existing.startTime;
+    if (input.startTime !== undefined && startTime < new Date()) {
+      throw new JobCartError(400, "Job cart start time cannot be in the past");
+    }
     const endTime = new Date(
       startTime.getTime() +
         Math.max(existing.totalDurationMinutes, 30) * 60_000
@@ -1328,7 +1335,21 @@ export const addJobCartItem = async (
           id: input.packageId ?? "__missing__",
           salonId: existing.salonId,
           status: "ACTIVE",
-          OR: [{ branchId: null }, { branchId: existing.branchId }],
+          AND: [
+            { OR: [{ branchId: null }, { branchId: existing.branchId }] },
+            {
+              OR: [
+                { type: "STANDARD" },
+                {
+                  type: "CUSTOMER_CUSTOM",
+                  customerId: existing.customerId,
+                },
+              ],
+            },
+          ],
+        },
+        include: {
+          items: { select: { serviceId: true, serviceNameSnapshot: true } },
         },
       });
       if (!servicePackage) {
@@ -1342,6 +1363,20 @@ export const addJobCartItem = async (
         )
       ) {
         throw new JobCartError(409, "Package is already in the job cart");
+      }
+      const existingServiceIds = new Set(
+        existing.services
+          .filter((item) => !item.customerPackageUsageItemId)
+          .map((item) => item.serviceId)
+      );
+      const overlapping = servicePackage.items.find((item) =>
+        existingServiceIds.has(item.serviceId)
+      );
+      if (overlapping) {
+        throw new JobCartError(
+          409,
+          `${overlapping.serviceNameSnapshot} is already selected as a standalone service`
+        );
       }
       if (input.staffId) {
         await validateStaff(
@@ -1400,6 +1435,21 @@ export const addJobCartItem = async (
       if (!service) throw new JobCartError(400, "Service is unavailable");
       if (existing.services.some((item) => item.serviceId === service.id)) {
         throw new JobCartError(409, "Service is already in the job cart");
+      }
+      const packageIds = existing.invoice!.items
+        .filter((item) => item.itemType === "PACKAGE" && item.packageId)
+        .map((item) => item.packageId!);
+      if (packageIds.length) {
+        const packageService = await tx.servicePackageItem.findFirst({
+          where: { packageId: { in: packageIds }, serviceId: service.id },
+          select: { serviceNameSnapshot: true },
+        });
+        if (packageService) {
+          throw new JobCartError(
+            409,
+            `${packageService.serviceNameSnapshot} is already covered by a selected package`
+          );
+        }
       }
       const item = await tx.appointmentService.create({
         data: {

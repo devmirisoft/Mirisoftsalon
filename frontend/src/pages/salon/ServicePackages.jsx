@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Input } from "reactstrap";
+import { Alert, ButtonGroup, Input } from "reactstrap";
 import ResourcePanel from "@/components/salon/ResourcePanel";
 import PageShell from "@/components/salon/PageShell";
 import StatusBadge from "@/components/salon/StatusBadge";
@@ -9,14 +9,10 @@ import { salonApi } from "@/services/salonApi";
 import { formatMoney } from "@/utils/salonFormat";
 import { useAuth } from "@/auth/AuthContext";
 
-const packageApi = {
-  ...salonApi.packages,
-  list: () => salonApi.packages.list({ page: 1, limit: 100 }),
-};
-
 const ServicePackages = () => {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
+  const [tab, setTab] = useState("STANDARD");
   const [categories, setCategories] = useState([]);
   const [services, setServices] = useState([]);
   const [error, setError] = useState("");
@@ -120,6 +116,20 @@ const ServicePackages = () => {
       typeof value === "string" ? value : value.serviceId
     ),
   });
+  const packageApi = useMemo(
+    () => ({
+      ...salonApi.packages,
+      list: () =>
+        tab === "CUSTOMER_CUSTOM"
+          ? salonApi.packages.customerCustom({ page: 1, limit: 100 })
+          : salonApi.packages.list({
+              page: 1,
+              limit: 100,
+              type: "STANDARD",
+            }),
+    }),
+    [tab]
+  );
 
   return (
     <PageShell
@@ -127,21 +137,40 @@ const ServicePackages = () => {
       description="Bundle existing services at a special prepaid price."
     >
       {error && <Alert color="danger">{error}</Alert>}
-      <div className="mb-3" style={{ maxWidth: 360 }}>
-        <Input
-          type="search"
-          placeholder="Search packages"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <ButtonGroup>
+          <Button
+            color={tab === "STANDARD" ? "primary" : "light"}
+            outline={tab !== "STANDARD"}
+            onClick={() => setTab("STANDARD")}
+          >
+            Standard
+          </Button>
+          <Button
+            color={tab === "CUSTOMER_CUSTOM" ? "primary" : "light"}
+            outline={tab !== "CUSTOMER_CUSTOM"}
+            onClick={() => setTab("CUSTOMER_CUSTOM")}
+          >
+            Customer Custom
+          </Button>
+        </ButtonGroup>
+        <div style={{ maxWidth: 360, flex: "1 1 280px" }}>
+          <Input
+            type="search"
+            placeholder="Search packages"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
       </div>
       <ResourcePanel
-        title="Packages"
+        title={tab === "CUSTOMER_CUSTOM" ? "Customer Custom Packages" : "Packages"}
         api={packageApi}
+        refreshKey={tab}
         pageSize={10}
         fields={fields}
-        canCreate={manage}
-        canEdit={manage}
+        canCreate={manage && tab === "STANDARD"}
+        canEdit={manage && tab === "STANDARD"}
         canDelete={manage}
         transformCreate={transform}
         transformUpdate={transform}
@@ -172,6 +201,11 @@ const ServicePackages = () => {
         }
         columns={[
           { key: "name", label: "Package" },
+          {
+            key: "customer",
+            label: "Customer",
+            render: (value) => value?.name || "",
+          },
           {
             key: "category",
             label: "Category",

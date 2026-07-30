@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { chat } from "./ai-assistant.controller.js";
+import { chat, chatStream } from "./ai-assistant.controller.js";
 
 const router = Router();
 
-router.use(authenticate);
-router.post("/chat", chat);
+router.post("/chat", authenticate, chat);
+router.post("/chat/stream", authenticate, chatStream);
 
 export default router;

@@ -9,6 +9,7 @@ import {
   getCustomerPackageUsageHistory,
   getCustomerPackages,
   getCustomerPackagesForCustomer,
+  getCustomerCustomPackages,
   getPackageById,
   getPackageCategories,
   getPackageCategoryById,
@@ -16,6 +17,8 @@ import {
   patchCustomerPackageStatus,
   patchPackageCategoryStatus,
   patchPackageStatus,
+  postCopyCustomerCustomPackage,
+  postCustomPackageFromCart,
   postPackage,
   postPackageCategory,
   putPackage,
@@ -62,6 +65,21 @@ export const servicePackageRoutes = Router();
 servicePackageRoutes.param("id", validateUuidParam("id"));
 servicePackageRoutes.use(authenticate);
 servicePackageRoutes.get("/", requireRole(...viewers), getPackages);
+servicePackageRoutes.get(
+  "/customer-custom",
+  requireRole(...viewers),
+  getCustomerCustomPackages
+);
+servicePackageRoutes.post(
+  "/custom/from-cart",
+  requireRole(...managers),
+  postCustomPackageFromCart
+);
+servicePackageRoutes.post(
+  "/custom/copy",
+  requireRole(...managers),
+  postCopyCustomerCustomPackage
+);
 servicePackageRoutes.post("/", requireRole(...managers), postPackage);
 servicePackageRoutes.get("/:id", requireRole(...viewers), getPackageById);
 servicePackageRoutes.put("/:id", requireRole(...managers), putPackage);

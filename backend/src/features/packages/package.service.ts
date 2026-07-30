@@ -3,8 +3,10 @@ import {
   Prisma,
   type CustomerPackageStatus,
   type PackageStatus,
+  type ServicePackageType,
 } from "../../generated/prisma/client.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
+import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -99,6 +101,9 @@ const categoryInclude = {
 const packageInclude = {
   category: { select: { id: true, name: true, status: true } },
   branch: { select: { id: true, name: true } },
+  customer: { select: { id: true, name: true, phone: true } },
+  sourceCustomer: { select: { id: true, name: true, phone: true } },
+  sourcePackage: { select: { id: true, name: true } },
   items: {
     include: {
       service: {
@@ -131,6 +136,74 @@ const serviceDurationMinutes = (service: {
   service.durationValue === null
     ? null
     : service.durationValue * (service.durationUnit === "HOURS" ? 60 : 1);
+
+const customCategoryName = "Customer Custom Packages";
+
+const ensureCustomPackageCategory = async (
+  tx: TransactionClient,
+  salonId: string
+) => {
+  const existing = await tx.packageCategory.findFirst({
+    where: {
+      salonId,
+      name: { equals: customCategoryName, mode: "insensitive" },
+    },
+    select: { id: true },
+  });
+  if (existing) return existing;
+  return tx.packageCategory.create({
+    data: {
+      salonId,
+      branchId: null,
+      name: customCategoryName,
+      status: "ACTIVE",
+    },
+    select: { id: true },
+  });
+};
+
+const assertCustomer = async (
+  tx: TransactionClient,
+  actor: PackageActor,
+  customerId: string,
+  salonId: string,
+  branchId?: string | null
+) => {
+  const customer = await tx.customer.findFirst({
+    where: {
+      id: customerId,
+      salonId,
+      ...(branchRoles.has(actor.role)
+        ? { branchId: actor.branchId ?? "__unauthorized__" }
+        : {}),
+      ...(branchId ? { OR: [{ branchId: null }, { branchId }] } : {}),
+    },
+    select: { id: true, name: true, phone: true },
+  });
+  if (!customer) throw new PackageError(404, "Customer not found");
+  return customer;
+};
+
+const uniquePackageName = async (
+  tx: TransactionClient,
+  salonId: string,
+  requestedName: string
+) => {
+  const base = requestedName.trim().slice(0, 110) || "Custom Package";
+  let candidate = base;
+  for (let suffix = 2; suffix < 100; suffix += 1) {
+    const existing = await tx.servicePackage.findFirst({
+      where: {
+        salonId,
+        name: { equals: candidate, mode: "insensitive" },
+      },
+      select: { id: true },
+    });
+    if (!existing) return candidate;
+    candidate = `${base} (${suffix})`.slice(0, 120);
+  }
+  throw new PackageError(409, "Package name already exists in this salon");
+};
 
 const resolvePackageItems = async (
   tx: TransactionClient,
@@ -420,7 +493,9 @@ export const listServicePackages = async (
     limit: number;
     search?: string | undefined;
     status?: PackageStatus | undefined;
+    type?: ServicePackageType | undefined;
     categoryId?: string | undefined;
+    customerId?: string | undefined;
     salonId?: string | undefined;
     branchId?: string | undefined;
   }
@@ -432,6 +507,8 @@ export const listServicePackages = async (
       : {}),
     ...(filters.branchId ? { branchId: filters.branchId } : {}),
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+    ...(filters.type ? { type: filters.type } : {}),
+    ...(filters.customerId ? { customerId: filters.customerId } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.search
       ? {
@@ -539,6 +616,7 @@ export const createServicePackage = async (
         salonId: target.salonId,
         branchId: target.branchId,
         categoryId: category.id,
+        type: "STANDARD",
         name: input.name,
         description: input.description ?? null,
         totalPrice: resolved.totalPrice,
@@ -573,6 +651,388 @@ export const createServicePackage = async (
       ...audit,
     });
     return created;
+  });
+
+export const createCustomPackageFromCart = async (
+  actor: PackageActor,
+  input: {
+    jobCartId: string;
+    serviceIds?: string[] | undefined;
+    items?: Array<{ serviceId: string; quantity: number }> | undefined;
+    name: string;
+    description?: string | null | undefined;
+    specialPrice: number;
+    validityDays: number;
+    soldByStaffId?: string | undefined;
+  },
+  audit: AuditContext
+) =>
+  prisma.$transaction(async (tx) => {
+    const requestedItems = normalizeItems(input.items, input.serviceIds);
+    const requestedServiceIds = requestedItems.map((item) => item.serviceId);
+    await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${input.jobCartId} FOR UPDATE`;
+    const cart = await tx.appointment.findFirst({
+      where: {
+        id: input.jobCartId,
+        walkInJobCart: true,
+        source: "WALK_IN",
+        ...(actor.role === "SUPER_ADMIN"
+          ? {}
+          : { salonId: actor.salonId ?? "__unauthorized__" }),
+        ...(branchRoles.has(actor.role)
+          ? { branchId: actor.branchId ?? "__unauthorized__" }
+          : {}),
+      },
+      include: {
+        customer: { select: { id: true, name: true } },
+        services: {
+          where: {
+            customerPackageUsageItemId: null,
+            serviceId: { in: requestedServiceIds },
+          },
+          include: { service: true },
+        },
+        invoice: { include: { items: true } },
+      },
+    });
+    if (!cart || !cart.branchId) {
+      throw new PackageError(404, "Job cart not found");
+    }
+    if (
+      cart.status === "CANCELLED" ||
+      cart.invoice?.status !== "DRAFT" ||
+      cart.invoice.paymentStatus !== "UNPAID" ||
+      cart.invoice.paidAmount.gt(0)
+    ) {
+      throw new PackageError(409, "Job cart cannot be changed");
+    }
+    if (cart.invoice.couponId) {
+      throw new PackageError(
+        409,
+        "Remove the coupon before creating a custom package"
+      );
+    }
+    if (cart.services.length !== requestedServiceIds.length) {
+      throw new PackageError(
+        400,
+        "Custom package services must already be standalone services in this job cart"
+      );
+    }
+    const invoicePackages = cart.invoice.items.filter(
+      (item) => item.itemType === "PACKAGE" && item.packageId
+    );
+    if (invoicePackages.length) {
+      const packageItems = await tx.servicePackageItem.findMany({
+        where: {
+          packageId: {
+            in: invoicePackages
+              .map((item) => item.packageId)
+              .filter((id): id is string => Boolean(id)),
+          },
+          serviceId: { in: requestedServiceIds },
+        },
+        select: { serviceNameSnapshot: true },
+      });
+      if (packageItems.length) {
+        const packageItem = packageItems[0]!;
+        throw new PackageError(
+          409,
+          `Remove package-covered service ${packageItem.serviceNameSnapshot} before creating this custom package`
+        );
+      }
+    }
+    if (input.soldByStaffId) {
+      const staff = await tx.staff.findFirst({
+        where: {
+          id: input.soldByStaffId,
+          salonId: cart.salonId,
+          status: true,
+          OR: [{ branchId: null }, { branchId: cart.branchId }],
+        },
+        select: { id: true },
+      });
+      if (!staff) throw new PackageError(400, "Invalid or unavailable staff");
+    }
+    const category = await ensureCustomPackageCategory(tx, cart.salonId);
+    const resolved = await resolvePackageItems(
+      tx,
+      cart.salonId,
+      cart.branchId,
+      requestedItems
+    );
+    if (new Prisma.Decimal(input.specialPrice).gt(resolved.totalPrice)) {
+      throw new PackageError(
+        400,
+        "Special price cannot exceed total price"
+      );
+    }
+    const name = await uniquePackageName(tx, cart.salonId, input.name);
+    const created = await tx.servicePackage.create({
+      data: {
+        salonId: cart.salonId,
+        branchId: cart.branchId,
+        categoryId: category.id,
+        type: "CUSTOMER_CUSTOM",
+        customerId: cart.customerId,
+        sourceCustomerId: cart.customerId,
+        name,
+        description: input.description ?? null,
+        totalPrice: resolved.totalPrice,
+        specialPrice: input.specialPrice,
+        validityDays: input.validityDays,
+        status: "ACTIVE",
+        createdById: actor.userId,
+        items: {
+          create: resolved.items.map(({ service, quantity }) => ({
+            salonId: cart.salonId,
+            serviceId: service.id,
+            serviceNameSnapshot: service.name,
+            quantity,
+            priceSnapshot: service.price,
+            durationMinutesSnapshot: serviceDurationMinutes(service),
+          })),
+        },
+      },
+      include: packageInclude,
+    });
+    await tx.appointmentService.deleteMany({
+      where: {
+        appointmentId: cart.id,
+        customerPackageUsageItemId: null,
+        serviceId: { in: requestedServiceIds },
+      },
+    });
+    await tx.invoiceItem.create({
+      data: {
+        invoiceId: cart.invoice.id,
+        itemType: "PACKAGE",
+        packageId: created.id,
+        soldByStaffId: input.soldByStaffId ?? null,
+        itemCode: created.id.slice(0, 8),
+        description: created.name,
+        serviceName: created.name,
+        quantity: 1,
+        unitPrice: created.specialPrice,
+        discountAmount: 0,
+        taxPercent: 0,
+        taxAmount: 0,
+        lineTotal: created.specialPrice,
+      },
+    });
+    await tx.invoiceItem.deleteMany({
+      where: {
+        invoiceId: cart.invoice.id,
+        itemType: "SERVICE",
+        serviceId: { in: requestedServiceIds },
+      },
+    });
+    const freshCart = await tx.appointment.findUniqueOrThrow({
+      where: { id: cart.id },
+      include: {
+        services: { orderBy: { createdAt: "asc" } },
+        invoice: { include: { items: true } },
+      },
+    });
+    const paidServices = freshCart.services.filter(
+      (item) => !item.customerPackageUsageItemId
+    );
+    const serviceSubtotal = paidServices.reduce(
+      (sum, item) => sum.add(item.price),
+      new Prisma.Decimal(0)
+    );
+    const packageSubtotal = freshCart.invoice!.items
+      .filter((item) => item.itemType === "PACKAGE")
+      .reduce((sum, item) => sum.add(item.lineTotal), new Prisma.Decimal(0));
+    const subtotal = serviceSubtotal.add(packageSubtotal).toDecimalPlaces(2);
+    const membership = await resolveCurrentCustomerMembership(tx, {
+      customerId: cart.customerId,
+      actor,
+      audit,
+    });
+    const discount = membership
+      ? Prisma.Decimal.min(
+          subtotal
+            .mul(membership.discountPercentageSnapshot)
+            .div(100)
+            .toDecimalPlaces(2),
+          subtotal
+        )
+      : new Prisma.Decimal(0);
+    const total = subtotal.minus(discount).toDecimalPlaces(2);
+    const totalDurationMinutes = paidServices.reduce(
+      (sum, item) =>
+        sum +
+        (item.durationValue ?? 0) *
+          (item.durationUnit === "HOURS" ? 60 : 1),
+      0
+    );
+    const endTime = new Date(
+      freshCart.startTime.getTime() +
+        Math.max(totalDurationMinutes, 30) * 60_000
+    );
+    await tx.invoice.update({
+      where: { id: cart.invoice.id },
+      data: {
+        subtotalAmount: subtotal,
+        discountAmount: discount,
+        couponDiscountAmount: 0,
+        processingFeeAmount: 0,
+        taxAmount: 0,
+        totalAmount: total,
+        balanceAmount: total,
+      },
+    });
+    await tx.appointment.update({
+      where: { id: cart.id },
+      data: {
+        totalDurationMinutes,
+        estimatedAmount: subtotal,
+        endTime,
+      },
+    });
+    await createAuditLog({
+      tx,
+      salonId: cart.salonId,
+      branchId: cart.branchId,
+      userId: actor.userId,
+      module: "PACKAGE",
+      action: "CREATE",
+      entityId: created.id,
+      entityName: created.name,
+      description: `Custom package ${created.name} created from job cart ${cart.appointmentCode}`,
+      newData: {
+        packageId: created.id,
+        customerId: cart.customerId,
+        jobCartId: cart.id,
+        serviceIds: input.serviceIds,
+      },
+      ...audit,
+    });
+    return created;
+  });
+
+export const copyCustomerCustomPackage = async (
+  actor: PackageActor,
+  input: {
+    sourcePackageId: string;
+    targetCustomerId: string;
+    branchId?: string | undefined;
+    name?: string | undefined;
+    description?: string | null | undefined;
+    specialPrice?: number | undefined;
+    validityDays?: number | undefined;
+    status?: PackageStatus | undefined;
+  },
+  audit: AuditContext
+) =>
+  prisma.$transaction(async (tx) => {
+    const source = await tx.servicePackage.findFirst({
+      where: {
+        id: input.sourcePackageId,
+        type: "CUSTOMER_CUSTOM",
+        ...scope(actor),
+      },
+      include: { ...packageInclude, items: { include: { service: true } } },
+    });
+    if (!source) throw new PackageError(404, "Custom package not found");
+    const branchId =
+      actor.role === "BRANCH_MANAGER"
+        ? actor.branchId
+        : input.branchId === undefined
+          ? source.branchId
+          : input.branchId;
+    if (!branchId) throw new PackageError(400, "Branch is required");
+    await assertBranch(tx, source.salonId, branchId);
+    const customer = await assertCustomer(
+      tx,
+      actor,
+      input.targetCustomerId,
+      source.salonId,
+      branchId
+    );
+    const category = await ensureCustomPackageCategory(tx, source.salonId);
+    const specialPrice =
+      input.specialPrice === undefined
+        ? source.specialPrice
+        : new Prisma.Decimal(input.specialPrice);
+    if (specialPrice.gt(source.totalPrice)) {
+      throw new PackageError(
+        400,
+        "Special price cannot exceed total price"
+      );
+    }
+    const name = await uniquePackageName(
+      tx,
+      source.salonId,
+      input.name ?? `${source.name} - ${customer.name}`
+    );
+    const copied = await tx.servicePackage.create({
+      data: {
+        salonId: source.salonId,
+        branchId,
+        categoryId: category.id,
+        type: "CUSTOMER_CUSTOM",
+        customerId: customer.id,
+        sourceCustomerId: source.customerId ?? source.sourceCustomerId,
+        sourcePackageId: source.id,
+        name,
+        description:
+          input.description === undefined
+            ? source.description
+            : input.description,
+        totalPrice: source.totalPrice,
+        specialPrice,
+        validityDays: input.validityDays ?? source.validityDays,
+        status: input.status ?? "ACTIVE",
+        createdById: actor.userId,
+        items: {
+          create: source.items.map((item) => ({
+            salonId: source.salonId,
+            serviceId: item.serviceId,
+            serviceNameSnapshot: item.serviceNameSnapshot,
+            quantity: item.quantity,
+            priceSnapshot: item.priceSnapshot,
+            durationMinutesSnapshot: item.durationMinutesSnapshot,
+          })),
+        },
+      },
+      include: packageInclude,
+    });
+    await createAuditLog({
+      tx,
+      salonId: copied.salonId,
+      branchId: copied.branchId,
+      userId: actor.userId,
+      module: "PACKAGE",
+      action: "CREATE",
+      entityId: copied.id,
+      entityName: copied.name,
+      description: `Custom package ${source.name} copied for ${customer.name}`,
+      newData: {
+        sourcePackageId: source.id,
+        sourceCustomerId: source.customerId,
+        targetCustomerId: customer.id,
+      },
+      ...audit,
+    });
+    return copied;
+  });
+
+export const listCustomerCustomPackages = (
+  actor: PackageActor,
+  filters: {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+    status?: PackageStatus | undefined;
+    customerId?: string | undefined;
+    salonId?: string | undefined;
+    branchId?: string | undefined;
+  }
+) =>
+  listServicePackages(actor, {
+    ...filters,
+    type: "CUSTOMER_CUSTOM",
   });
 
 export const updateServicePackage = async (

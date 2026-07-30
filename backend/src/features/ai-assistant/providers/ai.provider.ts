@@ -1,14 +1,52 @@
-import type { AiToolResult } from "../ai-tool.types.js";
+import type { AiTool, AiToolResult, SalonAiUiContext } from "../ai-tool.types.js";
+import { GeminiProvider } from "./gemini.provider.js";
 
-export class AiProvider {
+export interface AiProvider {
+  selectToolNames?(params: {
+    userMessage: string;
+    uiContext?: SalonAiUiContext | undefined;
+    tools: readonly AiTool[];
+  }): Promise<string[]>;
+
+  generateAnswer(params: {
+    userMessage: string;
+    toolResults: AiToolResult[];
+    uiContext?: SalonAiUiContext | undefined;
+  }): Promise<string>;
+}
+
+let aiProviderFactoryOverride: (() => AiProvider) | undefined;
+
+export class DevAiProvider implements AiProvider {
   async generateAnswer(params: {
     userMessage: string;
     toolResults: AiToolResult[];
+    uiContext?: SalonAiUiContext | undefined;
   }): Promise<string> {
     if (!params.toolResults.length) {
-      return "I could not understand that question yet. Try asking about appointments, revenue, low stock, outstanding customers, packages, or memberships.";
+      return "I can answer read-only salon operations questions. Try asking about appointments, holidays, staff availability, revenue, low stock, outstanding customers, packages, or memberships.";
     }
 
-    return params.toolResults.map((result) => result.summary).join("\n");
+    return params.toolResults.map((r) => r.summary).join("\n");
   }
+}
+
+export function getAiProvider(): AiProvider {
+  if (aiProviderFactoryOverride) {
+    return aiProviderFactoryOverride();
+  }
+
+  const provider = process.env.AI_PROVIDER || "dev";
+
+  if (provider.toLowerCase() === "gemini") {
+    return new GeminiProvider();
+  }
+
+  return new DevAiProvider();
+}
+
+export function setAiProviderFactoryForTesting(
+  factory: (() => AiProvider) | undefined
+) {
+  aiProviderFactoryOverride = factory;
 }

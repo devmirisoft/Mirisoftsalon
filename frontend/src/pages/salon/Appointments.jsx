@@ -23,6 +23,7 @@ import { salonApi } from "@/services/salonApi";
 import {
   formatDate,
   formatMoney,
+  minDateTimeInput,
   roleCanManage,
   toLocalInput,
 } from "@/utils/salonFormat";
@@ -257,15 +258,21 @@ const Appointments = () => {
             name: "startTime",
             label: "New start time",
             type: "datetime-local",
+            min: minDateTimeInput(),
             required: true,
           },
         ],
         initialValues: { startTime: toLocalInput(selected?.startTime) },
-        submit: (values) =>
-          salonApi.appointments.reschedule(
+        submit: (values) => {
+          const startTime = new Date(values.startTime);
+          if (Number.isNaN(startTime.getTime()) || startTime < new Date()) {
+            throw new Error("Choose a start time from now onward.");
+          }
+          return salonApi.appointments.reschedule(
             selected.id,
-            new Date(values.startTime).toISOString()
-          ),
+            startTime.toISOString()
+          );
+        },
       };
     }
     if (action === "notes") {
@@ -367,7 +374,7 @@ const Appointments = () => {
           label: "Start time",
           type: "datetime-local",
           required: true,
-          min: toLocalInput(new Date()),
+          min: minDateTimeInput(),
           help: "Appointments can only be booked for today or a future date.",
         },
         {

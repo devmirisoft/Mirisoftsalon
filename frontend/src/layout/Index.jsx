@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { Outlet, useLocation } from "react-router-dom";
 import getMenu from "./sidebar/MenuData";
 import Sidebar from "./sidebar/Sidebar";
@@ -9,6 +8,7 @@ import AppRoot from "./global/AppRoot";
 import AppMain from "./global/AppMain";
 import AppWrap from "./global/AppWrap";
 import { useAuth } from "@/auth/AuthContext";
+import FloatingAiAssistant from "@/components/FloatingAiAssistant";
 
 const Layout = ({title}) => {
   const { user } = useAuth();
@@ -28,6 +28,7 @@ const Layout = ({title}) => {
           </AppWrap>
         </AppMain>
       </AppRoot>
+      <FloatingAiAssistant />
     </>
   );
 };

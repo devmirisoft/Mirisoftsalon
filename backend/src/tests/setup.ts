@@ -1,5 +1,13 @@
 import { prisma } from "../config/prisma.js";
 
+beforeAll(async () => {
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE "SalonAssistantConversation"
+    ADD COLUMN IF NOT EXISTS "stateJson" JSONB NOT NULL DEFAULT '{}',
+    ADD COLUMN IF NOT EXISTS "stateVersion" INTEGER NOT NULL DEFAULT 1
+  `);
+});
+
 beforeEach(async () => {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE

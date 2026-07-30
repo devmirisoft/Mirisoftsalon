@@ -10,6 +10,7 @@
     "render-build": "npm run build",
     "deploy:migrate": "prisma migrate deploy",
     "seed:roles": "tsx scripts/seed-role-users.ts",
+    "seed:super-admin": "tsx scripts/seed-super-admin.ts",
     "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit",
     "test:watch": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "dev": "tsx watch src/index.ts",
@@ -26,6 +27,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@google/genai": "^2.10.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@vercel/functions": "^3.7.2",

@@ -289,7 +289,7 @@ export const CustomerModel = {
                     type: "INVOICE",
                     debit: data.amount,
                     credit: 0,
-                    balanceAfter: Number(customer.outstandingAmount),
+                    balanceAfter: customer.outstandingAmount,
                     status: "COMPLETE",
                 },
             });

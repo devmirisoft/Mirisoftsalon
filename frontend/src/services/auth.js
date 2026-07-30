@@ -98,15 +98,26 @@ export const login = async ({ email, password }) => {
   return createSessionFromResponse(body);
 };
 
-export const registerAccount = async ({ name, email, phoneNumber, password }) => {
+export const registerAccount = async ({
+  salonName,
+  branchName,
+  adminName,
+  email,
+  phone,
+  password,
+  confirmPassword,
+}) => {
   const body = await apiRequest("/api/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: name.trim(),
+      salonName: salonName.trim(),
+      ...(branchName?.trim() ? { branchName: branchName.trim() } : {}),
+      adminName: adminName.trim(),
       email: email.trim().toLowerCase(),
-      phone_number: phoneNumber.replace(/\D/g, ""),
+      phone: phone.replace(/\D/g, ""),
       password,
+      confirmPassword,
     }),
   });
 

@@ -18,6 +18,7 @@ import { salonApi } from "@/services/salonApi";
 import {
   formatDate,
   formatMoney,
+  minDateTimeInput,
   toLocalInput,
 } from "@/utils/salonFormat";
 
@@ -38,6 +39,13 @@ const JobCartDetails = () => {
   const [serviceId, setServiceId] = useState("");
   const [packageId, setPackageId] = useState("");
   const [packageStaffId, setPackageStaffId] = useState("");
+  const [customPackage, setCustomPackage] = useState({
+    serviceIds: [],
+    name: "",
+    specialPrice: "",
+    validityDays: 30,
+    usageLimit: 1,
+  });
   const [redemptionSelections, setRedemptionSelections] = useState({});
   const [couponCode, setCouponCode] = useState("");
   const [loading, setLoading] = useState(true);
@@ -92,10 +100,37 @@ const JobCartDetails = () => {
         .filter((item) => item.itemType === "PACKAGE")
         .map((item) => item.packageId)
     );
+    const standaloneServices = new Set(
+      (cart?.items || [])
+        .filter((item) => item.itemType !== "PACKAGE" && item.serviceId)
+        .map((item) => item.serviceId)
+    );
     return (refs.packages || []).filter(
-      (servicePackage) => !existing.has(servicePackage.id)
+      (servicePackage) =>
+        !existing.has(servicePackage.id) &&
+        !(servicePackage.items || []).some((item) =>
+          standaloneServices.has(item.serviceId)
+        )
     );
   }, [cart?.items, refs.packages]);
+  const standaloneServiceItems = useMemo(
+    () =>
+      (cart?.items || []).filter(
+        (item) => item.itemType !== "PACKAGE" && item.serviceId
+      ),
+    [cart?.items]
+  );
+  const selectedCustomServices = useMemo(
+    () =>
+      standaloneServiceItems.filter((item) =>
+        customPackage.serviceIds.includes(item.serviceId)
+      ),
+    [customPackage.serviceIds, standaloneServiceItems]
+  );
+  const selectedCustomTotal = selectedCustomServices.reduce(
+    (sum, item) => sum + Number(item.price || 0),
+    0
+  );
 
   const run = async (action) => {
     setWorking(true);
@@ -110,16 +145,22 @@ const JobCartDetails = () => {
     }
   };
 
-  const save = () =>
+  const save = () => {
+    const startTime = new Date(form.startTime);
+    if (Number.isNaN(startTime.getTime()) || startTime < new Date()) {
+      setError("Choose a start time from now onward.");
+      return;
+    }
     run(() =>
       salonApi.jobCarts.update(id, {
         customerName: form.customerName,
         phone: form.phone,
-        startTime: new Date(form.startTime).toISOString(),
+        startTime: startTime.toISOString(),
         staffId: form.staffId || null,
         bookingNote: form.bookingNote || null,
       })
     );
+  };
 
   const confirm = () => {
     if (
@@ -188,6 +229,47 @@ const JobCartDetails = () => {
         items,
       });
       setRedemptionSelections({});
+    });
+
+  const toggleCustomPackageService = (serviceId) =>
+    setCustomPackage((current) => ({
+      ...current,
+      serviceIds: current.serviceIds.includes(serviceId)
+        ? current.serviceIds.filter((id) => id !== serviceId)
+        : [...current.serviceIds, serviceId],
+    }));
+
+  const createCustomPackage = () =>
+    run(async () => {
+      if (!customPackage.serviceIds.length) {
+        throw new Error("Choose at least one service for the custom package");
+      }
+      if (!customPackage.name.trim()) {
+        throw new Error("Enter a custom package name");
+      }
+      const usageLimit = Number(customPackage.usageLimit || 1);
+      if (!Number.isInteger(usageLimit) || usageLimit < 1 || usageLimit > 100) {
+        throw new Error("Enter a usage limit from 1 to 100");
+      }
+      await salonApi.packages.createCustomFromCart({
+        jobCartId: id,
+        serviceIds: customPackage.serviceIds,
+        items: customPackage.serviceIds.map((serviceId) => ({
+          serviceId,
+          quantity: usageLimit,
+        })),
+        name: customPackage.name,
+        specialPrice: Number(customPackage.specialPrice || selectedCustomTotal),
+        validityDays: Number(customPackage.validityDays || 30),
+        ...(packageStaffId ? { soldByStaffId: packageStaffId } : {}),
+      });
+      setCustomPackage({
+        serviceIds: [],
+        name: "",
+        specialPrice: "",
+        validityDays: 30,
+        usageLimit: 1,
+      });
     });
 
   return (
@@ -264,6 +346,7 @@ const JobCartDetails = () => {
                       <Label>Date & Start Time</Label>
                       <Input
                         type="datetime-local"
+                        min={minDateTimeInput()}
                         disabled={!active}
                         value={form.startTime}
                         onChange={(event) =>
@@ -325,6 +408,105 @@ const JobCartDetails = () => {
             <div className="card card-bordered">
               <div className="card-inner">
                 <h5>Services & Packages</h5>
+                {active && standaloneServiceItems.length > 0 && (
+                  <div className="border rounded p-3 mb-4">
+                    <h6>Create Customer Custom Package</h6>
+                    <Row className="g-2">
+                      <Col md="3">
+                        <Label className="form-label">Package name</Label>
+                        <Input
+                          placeholder="Package name"
+                          value={customPackage.name}
+                          onChange={(event) =>
+                            setCustomPackage((current) => ({
+                              ...current,
+                              name: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Label className="form-label">Price</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder={`Price ${formatMoney(selectedCustomTotal)}`}
+                          value={customPackage.specialPrice}
+                          onChange={(event) =>
+                            setCustomPackage((current) => ({
+                              ...current,
+                              specialPrice: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Label className="form-label">Validity days</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          value={customPackage.validityDays}
+                          onChange={(event) =>
+                            setCustomPackage((current) => ({
+                              ...current,
+                              validityDays: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Label className="form-label">Usage limit</Label>
+                        <Input
+                          type="number"
+                          min="1"
+                          max="100"
+                          step="1"
+                          value={customPackage.usageLimit}
+                          onChange={(event) =>
+                            setCustomPackage((current) => ({
+                              ...current,
+                              usageLimit: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="2">
+                        <Label className="form-label d-none d-md-block">&nbsp;</Label>
+                        <Button
+                          color="primary"
+                          outline
+                          disabled={working || !customPackage.serviceIds.length}
+                          onClick={createCustomPackage}
+                        >
+                          Create
+                        </Button>
+                      </Col>
+                    </Row>
+                    <div className="mt-3">
+                      {standaloneServiceItems.map((item) => (
+                        <div key={item.id} className="form-check mb-1">
+                          <Input
+                            type="checkbox"
+                            id={`custom-package-service-${item.serviceId}`}
+                            checked={customPackage.serviceIds.includes(
+                              item.serviceId
+                            )}
+                            onChange={() =>
+                              toggleCustomPackageService(item.serviceId)
+                            }
+                          />
+                          <Label
+                            className="form-check-label"
+                            htmlFor={`custom-package-service-${item.serviceId}`}
+                          >
+                            {item.serviceName} - {formatMoney(item.price)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {active && (
                   <div className="d-flex gap-2 mb-4">
                     <Input
@@ -819,7 +1001,9 @@ const JobCartDetails = () => {
                 ) : invoice && canOpenInvoice ? (
                   <Link to={`/billing/invoices/${invoice.id}`}>
                     <Button color="primary" block>
-                      Open Invoice / Payment
+                      {cart.status === "CANCELLED"
+                        ? "Open Invoice"
+                        : "Open Invoice / Payment"}
                     </Button>
                   </Link>
                 ) : invoice ? (

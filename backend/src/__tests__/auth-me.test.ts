@@ -6,16 +6,25 @@ import { env } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
 import { generateAccessToken } from "../utils/jwt.js";
 
+const makeRegisterPayload = (overrides: Record<string, unknown> = {}) => {
+  const stamp = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  return {
+    salonName: `Me Salon ${stamp}`,
+    branchName: "Main Branch",
+    adminName: "Me User",
+    email: `me-${stamp}@example.com`,
+    phone: `7${stamp.slice(-9)}`,
+    password: "Password@123",
+    confirmPassword: "Password@123",
+    ...overrides,
+  };
+};
+
 describe("Protected Auth Routes", () => {
   it("should return current token payload with valid token", async () => {
-    const email = `me${Date.now()}@example.com`;
-
-    const registerRes = await request(app).post("/api/auth/register").send({
-      name: "Me User",
-      email,
-      phone_number: `7${Date.now().toString().slice(-9)}`,
-      password: "Password@123",
-    });
+    const registerRes = await request(app)
+      .post("/api/auth/register")
+      .send(makeRegisterPayload());
 
     const token = registerRes.body.data.accessToken;
 
@@ -26,7 +35,9 @@ describe("Protected Auth Routes", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.user.userId).toBe(registerRes.body.data.user.id);
-    expect(res.body.user.role).toBe("SUPER_ADMIN");
+    expect(res.body.user.role).toBe("SALON_ADMIN");
+    expect(res.body.user.salonId).toBe(registerRes.body.data.salon.id);
+    expect(res.body.user.branchId).toBe(registerRes.body.data.branch.id);
   });
 
   it("should reject request without token", async () => {
@@ -53,12 +64,12 @@ describe("Protected Auth Routes", () => {
   });
 
   it("rejects a token after its user is deleted", async () => {
-    const registerRes = await request(app).post("/api/auth/register").send({
-      name: "Deleted Token User",
-      email: `deleted-${Date.now()}@example.com`,
-      phone_number: `6${Date.now().toString().slice(-9)}`,
-      password: "Password@123",
-    });
+    const registerRes = await request(app)
+      .post("/api/auth/register")
+      .send(makeRegisterPayload({
+        adminName: "Deleted Token User",
+        email: `deleted-${Date.now()}@example.com`,
+      }));
     expect(registerRes.statusCode).toBe(201);
 
     await prisma.user.delete({ where: { id: registerRes.body.data.user.id } });
@@ -89,13 +100,18 @@ describe("Protected Auth Routes", () => {
   it("blocks disabled users and enforces tenant-scoped status administration", async () => {
     const stamp = Date.now();
     const password = "Password@123";
-    const superRegistration = await request(app).post("/api/auth/register").send({
-      name: "Status Super Admin",
-      email: `status-super-${stamp}@example.com`,
-      phone_number: `5${String(stamp).slice(-9)}`,
-      password,
+    const superUser = await prisma.user.create({
+      data: {
+        name: "Status Super Admin",
+        email: `status-super-${stamp}@example.com`,
+        passwordHash: "not-used",
+        role: "SUPER_ADMIN",
+      },
     });
-    const superToken = superRegistration.body.data.accessToken as string;
+    const superToken = generateAccessToken({
+      userId: superUser.id,
+      role: superUser.role,
+    });
     const auth = { Authorization: `Bearer ${superToken}` };
 
     const salonA = await request(app).post("/api/salons").set(auth).send({ name: `Status Salon A ${stamp}` });

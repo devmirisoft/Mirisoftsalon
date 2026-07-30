@@ -69,6 +69,14 @@ export const getRevenueSummaryTool: AiTool = {
         paymentCount,
         currency: "INR",
       },
+      cards: [
+        {
+          type: "METRIC",
+          title: "Revenue",
+          value: inr.format(total),
+          description: `${paymentCount} payment${paymentCount === 1 ? "" : "s"} today`,
+        },
+      ],
     };
   },
 };

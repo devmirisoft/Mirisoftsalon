@@ -7,18 +7,23 @@ type PaymentStatus = "UNPAID" | "PARTIALLY_PAID" | "PAID";
 
 type CreateInvoiceItemInput = {
   serviceId?: string;
-  itemType?: "SERVICE" | "PACKAGE" | "PACKAGE_REDEMPTION";
+  productId?: string;
+  itemType?: "SERVICE" | "PRODUCT" | "PACKAGE" | "PACKAGE_REDEMPTION";
   packageId?: string;
   soldByStaffId?: string;
   itemCode?: string;
   description: string;
   serviceName: string;
   quantity?: number;
-  unitPrice: number;
-  discountAmount?: number;
-  taxPercent?: number;
-  taxAmount?: number;
-  lineTotal: number;
+  unitPrice: Prisma.Decimal | number;
+  discountAmount?: Prisma.Decimal | number;
+  taxableAmount?: Prisma.Decimal | number;
+  gstRateSnapshot?: Prisma.Decimal | number;
+  gstAmount?: Prisma.Decimal | number;
+  totalWithTax?: Prisma.Decimal | number;
+  taxPercent?: Prisma.Decimal | number;
+  taxAmount?: Prisma.Decimal | number;
+  lineTotal: Prisma.Decimal | number;
 };
 
 export const InvoiceModel = {
@@ -44,14 +49,24 @@ export const InvoiceModel = {
     customerAddress?: string;
     customerGst?: string;
 
-    subtotalAmount: number;
-    discountAmount: number;
-    processingFeeAmount: number;
-    taxAmount: number;
-    totalAmount: number;
+    serviceTaxableAmount?: Prisma.Decimal | number;
+    productTaxableAmount?: Prisma.Decimal | number;
+    serviceGstAmount?: Prisma.Decimal | number;
+    productGstAmount?: Prisma.Decimal | number;
+    totalGstAmount?: Prisma.Decimal | number;
+    gstNumberSnapshot?: string | null;
+    gstLegalNameSnapshot?: string | null;
+    gstStateCodeSnapshot?: string | null;
+    gstEnabledSnapshot?: boolean;
 
-    paidAmount?: number;
-    balanceAmount: number;
+    subtotalAmount: Prisma.Decimal | number;
+    discountAmount: Prisma.Decimal | number;
+    processingFeeAmount: Prisma.Decimal | number;
+    taxAmount: Prisma.Decimal | number;
+    totalAmount: Prisma.Decimal | number;
+
+    paidAmount?: Prisma.Decimal | number;
+    balanceAmount: Prisma.Decimal | number;
 
     status?: InvoiceStatus;
     paymentStatus?: PaymentStatus;
@@ -77,6 +92,15 @@ export const InvoiceModel = {
         ...(data.salonEmail ? { salonEmail: data.salonEmail } : {}),
         ...(data.salonAddress ? { salonAddress: data.salonAddress } : {}),
         ...(data.salonGst ? { salonGst: data.salonGst } : {}),
+        serviceTaxableAmount: data.serviceTaxableAmount ?? 0,
+        productTaxableAmount: data.productTaxableAmount ?? 0,
+        serviceGstAmount: data.serviceGstAmount ?? 0,
+        productGstAmount: data.productGstAmount ?? 0,
+        totalGstAmount: data.totalGstAmount ?? data.taxAmount,
+        gstNumberSnapshot: data.gstNumberSnapshot ?? null,
+        gstLegalNameSnapshot: data.gstLegalNameSnapshot ?? null,
+        gstStateCodeSnapshot: data.gstStateCodeSnapshot ?? null,
+        gstEnabledSnapshot: data.gstEnabledSnapshot ?? false,
 
         customerName: data.customerName,
         ...(data.customerPhone ? { customerPhone: data.customerPhone } : {}),
@@ -104,6 +128,7 @@ export const InvoiceModel = {
         items: {
           create: data.items.map((item) => ({
             ...(item.serviceId ? { serviceId: item.serviceId } : {}),
+            ...(item.productId ? { productId: item.productId } : {}),
             ...(item.itemType ? { itemType: item.itemType } : {}),
             ...(item.packageId ? { packageId: item.packageId } : {}),
             ...(item.soldByStaffId
@@ -118,6 +143,10 @@ export const InvoiceModel = {
             unitPrice: item.unitPrice,
 
             discountAmount: item.discountAmount || 0,
+            taxableAmount: item.taxableAmount ?? 0,
+            gstRateSnapshot: item.gstRateSnapshot ?? item.taxPercent ?? 0,
+            gstAmount: item.gstAmount ?? item.taxAmount ?? 0,
+            totalWithTax: item.totalWithTax ?? item.lineTotal,
             taxPercent: item.taxPercent || 0,
             taxAmount: item.taxAmount || 0,
 
@@ -199,6 +228,13 @@ export const InvoiceModel = {
                 status: true,
               },
             },
+          },
+        },
+        appointment: {
+          select: {
+            id: true,
+            appointmentCode: true,
+            status: true,
           },
         },
         items: true,

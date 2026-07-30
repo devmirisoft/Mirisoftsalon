@@ -2,6 +2,8 @@ import { prisma } from "../../../config/prisma.js";
 import type { AiTool } from "../ai-tool.types.js";
 import { aiExactBranchScope } from "../ai-permission.service.js";
 
+const MAX_CUSTOMERS = 10;
+
 const inr = new Intl.NumberFormat("en-IN", {
   style: "currency",
   currency: "INR",
@@ -35,7 +37,7 @@ export const getOutstandingCustomersTool: AiTool = {
           outstandingAmount: true,
         },
         orderBy: { outstandingAmount: "desc" },
-        take: 20,
+        take: MAX_CUSTOMERS,
       }),
       prisma.customer.aggregate({
         where,
@@ -59,6 +61,31 @@ export const getOutstandingCustomersTool: AiTool = {
         })),
         truncated: total > customers.length,
       },
+      cards: [
+        {
+          type: total > 0 ? "WARNING" : "METRIC",
+          title: "Pending balances",
+          value: inr.format(totalOutstanding),
+          description: `${total} customer${total === 1 ? "" : "s"}`,
+        },
+      ],
+      table: {
+        columns: [
+          { key: "customerCode", label: "Code" },
+          { key: "name", label: "Customer" },
+          { key: "outstandingAmount", label: "Outstanding" },
+        ],
+        rows: customers.map((customer) => ({
+          customerCode: customer.customerCode,
+          name: customer.name,
+          outstandingAmount: Number(customer.outstandingAmount),
+          branchId: customer.branchId,
+        })),
+      },
+      warnings:
+        total > 0
+          ? [`${total} customer${total === 1 ? " has" : "s have"} pending balances.`]
+          : undefined,
     };
   },
 };

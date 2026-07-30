@@ -1,5 +1,7 @@
 import request from "supertest";
 import { app } from "../app.js";
+import { prisma } from "../config/prisma.js";
+import { generateAccessToken } from "../utils/jwt.js";
 
 const auth = (token: string) => ({
   Authorization: `Bearer ${token}`,
@@ -8,23 +10,18 @@ const auth = (token: string) => ({
 describe("Staff code generation", () => {
   it("uses salon initials, joining month, ISO weekday, and phone suffix", async () => {
     const stamp = Date.now();
-    const password = "Password@123";
-    const register = await request(app).post("/api/auth/register").send({
-      name: "Staff Code Super Admin",
-      email: `staff-code-${stamp}@example.com`,
-      phone_number: `90${String(stamp).slice(-8)}`,
-      password,
+    const superAdmin = await prisma.user.create({
+      data: {
+        name: "Staff Code Super Admin",
+        email: `staff-code-${stamp}@example.com`,
+        passwordHash: "not-used",
+        role: "SUPER_ADMIN",
+      },
     });
-
-    expect(register.status).toBe(201);
-
-    const login = await request(app).post("/api/auth/login").send({
-      email: `staff-code-${stamp}@example.com`,
-      password,
+    const token = generateAccessToken({
+      userId: superAdmin.id,
+      role: superAdmin.role,
     });
-
-    expect(login.status).toBe(200);
-    const token = login.body.data.accessToken as string;
 
     const salon = await request(app)
       .post("/api/salons")

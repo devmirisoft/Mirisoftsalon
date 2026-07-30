@@ -9,7 +9,7 @@ import ServerPagination from "@/components/salon/ServerPagination";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
-import { formatDate, formatMoney } from "@/utils/salonFormat";
+import { formatDate, formatMoney, minDateTimeInput } from "@/utils/salonFormat";
 
 const couponStatus = (coupon) => {
   const now = new Date();
@@ -132,12 +132,14 @@ const Coupons = () => {
         name: "validFrom",
         label: "Valid from",
         type: "datetime-local",
+        min: minDateTimeInput(),
         required: true,
       },
       {
         name: "validUntil",
         label: "Valid until",
         type: "datetime-local",
+        min: minDateTimeInput(),
         required: true,
       },
       {

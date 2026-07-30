@@ -4,6 +4,19 @@ export const salonApi = {
   auth: {
     me: () => request("/api/auth/me"),
   },
+  profile: {
+    get: () => request("/api/profile"),
+    update: (body) => request("/api/profile", { method: "PUT", body }),
+    salon: () => request("/api/salon-profile"),
+    updateSalon: (body) =>
+      request("/api/salon-profile", { method: "PUT", body }),
+    branch: () => request("/api/branch-profile"),
+    updateBranch: (body) =>
+      request("/api/branch-profile", { method: "PUT", body }),
+    gst: () => request("/api/salon-profile/gst"),
+    updateGst: (body) =>
+      request("/api/salon-profile/gst", { method: "PUT", body }),
+  },
   users: {
     list: () => request("/api/users"),
     createSalonAdmin: (body) =>
@@ -14,6 +27,19 @@ export const salonApi = {
   salons: {
     list: () => request("/api/salons"),
     create: (body) => request("/api/salons", { method: "POST", body }),
+    gstSettings: (salonId) =>
+      request(
+        salonId
+          ? `/api/salons/${salonId}/gst/settings`
+          : "/api/salons/gst/settings"
+      ),
+    updateGstSettings: (body, salonId) =>
+      request(
+        salonId
+          ? `/api/salons/${salonId}/gst/settings`
+          : "/api/salons/gst/settings",
+        { method: "PATCH", body }
+      ),
   },
   branches: {
     list: () => request("/api/branches"),
@@ -116,8 +142,14 @@ export const salonApi = {
   },
   packages: {
     list: (query) => request("/api/packages", { query }),
+    customerCustom: (query) =>
+      request("/api/packages/customer-custom", { query }),
     get: (id) => request(`/api/packages/${id}`),
     create: (body) => request("/api/packages", { method: "POST", body }),
+    createCustomFromCart: (body) =>
+      request("/api/packages/custom/from-cart", { method: "POST", body }),
+    copyCustom: (body) =>
+      request("/api/packages/custom/copy", { method: "POST", body }),
     update: (id, body) =>
       request(`/api/packages/${id}`, { method: "PUT", body }),
     setStatus: (id, status) =>

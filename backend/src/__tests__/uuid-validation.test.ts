@@ -1,16 +1,25 @@
 import request from "supertest";
 import { app } from "../app.js";
+import { prisma } from "../config/prisma.js";
+import { generateAccessToken } from "../utils/jwt.js";
 
 describe("universal UUID route validation", () => {
   it("returns 400 for malformed IDs across major modules and accepts valid UUIDs", async () => {
     const stamp = Date.now();
-    const registration = await request(app).post("/api/auth/register").send({
-      name: "UUID Super Admin",
-      email: `uuid-${stamp}@example.com`,
-      phone_number: `3${String(stamp).slice(-9)}`,
-      password: "Password@123",
+    const superAdmin = await prisma.user.create({
+      data: {
+        name: "UUID Super Admin",
+        email: `uuid-${stamp}@example.com`,
+        passwordHash: "not-used",
+        role: "SUPER_ADMIN",
+      },
     });
-    const auth = { Authorization: `Bearer ${registration.body.data.accessToken}` };
+    const auth = {
+      Authorization: `Bearer ${generateAccessToken({
+        userId: superAdmin.id,
+        role: superAdmin.role,
+      })}`,
+    };
 
     for (const path of [
       "/api/customers/not-a-uuid",

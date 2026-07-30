@@ -27,4 +27,10 @@ export const SalonModel = {
             },
         });
     },
+    updateGstSettings: async (id, data, tx) => {
+        return (tx ?? prisma).salon.update({
+            where: { id },
+            data,
+        });
+    },
 };

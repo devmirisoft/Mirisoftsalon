@@ -5,9 +5,23 @@ import { comparePass, hashPass } from "../../utils/password.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 import { verifyRefreshToken } from "../../utils/jwt.js";
 import { env } from "../../config/env.js";
+import { isValidTimezone } from "../../utils/timezone.js";
+import { buildSalonCode } from "../../utils/business-id.js";
 import { createRefreshSession, findActiveRefreshSession, hashRefreshToken, } from "./session.service.js";
 import { createBestEffortAuditLog, createAuditLog, requestAuditContext, } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
+const PUBLIC_REGISTER_PROTECTED_FIELDS = new Set([
+    "role",
+    "permissions",
+    "salonId",
+    "branchId",
+    "isSuperAdmin",
+    "isActive",
+    "status",
+    "createdById",
+    "salonCode",
+    "branchCode",
+]);
 const refreshCookieBase = {
     httpOnly: true,
     secure: env.IS_PRODUCTION,
@@ -20,6 +34,13 @@ const refreshCookieOptions = {
 };
 export const register = async (req, res) => {
     try {
+        const protectedField = Object.keys(req.body ?? {}).find((key) => PUBLIC_REGISTER_PROTECTED_FIELDS.has(key));
+        if (protectedField) {
+            return res.status(400).json({
+                success: false,
+                message: `${protectedField} is server-controlled and cannot be provided during public registration`,
+            });
+        }
         const data = registerSchema.safeParse(req.body);
         if (!data.success) {
             return res.status(400).json({
@@ -28,29 +49,115 @@ export const register = async (req, res) => {
                 errors: data.error.flatten().fieldErrors
             });
         }
-        const { name, email, password, phone_number } = data.data;
-        const existingUser = await UserModel.findByEmail(email);
-        const existingPhone = await UserModel.findByPhoneNumber(phone_number);
-        if (existingUser) {
+        const { salonName, branchName, adminName, email, password, phone, address, city, state, pincode, timezone, } = data.data;
+        if (timezone && !isValidTimezone(timezone)) {
             return res.status(400).json({
+                success: false,
+                message: "Invalid salon timezone",
+            });
+        }
+        const existingUser = await UserModel.findByEmail(email);
+        const existingPhone = await UserModel.findByPhoneNumber(phone);
+        if (existingUser) {
+            return res.status(409).json({
                 success: false,
                 message: "user with this email already exists"
             });
         }
         if (existingPhone) {
-            return res.status(400).json({
+            return res.status(409).json({
                 success: false,
                 message: "user with this phone number already exists"
             });
         }
         const hashpassword = await hashPass(password);
-        const newUser = await UserModel.create({
-            name,
-            email,
-            phone_number,
-            passwordHash: hashpassword,
-            role: "SUPER_ADMIN"
+        const onboarding = await prisma.$transaction(async (tx) => {
+            const salon = await tx.salon.create({
+                data: {
+                    name: salonName,
+                    salonCode: buildSalonCode({
+                        salonName,
+                        timezone: timezone || "Asia/Kolkata",
+                    }),
+                    timezone: timezone || "Asia/Kolkata",
+                    ...(address ? { addressLine1: address } : {}),
+                    ...(city ? { city } : {}),
+                    ...(state ? { state } : {}),
+                    ...(pincode ? { postalCode: pincode } : {}),
+                    ...(phone ? { phone } : {}),
+                    ...(email ? { email } : {}),
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    timezone: true,
+                },
+            });
+            const branch = await tx.branch.create({
+                data: {
+                    name: branchName || "Main Branch",
+                    salonId: salon.id,
+                    ...(address ? { addressLine1: address } : {}),
+                    ...(city ? { city } : {}),
+                    ...(state ? { state } : {}),
+                    ...(pincode ? { postalCode: pincode } : {}),
+                    ...(phone ? { phone } : {}),
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    salonId: true,
+                },
+            });
+            const user = await tx.user.create({
+                data: {
+                    name: adminName,
+                    email,
+                    phone_number: phone,
+                    passwordHash: hashpassword,
+                    role: "SALON_ADMIN",
+                    salonId: salon.id,
+                    branchId: branch.id,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    phone_number: true,
+                    role: true,
+                    status: true,
+                    salonId: true,
+                    branchId: true,
+                    createdAt: true,
+                },
+            });
+            await createAuditLog({
+                tx,
+                salonId: salon.id,
+                branchId: branch.id,
+                userId: user.id,
+                userName: user.name,
+                userRole: user.role,
+                module: "AUTH",
+                action: "CREATE",
+                entityId: user.id,
+                entityName: salon.name,
+                description: "New salon account registered",
+                newData: {
+                    salonId: salon.id,
+                    salonName: salon.name,
+                    branchId: branch.id,
+                    branchName: branch.name,
+                    adminUserId: user.id,
+                    adminName: user.name,
+                    adminEmail: user.email,
+                    role: user.role,
+                },
+                ...requestAuditContext(req),
+            });
+            return { salon, branch, user };
         });
+        const newUser = onboarding.user;
         const tokenPayload = {
             userId: newUser.id,
             role: newUser.role,
@@ -63,9 +170,19 @@ export const register = async (req, res) => {
         res.cookie("refreshToken", refreshToken, refreshCookieOptions);
         return res.status(201).json({
             success: true,
-            message: "User registered successfully",
+            message: "Salon account created successfully",
             data: {
-                user: newUser,
+                salon: onboarding.salon,
+                branch: onboarding.branch,
+                user: {
+                    id: newUser.id,
+                    name: newUser.name,
+                    email: newUser.email,
+                    phone: newUser.phone_number,
+                    role: newUser.role,
+                    salonId: newUser.salonId,
+                    branchId: newUser.branchId,
+                },
                 accessToken,
             },
         });

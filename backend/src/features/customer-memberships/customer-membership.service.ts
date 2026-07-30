@@ -27,6 +27,12 @@ export class CustomerMembershipError extends Error {
 
 const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 
+const addMonths = (value: Date, months: number) => {
+  const date = new Date(value);
+  date.setMonth(date.getMonth() + months);
+  return date;
+};
+
 const historyInclude = {
   customer: {
     select: {
@@ -336,7 +342,8 @@ export const assignCustomerMembershipHistory = async (
     }
 
     const startsAt = input.startsAt ?? new Date();
-    const expiresAt = input.expiresAt ?? null;
+    const expiresAt =
+      input.expiresAt === undefined ? addMonths(startsAt, 1) : input.expiresAt;
     if (expiresAt && expiresAt < startsAt) {
       throw new CustomerMembershipError(
         400,

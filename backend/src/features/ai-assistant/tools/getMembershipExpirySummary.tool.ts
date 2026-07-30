@@ -3,6 +3,7 @@ import type { AiTool } from "../ai-tool.types.js";
 import { aiExactBranchScope } from "../ai-permission.service.js";
 
 const EXPIRY_WINDOW_DAYS = 30;
+const MAX_MEMBERSHIPS = 10;
 
 export const getMembershipExpirySummaryTool: AiTool = {
   name: "getMembershipExpirySummary",
@@ -29,15 +30,14 @@ export const getMembershipExpirySummaryTool: AiTool = {
       prisma.customerMembership.findMany({
         where,
         select: {
-          id: true,
           membershipNameSnapshot: true,
           expiresAt: true,
           customer: {
-            select: { id: true, customerCode: true, name: true },
+            select: { customerCode: true, name: true },
           },
         },
         orderBy: { expiresAt: "asc" },
-        take: 20,
+        take: MAX_MEMBERSHIPS,
       }),
       prisma.customerMembership.count({ where }),
     ]);

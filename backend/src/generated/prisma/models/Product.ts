@@ -357,6 +357,7 @@ export type ProductWhereInput = {
   stockAlerts?: Prisma.StockAlertListRelationFilter
   reorderSuggestions?: Prisma.ReorderSuggestionListRelationFilter
   retailSaleItems?: Prisma.RetailSaleItemListRelationFilter
+  invoiceItems?: Prisma.InvoiceItemListRelationFilter
   serviceConsumables?: Prisma.ServiceConsumableListRelationFilter
 }
 
@@ -390,6 +391,7 @@ export type ProductOrderByWithRelationInput = {
   stockAlerts?: Prisma.StockAlertOrderByRelationAggregateInput
   reorderSuggestions?: Prisma.ReorderSuggestionOrderByRelationAggregateInput
   retailSaleItems?: Prisma.RetailSaleItemOrderByRelationAggregateInput
+  invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   serviceConsumables?: Prisma.ServiceConsumableOrderByRelationAggregateInput
 }
 
@@ -427,6 +429,7 @@ export type ProductWhereUniqueInput = Prisma.AtLeast<{
   stockAlerts?: Prisma.StockAlertListRelationFilter
   reorderSuggestions?: Prisma.ReorderSuggestionListRelationFilter
   retailSaleItems?: Prisma.RetailSaleItemListRelationFilter
+  invoiceItems?: Prisma.InvoiceItemListRelationFilter
   serviceConsumables?: Prisma.ServiceConsumableListRelationFilter
 }, "id" | "salonId_name">
 
@@ -510,6 +513,7 @@ export type ProductCreateInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -539,6 +543,7 @@ export type ProductUncheckedCreateInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -568,6 +573,7 @@ export type ProductUpdateInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -597,6 +603,7 @@ export type ProductUncheckedUpdateInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -678,6 +685,11 @@ export type ProductOrderByRelationAggregateInput = {
 export type ProductScalarRelationFilter = {
   is?: Prisma.ProductWhereInput
   isNot?: Prisma.ProductWhereInput
+}
+
+export type ProductNullableScalarRelationFilter = {
+  is?: Prisma.ProductWhereInput | null
+  isNot?: Prisma.ProductWhereInput | null
 }
 
 export type ProductSalonIdNameCompoundUniqueInput = {
@@ -866,6 +878,22 @@ export type ProductUpdateOneRequiredWithoutServiceConsumablesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutServiceConsumablesInput, Prisma.ProductUpdateWithoutServiceConsumablesInput>, Prisma.ProductUncheckedUpdateWithoutServiceConsumablesInput>
 }
 
+export type ProductCreateNestedOneWithoutInvoiceItemsInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutInvoiceItemsInput, Prisma.ProductUncheckedCreateWithoutInvoiceItemsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutInvoiceItemsInput
+  connect?: Prisma.ProductWhereUniqueInput
+}
+
+export type ProductUpdateOneWithoutInvoiceItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductCreateWithoutInvoiceItemsInput, Prisma.ProductUncheckedCreateWithoutInvoiceItemsInput>
+  connectOrCreate?: Prisma.ProductCreateOrConnectWithoutInvoiceItemsInput
+  upsert?: Prisma.ProductUpsertWithoutInvoiceItemsInput
+  disconnect?: Prisma.ProductWhereInput | boolean
+  delete?: Prisma.ProductWhereInput | boolean
+  connect?: Prisma.ProductWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProductUpdateToOneWithWhereWithoutInvoiceItemsInput, Prisma.ProductUpdateWithoutInvoiceItemsInput>, Prisma.ProductUncheckedUpdateWithoutInvoiceItemsInput>
+}
+
 export type ProductCreateNestedManyWithoutBrandInput = {
   create?: Prisma.XOR<Prisma.ProductCreateWithoutBrandInput, Prisma.ProductUncheckedCreateWithoutBrandInput> | Prisma.ProductCreateWithoutBrandInput[] | Prisma.ProductUncheckedCreateWithoutBrandInput[]
   connectOrCreate?: Prisma.ProductCreateOrConnectWithoutBrandInput | Prisma.ProductCreateOrConnectWithoutBrandInput[]
@@ -1049,6 +1077,7 @@ export type ProductCreateWithoutSalonInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1077,6 +1106,7 @@ export type ProductUncheckedCreateWithoutSalonInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1157,6 +1187,7 @@ export type ProductCreateWithoutBranchInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1185,6 +1216,7 @@ export type ProductUncheckedCreateWithoutBranchInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1240,6 +1272,7 @@ export type ProductCreateWithoutServiceConsumablesInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
 }
 
 export type ProductUncheckedCreateWithoutServiceConsumablesInput = {
@@ -1268,6 +1301,7 @@ export type ProductUncheckedCreateWithoutServiceConsumablesInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
 }
 
 export type ProductCreateOrConnectWithoutServiceConsumablesInput = {
@@ -1312,6 +1346,7 @@ export type ProductUpdateWithoutServiceConsumablesInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
 }
 
 export type ProductUncheckedUpdateWithoutServiceConsumablesInput = {
@@ -1340,6 +1375,139 @@ export type ProductUncheckedUpdateWithoutServiceConsumablesInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
+}
+
+export type ProductCreateWithoutInvoiceItemsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  sku?: string | null
+  barcode?: string | null
+  category?: string | null
+  unit?: $Enums.ProductUnit
+  costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sellingPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currentStock?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  lowStockAlert?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isRetailProduct?: boolean
+  isServiceConsumable?: boolean
+  status?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutProductsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductsInput
+  brand?: Prisma.ProductBrandCreateNestedOneWithoutProductsInput
+  vendor?: Prisma.VendorCreateNestedOneWithoutProductsInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutProductInput
+  purchaseItems?: Prisma.ProductPurchaseItemCreateNestedManyWithoutProductInput
+  stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
+  reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
+  retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
+}
+
+export type ProductUncheckedCreateWithoutInvoiceItemsInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  brandId?: string | null
+  vendorId?: string | null
+  name: string
+  description?: string | null
+  sku?: string | null
+  barcode?: string | null
+  category?: string | null
+  unit?: $Enums.ProductUnit
+  costPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  sellingPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  currentStock?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  lowStockAlert?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  isRetailProduct?: boolean
+  isServiceConsumable?: boolean
+  status?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutProductInput
+  purchaseItems?: Prisma.ProductPurchaseItemUncheckedCreateNestedManyWithoutProductInput
+  stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
+  retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
+}
+
+export type ProductCreateOrConnectWithoutInvoiceItemsInput = {
+  where: Prisma.ProductWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductCreateWithoutInvoiceItemsInput, Prisma.ProductUncheckedCreateWithoutInvoiceItemsInput>
+}
+
+export type ProductUpsertWithoutInvoiceItemsInput = {
+  update: Prisma.XOR<Prisma.ProductUpdateWithoutInvoiceItemsInput, Prisma.ProductUncheckedUpdateWithoutInvoiceItemsInput>
+  create: Prisma.XOR<Prisma.ProductCreateWithoutInvoiceItemsInput, Prisma.ProductUncheckedCreateWithoutInvoiceItemsInput>
+  where?: Prisma.ProductWhereInput
+}
+
+export type ProductUpdateToOneWithWhereWithoutInvoiceItemsInput = {
+  where?: Prisma.ProductWhereInput
+  data: Prisma.XOR<Prisma.ProductUpdateWithoutInvoiceItemsInput, Prisma.ProductUncheckedUpdateWithoutInvoiceItemsInput>
+}
+
+export type ProductUpdateWithoutInvoiceItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.EnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit
+  costPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sellingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currentStock?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  lowStockAlert?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isRetailProduct?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isServiceConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductsNestedInput
+  brand?: Prisma.ProductBrandUpdateOneWithoutProductsNestedInput
+  vendor?: Prisma.VendorUpdateOneWithoutProductsNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutProductNestedInput
+  purchaseItems?: Prisma.ProductPurchaseItemUpdateManyWithoutProductNestedInput
+  stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
+  retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
+}
+
+export type ProductUncheckedUpdateWithoutInvoiceItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  brandId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vendorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sku?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  barcode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  unit?: Prisma.EnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit
+  costPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  sellingPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  currentStock?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  lowStockAlert?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  isRetailProduct?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isServiceConsumable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutProductNestedInput
+  purchaseItems?: Prisma.ProductPurchaseItemUncheckedUpdateManyWithoutProductNestedInput
+  stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
+  retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
 export type ProductCreateWithoutBrandInput = {
@@ -1367,6 +1535,7 @@ export type ProductCreateWithoutBrandInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1395,6 +1564,7 @@ export type ProductUncheckedCreateWithoutBrandInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1449,6 +1619,7 @@ export type ProductCreateWithoutStockMovementsInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1477,6 +1648,7 @@ export type ProductUncheckedCreateWithoutStockMovementsInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1521,6 +1693,7 @@ export type ProductUpdateWithoutStockMovementsInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -1549,6 +1722,7 @@ export type ProductUncheckedUpdateWithoutStockMovementsInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -1577,6 +1751,7 @@ export type ProductCreateWithoutVendorInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1605,6 +1780,7 @@ export type ProductUncheckedCreateWithoutVendorInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1659,6 +1835,7 @@ export type ProductCreateWithoutPurchaseItemsInput = {
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1687,6 +1864,7 @@ export type ProductUncheckedCreateWithoutPurchaseItemsInput = {
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1731,6 +1909,7 @@ export type ProductUpdateWithoutPurchaseItemsInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -1759,6 +1938,7 @@ export type ProductUncheckedUpdateWithoutPurchaseItemsInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -1787,6 +1967,7 @@ export type ProductCreateWithoutStockAlertsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1815,6 +1996,7 @@ export type ProductUncheckedCreateWithoutStockAlertsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1859,6 +2041,7 @@ export type ProductUpdateWithoutStockAlertsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -1887,6 +2070,7 @@ export type ProductUncheckedUpdateWithoutStockAlertsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -1915,6 +2099,7 @@ export type ProductCreateWithoutReorderSuggestionsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemCreateNestedManyWithoutProductInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -1943,6 +2128,7 @@ export type ProductUncheckedCreateWithoutReorderSuggestionsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedCreateNestedManyWithoutProductInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -1987,6 +2173,7 @@ export type ProductUpdateWithoutReorderSuggestionsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUpdateManyWithoutProductNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2015,6 +2202,7 @@ export type ProductUncheckedUpdateWithoutReorderSuggestionsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedUpdateManyWithoutProductNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2043,6 +2231,7 @@ export type ProductCreateWithoutRetailSaleItemsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemCreateNestedManyWithoutProductInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutProductInput
 }
 
@@ -2071,6 +2260,7 @@ export type ProductUncheckedCreateWithoutRetailSaleItemsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedCreateNestedManyWithoutProductInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutProductInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutProductInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutProductInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutProductInput
 }
 
@@ -2115,6 +2305,7 @@ export type ProductUpdateWithoutRetailSaleItemsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUpdateManyWithoutProductNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2143,6 +2334,7 @@ export type ProductUncheckedUpdateWithoutRetailSaleItemsInput = {
   purchaseItems?: Prisma.ProductPurchaseItemUncheckedUpdateManyWithoutProductNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2193,6 +2385,7 @@ export type ProductUpdateWithoutSalonInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2221,6 +2414,7 @@ export type ProductUncheckedUpdateWithoutSalonInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2293,6 +2487,7 @@ export type ProductUpdateWithoutBranchInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2321,6 +2516,7 @@ export type ProductUncheckedUpdateWithoutBranchInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2393,6 +2589,7 @@ export type ProductUpdateWithoutBrandInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2421,6 +2618,7 @@ export type ProductUncheckedUpdateWithoutBrandInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2493,6 +2691,7 @@ export type ProductUpdateWithoutVendorInput = {
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutProductNestedInput
 }
 
@@ -2521,6 +2720,7 @@ export type ProductUncheckedUpdateWithoutVendorInput = {
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutProductNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutProductNestedInput
   retailSaleItems?: Prisma.RetailSaleItemUncheckedUpdateManyWithoutProductNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutProductNestedInput
   serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutProductNestedInput
 }
 
@@ -2557,6 +2757,7 @@ export type ProductCountOutputType = {
   stockAlerts: number
   reorderSuggestions: number
   retailSaleItems: number
+  invoiceItems: number
   serviceConsumables: number
 }
 
@@ -2566,6 +2767,7 @@ export type ProductCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   stockAlerts?: boolean | ProductCountOutputTypeCountStockAlertsArgs
   reorderSuggestions?: boolean | ProductCountOutputTypeCountReorderSuggestionsArgs
   retailSaleItems?: boolean | ProductCountOutputTypeCountRetailSaleItemsArgs
+  invoiceItems?: boolean | ProductCountOutputTypeCountInvoiceItemsArgs
   serviceConsumables?: boolean | ProductCountOutputTypeCountServiceConsumablesArgs
 }
 
@@ -2617,6 +2819,13 @@ export type ProductCountOutputTypeCountRetailSaleItemsArgs<ExtArgs extends runti
 /**
  * ProductCountOutputType without action
  */
+export type ProductCountOutputTypeCountInvoiceItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvoiceItemWhereInput
+}
+
+/**
+ * ProductCountOutputType without action
+ */
 export type ProductCountOutputTypeCountServiceConsumablesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ServiceConsumableWhereInput
 }
@@ -2652,6 +2861,7 @@ export type ProductSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   stockAlerts?: boolean | Prisma.Product$stockAlertsArgs<ExtArgs>
   reorderSuggestions?: boolean | Prisma.Product$reorderSuggestionsArgs<ExtArgs>
   retailSaleItems?: boolean | Prisma.Product$retailSaleItemsArgs<ExtArgs>
+  invoiceItems?: boolean | Prisma.Product$invoiceItemsArgs<ExtArgs>
   serviceConsumables?: boolean | Prisma.Product$serviceConsumablesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["product"]>
@@ -2744,6 +2954,7 @@ export type ProductInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   stockAlerts?: boolean | Prisma.Product$stockAlertsArgs<ExtArgs>
   reorderSuggestions?: boolean | Prisma.Product$reorderSuggestionsArgs<ExtArgs>
   retailSaleItems?: boolean | Prisma.Product$retailSaleItemsArgs<ExtArgs>
+  invoiceItems?: boolean | Prisma.Product$invoiceItemsArgs<ExtArgs>
   serviceConsumables?: boolean | Prisma.Product$serviceConsumablesArgs<ExtArgs>
   _count?: boolean | Prisma.ProductCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2772,6 +2983,7 @@ export type $ProductPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     stockAlerts: Prisma.$StockAlertPayload<ExtArgs>[]
     reorderSuggestions: Prisma.$ReorderSuggestionPayload<ExtArgs>[]
     retailSaleItems: Prisma.$RetailSaleItemPayload<ExtArgs>[]
+    invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     serviceConsumables: Prisma.$ServiceConsumablePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3198,6 +3410,7 @@ export interface Prisma__ProductClient<T, Null = never, ExtArgs extends runtime.
   stockAlerts<T extends Prisma.Product$stockAlertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$stockAlertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reorderSuggestions<T extends Prisma.Product$reorderSuggestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$reorderSuggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReorderSuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   retailSaleItems<T extends Prisma.Product$retailSaleItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$retailSaleItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RetailSaleItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  invoiceItems<T extends Prisma.Product$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceConsumables<T extends Prisma.Product$serviceConsumablesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Product$serviceConsumablesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceConsumablePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3823,6 +4036,30 @@ export type Product$retailSaleItemsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.RetailSaleItemScalarFieldEnum | Prisma.RetailSaleItemScalarFieldEnum[]
+}
+
+/**
+ * Product.invoiceItems
+ */
+export type Product$invoiceItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the InvoiceItem
+   */
+  select?: Prisma.InvoiceItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the InvoiceItem
+   */
+  omit?: Prisma.InvoiceItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvoiceItemInclude<ExtArgs> | null
+  where?: Prisma.InvoiceItemWhereInput
+  orderBy?: Prisma.InvoiceItemOrderByWithRelationInput | Prisma.InvoiceItemOrderByWithRelationInput[]
+  cursor?: Prisma.InvoiceItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvoiceItemScalarFieldEnum | Prisma.InvoiceItemScalarFieldEnum[]
 }
 
 /**

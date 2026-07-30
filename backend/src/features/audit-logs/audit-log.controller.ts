@@ -21,6 +21,7 @@ const MODULES = [
   "MEMBERSHIP",
   "LOYALTY",
   "COUPON",
+  "GST",
   "PUBLIC_BOOKING",
   "JOB_CART",
   "PACKAGE",

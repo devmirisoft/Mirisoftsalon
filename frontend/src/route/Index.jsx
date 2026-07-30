@@ -8,6 +8,7 @@ import InvoiceDetails from "@/pages/salon/InvoiceDetails";
 import InvoicePrint from "@/pages/salon/InvoicePrint";
 import Customers from "@/pages/salon/Customers";
 import Management from "@/pages/salon/Management";
+import Profile from "@/pages/salon/Profile";
 import ServiceCatalog from "@/pages/salon/ServiceCatalog";
 import Support from "@/pages/salon/Support";
 import ProductBrands from "@/pages/salon/ProductBrands";
@@ -92,12 +93,14 @@ const Router = () => (
                     roles={[
                       "SUPER_ADMIN",
                       "SALON_ADMIN",
+                      "BRANCH_MANAGER",
                       "RECEPTIONIST",
                       "STAFF",
                     ]}
                   />
                 }
               >
+                <Route path="profile" element={<Profile />} />
                 <Route path="appointments" element={<Appointments />} />
                 <Route path="customers" element={<Customers />} />
                 <Route path="services" element={<ServiceCatalog />} />
@@ -161,6 +164,10 @@ const Router = () => (
                 <Route path="billing" element={<Billing />} />
                 <Route
                   path="billing/invoices/:invoiceId"
+                  element={<InvoiceDetails />}
+                />
+                <Route
+                  path="billing/invoices/:invoiceId/pay"
                   element={<InvoiceDetails />}
                 />
               </Route>

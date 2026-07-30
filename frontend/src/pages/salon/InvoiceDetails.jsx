@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Alert, Input, Spinner } from "reactstrap";
 import Content from "@/layout/content/Content";
 import Head from "@/layout/head/Head";
 import InvoiceDocument from "@/components/salon/InvoiceDocument";
+import SchemaModal from "@/components/salon/SchemaModal";
 import {
   Block,
   BlockBetween,
@@ -16,13 +17,16 @@ import {
   Icon,
 } from "@/components/Component";
 import { salonApi } from "@/services/salonApi";
-import { formatDate } from "@/utils/salonFormat";
+import { formatDate, formatMoney, toLocalInput } from "@/utils/salonFormat";
 import { useAuth } from "@/auth/AuthContext";
 
 const InvoiceDetails = () => {
   const { invoiceId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [invoice, setInvoice] = useState(null);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [working, setWorking] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -47,6 +51,10 @@ const InvoiceDetails = () => {
     };
   }, [invoiceId]);
 
+  useEffect(() => {
+    setPaymentOpen(location.pathname.endsWith("/pay"));
+  }, [location.pathname]);
+
   const runInvoiceAction = async (action) => {
     setWorking(true);
     setError("");
@@ -65,6 +73,84 @@ const InvoiceDetails = () => {
     user?.role
   );
   const canIssue = ["SUPER_ADMIN", "SALON_ADMIN"].includes(user?.role);
+  const canRecordPayment = ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"].includes(
+    user?.role
+  );
+  const isSourceCancelled = invoice?.appointment?.status === "CANCELLED";
+  const canPay =
+    canRecordPayment &&
+    invoice?.status === "ISSUED" &&
+    invoice?.paymentStatus !== "PAID" &&
+    !isSourceCancelled;
+  const paymentFields = useMemo(
+    () => [
+      {
+        name: "invoiceId",
+        label: "Invoice",
+        type: "select",
+        required: true,
+        fullWidth: true,
+        defaultValue: invoice?.id || "",
+        options: invoice
+          ? [
+              {
+                value: invoice.id,
+                label: `${invoice.invoiceCode} - ${
+                  invoice.customerName
+                } - Balance ${formatMoney(invoice.balanceAmount)}`,
+              },
+            ]
+          : [],
+      },
+      {
+        name: "amount",
+        label: "Amount",
+        type: "number",
+        min: 0.01,
+        step: "0.01",
+        required: true,
+        defaultValue: invoice?.balanceAmount || "",
+      },
+      {
+        name: "method",
+        label: "Payment method",
+        type: "select",
+        required: true,
+        options: ["CASH", "CARD", "UPI", "OTHER"].map((value) => ({
+          value,
+          label: value,
+        })),
+      },
+      { name: "referenceNo", label: "Reference number" },
+      {
+        name: "paidAt",
+        label: "Paid at",
+        type: "datetime-local",
+        defaultValue: toLocalInput(new Date()),
+      },
+      { name: "note", label: "Payment note", type: "textarea", fullWidth: true },
+    ],
+    [invoice]
+  );
+
+  const closePayment = () => {
+    setPaymentOpen(false);
+    if (location.pathname.endsWith("/pay")) {
+      navigate(`/billing/invoices/${invoiceId}`, { replace: true });
+    }
+  };
+
+  const submitPayment = async (values) => {
+    await salonApi.payments.create({
+      ...values,
+      ...(values.paidAt
+        ? { paidAt: new Date(values.paidAt).toISOString() }
+        : {}),
+    });
+    const refreshed = await salonApi.invoices.get(invoiceId);
+    setInvoice(refreshed.data);
+    closePayment();
+  };
 
   return (
     <>
@@ -92,6 +178,13 @@ const InvoiceDetails = () => {
                     <Icon name="arrow-left" /> Back
                   </Button>
                 </Link>
+                {canPay && (
+                  <Link to={`/billing/invoices/${invoice.id}/pay`}>
+                    <Button color="success">
+                      <Icon name="wallet-in" /> Pay
+                    </Button>
+                  </Link>
+                )}
                 {invoice && (
                   <Link to={`/billing/invoices/${invoice.id}/print`} target="_blank">
                     <Button color="primary">
@@ -182,6 +275,14 @@ const InvoiceDetails = () => {
                 </div>
               )}
               <InvoiceDocument invoice={invoice} />
+              <SchemaModal
+                isOpen={paymentOpen && canPay}
+                toggle={closePayment}
+                title={`Record payment - ${invoice.invoiceCode}`}
+                fields={paymentFields}
+                submitLabel="Record payment"
+                onSubmit={submitPayment}
+              />
             </>
           ) : null}
         </Block>

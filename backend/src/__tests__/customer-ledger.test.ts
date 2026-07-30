@@ -1,5 +1,7 @@
 import request from "supertest";
 import { app } from "../app.js";
+import { prisma } from "../config/prisma.js";
+import { hashPass } from "../utils/password.js";
 
 const auth = (token: string) => ({
   Authorization: `Bearer ${token}`,
@@ -106,13 +108,14 @@ describe("Customer ledger flow", () => {
     const superAdminPassword = "Password@123";
     const superAdminEmail = `ledger-super-${stamp}@example.com`;
 
-    const registerSuperAdmin = await request(app).post("/api/auth/register").send({
-      name: "Ledger Super Admin",
-      email: superAdminEmail,
-      phone_number: `90${String(stamp).slice(-8)}`,
-      password: superAdminPassword,
+    await prisma.user.create({
+      data: {
+        name: "Ledger Super Admin",
+        email: superAdminEmail,
+        passwordHash: await hashPass(superAdminPassword),
+        role: "SUPER_ADMIN",
+      },
     });
-    expectStatus(registerSuperAdmin, 201);
 
     const superLogin = await request(app).post("/api/auth/login").send({
       email: superAdminEmail,

@@ -43,6 +43,10 @@ export type ServicePackageMinAggregateOutputType = {
   salonId: string | null
   branchId: string | null
   categoryId: string | null
+  type: $Enums.ServicePackageType | null
+  customerId: string | null
+  sourceCustomerId: string | null
+  sourcePackageId: string | null
   name: string | null
   description: string | null
   totalPrice: runtime.Decimal | null
@@ -59,6 +63,10 @@ export type ServicePackageMaxAggregateOutputType = {
   salonId: string | null
   branchId: string | null
   categoryId: string | null
+  type: $Enums.ServicePackageType | null
+  customerId: string | null
+  sourceCustomerId: string | null
+  sourcePackageId: string | null
   name: string | null
   description: string | null
   totalPrice: runtime.Decimal | null
@@ -75,6 +83,10 @@ export type ServicePackageCountAggregateOutputType = {
   salonId: number
   branchId: number
   categoryId: number
+  type: number
+  customerId: number
+  sourceCustomerId: number
+  sourcePackageId: number
   name: number
   description: number
   totalPrice: number
@@ -105,6 +117,10 @@ export type ServicePackageMinAggregateInputType = {
   salonId?: true
   branchId?: true
   categoryId?: true
+  type?: true
+  customerId?: true
+  sourceCustomerId?: true
+  sourcePackageId?: true
   name?: true
   description?: true
   totalPrice?: true
@@ -121,6 +137,10 @@ export type ServicePackageMaxAggregateInputType = {
   salonId?: true
   branchId?: true
   categoryId?: true
+  type?: true
+  customerId?: true
+  sourceCustomerId?: true
+  sourcePackageId?: true
   name?: true
   description?: true
   totalPrice?: true
@@ -137,6 +157,10 @@ export type ServicePackageCountAggregateInputType = {
   salonId?: true
   branchId?: true
   categoryId?: true
+  type?: true
+  customerId?: true
+  sourceCustomerId?: true
+  sourcePackageId?: true
   name?: true
   description?: true
   totalPrice?: true
@@ -240,6 +264,10 @@ export type ServicePackageGroupByOutputType = {
   salonId: string
   branchId: string | null
   categoryId: string
+  type: $Enums.ServicePackageType
+  customerId: string | null
+  sourceCustomerId: string | null
+  sourcePackageId: string | null
   name: string
   description: string | null
   totalPrice: runtime.Decimal
@@ -279,6 +307,10 @@ export type ServicePackageWhereInput = {
   salonId?: Prisma.StringFilter<"ServicePackage"> | string
   branchId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   categoryId?: Prisma.StringFilter<"ServicePackage"> | string
+  type?: Prisma.EnumServicePackageTypeFilter<"ServicePackage"> | $Enums.ServicePackageType
+  customerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourceCustomerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourcePackageId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   name?: Prisma.StringFilter<"ServicePackage"> | string
   description?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -291,6 +323,10 @@ export type ServicePackageWhereInput = {
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   category?: Prisma.XOR<Prisma.PackageCategoryScalarRelationFilter, Prisma.PackageCategoryWhereInput>
+  customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  sourceCustomer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  sourcePackage?: Prisma.XOR<Prisma.ServicePackageNullableScalarRelationFilter, Prisma.ServicePackageWhereInput> | null
+  copiedPackages?: Prisma.ServicePackageListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   items?: Prisma.ServicePackageItemListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
@@ -303,6 +339,10 @@ export type ServicePackageOrderByWithRelationInput = {
   salonId?: Prisma.SortOrder
   branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourcePackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
@@ -315,6 +355,10 @@ export type ServicePackageOrderByWithRelationInput = {
   salon?: Prisma.SalonOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
   category?: Prisma.PackageCategoryOrderByWithRelationInput
+  customer?: Prisma.CustomerOrderByWithRelationInput
+  sourceCustomer?: Prisma.CustomerOrderByWithRelationInput
+  sourcePackage?: Prisma.ServicePackageOrderByWithRelationInput
+  copiedPackages?: Prisma.ServicePackageOrderByRelationAggregateInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.ServicePackageItemOrderByRelationAggregateInput
   invoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
@@ -331,6 +375,10 @@ export type ServicePackageWhereUniqueInput = Prisma.AtLeast<{
   salonId?: Prisma.StringFilter<"ServicePackage"> | string
   branchId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   categoryId?: Prisma.StringFilter<"ServicePackage"> | string
+  type?: Prisma.EnumServicePackageTypeFilter<"ServicePackage"> | $Enums.ServicePackageType
+  customerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourceCustomerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourcePackageId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   name?: Prisma.StringFilter<"ServicePackage"> | string
   description?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -343,6 +391,10 @@ export type ServicePackageWhereUniqueInput = Prisma.AtLeast<{
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   category?: Prisma.XOR<Prisma.PackageCategoryScalarRelationFilter, Prisma.PackageCategoryWhereInput>
+  customer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  sourceCustomer?: Prisma.XOR<Prisma.CustomerNullableScalarRelationFilter, Prisma.CustomerWhereInput> | null
+  sourcePackage?: Prisma.XOR<Prisma.ServicePackageNullableScalarRelationFilter, Prisma.ServicePackageWhereInput> | null
+  copiedPackages?: Prisma.ServicePackageListRelationFilter
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   items?: Prisma.ServicePackageItemListRelationFilter
   invoiceItems?: Prisma.InvoiceItemListRelationFilter
@@ -355,6 +407,10 @@ export type ServicePackageOrderByWithAggregationInput = {
   salonId?: Prisma.SortOrder
   branchId?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  customerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceCustomerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourcePackageId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
@@ -379,6 +435,10 @@ export type ServicePackageScalarWhereWithAggregatesInput = {
   salonId?: Prisma.StringWithAggregatesFilter<"ServicePackage"> | string
   branchId?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
   categoryId?: Prisma.StringWithAggregatesFilter<"ServicePackage"> | string
+  type?: Prisma.EnumServicePackageTypeWithAggregatesFilter<"ServicePackage"> | $Enums.ServicePackageType
+  customerId?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
+  sourceCustomerId?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
+  sourcePackageId?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"ServicePackage"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
   totalPrice?: Prisma.DecimalWithAggregatesFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -392,6 +452,7 @@ export type ServicePackageScalarWhereWithAggregatesInput = {
 
 export type ServicePackageCreateInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -403,6 +464,10 @@ export type ServicePackageCreateInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -415,6 +480,10 @@ export type ServicePackageUncheckedCreateInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -424,6 +493,7 @@ export type ServicePackageUncheckedCreateInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -432,6 +502,7 @@ export type ServicePackageUncheckedCreateInput = {
 
 export type ServicePackageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -443,6 +514,10 @@ export type ServicePackageUpdateInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -455,6 +530,10 @@ export type ServicePackageUncheckedUpdateInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -464,6 +543,7 @@ export type ServicePackageUncheckedUpdateInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -475,6 +555,10 @@ export type ServicePackageCreateManyInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -488,6 +572,7 @@ export type ServicePackageCreateManyInput = {
 
 export type ServicePackageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -503,6 +588,10 @@ export type ServicePackageUncheckedUpdateManyInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -524,6 +613,11 @@ export type ServicePackageOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type ServicePackageNullableScalarRelationFilter = {
+  is?: Prisma.ServicePackageWhereInput | null
+  isNot?: Prisma.ServicePackageWhereInput | null
+}
+
 export type ServicePackageSalonIdNameCompoundUniqueInput = {
   salonId: string
   name: string
@@ -534,6 +628,10 @@ export type ServicePackageCountOrderByAggregateInput = {
   salonId?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  sourceCustomerId?: Prisma.SortOrder
+  sourcePackageId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
@@ -556,6 +654,10 @@ export type ServicePackageMaxOrderByAggregateInput = {
   salonId?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  sourceCustomerId?: Prisma.SortOrder
+  sourcePackageId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
@@ -572,6 +674,10 @@ export type ServicePackageMinOrderByAggregateInput = {
   salonId?: Prisma.SortOrder
   branchId?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
+  type?: Prisma.SortOrder
+  customerId?: Prisma.SortOrder
+  sourceCustomerId?: Prisma.SortOrder
+  sourcePackageId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   description?: Prisma.SortOrder
   totalPrice?: Prisma.SortOrder
@@ -592,11 +698,6 @@ export type ServicePackageSumOrderByAggregateInput = {
 export type ServicePackageScalarRelationFilter = {
   is?: Prisma.ServicePackageWhereInput
   isNot?: Prisma.ServicePackageWhereInput
-}
-
-export type ServicePackageNullableScalarRelationFilter = {
-  is?: Prisma.ServicePackageWhereInput | null
-  isNot?: Prisma.ServicePackageWhereInput | null
 }
 
 export type ServicePackageCreateNestedManyWithoutSalonInput = {
@@ -680,6 +781,90 @@ export type ServicePackageUncheckedUpdateManyWithoutCreatedByNestedInput = {
   connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
   update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutCreatedByInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutCreatedByInput[]
   updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutCreatedByInput | Prisma.ServicePackageUpdateManyWithWhereWithoutCreatedByInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
+export type ServicePackageCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput> | Prisma.ServicePackageCreateWithoutCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManyCustomerInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type ServicePackageCreateNestedManyWithoutSourceCustomerInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput> | Prisma.ServicePackageCreateWithoutSourceCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManySourceCustomerInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type ServicePackageUncheckedCreateNestedManyWithoutCustomerInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput> | Prisma.ServicePackageCreateWithoutCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManyCustomerInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type ServicePackageUncheckedCreateNestedManyWithoutSourceCustomerInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput> | Prisma.ServicePackageCreateWithoutSourceCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManySourceCustomerInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type ServicePackageUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput> | Prisma.ServicePackageCreateWithoutCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutCustomerInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManyCustomerInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutCustomerInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutCustomerInput | Prisma.ServicePackageUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
+export type ServicePackageUpdateManyWithoutSourceCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput> | Prisma.ServicePackageCreateWithoutSourceCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourceCustomerInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourceCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManySourceCustomerInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourceCustomerInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourceCustomerInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutSourceCustomerInput | Prisma.ServicePackageUpdateManyWithWhereWithoutSourceCustomerInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput> | Prisma.ServicePackageCreateWithoutCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutCustomerInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutCustomerInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManyCustomerInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutCustomerInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutCustomerInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutCustomerInput | Prisma.ServicePackageUpdateManyWithWhereWithoutCustomerInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutSourceCustomerNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput> | Prisma.ServicePackageCreateWithoutSourceCustomerInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput | Prisma.ServicePackageCreateOrConnectWithoutSourceCustomerInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourceCustomerInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourceCustomerInput[]
+  createMany?: Prisma.ServicePackageCreateManySourceCustomerInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourceCustomerInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourceCustomerInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutSourceCustomerInput | Prisma.ServicePackageUpdateManyWithWhereWithoutSourceCustomerInput[]
   deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
 }
 
@@ -767,6 +952,68 @@ export type ServicePackageUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
 }
 
+export type ServicePackageCreateNestedOneWithoutCopiedPackagesInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedCreateWithoutCopiedPackagesInput>
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCopiedPackagesInput
+  connect?: Prisma.ServicePackageWhereUniqueInput
+}
+
+export type ServicePackageCreateNestedManyWithoutSourcePackageInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput> | Prisma.ServicePackageCreateWithoutSourcePackageInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput | Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput[]
+  createMany?: Prisma.ServicePackageCreateManySourcePackageInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput> | Prisma.ServicePackageCreateWithoutSourcePackageInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput | Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput[]
+  createMany?: Prisma.ServicePackageCreateManySourcePackageInputEnvelope
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+}
+
+export type EnumServicePackageTypeFieldUpdateOperationsInput = {
+  set?: $Enums.ServicePackageType
+}
+
+export type ServicePackageUpdateOneWithoutCopiedPackagesNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedCreateWithoutCopiedPackagesInput>
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutCopiedPackagesInput
+  upsert?: Prisma.ServicePackageUpsertWithoutCopiedPackagesInput
+  disconnect?: Prisma.ServicePackageWhereInput | boolean
+  delete?: Prisma.ServicePackageWhereInput | boolean
+  connect?: Prisma.ServicePackageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ServicePackageUpdateToOneWithWhereWithoutCopiedPackagesInput, Prisma.ServicePackageUpdateWithoutCopiedPackagesInput>, Prisma.ServicePackageUncheckedUpdateWithoutCopiedPackagesInput>
+}
+
+export type ServicePackageUpdateManyWithoutSourcePackageNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput> | Prisma.ServicePackageCreateWithoutSourcePackageInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput | Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourcePackageInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourcePackageInput[]
+  createMany?: Prisma.ServicePackageCreateManySourcePackageInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourcePackageInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourcePackageInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutSourcePackageInput | Prisma.ServicePackageUpdateManyWithWhereWithoutSourcePackageInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput = {
+  create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput> | Prisma.ServicePackageCreateWithoutSourcePackageInput[] | Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput[]
+  connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput | Prisma.ServicePackageCreateOrConnectWithoutSourcePackageInput[]
+  upsert?: Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourcePackageInput | Prisma.ServicePackageUpsertWithWhereUniqueWithoutSourcePackageInput[]
+  createMany?: Prisma.ServicePackageCreateManySourcePackageInputEnvelope
+  set?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  disconnect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  delete?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  connect?: Prisma.ServicePackageWhereUniqueInput | Prisma.ServicePackageWhereUniqueInput[]
+  update?: Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourcePackageInput | Prisma.ServicePackageUpdateWithWhereUniqueWithoutSourcePackageInput[]
+  updateMany?: Prisma.ServicePackageUpdateManyWithWhereWithoutSourcePackageInput | Prisma.ServicePackageUpdateManyWithWhereWithoutSourcePackageInput[]
+  deleteMany?: Prisma.ServicePackageScalarWhereInput | Prisma.ServicePackageScalarWhereInput[]
+}
+
 export type ServicePackageCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.ServicePackageCreateWithoutItemsInput, Prisma.ServicePackageUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.ServicePackageCreateOrConnectWithoutItemsInput
@@ -827,6 +1074,7 @@ export type ServicePackageUpdateOneRequiredWithoutServiceBalancesNestedInput = {
 
 export type ServicePackageCreateWithoutSalonInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -837,6 +1085,10 @@ export type ServicePackageCreateWithoutSalonInput = {
   updatedAt?: Date | string
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -848,6 +1100,10 @@ export type ServicePackageUncheckedCreateWithoutSalonInput = {
   id?: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -857,6 +1113,7 @@ export type ServicePackageUncheckedCreateWithoutSalonInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -897,6 +1154,10 @@ export type ServicePackageScalarWhereInput = {
   salonId?: Prisma.StringFilter<"ServicePackage"> | string
   branchId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   categoryId?: Prisma.StringFilter<"ServicePackage"> | string
+  type?: Prisma.EnumServicePackageTypeFilter<"ServicePackage"> | $Enums.ServicePackageType
+  customerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourceCustomerId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
+  sourcePackageId?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   name?: Prisma.StringFilter<"ServicePackage"> | string
   description?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -910,6 +1171,7 @@ export type ServicePackageScalarWhereInput = {
 
 export type ServicePackageCreateWithoutCreatedByInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -921,6 +1183,10 @@ export type ServicePackageCreateWithoutCreatedByInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
@@ -932,6 +1198,10 @@ export type ServicePackageUncheckedCreateWithoutCreatedByInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -940,6 +1210,7 @@ export type ServicePackageUncheckedCreateWithoutCreatedByInput = {
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -972,8 +1243,157 @@ export type ServicePackageUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.ServicePackageUpdateManyMutationInput, Prisma.ServicePackageUncheckedUpdateManyWithoutCreatedByInput>
 }
 
+export type ServicePackageCreateWithoutCustomerInput = {
+  id?: string
+  type?: $Enums.ServicePackageType
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
+  branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
+  category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
+  items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageUncheckedCreateWithoutCustomerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
+  items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageCreateOrConnectWithoutCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput>
+}
+
+export type ServicePackageCreateManyCustomerInputEnvelope = {
+  data: Prisma.ServicePackageCreateManyCustomerInput | Prisma.ServicePackageCreateManyCustomerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ServicePackageCreateWithoutSourceCustomerInput = {
+  id?: string
+  type?: $Enums.ServicePackageType
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
+  branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
+  category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
+  items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageUncheckedCreateWithoutSourceCustomerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourcePackageId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
+  items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageCreateOrConnectWithoutSourceCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput>
+}
+
+export type ServicePackageCreateManySourceCustomerInputEnvelope = {
+  data: Prisma.ServicePackageCreateManySourceCustomerInput | Prisma.ServicePackageCreateManySourceCustomerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ServicePackageUpsertWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  update: Prisma.XOR<Prisma.ServicePackageUpdateWithoutCustomerInput, Prisma.ServicePackageUncheckedUpdateWithoutCustomerInput>
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutCustomerInput>
+}
+
+export type ServicePackageUpdateWithWhereUniqueWithoutCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateWithoutCustomerInput, Prisma.ServicePackageUncheckedUpdateWithoutCustomerInput>
+}
+
+export type ServicePackageUpdateManyWithWhereWithoutCustomerInput = {
+  where: Prisma.ServicePackageScalarWhereInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateManyMutationInput, Prisma.ServicePackageUncheckedUpdateManyWithoutCustomerInput>
+}
+
+export type ServicePackageUpsertWithWhereUniqueWithoutSourceCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  update: Prisma.XOR<Prisma.ServicePackageUpdateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedUpdateWithoutSourceCustomerInput>
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedCreateWithoutSourceCustomerInput>
+}
+
+export type ServicePackageUpdateWithWhereUniqueWithoutSourceCustomerInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateWithoutSourceCustomerInput, Prisma.ServicePackageUncheckedUpdateWithoutSourceCustomerInput>
+}
+
+export type ServicePackageUpdateManyWithWhereWithoutSourceCustomerInput = {
+  where: Prisma.ServicePackageScalarWhereInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateManyMutationInput, Prisma.ServicePackageUncheckedUpdateManyWithoutSourceCustomerInput>
+}
+
 export type ServicePackageCreateWithoutBranchInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -984,6 +1404,10 @@ export type ServicePackageCreateWithoutBranchInput = {
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -995,6 +1419,10 @@ export type ServicePackageUncheckedCreateWithoutBranchInput = {
   id?: string
   salonId: string
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1004,6 +1432,7 @@ export type ServicePackageUncheckedCreateWithoutBranchInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -1038,6 +1467,7 @@ export type ServicePackageUpdateManyWithWhereWithoutBranchInput = {
 
 export type ServicePackageCreateWithoutCategoryInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1048,6 +1478,10 @@ export type ServicePackageCreateWithoutCategoryInput = {
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -1059,6 +1493,10 @@ export type ServicePackageUncheckedCreateWithoutCategoryInput = {
   id?: string
   salonId: string
   branchId?: string | null
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1068,6 +1506,7 @@ export type ServicePackageUncheckedCreateWithoutCategoryInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -1100,8 +1539,9 @@ export type ServicePackageUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.ServicePackageUpdateManyMutationInput, Prisma.ServicePackageUncheckedUpdateManyWithoutCategoryInput>
 }
 
-export type ServicePackageCreateWithoutItemsInput = {
+export type ServicePackageCreateWithoutCopiedPackagesInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1113,6 +1553,196 @@ export type ServicePackageCreateWithoutItemsInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
+  items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageUncheckedCreateWithoutCopiedPackagesInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageCreateOrConnectWithoutCopiedPackagesInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedCreateWithoutCopiedPackagesInput>
+}
+
+export type ServicePackageCreateWithoutSourcePackageInput = {
+  id?: string
+  type?: $Enums.ServicePackageType
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
+  branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
+  category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
+  items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageUncheckedCreateWithoutSourcePackageInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
+  items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
+}
+
+export type ServicePackageCreateOrConnectWithoutSourcePackageInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput>
+}
+
+export type ServicePackageCreateManySourcePackageInputEnvelope = {
+  data: Prisma.ServicePackageCreateManySourcePackageInput | Prisma.ServicePackageCreateManySourcePackageInput[]
+  skipDuplicates?: boolean
+}
+
+export type ServicePackageUpsertWithoutCopiedPackagesInput = {
+  update: Prisma.XOR<Prisma.ServicePackageUpdateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedUpdateWithoutCopiedPackagesInput>
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedCreateWithoutCopiedPackagesInput>
+  where?: Prisma.ServicePackageWhereInput
+}
+
+export type ServicePackageUpdateToOneWithWhereWithoutCopiedPackagesInput = {
+  where?: Prisma.ServicePackageWhereInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateWithoutCopiedPackagesInput, Prisma.ServicePackageUncheckedUpdateWithoutCopiedPackagesInput>
+}
+
+export type ServicePackageUpdateWithoutCopiedPackagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
+  category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
+  items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateWithoutCopiedPackagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUpsertWithWhereUniqueWithoutSourcePackageInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  update: Prisma.XOR<Prisma.ServicePackageUpdateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedUpdateWithoutSourcePackageInput>
+  create: Prisma.XOR<Prisma.ServicePackageCreateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedCreateWithoutSourcePackageInput>
+}
+
+export type ServicePackageUpdateWithWhereUniqueWithoutSourcePackageInput = {
+  where: Prisma.ServicePackageWhereUniqueInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateWithoutSourcePackageInput, Prisma.ServicePackageUncheckedUpdateWithoutSourcePackageInput>
+}
+
+export type ServicePackageUpdateManyWithWhereWithoutSourcePackageInput = {
+  where: Prisma.ServicePackageScalarWhereInput
+  data: Prisma.XOR<Prisma.ServicePackageUpdateManyMutationInput, Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageInput>
+}
+
+export type ServicePackageCreateWithoutItemsInput = {
+  id?: string
+  type?: $Enums.ServicePackageType
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
+  branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
+  category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
@@ -1124,6 +1754,10 @@ export type ServicePackageUncheckedCreateWithoutItemsInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1133,6 +1767,7 @@ export type ServicePackageUncheckedCreateWithoutItemsInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
@@ -1156,6 +1791,7 @@ export type ServicePackageUpdateToOneWithWhereWithoutItemsInput = {
 
 export type ServicePackageUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1167,6 +1803,10 @@ export type ServicePackageUpdateWithoutItemsInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
@@ -1178,6 +1818,10 @@ export type ServicePackageUncheckedUpdateWithoutItemsInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1187,6 +1831,7 @@ export type ServicePackageUncheckedUpdateWithoutItemsInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
@@ -1194,6 +1839,7 @@ export type ServicePackageUncheckedUpdateWithoutItemsInput = {
 
 export type ServicePackageCreateWithoutInvoiceItemsInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1205,6 +1851,10 @@ export type ServicePackageCreateWithoutInvoiceItemsInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutPackageInput
@@ -1216,6 +1866,10 @@ export type ServicePackageUncheckedCreateWithoutInvoiceItemsInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1225,6 +1879,7 @@ export type ServicePackageUncheckedCreateWithoutInvoiceItemsInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
@@ -1248,6 +1903,7 @@ export type ServicePackageUpdateToOneWithWhereWithoutInvoiceItemsInput = {
 
 export type ServicePackageUpdateWithoutInvoiceItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1259,6 +1915,10 @@ export type ServicePackageUpdateWithoutInvoiceItemsInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
@@ -1270,6 +1930,10 @@ export type ServicePackageUncheckedUpdateWithoutInvoiceItemsInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1279,6 +1943,7 @@ export type ServicePackageUncheckedUpdateWithoutInvoiceItemsInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
@@ -1286,6 +1951,7 @@ export type ServicePackageUncheckedUpdateWithoutInvoiceItemsInput = {
 
 export type ServicePackageCreateWithoutCustomerPackagesInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1297,6 +1963,10 @@ export type ServicePackageCreateWithoutCustomerPackagesInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -1308,6 +1978,10 @@ export type ServicePackageUncheckedCreateWithoutCustomerPackagesInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1317,6 +1991,7 @@ export type ServicePackageUncheckedCreateWithoutCustomerPackagesInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutPackageInput
@@ -1340,6 +2015,7 @@ export type ServicePackageUpdateToOneWithWhereWithoutCustomerPackagesInput = {
 
 export type ServicePackageUpdateWithoutCustomerPackagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1351,6 +2027,10 @@ export type ServicePackageUpdateWithoutCustomerPackagesInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -1362,6 +2042,10 @@ export type ServicePackageUncheckedUpdateWithoutCustomerPackagesInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1371,6 +2055,7 @@ export type ServicePackageUncheckedUpdateWithoutCustomerPackagesInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
@@ -1378,6 +2063,7 @@ export type ServicePackageUncheckedUpdateWithoutCustomerPackagesInput = {
 
 export type ServicePackageCreateWithoutServiceBalancesInput = {
   id?: string
+  type?: $Enums.ServicePackageType
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1389,6 +2075,10 @@ export type ServicePackageCreateWithoutServiceBalancesInput = {
   salon: Prisma.SalonCreateNestedOneWithoutServicePackagesInput
   branch?: Prisma.BranchCreateNestedOneWithoutServicePackagesInput
   category: Prisma.PackageCategoryCreateNestedOneWithoutPackagesInput
+  customer?: Prisma.CustomerCreateNestedOneWithoutCustomServicePackagesInput
+  sourceCustomer?: Prisma.CustomerCreateNestedOneWithoutSourceCustomPackagesInput
+  sourcePackage?: Prisma.ServicePackageCreateNestedOneWithoutCopiedPackagesInput
+  copiedPackages?: Prisma.ServicePackageCreateNestedManyWithoutSourcePackageInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedServicePackagesInput
   items?: Prisma.ServicePackageItemCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutPackageInput
@@ -1400,6 +2090,10 @@ export type ServicePackageUncheckedCreateWithoutServiceBalancesInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1409,6 +2103,7 @@ export type ServicePackageUncheckedCreateWithoutServiceBalancesInput = {
   createdById?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSourcePackageInput
   items?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutPackageInput
   invoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutPackageInput
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutPackageInput
@@ -1432,6 +2127,7 @@ export type ServicePackageUpdateToOneWithWhereWithoutServiceBalancesInput = {
 
 export type ServicePackageUpdateWithoutServiceBalancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1443,6 +2139,10 @@ export type ServicePackageUpdateWithoutServiceBalancesInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -1454,6 +2154,10 @@ export type ServicePackageUncheckedUpdateWithoutServiceBalancesInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1463,6 +2167,7 @@ export type ServicePackageUncheckedUpdateWithoutServiceBalancesInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -1472,6 +2177,10 @@ export type ServicePackageCreateManySalonInput = {
   id?: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1485,6 +2194,7 @@ export type ServicePackageCreateManySalonInput = {
 
 export type ServicePackageUpdateWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1495,6 +2205,10 @@ export type ServicePackageUpdateWithoutSalonInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -1506,6 +2220,10 @@ export type ServicePackageUncheckedUpdateWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1515,6 +2233,7 @@ export type ServicePackageUncheckedUpdateWithoutSalonInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -1525,6 +2244,10 @@ export type ServicePackageUncheckedUpdateManyWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1541,6 +2264,10 @@ export type ServicePackageCreateManyCreatedByInput = {
   salonId: string
   branchId?: string | null
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1553,6 +2280,7 @@ export type ServicePackageCreateManyCreatedByInput = {
 
 export type ServicePackageUpdateWithoutCreatedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1564,6 +2292,10 @@ export type ServicePackageUpdateWithoutCreatedByInput = {
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
@@ -1575,6 +2307,10 @@ export type ServicePackageUncheckedUpdateWithoutCreatedByInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1583,6 +2319,7 @@ export type ServicePackageUncheckedUpdateWithoutCreatedByInput = {
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -1594,6 +2331,10 @@ export type ServicePackageUncheckedUpdateManyWithoutCreatedByInput = {
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1604,10 +2345,186 @@ export type ServicePackageUncheckedUpdateManyWithoutCreatedByInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type ServicePackageCreateManyCustomerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServicePackageCreateManySourceCustomerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourcePackageId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServicePackageUpdateWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
+  category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
+  items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
+  items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ServicePackageUpdateWithoutSourceCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
+  category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
+  items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateWithoutSourceCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
+  items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutSourceCustomerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ServicePackageCreateManyBranchInput = {
   id?: string
   salonId: string
   categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1621,6 +2538,7 @@ export type ServicePackageCreateManyBranchInput = {
 
 export type ServicePackageUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1631,6 +2549,10 @@ export type ServicePackageUpdateWithoutBranchInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -1642,6 +2564,10 @@ export type ServicePackageUncheckedUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1651,6 +2577,7 @@ export type ServicePackageUncheckedUpdateWithoutBranchInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -1661,6 +2588,10 @@ export type ServicePackageUncheckedUpdateManyWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1676,6 +2607,10 @@ export type ServicePackageCreateManyCategoryInput = {
   id?: string
   salonId: string
   branchId?: string | null
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  sourcePackageId?: string | null
   name: string
   description?: string | null
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1689,6 +2624,7 @@ export type ServicePackageCreateManyCategoryInput = {
 
 export type ServicePackageUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1699,6 +2635,10 @@ export type ServicePackageUpdateWithoutCategoryInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
   branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  sourcePackage?: Prisma.ServicePackageUpdateOneWithoutCopiedPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
   items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
@@ -1710,6 +2650,10 @@ export type ServicePackageUncheckedUpdateWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1719,6 +2663,7 @@ export type ServicePackageUncheckedUpdateWithoutCategoryInput = {
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
   items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
   invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
@@ -1729,6 +2674,96 @@ export type ServicePackageUncheckedUpdateManyWithoutCategoryInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourcePackageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type ServicePackageCreateManySourcePackageInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  categoryId: string
+  type?: $Enums.ServicePackageType
+  customerId?: string | null
+  sourceCustomerId?: string | null
+  name: string
+  description?: string | null
+  totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays: number
+  status?: $Enums.PackageStatus
+  createdById?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ServicePackageUpdateWithoutSourcePackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutServicePackagesNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutServicePackagesNestedInput
+  category?: Prisma.PackageCategoryUpdateOneRequiredWithoutPackagesNestedInput
+  customer?: Prisma.CustomerUpdateOneWithoutCustomServicePackagesNestedInput
+  sourceCustomer?: Prisma.CustomerUpdateOneWithoutSourceCustomPackagesNestedInput
+  copiedPackages?: Prisma.ServicePackageUpdateManyWithoutSourcePackageNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedServicePackagesNestedInput
+  items?: Prisma.ServicePackageItemUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateWithoutSourcePackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  copiedPackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSourcePackageNestedInput
+  items?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutPackageNestedInput
+  invoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutPackageNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutPackageNestedInput
+  serviceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutPackageNestedInput
+}
+
+export type ServicePackageUncheckedUpdateManyWithoutSourcePackageInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumServicePackageTypeFieldUpdateOperationsInput | $Enums.ServicePackageType
+  customerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceCustomerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1746,6 +2781,7 @@ export type ServicePackageUncheckedUpdateManyWithoutCategoryInput = {
  */
 
 export type ServicePackageCountOutputType = {
+  copiedPackages: number
   items: number
   invoiceItems: number
   customerPackages: number
@@ -1753,6 +2789,7 @@ export type ServicePackageCountOutputType = {
 }
 
 export type ServicePackageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  copiedPackages?: boolean | ServicePackageCountOutputTypeCountCopiedPackagesArgs
   items?: boolean | ServicePackageCountOutputTypeCountItemsArgs
   invoiceItems?: boolean | ServicePackageCountOutputTypeCountInvoiceItemsArgs
   customerPackages?: boolean | ServicePackageCountOutputTypeCountCustomerPackagesArgs
@@ -1767,6 +2804,13 @@ export type ServicePackageCountOutputTypeDefaultArgs<ExtArgs extends runtime.Typ
    * Select specific fields to fetch from the ServicePackageCountOutputType
    */
   select?: Prisma.ServicePackageCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ServicePackageCountOutputType without action
+ */
+export type ServicePackageCountOutputTypeCountCopiedPackagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServicePackageWhereInput
 }
 
 /**
@@ -1803,6 +2847,10 @@ export type ServicePackageSelect<ExtArgs extends runtime.Types.Extensions.Intern
   salonId?: boolean
   branchId?: boolean
   categoryId?: boolean
+  type?: boolean
+  customerId?: boolean
+  sourceCustomerId?: boolean
+  sourcePackageId?: boolean
   name?: boolean
   description?: boolean
   totalPrice?: boolean
@@ -1815,6 +2863,10 @@ export type ServicePackageSelect<ExtArgs extends runtime.Types.Extensions.Intern
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
+  copiedPackages?: boolean | Prisma.ServicePackage$copiedPackagesArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
   items?: boolean | Prisma.ServicePackage$itemsArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.ServicePackage$invoiceItemsArgs<ExtArgs>
@@ -1828,6 +2880,10 @@ export type ServicePackageSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   salonId?: boolean
   branchId?: boolean
   categoryId?: boolean
+  type?: boolean
+  customerId?: boolean
+  sourceCustomerId?: boolean
+  sourcePackageId?: boolean
   name?: boolean
   description?: boolean
   totalPrice?: boolean
@@ -1840,6 +2896,9 @@ export type ServicePackageSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["servicePackage"]>
 
@@ -1848,6 +2907,10 @@ export type ServicePackageSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   salonId?: boolean
   branchId?: boolean
   categoryId?: boolean
+  type?: boolean
+  customerId?: boolean
+  sourceCustomerId?: boolean
+  sourcePackageId?: boolean
   name?: boolean
   description?: boolean
   totalPrice?: boolean
@@ -1860,6 +2923,9 @@ export type ServicePackageSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
 }, ExtArgs["result"]["servicePackage"]>
 
@@ -1868,6 +2934,10 @@ export type ServicePackageSelectScalar = {
   salonId?: boolean
   branchId?: boolean
   categoryId?: boolean
+  type?: boolean
+  customerId?: boolean
+  sourceCustomerId?: boolean
+  sourcePackageId?: boolean
   name?: boolean
   description?: boolean
   totalPrice?: boolean
@@ -1879,11 +2949,15 @@ export type ServicePackageSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ServicePackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "categoryId" | "name" | "description" | "totalPrice" | "specialPrice" | "validityDays" | "status" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["servicePackage"]>
+export type ServicePackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "categoryId" | "type" | "customerId" | "sourceCustomerId" | "sourcePackageId" | "name" | "description" | "totalPrice" | "specialPrice" | "validityDays" | "status" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["servicePackage"]>
 export type ServicePackageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
+  copiedPackages?: boolean | Prisma.ServicePackage$copiedPackagesArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
   items?: boolean | Prisma.ServicePackage$itemsArgs<ExtArgs>
   invoiceItems?: boolean | Prisma.ServicePackage$invoiceItemsArgs<ExtArgs>
@@ -1895,12 +2969,18 @@ export type ServicePackageIncludeCreateManyAndReturn<ExtArgs extends runtime.Typ
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
 }
 export type ServicePackageIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
   category?: boolean | Prisma.PackageCategoryDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.ServicePackage$customerArgs<ExtArgs>
+  sourceCustomer?: boolean | Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>
+  sourcePackage?: boolean | Prisma.ServicePackage$sourcePackageArgs<ExtArgs>
   createdBy?: boolean | Prisma.ServicePackage$createdByArgs<ExtArgs>
 }
 
@@ -1910,6 +2990,10 @@ export type $ServicePackagePayload<ExtArgs extends runtime.Types.Extensions.Inte
     salon: Prisma.$SalonPayload<ExtArgs>
     branch: Prisma.$BranchPayload<ExtArgs> | null
     category: Prisma.$PackageCategoryPayload<ExtArgs>
+    customer: Prisma.$CustomerPayload<ExtArgs> | null
+    sourceCustomer: Prisma.$CustomerPayload<ExtArgs> | null
+    sourcePackage: Prisma.$ServicePackagePayload<ExtArgs> | null
+    copiedPackages: Prisma.$ServicePackagePayload<ExtArgs>[]
     createdBy: Prisma.$UserPayload<ExtArgs> | null
     items: Prisma.$ServicePackageItemPayload<ExtArgs>[]
     invoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
@@ -1921,6 +3005,10 @@ export type $ServicePackagePayload<ExtArgs extends runtime.Types.Extensions.Inte
     salonId: string
     branchId: string | null
     categoryId: string
+    type: $Enums.ServicePackageType
+    customerId: string | null
+    sourceCustomerId: string | null
+    sourcePackageId: string | null
     name: string
     description: string | null
     totalPrice: runtime.Decimal
@@ -2327,6 +3415,10 @@ export interface Prisma__ServicePackageClient<T, Null = never, ExtArgs extends r
   salon<T extends Prisma.SalonDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SalonDefaultArgs<ExtArgs>>): Prisma.Prisma__SalonClient<runtime.Types.Result.GetResult<Prisma.$SalonPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   branch<T extends Prisma.ServicePackage$branchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$branchArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   category<T extends Prisma.PackageCategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PackageCategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__PackageCategoryClient<runtime.Types.Result.GetResult<Prisma.$PackageCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  customer<T extends Prisma.ServicePackage$customerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$customerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sourceCustomer<T extends Prisma.ServicePackage$sourceCustomerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$sourceCustomerArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sourcePackage<T extends Prisma.ServicePackage$sourcePackageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$sourcePackageArgs<ExtArgs>>): Prisma.Prisma__ServicePackageClient<runtime.Types.Result.GetResult<Prisma.$ServicePackagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  copiedPackages<T extends Prisma.ServicePackage$copiedPackagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$copiedPackagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePackagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdBy<T extends Prisma.ServicePackage$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.ServicePackage$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServicePackageItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceItems<T extends Prisma.ServicePackage$invoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServicePackage$invoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2365,6 +3457,10 @@ export interface ServicePackageFieldRefs {
   readonly salonId: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly branchId: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly categoryId: Prisma.FieldRef<"ServicePackage", 'String'>
+  readonly type: Prisma.FieldRef<"ServicePackage", 'ServicePackageType'>
+  readonly customerId: Prisma.FieldRef<"ServicePackage", 'String'>
+  readonly sourceCustomerId: Prisma.FieldRef<"ServicePackage", 'String'>
+  readonly sourcePackageId: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly name: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly description: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly totalPrice: Prisma.FieldRef<"ServicePackage", 'Decimal'>
@@ -2791,6 +3887,87 @@ export type ServicePackage$branchArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   include?: Prisma.BranchInclude<ExtArgs> | null
   where?: Prisma.BranchWhereInput
+}
+
+/**
+ * ServicePackage.customer
+ */
+export type ServicePackage$customerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Customer
+   */
+  select?: Prisma.CustomerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Customer
+   */
+  omit?: Prisma.CustomerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CustomerInclude<ExtArgs> | null
+  where?: Prisma.CustomerWhereInput
+}
+
+/**
+ * ServicePackage.sourceCustomer
+ */
+export type ServicePackage$sourceCustomerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Customer
+   */
+  select?: Prisma.CustomerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Customer
+   */
+  omit?: Prisma.CustomerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CustomerInclude<ExtArgs> | null
+  where?: Prisma.CustomerWhereInput
+}
+
+/**
+ * ServicePackage.sourcePackage
+ */
+export type ServicePackage$sourcePackageArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServicePackage
+   */
+  select?: Prisma.ServicePackageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServicePackage
+   */
+  omit?: Prisma.ServicePackageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServicePackageInclude<ExtArgs> | null
+  where?: Prisma.ServicePackageWhereInput
+}
+
+/**
+ * ServicePackage.copiedPackages
+ */
+export type ServicePackage$copiedPackagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServicePackage
+   */
+  select?: Prisma.ServicePackageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServicePackage
+   */
+  omit?: Prisma.ServicePackageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServicePackageInclude<ExtArgs> | null
+  where?: Prisma.ServicePackageWhereInput
+  orderBy?: Prisma.ServicePackageOrderByWithRelationInput | Prisma.ServicePackageOrderByWithRelationInput[]
+  cursor?: Prisma.ServicePackageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServicePackageScalarFieldEnum | Prisma.ServicePackageScalarFieldEnum[]
 }
 
 /**

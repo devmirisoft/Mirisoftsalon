@@ -163,6 +163,12 @@ export const createAppointment = async (req, res) => {
                 message: "Invalid startTime",
             });
         }
+        if (finalStartTime < new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment start time cannot be in the past",
+            });
+        }
         const finalEndTime = new Date(finalStartTime.getTime() + totalDurationMinutes * 60 * 1000);
         const salon = await SalonModel.findById(finalSalonId);
         if (!salon) {
@@ -535,6 +541,12 @@ export const rescheduleAppointment = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid startTime",
+            });
+        }
+        if (finalStartTime < new Date()) {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment start time cannot be in the past",
             });
         }
         if (existingAppointment.totalDurationMinutes <= 0) {

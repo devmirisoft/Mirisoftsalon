@@ -288,6 +288,16 @@ export type SupportTicket = Prisma.SupportTicketModel
  */
 export type SupportTicketMessage = Prisma.SupportTicketMessageModel
 /**
+ * Model SalonAssistantConversation
+ * 
+ */
+export type SalonAssistantConversation = Prisma.SalonAssistantConversationModel
+/**
+ * Model SalonAssistantMessage
+ * 
+ */
+export type SalonAssistantMessage = Prisma.SalonAssistantMessageModel
+/**
  * Model SupportTicketStatusHistory
  * 
  */

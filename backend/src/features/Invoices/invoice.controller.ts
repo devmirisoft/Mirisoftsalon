@@ -27,6 +27,7 @@ import { applyCouponSchema } from "../coupons/coupon.validation.js";
 import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import { calculateInvoiceGst } from "./invoice-gst.service.js";
 
 
 const INVOICE_TYPES = ["GST_INVOICE", "BILL_OF_SUPPLY"] as const;
@@ -87,6 +88,16 @@ const getAppointmentIdParam = (req: Request) => {
 
 const buildAddress = (parts: Array<string | null | undefined>) => {
   return parts.filter(Boolean).join(", ");
+};
+
+const decimalOrZero = (value: unknown) => {
+  try {
+    return new Prisma.Decimal(
+      (value ?? 0) as string | number | Prisma.Decimal
+    ).toDecimalPlaces(2);
+  } catch {
+    return new Prisma.Decimal(0);
+  }
 };
 
 const getExistingInvoiceByAccess = async (req: Request, invoiceId: string) => {
@@ -206,25 +217,39 @@ export const createInvoiceFromAppointment = async (
         ? invoiceType
         : "BILL_OF_SUPPLY";
 
-    const subtotalAmount = appointment.services.reduce((total, item) => {
-      return total + Number(item.price);
-    }, 0);
+    const subtotalAmount = appointment.services
+      .reduce(
+        (total, item) => total.plus(new Prisma.Decimal(item.price)),
+        new Prisma.Decimal(0)
+      )
+      .toDecimalPlaces(2);
 
-    const requestedManualDiscountAmount = Math.max(
-      Number(discountAmount || 0),
-      0
-    );
-    const manualDiscountAmount = Number(
-      Math.min(requestedManualDiscountAmount, subtotalAmount).toFixed(2)
-    );
-    const finalProcessingFeeAmount = Math.max(
-      Number(processingFeeAmount || 0),
-      0
-    );
-    const finalTaxPercent =
-      finalInvoiceType === "GST_INVOICE"
-        ? Math.max(Number(taxPercent || 0), 0)
-        : 0;
+    const requestedManualDiscountAmount = decimalOrZero(discountAmount);
+    if (requestedManualDiscountAmount.isNegative()) {
+      return res.status(400).json({
+        success: false,
+        message: "Discount must be non-negative",
+      });
+    }
+    const manualDiscountAmount = Prisma.Decimal.min(
+      requestedManualDiscountAmount,
+      subtotalAmount
+    ).toDecimalPlaces(2);
+    const finalProcessingFeeAmount = decimalOrZero(processingFeeAmount);
+    if (finalProcessingFeeAmount.isNegative()) {
+      return res.status(400).json({
+        success: false,
+        message: "Processing fee must be non-negative",
+      });
+    }
+    const requestedTaxPercent =
+      taxPercent === undefined ? null : decimalOrZero(taxPercent);
+    if (requestedTaxPercent?.isNegative() || requestedTaxPercent?.gt(100)) {
+      return res.status(400).json({
+        success: false,
+        message: "Tax percent must be between 0 and 100",
+      });
+    }
     const auditContext = requestAuditContext(req);
     const membershipActor = {
       userId: req.user!.userId,
@@ -241,29 +266,40 @@ export const createInvoiceFromAppointment = async (
           audit: auditContext,
         });
         const membershipDiscountAmount = currentMembership
-          ? Number(
-              Math.min(
-                (subtotalAmount *
-                  Number(currentMembership.discountPercentageSnapshot)) /
-                  100,
-                subtotalAmount - manualDiscountAmount
-              ).toFixed(2)
-            )
-          : 0;
-        const finalDiscountAmount = Number(
-          Math.min(
-            manualDiscountAmount + membershipDiscountAmount,
-            subtotalAmount
-          ).toFixed(2)
+          ? Prisma.Decimal.min(
+              subtotalAmount
+                .mul(currentMembership.discountPercentageSnapshot)
+                .div(100),
+              subtotalAmount.minus(manualDiscountAmount)
+            ).toDecimalPlaces(2)
+          : new Prisma.Decimal(0);
+        const finalDiscountAmount = Prisma.Decimal.min(
+          manualDiscountAmount.plus(membershipDiscountAmount),
+          subtotalAmount
+        ).toDecimalPlaces(2);
+        const gstSettings =
+          requestedTaxPercent && finalInvoiceType === "GST_INVOICE"
+            ? {
+                ...appointment.salon,
+                gstEnabled: true,
+                serviceGstRate: requestedTaxPercent,
+                productGstRate: requestedTaxPercent,
+              }
+            : appointment.salon;
+        const calculation = calculateInvoiceGst(
+          {
+            invoiceType: finalInvoiceType,
+            discountAmount: finalDiscountAmount,
+            couponDiscountAmount: new Prisma.Decimal(0),
+            processingFeeAmount: finalProcessingFeeAmount,
+            items: appointment.services.map((item) => ({
+              itemType: "SERVICE",
+              quantity: 1,
+              unitPrice: new Prisma.Decimal(item.price),
+            })),
+          },
+          gstSettings
         );
-        const taxableAmount = Math.max(
-          subtotalAmount - finalDiscountAmount + finalProcessingFeeAmount,
-          0
-        );
-        const finalTaxAmount = Number(
-          ((taxableAmount * finalTaxPercent) / 100).toFixed(2)
-        );
-        const totalAmount = Number((taxableAmount + finalTaxAmount).toFixed(2));
         const invoiceDate = new Date();
         const created = await InvoiceModel.create(
           {
@@ -286,6 +322,18 @@ export const createInvoiceFromAppointment = async (
             ...(appointment.salon.email
               ? { salonEmail: appointment.salon.email }
               : {}),
+            ...(calculation.gstNumberSnapshot
+              ? { salonGst: calculation.gstNumberSnapshot }
+              : {}),
+            serviceTaxableAmount: calculation.serviceTaxableAmount,
+            productTaxableAmount: calculation.productTaxableAmount,
+            serviceGstAmount: calculation.serviceGstAmount,
+            productGstAmount: calculation.productGstAmount,
+            totalGstAmount: calculation.totalGstAmount,
+            gstNumberSnapshot: calculation.gstNumberSnapshot,
+            gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+            gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+            gstEnabledSnapshot: calculation.gstEnabledSnapshot,
             salonAddress: buildAddress([
               appointment.salon.addressLine1,
               appointment.salon.addressLine2,
@@ -304,60 +352,50 @@ export const createInvoiceFromAppointment = async (
             ...(appointment.customer.gst
               ? { customerGst: appointment.customer.gst }
               : {}),
-            subtotalAmount,
+            subtotalAmount: calculation.subtotalAmount,
             discountAmount: finalDiscountAmount,
             processingFeeAmount: finalProcessingFeeAmount,
-            taxAmount: finalTaxAmount,
-            totalAmount,
+            taxAmount: calculation.totalGstAmount,
+            totalAmount: calculation.totalAmount,
             paidAmount: 0,
-            balanceAmount: totalAmount,
+            balanceAmount: calculation.totalAmount,
             status: status === "DRAFT" ? "DRAFT" : "ISSUED",
             paymentStatus: "UNPAID",
             ...(billingNote ? { billingNote } : {}),
             ...(footerNote ? { footerNote } : {}),
-            items: appointment.services.map((item) => ({
+            items: appointment.services.map((item, index) => ({
               serviceId: item.serviceId,
               itemCode: item.serviceId.slice(0, 8),
               description: item.serviceName,
               serviceName: item.serviceName,
               quantity: 1,
-              unitPrice: Number(item.price),
+              unitPrice: new Prisma.Decimal(item.price),
               discountAmount: 0,
-              taxPercent: finalTaxPercent,
-              taxAmount:
-                finalInvoiceType === "GST_INVOICE"
-                  ? Number(
-                      (
-                        (Number(item.price) * finalTaxPercent) /
-                        100
-                      ).toFixed(2)
-                    )
-                  : 0,
-              lineTotal:
-                finalInvoiceType === "GST_INVOICE"
-                  ? Number(
-                      (
-                        Number(item.price) +
-                        (Number(item.price) * finalTaxPercent) / 100
-                      ).toFixed(2)
-                    )
-                  : Number(item.price),
+              taxableAmount: calculation.lines[index]?.taxableAmount ?? 0,
+              gstRateSnapshot: calculation.lines[index]?.gstRateSnapshot ?? 0,
+              gstAmount: calculation.lines[index]?.gstAmount ?? 0,
+              totalWithTax: calculation.lines[index]?.totalWithTax ?? 0,
+              taxPercent: calculation.lines[index]?.taxPercent ?? 0,
+              taxAmount: calculation.lines[index]?.taxAmount ?? 0,
+              lineTotal: calculation.lines[index]?.lineTotal ?? 0,
             })),
           },
           tx
         );
 
-        await CustomerModel.increaseOutstandingWithTransaction(
-          {
-            customerId: created.customerId,
-            salonId: created.salonId,
-            invoiceId: created.id,
-            billNo: created.invoiceCode,
-            amount: Number(created.totalAmount),
-            narration: `Invoice generated: ${created.invoiceCode}`,
-          },
-          tx
-        );
+        if (created.status === "ISSUED" && created.totalAmount.gt(0)) {
+          await CustomerModel.increaseOutstandingWithTransaction(
+            {
+              customerId: created.customerId,
+              salonId: created.salonId,
+              invoiceId: created.id,
+              billNo: created.invoiceCode,
+              amount: created.totalAmount,
+              narration: `Invoice issued: ${created.invoiceCode}`,
+            },
+            tx
+          );
+        }
 
         await createAuditLog({
           tx,
@@ -376,6 +414,12 @@ export const createInvoiceFromAppointment = async (
             subtotalAmount: created.subtotalAmount,
             discountAmount: created.discountAmount,
             taxAmount: created.taxAmount,
+            serviceTaxableAmount: created.serviceTaxableAmount,
+            productTaxableAmount: created.productTaxableAmount,
+            serviceGstAmount: created.serviceGstAmount,
+            productGstAmount: created.productGstAmount,
+            totalGstAmount: created.totalGstAmount,
+            gstEnabledSnapshot: created.gstEnabledSnapshot,
             totalAmount: created.totalAmount,
             customerMembershipId: currentMembership?.id ?? null,
             membershipName:
@@ -554,7 +598,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: "Invalid invoice type" });
     }
 
-    const parseMoney = (key: "discountAmount" | "processingFeeAmount" | "taxAmount", fallback: Prisma.Decimal) => {
+    const parseMoney = (key: "discountAmount" | "processingFeeAmount", fallback: Prisma.Decimal) => {
       if (!(key in req.body)) return fallback;
       try {
         const value = new Prisma.Decimal(req.body[key]);
@@ -565,25 +609,30 @@ export const updateInvoice = async (req: Request, res: Response) => {
     };
     const discount = parseMoney("discountAmount", existing.discountAmount);
     const fee = parseMoney("processingFeeAmount", existing.processingFeeAmount);
-    const tax = parseMoney("taxAmount", existing.taxAmount);
-    if (!discount || !fee || !tax) {
+    if (!discount || !fee) {
       return res.status(400).json({ success: false, message: "Invoice amounts must be valid non-negative numbers" });
     }
     if (discount.gt(existing.subtotalAmount)) {
       return res.status(400).json({ success: false, message: "Discount cannot exceed subtotal" });
     }
-    const total = existing.subtotalAmount
-      .minus(discount)
-      .minus(existing.couponDiscountAmount)
-      .plus(fee)
-      .plus(tax)
-      .toDecimalPlaces(2);
-    if (total.isNegative()) return res.status(400).json({ success: false, message: "Invoice total cannot be negative" });
-    const balance = total.minus(existing.paidAmount).toDecimalPlaces(2);
-
     const updated = await prisma.$transaction(async (tx) => {
       await tx.$queryRaw`SELECT "id" FROM "Invoice" WHERE "id" = ${id} FOR UPDATE`;
-      const current = await tx.invoice.findUniqueOrThrow({ where: { id } });
+      const current = await tx.invoice.findUniqueOrThrow({
+        where: { id },
+        include: {
+          items: true,
+          salon: {
+            select: {
+              gstEnabled: true,
+              gstNumber: true,
+              gstLegalName: true,
+              gstStateCode: true,
+              serviceGstRate: true,
+              productGstRate: true,
+            },
+          },
+        },
+      });
       if (current.status === "CANCELLED") throw Object.assign(new Error("Cancelled invoices cannot be edited"), { status: 409 });
       if (monetary && (current.status !== "DRAFT" || current.paymentStatus !== "UNPAID" || current.paidAmount.gt(0))) {
         throw Object.assign(new Error("Invoice is no longer eligible for monetary edits"), { status: 409 });
@@ -591,19 +640,93 @@ export const updateInvoice = async (req: Request, res: Response) => {
       if (monetary && await tx.customerTransaction.count({ where: { invoiceId: id } })) {
         throw Object.assign(new Error("Invoice ledger already exists; monetary fields are locked"), { status: 409 });
       }
-      const invoice = await InvoiceModel.updateSafeFields(id, {
-        ...(monetary ? {
-          discountAmount: discount,
-          processingFeeAmount: fee,
-          taxAmount: tax,
-          totalAmount: total,
-          balanceAmount: balance,
-          paymentStatus: balance.lte(0) ? "PAID" : current.paidAmount.gt(0) ? "PARTIALLY_PAID" : "UNPAID",
-        } : {}),
+      const nextInvoiceType = req.body.invoiceType ?? current.invoiceType;
+      const legacyTax =
+        "taxAmount" in req.body ? decimalOrZero(req.body.taxAmount) : current.taxAmount;
+      const legacyNoLineDraft = monetary && current.items.length === 0;
+      const calculation = monetary && !legacyNoLineDraft
+        ? calculateInvoiceGst(
+            {
+              invoiceType: nextInvoiceType,
+              discountAmount: discount,
+              couponDiscountAmount: current.couponDiscountAmount,
+              processingFeeAmount: fee,
+              items: current.items,
+            },
+            current.salon
+          )
+        : null;
+      if (calculation) {
+        for (const [index, item] of current.items.entries()) {
+          const line = calculation.lines[index];
+          if (!line) continue;
+          await tx.invoiceItem.update({
+            where: { id: item.id },
+            data: {
+              taxableAmount: line.taxableAmount,
+              gstRateSnapshot: line.gstRateSnapshot,
+              gstAmount: line.gstAmount,
+              totalWithTax: line.totalWithTax,
+              taxPercent: line.taxPercent,
+              taxAmount: line.taxAmount,
+              lineTotal: line.lineTotal,
+            },
+          });
+        }
+      }
+      const updateData: Prisma.InvoiceUpdateInput = {
         ...(req.body.invoiceType ? { invoiceType: req.body.invoiceType } : {}),
         ...("billingNote" in req.body ? { billingNote: req.body.billingNote } : {}),
         ...("footerNote" in req.body ? { footerNote: req.body.footerNote } : {}),
-      }, tx);
+      };
+      if (legacyNoLineDraft) {
+        const totalAmount = current.subtotalAmount
+          .minus(discount)
+          .minus(current.couponDiscountAmount)
+          .plus(fee)
+          .plus(legacyTax)
+          .toDecimalPlaces(2);
+        const balanceAmount = totalAmount.minus(current.paidAmount).toDecimalPlaces(2);
+        Object.assign(updateData, {
+          discountAmount: discount,
+          processingFeeAmount: fee,
+          taxAmount: legacyTax,
+          totalGstAmount: legacyTax,
+          totalAmount,
+          balanceAmount,
+          paymentStatus: balanceAmount.lte(0)
+            ? "PAID"
+            : current.paidAmount.gt(0)
+              ? "PARTIALLY_PAID"
+              : "UNPAID",
+        });
+      } else if (monetary && calculation) {
+        const balanceAmount = calculation.totalAmount
+          .minus(current.paidAmount)
+          .toDecimalPlaces(2);
+        Object.assign(updateData, {
+          discountAmount: discount,
+          processingFeeAmount: fee,
+          serviceTaxableAmount: calculation.serviceTaxableAmount,
+          productTaxableAmount: calculation.productTaxableAmount,
+          serviceGstAmount: calculation.serviceGstAmount,
+          productGstAmount: calculation.productGstAmount,
+          totalGstAmount: calculation.totalGstAmount,
+          gstNumberSnapshot: calculation.gstNumberSnapshot,
+          gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+          gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+          gstEnabledSnapshot: calculation.gstEnabledSnapshot,
+          taxAmount: calculation.totalGstAmount,
+          totalAmount: calculation.totalAmount,
+          balanceAmount,
+          paymentStatus: balanceAmount.lte(0)
+            ? "PAID"
+            : current.paidAmount.gt(0)
+              ? "PARTIALLY_PAID"
+              : "UNPAID",
+        });
+      }
+      const invoice = await InvoiceModel.updateSafeFields(id, updateData, tx);
       await createAuditLog({
         tx,
         salonId: current.salonId,

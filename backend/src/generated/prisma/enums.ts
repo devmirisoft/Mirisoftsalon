@@ -247,6 +247,14 @@ export const PackageStatus = {
 export type PackageStatus = (typeof PackageStatus)[keyof typeof PackageStatus]
 
 
+export const ServicePackageType = {
+  STANDARD: 'STANDARD',
+  CUSTOMER_CUSTOM: 'CUSTOMER_CUSTOM'
+} as const
+
+export type ServicePackageType = (typeof ServicePackageType)[keyof typeof ServicePackageType]
+
+
 export const CustomerPackageStatus = {
   ACTIVE: 'ACTIVE',
   EXPIRED: 'EXPIRED',
@@ -275,6 +283,7 @@ export type PackageItemType = (typeof PackageItemType)[keyof typeof PackageItemT
 
 export const InvoiceItemType = {
   SERVICE: 'SERVICE',
+  PRODUCT: 'PRODUCT',
   PACKAGE: 'PACKAGE',
   PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION'
 } as const
@@ -354,6 +363,7 @@ export const AuditModule = {
   MEMBERSHIP: 'MEMBERSHIP',
   LOYALTY: 'LOYALTY',
   COUPON: 'COUPON',
+  GST: 'GST',
   PUBLIC_BOOKING: 'PUBLIC_BOOKING',
   JOB_CART: 'JOB_CART',
   PACKAGE: 'PACKAGE',
@@ -400,6 +410,24 @@ export const ExpenseCategory = {
 } as const
 
 export type ExpenseCategory = (typeof ExpenseCategory)[keyof typeof ExpenseCategory]
+
+
+export const SalonAssistantSenderType = {
+  USER: 'USER',
+  ASSISTANT: 'ASSISTANT'
+} as const
+
+export type SalonAssistantSenderType = (typeof SalonAssistantSenderType)[keyof typeof SalonAssistantSenderType]
+
+
+export const SalonAssistantMessageStatus = {
+  STREAMING: 'STREAMING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type SalonAssistantMessageStatus = (typeof SalonAssistantMessageStatus)[keyof typeof SalonAssistantMessageStatus]
 
 
 export const SupportTicketCategory = {

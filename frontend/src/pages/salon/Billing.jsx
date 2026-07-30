@@ -73,9 +73,14 @@ const Billing = () => {
   );
   const payableInvoices = invoices.filter(
     (invoice) =>
-      invoice.status !== "CANCELLED" && invoice.paymentStatus !== "PAID"
+      invoice.status !== "CANCELLED" &&
+      invoice.appointment?.status !== "CANCELLED" &&
+      invoice.paymentStatus !== "PAID"
   );
-  const visibleInvoices = invoices.filter((invoice) => {
+  const activeInvoices = invoices.filter(
+    (invoice) => invoice.status !== "CANCELLED"
+  );
+  const visibleInvoices = activeInvoices.filter((invoice) => {
     const query = invoiceSearch.trim().toLowerCase();
     if (!query) return true;
     return [invoice.invoiceCode, invoice.customerName, invoice.customerPhone]
@@ -122,7 +127,6 @@ const Billing = () => {
           },
           { name: "discountAmount", label: "Discount", type: "number", min: 0, step: "0.01", defaultValue: 0 },
           { name: "processingFeeAmount", label: "Processing fee", type: "number", min: 0, step: "0.01", defaultValue: 0 },
-          { name: "taxPercent", label: "Tax percent", type: "number", min: 0, step: "0.01", defaultValue: 0 },
           { name: "billingNote", label: "Billing note", type: "textarea", fullWidth: true },
           { name: "footerNote", label: "Footer note", type: "textarea", fullWidth: true },
         ],
@@ -238,7 +242,7 @@ const Billing = () => {
               setTab("invoices");
             }}
           >
-            Invoices ({invoices.length})
+            Invoices ({activeInvoices.length})
           </NavLink>
         </NavItem>
         <NavItem>
@@ -307,24 +311,39 @@ const Billing = () => {
                 >
                   <Icon name="printer-fill" />
                 </Button>
-                {row.status === "ISSUED" && row.paymentStatus !== "PAID" && (
-                  <Button size="sm" color="warning" outline className="ms-1" disabled={!row.customer?.loyaltyPoints}
-                    onClick={() => { setSelected(row); setAction("redeem"); }}>Redeem</Button>
-                )}
-                {row.status === "ISSUED" && row.paymentStatus !== "PAID" && (
-                  <Button
-                    size="sm"
-                    color="success"
-                    outline
-                    className="ms-1"
-                    onClick={() => {
-                      setSelected(row);
-                      setAction("payment");
-                    }}
-                  >
-                    Pay
-                  </Button>
-                )}
+                {row.status === "ISSUED" &&
+                  row.paymentStatus !== "PAID" &&
+                  row.appointment?.status !== "CANCELLED" && (
+                    <Button
+                      size="sm"
+                      color="warning"
+                      outline
+                      className="ms-1"
+                      disabled={!row.customer?.loyaltyPoints}
+                      onClick={() => {
+                        setSelected(row);
+                        setAction("redeem");
+                      }}
+                    >
+                      Redeem
+                    </Button>
+                  )}
+                {row.status === "ISSUED" &&
+                  row.paymentStatus !== "PAID" &&
+                  row.appointment?.status !== "CANCELLED" && (
+                    <Button
+                      size="sm"
+                      color="success"
+                      outline
+                      className="ms-1"
+                      onClick={() => {
+                        setSelected(row);
+                        setAction("payment");
+                      }}
+                    >
+                      Pay
+                    </Button>
+                  )}
                 {roleCanManage(user?.role) &&
                   row.status !== "CANCELLED" &&
                   row.paymentStatus === "UNPAID" && (

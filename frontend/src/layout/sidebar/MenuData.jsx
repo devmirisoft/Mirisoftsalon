@@ -18,6 +18,15 @@ const getMenu = (role) => {
   },
   ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
+        {
+          icon: "user",
+          text: "Profile",
+          link: "/profile",
+        },
+      ]
+    : []),
+  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
+    ? [
         { heading: "Staff Operations" },
         {
           icon: "users-fill",

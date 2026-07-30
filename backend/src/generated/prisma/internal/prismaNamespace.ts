@@ -438,6 +438,8 @@ export const ModelName = {
   ExpenseCategoryDefinition: 'ExpenseCategoryDefinition',
   SupportTicket: 'SupportTicket',
   SupportTicketMessage: 'SupportTicketMessage',
+  SalonAssistantConversation: 'SalonAssistantConversation',
+  SalonAssistantMessage: 'SalonAssistantMessage',
   SupportTicketStatusHistory: 'SupportTicketStatusHistory'
 } as const
 
@@ -454,7 +456,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "supportTicketStatusHistory"
+    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "salonAssistantConversation" | "salonAssistantMessage" | "supportTicketStatusHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -4454,6 +4456,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SalonAssistantConversation: {
+      payload: Prisma.$SalonAssistantConversationPayload<ExtArgs>
+      fields: Prisma.SalonAssistantConversationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SalonAssistantConversationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SalonAssistantConversationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        findFirst: {
+          args: Prisma.SalonAssistantConversationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SalonAssistantConversationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        findMany: {
+          args: Prisma.SalonAssistantConversationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>[]
+        }
+        create: {
+          args: Prisma.SalonAssistantConversationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        createMany: {
+          args: Prisma.SalonAssistantConversationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SalonAssistantConversationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>[]
+        }
+        delete: {
+          args: Prisma.SalonAssistantConversationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        update: {
+          args: Prisma.SalonAssistantConversationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SalonAssistantConversationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SalonAssistantConversationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SalonAssistantConversationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SalonAssistantConversationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantConversationPayload>
+        }
+        aggregate: {
+          args: Prisma.SalonAssistantConversationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSalonAssistantConversation>
+        }
+        groupBy: {
+          args: Prisma.SalonAssistantConversationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalonAssistantConversationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SalonAssistantConversationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalonAssistantConversationCountAggregateOutputType> | number
+        }
+      }
+    }
+    SalonAssistantMessage: {
+      payload: Prisma.$SalonAssistantMessagePayload<ExtArgs>
+      fields: Prisma.SalonAssistantMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SalonAssistantMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SalonAssistantMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.SalonAssistantMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SalonAssistantMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        findMany: {
+          args: Prisma.SalonAssistantMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>[]
+        }
+        create: {
+          args: Prisma.SalonAssistantMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        createMany: {
+          args: Prisma.SalonAssistantMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SalonAssistantMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.SalonAssistantMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        update: {
+          args: Prisma.SalonAssistantMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.SalonAssistantMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SalonAssistantMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SalonAssistantMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.SalonAssistantMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SalonAssistantMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.SalonAssistantMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSalonAssistantMessage>
+        }
+        groupBy: {
+          args: Prisma.SalonAssistantMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalonAssistantMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SalonAssistantMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SalonAssistantMessageCountAggregateOutputType> | number
+        }
+      }
+    }
     SupportTicketStatusHistory: {
       payload: Prisma.$SupportTicketStatusHistoryPayload<ExtArgs>
       fields: Prisma.SupportTicketStatusHistoryFieldRefs
@@ -4570,9 +4720,17 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const SalonScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  legalName: 'legalName',
   salonCode: 'salonCode',
   timezone: 'timezone',
   status: 'status',
+  gstEnabled: 'gstEnabled',
+  gstNumber: 'gstNumber',
+  gstLegalName: 'gstLegalName',
+  gstStateCode: 'gstStateCode',
+  serviceGstRate: 'serviceGstRate',
+  productGstRate: 'productGstRate',
+  gstVerifiedAt: 'gstVerifiedAt',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',
@@ -4746,6 +4904,7 @@ export type CouponScalarFieldEnum = (typeof CouponScalarFieldEnum)[keyof typeof 
 export const BranchScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  branchCode: 'branchCode',
   status: 'status',
   salonId: 'salonId',
   addressLine1: 'addressLine1',
@@ -4753,6 +4912,9 @@ export const BranchScalarFieldEnum = {
   state: 'state',
   postalCode: 'postalCode',
   phone: 'phone',
+  email: 'email',
+  openingTime: 'openingTime',
+  closingTime: 'closingTime',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -5006,6 +5168,10 @@ export const ServicePackageScalarFieldEnum = {
   salonId: 'salonId',
   branchId: 'branchId',
   categoryId: 'categoryId',
+  type: 'type',
+  customerId: 'customerId',
+  sourceCustomerId: 'sourceCustomerId',
+  sourcePackageId: 'sourcePackageId',
   name: 'name',
   description: 'description',
   totalPrice: 'totalPrice',
@@ -5202,6 +5368,15 @@ export const InvoiceScalarFieldEnum = {
   salonEmail: 'salonEmail',
   salonAddress: 'salonAddress',
   salonGst: 'salonGst',
+  serviceTaxableAmount: 'serviceTaxableAmount',
+  productTaxableAmount: 'productTaxableAmount',
+  serviceGstAmount: 'serviceGstAmount',
+  productGstAmount: 'productGstAmount',
+  totalGstAmount: 'totalGstAmount',
+  gstNumberSnapshot: 'gstNumberSnapshot',
+  gstLegalNameSnapshot: 'gstLegalNameSnapshot',
+  gstStateCodeSnapshot: 'gstStateCodeSnapshot',
+  gstEnabledSnapshot: 'gstEnabledSnapshot',
   customerName: 'customerName',
   customerPhone: 'customerPhone',
   customerEmail: 'customerEmail',
@@ -5229,6 +5404,7 @@ export const InvoiceItemScalarFieldEnum = {
   id: 'id',
   invoiceId: 'invoiceId',
   serviceId: 'serviceId',
+  productId: 'productId',
   itemType: 'itemType',
   packageId: 'packageId',
   soldByStaffId: 'soldByStaffId',
@@ -5239,6 +5415,10 @@ export const InvoiceItemScalarFieldEnum = {
   quantity: 'quantity',
   unitPrice: 'unitPrice',
   discountAmount: 'discountAmount',
+  taxableAmount: 'taxableAmount',
+  gstRateSnapshot: 'gstRateSnapshot',
+  gstAmount: 'gstAmount',
+  totalWithTax: 'totalWithTax',
   taxPercent: 'taxPercent',
   taxAmount: 'taxAmount',
   lineTotal: 'lineTotal',
@@ -5645,6 +5825,39 @@ export const SupportTicketMessageScalarFieldEnum = {
 export type SupportTicketMessageScalarFieldEnum = (typeof SupportTicketMessageScalarFieldEnum)[keyof typeof SupportTicketMessageScalarFieldEnum]
 
 
+export const SalonAssistantConversationScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  createdById: 'createdById',
+  title: 'title',
+  stateJson: 'stateJson',
+  stateVersion: 'stateVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalonAssistantConversationScalarFieldEnum = (typeof SalonAssistantConversationScalarFieldEnum)[keyof typeof SalonAssistantConversationScalarFieldEnum]
+
+
+export const SalonAssistantMessageScalarFieldEnum = {
+  id: 'id',
+  conversationId: 'conversationId',
+  senderType: 'senderType',
+  content: 'content',
+  status: 'status',
+  provider: 'provider',
+  model: 'model',
+  promptVersion: 'promptVersion',
+  usedFallback: 'usedFallback',
+  errorCode: 'errorCode',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SalonAssistantMessageScalarFieldEnum = (typeof SalonAssistantMessageScalarFieldEnum)[keyof typeof SalonAssistantMessageScalarFieldEnum]
+
+
 export const SupportTicketStatusHistoryScalarFieldEnum = {
   id: 'id',
   ticketId: 'ticketId',
@@ -5672,6 +5885,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -5723,6 +5943,20 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal'
+ */
+export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+/**
+ * Reference to a field of type 'Decimal[]'
+ */
+export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -5779,20 +6013,6 @@ export type EnumCustomerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'CustomerStatus[]'
  */
 export type ListEnumCustomerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'Decimal'
- */
-export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
-    
-
-
-/**
- * Reference to a field of type 'Decimal[]'
- */
-export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -6003,6 +6223,20 @@ export type EnumPackageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'PackageStatus[]'
  */
 export type ListEnumPackageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PackageStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ServicePackageType'
+ */
+export type EnumServicePackageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServicePackageType'>
+    
+
+
+/**
+ * Reference to a field of type 'ServicePackageType[]'
+ */
+export type ListEnumServicePackageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ServicePackageType[]'>
     
 
 
@@ -6329,6 +6563,34 @@ export type ListEnumSupportTicketSourceFieldRefInput<$PrismaModel> = FieldRefInp
 
 
 /**
+ * Reference to a field of type 'SalonAssistantSenderType'
+ */
+export type EnumSalonAssistantSenderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SalonAssistantSenderType'>
+    
+
+
+/**
+ * Reference to a field of type 'SalonAssistantSenderType[]'
+ */
+export type ListEnumSalonAssistantSenderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SalonAssistantSenderType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SalonAssistantMessageStatus'
+ */
+export type EnumSalonAssistantMessageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SalonAssistantMessageStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'SalonAssistantMessageStatus[]'
+ */
+export type ListEnumSalonAssistantMessageStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SalonAssistantMessageStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -6505,6 +6767,8 @@ export type GlobalOmitConfig = {
   expenseCategoryDefinition?: Prisma.ExpenseCategoryDefinitionOmit
   supportTicket?: Prisma.SupportTicketOmit
   supportTicketMessage?: Prisma.SupportTicketMessageOmit
+  salonAssistantConversation?: Prisma.SalonAssistantConversationOmit
+  salonAssistantMessage?: Prisma.SalonAssistantMessageOmit
   supportTicketStatusHistory?: Prisma.SupportTicketStatusHistoryOmit
 }
 

@@ -4,7 +4,12 @@ import { useAuth } from "@/auth/AuthContext";
 import PageShell from "@/components/salon/PageShell";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
-import { formatDate, labelize } from "@/utils/salonFormat";
+import {
+  currentInputTime,
+  formatDate,
+  labelize,
+  todayInputDate,
+} from "@/utils/salonFormat";
 
 const DAYS = [
   "Sunday",
@@ -68,7 +73,7 @@ const emptyRule = {
 
 const emptyBlock = {
   staffId: "",
-  date: dateValue(new Date()),
+  date: todayInputDate(),
   startTime: "13:00",
   endTime: "14:00",
   type: "BREAK",
@@ -95,7 +100,7 @@ const ShiftRoster = () => {
   const [editingRuleId, setEditingRuleId] = useState("");
   const [editingBlockId, setEditingBlockId] = useState("");
   const [preview, setPreview] = useState({
-    date: dateValue(new Date()),
+    date: todayInputDate(),
     serviceId: "",
     staffId: "",
   });
@@ -181,6 +186,14 @@ const ShiftRoster = () => {
       setError("Select a branch-assigned staff member.");
       return;
     }
+    if (ruleForm.effectiveFrom && ruleForm.effectiveFrom < todayInputDate()) {
+      setError("Effective from date cannot be in the past.");
+      return;
+    }
+    if (ruleForm.effectiveUntil && ruleForm.effectiveUntil < todayInputDate()) {
+      setError("Effective until date cannot be in the past.");
+      return;
+    }
     setSaving(true);
     setError("");
     setMessage("");
@@ -253,6 +266,16 @@ const ShiftRoster = () => {
     const member = memberFor(blockForm.staffId);
     if (!member?.branchId) {
       setError("Select a branch-assigned staff member.");
+      return;
+    }
+    const start = new Date(`${blockForm.date}T${blockForm.startTime}:00`);
+    const end = new Date(`${blockForm.date}T${blockForm.endTime}:00`);
+    if (blockForm.date < todayInputDate() || start < new Date()) {
+      setError("Time block start cannot be in the past.");
+      return;
+    }
+    if (end <= start) {
+      setError("Time block end must be after the start time.");
       return;
     }
     setSaving(true);
@@ -473,22 +496,29 @@ const ShiftRoster = () => {
                   </div>
                   <div className="col-md-3">
                     <Label>Effective from</Label>
-                    <Input
+                  <Input
                       type="date"
                       value={ruleForm.effectiveFrom}
+                      min={todayInputDate()}
                       onChange={(event) =>
                         setRuleForm({
                           ...ruleForm,
                           effectiveFrom: event.target.value,
+                          effectiveUntil:
+                            ruleForm.effectiveUntil &&
+                            ruleForm.effectiveUntil < event.target.value
+                              ? event.target.value
+                              : ruleForm.effectiveUntil,
                         })
                       }
                     />
                   </div>
                   <div className="col-md-3">
                     <Label>Effective until</Label>
-                    <Input
+                  <Input
                       type="date"
                       value={ruleForm.effectiveUntil}
+                      min={ruleForm.effectiveFrom || todayInputDate()}
                       onChange={(event) =>
                         setRuleForm({
                           ...ruleForm,
@@ -542,12 +572,21 @@ const ShiftRoster = () => {
                   </div>
                   <div className="col-md-3">
                     <Label>Date</Label>
-                    <Input
+                  <Input
                       type="date"
                       required
                       value={blockForm.date}
+                      min={todayInputDate()}
                       onChange={(event) =>
-                        setBlockForm({ ...blockForm, date: event.target.value })
+                        setBlockForm({
+                          ...blockForm,
+                          date: event.target.value,
+                          startTime:
+                            event.target.value === todayInputDate() &&
+                            blockForm.startTime < currentInputTime()
+                              ? currentInputTime()
+                              : blockForm.startTime,
+                        })
                       }
                     />
                   </div>
@@ -569,10 +608,15 @@ const ShiftRoster = () => {
                   </div>
                   <div className="col-md-3">
                     <Label>Start</Label>
-                    <Input
+                  <Input
                       type="time"
                       required
                       value={blockForm.startTime}
+                      min={
+                        blockForm.date === todayInputDate()
+                          ? currentInputTime()
+                          : undefined
+                      }
                       onChange={(event) =>
                         setBlockForm({
                           ...blockForm,
@@ -583,10 +627,11 @@ const ShiftRoster = () => {
                   </div>
                   <div className="col-md-3">
                     <Label>End</Label>
-                    <Input
+                  <Input
                       type="time"
                       required
                       value={blockForm.endTime}
+                      min={blockForm.startTime}
                       onChange={(event) =>
                         setBlockForm({
                           ...blockForm,
@@ -828,6 +873,7 @@ const ShiftRoster = () => {
                   <Input
                     type="date"
                     value={preview.date}
+                    min={todayInputDate()}
                     onChange={(event) =>
                       setPreview({ ...preview, date: event.target.value })
                     }

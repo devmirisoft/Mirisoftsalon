@@ -27,6 +27,7 @@ export type AggregateBranch = {
 export type BranchMinAggregateOutputType = {
   id: string | null
   name: string | null
+  branchCode: string | null
   status: boolean | null
   salonId: string | null
   addressLine1: string | null
@@ -34,6 +35,9 @@ export type BranchMinAggregateOutputType = {
   state: string | null
   postalCode: string | null
   phone: string | null
+  email: string | null
+  openingTime: string | null
+  closingTime: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -41,6 +45,7 @@ export type BranchMinAggregateOutputType = {
 export type BranchMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  branchCode: string | null
   status: boolean | null
   salonId: string | null
   addressLine1: string | null
@@ -48,6 +53,9 @@ export type BranchMaxAggregateOutputType = {
   state: string | null
   postalCode: string | null
   phone: string | null
+  email: string | null
+  openingTime: string | null
+  closingTime: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -55,6 +63,7 @@ export type BranchMaxAggregateOutputType = {
 export type BranchCountAggregateOutputType = {
   id: number
   name: number
+  branchCode: number
   status: number
   salonId: number
   addressLine1: number
@@ -62,6 +71,9 @@ export type BranchCountAggregateOutputType = {
   state: number
   postalCode: number
   phone: number
+  email: number
+  openingTime: number
+  closingTime: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,6 +83,7 @@ export type BranchCountAggregateOutputType = {
 export type BranchMinAggregateInputType = {
   id?: true
   name?: true
+  branchCode?: true
   status?: true
   salonId?: true
   addressLine1?: true
@@ -78,6 +91,9 @@ export type BranchMinAggregateInputType = {
   state?: true
   postalCode?: true
   phone?: true
+  email?: true
+  openingTime?: true
+  closingTime?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -85,6 +101,7 @@ export type BranchMinAggregateInputType = {
 export type BranchMaxAggregateInputType = {
   id?: true
   name?: true
+  branchCode?: true
   status?: true
   salonId?: true
   addressLine1?: true
@@ -92,6 +109,9 @@ export type BranchMaxAggregateInputType = {
   state?: true
   postalCode?: true
   phone?: true
+  email?: true
+  openingTime?: true
+  closingTime?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -99,6 +119,7 @@ export type BranchMaxAggregateInputType = {
 export type BranchCountAggregateInputType = {
   id?: true
   name?: true
+  branchCode?: true
   status?: true
   salonId?: true
   addressLine1?: true
@@ -106,6 +127,9 @@ export type BranchCountAggregateInputType = {
   state?: true
   postalCode?: true
   phone?: true
+  email?: true
+  openingTime?: true
+  closingTime?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -186,6 +210,7 @@ export type BranchGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type BranchGroupByOutputType = {
   id: string
   name: string
+  branchCode: string | null
   status: boolean
   salonId: string
   addressLine1: string | null
@@ -193,6 +218,9 @@ export type BranchGroupByOutputType = {
   state: string | null
   postalCode: string | null
   phone: string | null
+  email: string | null
+  openingTime: string | null
+  closingTime: string | null
   createdAt: Date
   updatedAt: Date
   _count: BranchCountAggregateOutputType | null
@@ -221,6 +249,7 @@ export type BranchWhereInput = {
   NOT?: Prisma.BranchWhereInput | Prisma.BranchWhereInput[]
   id?: Prisma.StringFilter<"Branch"> | string
   name?: Prisma.StringFilter<"Branch"> | string
+  branchCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.BoolFilter<"Branch"> | boolean
   salonId?: Prisma.StringFilter<"Branch"> | string
   addressLine1?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -228,6 +257,9 @@ export type BranchWhereInput = {
   state?: Prisma.StringNullableFilter<"Branch"> | string | null
   postalCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   phone?: Prisma.StringNullableFilter<"Branch"> | string | null
+  email?: Prisma.StringNullableFilter<"Branch"> | string | null
+  openingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
+  closingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
@@ -268,6 +300,7 @@ export type BranchWhereInput = {
 export type BranchOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  branchCode?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   salonId?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -275,6 +308,9 @@ export type BranchOrderByWithRelationInput = {
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  openingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingTime?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   salon?: Prisma.SalonOrderByWithRelationInput
@@ -315,10 +351,12 @@ export type BranchOrderByWithRelationInput = {
 export type BranchWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   salonId_name?: Prisma.BranchSalonIdNameCompoundUniqueInput
+  salonId_branchCode?: Prisma.BranchSalonIdBranchCodeCompoundUniqueInput
   AND?: Prisma.BranchWhereInput | Prisma.BranchWhereInput[]
   OR?: Prisma.BranchWhereInput[]
   NOT?: Prisma.BranchWhereInput | Prisma.BranchWhereInput[]
   name?: Prisma.StringFilter<"Branch"> | string
+  branchCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.BoolFilter<"Branch"> | boolean
   salonId?: Prisma.StringFilter<"Branch"> | string
   addressLine1?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -326,6 +364,9 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   state?: Prisma.StringNullableFilter<"Branch"> | string | null
   postalCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   phone?: Prisma.StringNullableFilter<"Branch"> | string | null
+  email?: Prisma.StringNullableFilter<"Branch"> | string | null
+  openingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
+  closingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
@@ -361,11 +402,12 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceListRelationFilter
   packageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
-}, "id" | "salonId_name">
+}, "id" | "salonId_name" | "salonId_branchCode">
 
 export type BranchOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  branchCode?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   salonId?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -373,6 +415,9 @@ export type BranchOrderByWithAggregationInput = {
   state?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
+  openingTime?: Prisma.SortOrderInput | Prisma.SortOrder
+  closingTime?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.BranchCountOrderByAggregateInput
@@ -386,6 +431,7 @@ export type BranchScalarWhereWithAggregatesInput = {
   NOT?: Prisma.BranchScalarWhereWithAggregatesInput | Prisma.BranchScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Branch"> | string
   name?: Prisma.StringWithAggregatesFilter<"Branch"> | string
+  branchCode?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   status?: Prisma.BoolWithAggregatesFilter<"Branch"> | boolean
   salonId?: Prisma.StringWithAggregatesFilter<"Branch"> | string
   addressLine1?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
@@ -393,6 +439,9 @@ export type BranchScalarWhereWithAggregatesInput = {
   state?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   postalCode?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
+  openingTime?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
+  closingTime?: Prisma.StringNullableWithAggregatesFilter<"Branch"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Branch"> | Date | string
 }
@@ -400,12 +449,16 @@ export type BranchScalarWhereWithAggregatesInput = {
 export type BranchCreateInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -446,6 +499,7 @@ export type BranchCreateInput = {
 export type BranchUncheckedCreateInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -453,6 +507,9 @@ export type BranchUncheckedCreateInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -492,12 +549,16 @@ export type BranchUncheckedCreateInput = {
 export type BranchUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -538,6 +599,7 @@ export type BranchUpdateInput = {
 export type BranchUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -545,6 +607,9 @@ export type BranchUncheckedUpdateInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -584,6 +649,7 @@ export type BranchUncheckedUpdateInput = {
 export type BranchCreateManyInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -591,6 +657,9 @@ export type BranchCreateManyInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -598,12 +667,16 @@ export type BranchCreateManyInput = {
 export type BranchUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -611,6 +684,7 @@ export type BranchUpdateManyMutationInput = {
 export type BranchUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -618,6 +692,9 @@ export type BranchUncheckedUpdateManyInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -642,9 +719,15 @@ export type BranchSalonIdNameCompoundUniqueInput = {
   name: string
 }
 
+export type BranchSalonIdBranchCodeCompoundUniqueInput = {
+  salonId: string
+  branchCode: string
+}
+
 export type BranchCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  branchCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   salonId?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
@@ -652,6 +735,9 @@ export type BranchCountOrderByAggregateInput = {
   state?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  openingTime?: Prisma.SortOrder
+  closingTime?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -659,6 +745,7 @@ export type BranchCountOrderByAggregateInput = {
 export type BranchMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  branchCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   salonId?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
@@ -666,6 +753,9 @@ export type BranchMaxOrderByAggregateInput = {
   state?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  openingTime?: Prisma.SortOrder
+  closingTime?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -673,6 +763,7 @@ export type BranchMaxOrderByAggregateInput = {
 export type BranchMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  branchCode?: Prisma.SortOrder
   status?: Prisma.SortOrder
   salonId?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
@@ -680,6 +771,9 @@ export type BranchMinOrderByAggregateInput = {
   state?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  email?: Prisma.SortOrder
+  openingTime?: Prisma.SortOrder
+  closingTime?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1236,12 +1330,16 @@ export type BranchUpdateOneWithoutSupportTicketsNestedInput = {
 export type BranchCreateWithoutSalonInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffCreateNestedManyWithoutBranchInput
@@ -1281,12 +1379,16 @@ export type BranchCreateWithoutSalonInput = {
 export type BranchUncheckedCreateWithoutSalonInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -1355,6 +1457,7 @@ export type BranchScalarWhereInput = {
   NOT?: Prisma.BranchScalarWhereInput | Prisma.BranchScalarWhereInput[]
   id?: Prisma.StringFilter<"Branch"> | string
   name?: Prisma.StringFilter<"Branch"> | string
+  branchCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   status?: Prisma.BoolFilter<"Branch"> | boolean
   salonId?: Prisma.StringFilter<"Branch"> | string
   addressLine1?: Prisma.StringNullableFilter<"Branch"> | string | null
@@ -1362,6 +1465,9 @@ export type BranchScalarWhereInput = {
   state?: Prisma.StringNullableFilter<"Branch"> | string | null
   postalCode?: Prisma.StringNullableFilter<"Branch"> | string | null
   phone?: Prisma.StringNullableFilter<"Branch"> | string | null
+  email?: Prisma.StringNullableFilter<"Branch"> | string | null
+  openingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
+  closingTime?: Prisma.StringNullableFilter<"Branch"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Branch"> | Date | string
 }
@@ -1369,12 +1475,16 @@ export type BranchScalarWhereInput = {
 export type BranchCreateWithoutUsersInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -1414,6 +1524,7 @@ export type BranchCreateWithoutUsersInput = {
 export type BranchUncheckedCreateWithoutUsersInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -1421,6 +1532,9 @@ export type BranchUncheckedCreateWithoutUsersInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -1475,12 +1589,16 @@ export type BranchUpdateToOneWithWhereWithoutUsersInput = {
 export type BranchUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -1520,6 +1638,7 @@ export type BranchUpdateWithoutUsersInput = {
 export type BranchUncheckedUpdateWithoutUsersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1527,6 +1646,9 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -1565,12 +1687,16 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
 export type BranchCreateWithoutCustomersInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -1610,6 +1736,7 @@ export type BranchCreateWithoutCustomersInput = {
 export type BranchUncheckedCreateWithoutCustomersInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -1617,6 +1744,9 @@ export type BranchUncheckedCreateWithoutCustomersInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -1671,12 +1801,16 @@ export type BranchUpdateToOneWithWhereWithoutCustomersInput = {
 export type BranchUpdateWithoutCustomersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -1716,6 +1850,7 @@ export type BranchUpdateWithoutCustomersInput = {
 export type BranchUncheckedUpdateWithoutCustomersInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1723,6 +1858,9 @@ export type BranchUncheckedUpdateWithoutCustomersInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -1761,12 +1899,16 @@ export type BranchUncheckedUpdateWithoutCustomersInput = {
 export type BranchCreateWithoutCustomerMembershipsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -1806,6 +1948,7 @@ export type BranchCreateWithoutCustomerMembershipsInput = {
 export type BranchUncheckedCreateWithoutCustomerMembershipsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -1813,6 +1956,9 @@ export type BranchUncheckedCreateWithoutCustomerMembershipsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -1867,12 +2013,16 @@ export type BranchUpdateToOneWithWhereWithoutCustomerMembershipsInput = {
 export type BranchUpdateWithoutCustomerMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -1912,6 +2062,7 @@ export type BranchUpdateWithoutCustomerMembershipsInput = {
 export type BranchUncheckedUpdateWithoutCustomerMembershipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1919,6 +2070,9 @@ export type BranchUncheckedUpdateWithoutCustomerMembershipsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -1957,12 +2111,16 @@ export type BranchUncheckedUpdateWithoutCustomerMembershipsInput = {
 export type BranchCreateWithoutCouponsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2002,6 +2160,7 @@ export type BranchCreateWithoutCouponsInput = {
 export type BranchUncheckedCreateWithoutCouponsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2009,6 +2168,9 @@ export type BranchUncheckedCreateWithoutCouponsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -2063,12 +2225,16 @@ export type BranchUpdateToOneWithWhereWithoutCouponsInput = {
 export type BranchUpdateWithoutCouponsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -2108,6 +2274,7 @@ export type BranchUpdateWithoutCouponsInput = {
 export type BranchUncheckedUpdateWithoutCouponsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2115,6 +2282,9 @@ export type BranchUncheckedUpdateWithoutCouponsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -2153,12 +2323,16 @@ export type BranchUncheckedUpdateWithoutCouponsInput = {
 export type BranchCreateWithoutStaffInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2198,6 +2372,7 @@ export type BranchCreateWithoutStaffInput = {
 export type BranchUncheckedCreateWithoutStaffInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2205,6 +2380,9 @@ export type BranchUncheckedCreateWithoutStaffInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBranchInput
@@ -2259,12 +2437,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffInput = {
 export type BranchUpdateWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -2304,6 +2486,7 @@ export type BranchUpdateWithoutStaffInput = {
 export type BranchUncheckedUpdateWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2311,6 +2494,9 @@ export type BranchUncheckedUpdateWithoutStaffInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutBranchNestedInput
@@ -2349,12 +2535,16 @@ export type BranchUncheckedUpdateWithoutStaffInput = {
 export type BranchCreateWithoutStaffAttendancesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2394,6 +2584,7 @@ export type BranchCreateWithoutStaffAttendancesInput = {
 export type BranchUncheckedCreateWithoutStaffAttendancesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2401,6 +2592,9 @@ export type BranchUncheckedCreateWithoutStaffAttendancesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -2455,12 +2649,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffAttendancesInput = {
 export type BranchUpdateWithoutStaffAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -2500,6 +2698,7 @@ export type BranchUpdateWithoutStaffAttendancesInput = {
 export type BranchUncheckedUpdateWithoutStaffAttendancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2507,6 +2706,9 @@ export type BranchUncheckedUpdateWithoutStaffAttendancesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -2545,12 +2747,16 @@ export type BranchUncheckedUpdateWithoutStaffAttendancesInput = {
 export type BranchCreateWithoutStaffLeavesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2590,6 +2796,7 @@ export type BranchCreateWithoutStaffLeavesInput = {
 export type BranchUncheckedCreateWithoutStaffLeavesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2597,6 +2804,9 @@ export type BranchUncheckedCreateWithoutStaffLeavesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -2651,12 +2861,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffLeavesInput = {
 export type BranchUpdateWithoutStaffLeavesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -2696,6 +2910,7 @@ export type BranchUpdateWithoutStaffLeavesInput = {
 export type BranchUncheckedUpdateWithoutStaffLeavesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2703,6 +2918,9 @@ export type BranchUncheckedUpdateWithoutStaffLeavesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -2741,12 +2959,16 @@ export type BranchUncheckedUpdateWithoutStaffLeavesInput = {
 export type BranchCreateWithoutStaffAvailabilityRulesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2786,6 +3008,7 @@ export type BranchCreateWithoutStaffAvailabilityRulesInput = {
 export type BranchUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2793,6 +3016,9 @@ export type BranchUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -2847,12 +3073,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffAvailabilityRulesInput = {
 export type BranchUpdateWithoutStaffAvailabilityRulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -2892,6 +3122,7 @@ export type BranchUpdateWithoutStaffAvailabilityRulesInput = {
 export type BranchUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2899,6 +3130,9 @@ export type BranchUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -2937,12 +3171,16 @@ export type BranchUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
 export type BranchCreateWithoutStaffTimeBlocksInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -2982,6 +3220,7 @@ export type BranchCreateWithoutStaffTimeBlocksInput = {
 export type BranchUncheckedCreateWithoutStaffTimeBlocksInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -2989,6 +3228,9 @@ export type BranchUncheckedCreateWithoutStaffTimeBlocksInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -3043,12 +3285,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffTimeBlocksInput = {
 export type BranchUpdateWithoutStaffTimeBlocksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -3088,6 +3334,7 @@ export type BranchUpdateWithoutStaffTimeBlocksInput = {
 export type BranchUncheckedUpdateWithoutStaffTimeBlocksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3095,6 +3342,9 @@ export type BranchUncheckedUpdateWithoutStaffTimeBlocksInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -3133,12 +3383,16 @@ export type BranchUncheckedUpdateWithoutStaffTimeBlocksInput = {
 export type BranchCreateWithoutStaffSalaryConfigsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -3178,6 +3432,7 @@ export type BranchCreateWithoutStaffSalaryConfigsInput = {
 export type BranchUncheckedCreateWithoutStaffSalaryConfigsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -3185,6 +3440,9 @@ export type BranchUncheckedCreateWithoutStaffSalaryConfigsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -3239,12 +3497,16 @@ export type BranchUpdateToOneWithWhereWithoutStaffSalaryConfigsInput = {
 export type BranchUpdateWithoutStaffSalaryConfigsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -3284,6 +3546,7 @@ export type BranchUpdateWithoutStaffSalaryConfigsInput = {
 export type BranchUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3291,6 +3554,9 @@ export type BranchUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -3329,12 +3595,16 @@ export type BranchUncheckedUpdateWithoutStaffSalaryConfigsInput = {
 export type BranchCreateWithoutSalarySlipsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -3374,6 +3644,7 @@ export type BranchCreateWithoutSalarySlipsInput = {
 export type BranchUncheckedCreateWithoutSalarySlipsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -3381,6 +3652,9 @@ export type BranchUncheckedCreateWithoutSalarySlipsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -3435,12 +3709,16 @@ export type BranchUpdateToOneWithWhereWithoutSalarySlipsInput = {
 export type BranchUpdateWithoutSalarySlipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -3480,6 +3758,7 @@ export type BranchUpdateWithoutSalarySlipsInput = {
 export type BranchUncheckedUpdateWithoutSalarySlipsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3487,6 +3766,9 @@ export type BranchUncheckedUpdateWithoutSalarySlipsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -3525,12 +3807,16 @@ export type BranchUncheckedUpdateWithoutSalarySlipsInput = {
 export type BranchCreateWithoutServicesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -3570,6 +3856,7 @@ export type BranchCreateWithoutServicesInput = {
 export type BranchUncheckedCreateWithoutServicesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -3577,6 +3864,9 @@ export type BranchUncheckedCreateWithoutServicesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -3631,12 +3921,16 @@ export type BranchUpdateToOneWithWhereWithoutServicesInput = {
 export type BranchUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -3676,6 +3970,7 @@ export type BranchUpdateWithoutServicesInput = {
 export type BranchUncheckedUpdateWithoutServicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3683,6 +3978,9 @@ export type BranchUncheckedUpdateWithoutServicesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -3721,12 +4019,16 @@ export type BranchUncheckedUpdateWithoutServicesInput = {
 export type BranchCreateWithoutPackageCategoriesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -3766,6 +4068,7 @@ export type BranchCreateWithoutPackageCategoriesInput = {
 export type BranchUncheckedCreateWithoutPackageCategoriesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -3773,6 +4076,9 @@ export type BranchUncheckedCreateWithoutPackageCategoriesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -3827,12 +4133,16 @@ export type BranchUpdateToOneWithWhereWithoutPackageCategoriesInput = {
 export type BranchUpdateWithoutPackageCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -3872,6 +4182,7 @@ export type BranchUpdateWithoutPackageCategoriesInput = {
 export type BranchUncheckedUpdateWithoutPackageCategoriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3879,6 +4190,9 @@ export type BranchUncheckedUpdateWithoutPackageCategoriesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -3917,12 +4231,16 @@ export type BranchUncheckedUpdateWithoutPackageCategoriesInput = {
 export type BranchCreateWithoutServicePackagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -3962,6 +4280,7 @@ export type BranchCreateWithoutServicePackagesInput = {
 export type BranchUncheckedCreateWithoutServicePackagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -3969,6 +4288,9 @@ export type BranchUncheckedCreateWithoutServicePackagesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -4023,12 +4345,16 @@ export type BranchUpdateToOneWithWhereWithoutServicePackagesInput = {
 export type BranchUpdateWithoutServicePackagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -4068,6 +4394,7 @@ export type BranchUpdateWithoutServicePackagesInput = {
 export type BranchUncheckedUpdateWithoutServicePackagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4075,6 +4402,9 @@ export type BranchUncheckedUpdateWithoutServicePackagesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -4113,12 +4443,16 @@ export type BranchUncheckedUpdateWithoutServicePackagesInput = {
 export type BranchCreateWithoutAppointmentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -4158,6 +4492,7 @@ export type BranchCreateWithoutAppointmentsInput = {
 export type BranchUncheckedCreateWithoutAppointmentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -4165,6 +4500,9 @@ export type BranchUncheckedCreateWithoutAppointmentsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -4219,12 +4557,16 @@ export type BranchUpdateToOneWithWhereWithoutAppointmentsInput = {
 export type BranchUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -4264,6 +4606,7 @@ export type BranchUpdateWithoutAppointmentsInput = {
 export type BranchUncheckedUpdateWithoutAppointmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4271,6 +4614,9 @@ export type BranchUncheckedUpdateWithoutAppointmentsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -4309,12 +4655,16 @@ export type BranchUncheckedUpdateWithoutAppointmentsInput = {
 export type BranchCreateWithoutPublicBookingSettingsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -4354,6 +4704,7 @@ export type BranchCreateWithoutPublicBookingSettingsInput = {
 export type BranchUncheckedCreateWithoutPublicBookingSettingsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -4361,6 +4712,9 @@ export type BranchUncheckedCreateWithoutPublicBookingSettingsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -4415,12 +4769,16 @@ export type BranchUpdateToOneWithWhereWithoutPublicBookingSettingsInput = {
 export type BranchUpdateWithoutPublicBookingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -4460,6 +4818,7 @@ export type BranchUpdateWithoutPublicBookingSettingsInput = {
 export type BranchUncheckedUpdateWithoutPublicBookingSettingsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4467,6 +4826,9 @@ export type BranchUncheckedUpdateWithoutPublicBookingSettingsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -4505,12 +4867,16 @@ export type BranchUncheckedUpdateWithoutPublicBookingSettingsInput = {
 export type BranchCreateWithoutSalesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -4550,6 +4916,7 @@ export type BranchCreateWithoutSalesInput = {
 export type BranchUncheckedCreateWithoutSalesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -4557,6 +4924,9 @@ export type BranchUncheckedCreateWithoutSalesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -4611,12 +4981,16 @@ export type BranchUpdateToOneWithWhereWithoutSalesInput = {
 export type BranchUpdateWithoutSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -4656,6 +5030,7 @@ export type BranchUpdateWithoutSalesInput = {
 export type BranchUncheckedUpdateWithoutSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4663,6 +5038,9 @@ export type BranchUncheckedUpdateWithoutSalesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -4701,12 +5079,16 @@ export type BranchUncheckedUpdateWithoutSalesInput = {
 export type BranchCreateWithoutInvoicesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -4746,6 +5128,7 @@ export type BranchCreateWithoutInvoicesInput = {
 export type BranchUncheckedCreateWithoutInvoicesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -4753,6 +5136,9 @@ export type BranchUncheckedCreateWithoutInvoicesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -4807,12 +5193,16 @@ export type BranchUpdateToOneWithWhereWithoutInvoicesInput = {
 export type BranchUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -4852,6 +5242,7 @@ export type BranchUpdateWithoutInvoicesInput = {
 export type BranchUncheckedUpdateWithoutInvoicesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4859,6 +5250,9 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -4897,12 +5291,16 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
 export type BranchCreateWithoutCustomerPackagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -4942,6 +5340,7 @@ export type BranchCreateWithoutCustomerPackagesInput = {
 export type BranchUncheckedCreateWithoutCustomerPackagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -4949,6 +5348,9 @@ export type BranchUncheckedCreateWithoutCustomerPackagesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5003,12 +5405,16 @@ export type BranchUpdateToOneWithWhereWithoutCustomerPackagesInput = {
 export type BranchUpdateWithoutCustomerPackagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -5048,6 +5454,7 @@ export type BranchUpdateWithoutCustomerPackagesInput = {
 export type BranchUncheckedUpdateWithoutCustomerPackagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5055,6 +5462,9 @@ export type BranchUncheckedUpdateWithoutCustomerPackagesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -5093,12 +5503,16 @@ export type BranchUncheckedUpdateWithoutCustomerPackagesInput = {
 export type BranchCreateWithoutPackageServiceBalancesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -5138,6 +5552,7 @@ export type BranchCreateWithoutPackageServiceBalancesInput = {
 export type BranchUncheckedCreateWithoutPackageServiceBalancesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -5145,6 +5560,9 @@ export type BranchUncheckedCreateWithoutPackageServiceBalancesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5199,12 +5617,16 @@ export type BranchUpdateToOneWithWhereWithoutPackageServiceBalancesInput = {
 export type BranchUpdateWithoutPackageServiceBalancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -5244,6 +5666,7 @@ export type BranchUpdateWithoutPackageServiceBalancesInput = {
 export type BranchUncheckedUpdateWithoutPackageServiceBalancesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5251,6 +5674,9 @@ export type BranchUncheckedUpdateWithoutPackageServiceBalancesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -5289,12 +5715,16 @@ export type BranchUncheckedUpdateWithoutPackageServiceBalancesInput = {
 export type BranchCreateWithoutPackageUsagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -5334,6 +5764,7 @@ export type BranchCreateWithoutPackageUsagesInput = {
 export type BranchUncheckedCreateWithoutPackageUsagesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -5341,6 +5772,9 @@ export type BranchUncheckedCreateWithoutPackageUsagesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5395,12 +5829,16 @@ export type BranchUpdateToOneWithWhereWithoutPackageUsagesInput = {
 export type BranchUpdateWithoutPackageUsagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -5440,6 +5878,7 @@ export type BranchUpdateWithoutPackageUsagesInput = {
 export type BranchUncheckedUpdateWithoutPackageUsagesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5447,6 +5886,9 @@ export type BranchUncheckedUpdateWithoutPackageUsagesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -5485,12 +5927,16 @@ export type BranchUncheckedUpdateWithoutPackageUsagesInput = {
 export type BranchCreateWithoutPaymentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -5530,6 +5976,7 @@ export type BranchCreateWithoutPaymentsInput = {
 export type BranchUncheckedCreateWithoutPaymentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -5537,6 +5984,9 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5591,12 +6041,16 @@ export type BranchUpdateToOneWithWhereWithoutPaymentsInput = {
 export type BranchUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -5636,6 +6090,7 @@ export type BranchUpdateWithoutPaymentsInput = {
 export type BranchUncheckedUpdateWithoutPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5643,6 +6098,9 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -5681,12 +6139,16 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
 export type BranchCreateWithoutProductsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -5726,6 +6188,7 @@ export type BranchCreateWithoutProductsInput = {
 export type BranchUncheckedCreateWithoutProductsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -5733,6 +6196,9 @@ export type BranchUncheckedCreateWithoutProductsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5787,12 +6253,16 @@ export type BranchUpdateToOneWithWhereWithoutProductsInput = {
 export type BranchUpdateWithoutProductsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -5832,6 +6302,7 @@ export type BranchUpdateWithoutProductsInput = {
 export type BranchUncheckedUpdateWithoutProductsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5839,6 +6310,9 @@ export type BranchUncheckedUpdateWithoutProductsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -5877,12 +6351,16 @@ export type BranchUncheckedUpdateWithoutProductsInput = {
 export type BranchCreateWithoutProductStockMovementsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -5922,6 +6400,7 @@ export type BranchCreateWithoutProductStockMovementsInput = {
 export type BranchUncheckedCreateWithoutProductStockMovementsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -5929,6 +6408,9 @@ export type BranchUncheckedCreateWithoutProductStockMovementsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -5983,12 +6465,16 @@ export type BranchUpdateToOneWithWhereWithoutProductStockMovementsInput = {
 export type BranchUpdateWithoutProductStockMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -6028,6 +6514,7 @@ export type BranchUpdateWithoutProductStockMovementsInput = {
 export type BranchUncheckedUpdateWithoutProductStockMovementsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6035,6 +6522,9 @@ export type BranchUncheckedUpdateWithoutProductStockMovementsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -6073,12 +6563,16 @@ export type BranchUncheckedUpdateWithoutProductStockMovementsInput = {
 export type BranchCreateWithoutProductPurchasesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -6118,6 +6612,7 @@ export type BranchCreateWithoutProductPurchasesInput = {
 export type BranchUncheckedCreateWithoutProductPurchasesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -6125,6 +6620,9 @@ export type BranchUncheckedCreateWithoutProductPurchasesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -6179,12 +6677,16 @@ export type BranchUpdateToOneWithWhereWithoutProductPurchasesInput = {
 export type BranchUpdateWithoutProductPurchasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -6224,6 +6726,7 @@ export type BranchUpdateWithoutProductPurchasesInput = {
 export type BranchUncheckedUpdateWithoutProductPurchasesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6231,6 +6734,9 @@ export type BranchUncheckedUpdateWithoutProductPurchasesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -6269,12 +6775,16 @@ export type BranchUncheckedUpdateWithoutProductPurchasesInput = {
 export type BranchCreateWithoutVendorPaymentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -6314,6 +6824,7 @@ export type BranchCreateWithoutVendorPaymentsInput = {
 export type BranchUncheckedCreateWithoutVendorPaymentsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -6321,6 +6832,9 @@ export type BranchUncheckedCreateWithoutVendorPaymentsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -6375,12 +6889,16 @@ export type BranchUpdateToOneWithWhereWithoutVendorPaymentsInput = {
 export type BranchUpdateWithoutVendorPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -6420,6 +6938,7 @@ export type BranchUpdateWithoutVendorPaymentsInput = {
 export type BranchUncheckedUpdateWithoutVendorPaymentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6427,6 +6946,9 @@ export type BranchUncheckedUpdateWithoutVendorPaymentsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -6465,12 +6987,16 @@ export type BranchUncheckedUpdateWithoutVendorPaymentsInput = {
 export type BranchCreateWithoutStockAlertsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -6510,6 +7036,7 @@ export type BranchCreateWithoutStockAlertsInput = {
 export type BranchUncheckedCreateWithoutStockAlertsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -6517,6 +7044,9 @@ export type BranchUncheckedCreateWithoutStockAlertsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -6571,12 +7101,16 @@ export type BranchUpdateToOneWithWhereWithoutStockAlertsInput = {
 export type BranchUpdateWithoutStockAlertsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -6616,6 +7150,7 @@ export type BranchUpdateWithoutStockAlertsInput = {
 export type BranchUncheckedUpdateWithoutStockAlertsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6623,6 +7158,9 @@ export type BranchUncheckedUpdateWithoutStockAlertsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -6661,12 +7199,16 @@ export type BranchUncheckedUpdateWithoutStockAlertsInput = {
 export type BranchCreateWithoutReorderSuggestionsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -6706,6 +7248,7 @@ export type BranchCreateWithoutReorderSuggestionsInput = {
 export type BranchUncheckedCreateWithoutReorderSuggestionsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -6713,6 +7256,9 @@ export type BranchUncheckedCreateWithoutReorderSuggestionsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -6767,12 +7313,16 @@ export type BranchUpdateToOneWithWhereWithoutReorderSuggestionsInput = {
 export type BranchUpdateWithoutReorderSuggestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -6812,6 +7362,7 @@ export type BranchUpdateWithoutReorderSuggestionsInput = {
 export type BranchUncheckedUpdateWithoutReorderSuggestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6819,6 +7370,9 @@ export type BranchUncheckedUpdateWithoutReorderSuggestionsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -6857,12 +7411,16 @@ export type BranchUncheckedUpdateWithoutReorderSuggestionsInput = {
 export type BranchCreateWithoutAuditLogsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -6902,6 +7460,7 @@ export type BranchCreateWithoutAuditLogsInput = {
 export type BranchUncheckedCreateWithoutAuditLogsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -6909,6 +7468,9 @@ export type BranchUncheckedCreateWithoutAuditLogsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -6963,12 +7525,16 @@ export type BranchUpdateToOneWithWhereWithoutAuditLogsInput = {
 export type BranchUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -7008,6 +7574,7 @@ export type BranchUpdateWithoutAuditLogsInput = {
 export type BranchUncheckedUpdateWithoutAuditLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7015,6 +7582,9 @@ export type BranchUncheckedUpdateWithoutAuditLogsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -7053,12 +7623,16 @@ export type BranchUncheckedUpdateWithoutAuditLogsInput = {
 export type BranchCreateWithoutRetailSalesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -7098,6 +7672,7 @@ export type BranchCreateWithoutRetailSalesInput = {
 export type BranchUncheckedCreateWithoutRetailSalesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -7105,6 +7680,9 @@ export type BranchUncheckedCreateWithoutRetailSalesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -7159,12 +7737,16 @@ export type BranchUpdateToOneWithWhereWithoutRetailSalesInput = {
 export type BranchUpdateWithoutRetailSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -7204,6 +7786,7 @@ export type BranchUpdateWithoutRetailSalesInput = {
 export type BranchUncheckedUpdateWithoutRetailSalesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7211,6 +7794,9 @@ export type BranchUncheckedUpdateWithoutRetailSalesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -7249,12 +7835,16 @@ export type BranchUncheckedUpdateWithoutRetailSalesInput = {
 export type BranchCreateWithoutExpensesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -7294,6 +7884,7 @@ export type BranchCreateWithoutExpensesInput = {
 export type BranchUncheckedCreateWithoutExpensesInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -7301,6 +7892,9 @@ export type BranchUncheckedCreateWithoutExpensesInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -7355,12 +7949,16 @@ export type BranchUpdateToOneWithWhereWithoutExpensesInput = {
 export type BranchUpdateWithoutExpensesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -7400,6 +7998,7 @@ export type BranchUpdateWithoutExpensesInput = {
 export type BranchUncheckedUpdateWithoutExpensesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7407,6 +8006,9 @@ export type BranchUncheckedUpdateWithoutExpensesInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -7445,12 +8047,16 @@ export type BranchUncheckedUpdateWithoutExpensesInput = {
 export type BranchCreateWithoutSupportTicketsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
@@ -7490,6 +8096,7 @@ export type BranchCreateWithoutSupportTicketsInput = {
 export type BranchUncheckedCreateWithoutSupportTicketsInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   salonId: string
   addressLine1?: string | null
@@ -7497,6 +8104,9 @@ export type BranchUncheckedCreateWithoutSupportTicketsInput = {
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
@@ -7551,12 +8161,16 @@ export type BranchUpdateToOneWithWhereWithoutSupportTicketsInput = {
 export type BranchUpdateWithoutSupportTicketsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
@@ -7596,6 +8210,7 @@ export type BranchUpdateWithoutSupportTicketsInput = {
 export type BranchUncheckedUpdateWithoutSupportTicketsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7603,6 +8218,9 @@ export type BranchUncheckedUpdateWithoutSupportTicketsInput = {
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -7641,12 +8259,16 @@ export type BranchUncheckedUpdateWithoutSupportTicketsInput = {
 export type BranchCreateManySalonInput = {
   id?: string
   name: string
+  branchCode?: string | null
   status?: boolean
   addressLine1?: string | null
   city?: string | null
   state?: string | null
   postalCode?: string | null
   phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -7654,12 +8276,16 @@ export type BranchCreateManySalonInput = {
 export type BranchUpdateWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUpdateManyWithoutBranchNestedInput
@@ -7699,12 +8325,16 @@ export type BranchUpdateWithoutSalonInput = {
 export type BranchUncheckedUpdateWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
@@ -7744,12 +8374,16 @@ export type BranchUncheckedUpdateWithoutSalonInput = {
 export type BranchUncheckedUpdateManyWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -8067,6 +8701,7 @@ export type BranchCountOutputTypeCountCustomerMembershipsArgs<ExtArgs extends ru
 export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  branchCode?: boolean
   status?: boolean
   salonId?: boolean
   addressLine1?: boolean
@@ -8074,6 +8709,9 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   state?: boolean
   postalCode?: boolean
   phone?: boolean
+  email?: boolean
+  openingTime?: boolean
+  closingTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -8115,6 +8753,7 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type BranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  branchCode?: boolean
   status?: boolean
   salonId?: boolean
   addressLine1?: boolean
@@ -8122,6 +8761,9 @@ export type BranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   state?: boolean
   postalCode?: boolean
   phone?: boolean
+  email?: boolean
+  openingTime?: boolean
+  closingTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -8130,6 +8772,7 @@ export type BranchSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type BranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  branchCode?: boolean
   status?: boolean
   salonId?: boolean
   addressLine1?: boolean
@@ -8137,6 +8780,9 @@ export type BranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   state?: boolean
   postalCode?: boolean
   phone?: boolean
+  email?: boolean
+  openingTime?: boolean
+  closingTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -8145,6 +8791,7 @@ export type BranchSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type BranchSelectScalar = {
   id?: boolean
   name?: boolean
+  branchCode?: boolean
   status?: boolean
   salonId?: boolean
   addressLine1?: boolean
@@ -8152,11 +8799,14 @@ export type BranchSelectScalar = {
   state?: boolean
   postalCode?: boolean
   phone?: boolean
+  email?: boolean
+  openingTime?: boolean
+  closingTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "status" | "salonId" | "addressLine1" | "city" | "state" | "postalCode" | "phone" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
+export type BranchOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "branchCode" | "status" | "salonId" | "addressLine1" | "city" | "state" | "postalCode" | "phone" | "email" | "openingTime" | "closingTime" | "createdAt" | "updatedAt", ExtArgs["result"]["branch"]>
 export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.Branch$staffArgs<ExtArgs>
@@ -8240,6 +8890,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    branchCode: string | null
     status: boolean
     salonId: string
     addressLine1: string | null
@@ -8247,6 +8898,9 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     state: string | null
     postalCode: string | null
     phone: string | null
+    email: string | null
+    openingTime: string | null
+    closingTime: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["branch"]>
@@ -8707,6 +9361,7 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
 export interface BranchFieldRefs {
   readonly id: Prisma.FieldRef<"Branch", 'String'>
   readonly name: Prisma.FieldRef<"Branch", 'String'>
+  readonly branchCode: Prisma.FieldRef<"Branch", 'String'>
   readonly status: Prisma.FieldRef<"Branch", 'Boolean'>
   readonly salonId: Prisma.FieldRef<"Branch", 'String'>
   readonly addressLine1: Prisma.FieldRef<"Branch", 'String'>
@@ -8714,6 +9369,9 @@ export interface BranchFieldRefs {
   readonly state: Prisma.FieldRef<"Branch", 'String'>
   readonly postalCode: Prisma.FieldRef<"Branch", 'String'>
   readonly phone: Prisma.FieldRef<"Branch", 'String'>
+  readonly email: Prisma.FieldRef<"Branch", 'String'>
+  readonly openingTime: Prisma.FieldRef<"Branch", 'String'>
+  readonly closingTime: Prisma.FieldRef<"Branch", 'String'>
   readonly createdAt: Prisma.FieldRef<"Branch", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Branch", 'DateTime'>
 }

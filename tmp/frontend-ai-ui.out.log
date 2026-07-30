@@ -1,0 +1,86 @@
+
+> mirisoft-salon@2.2.0 dev
+> vite --host 127.0.0.1 --port 5174
+
+[2m11:40:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m Re-optimizing dependencies because vite config has changed
+
+  [32m[1mVITE[22m v8.0.10[39m  [2mready in [0m[1m639[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5174[22m/[39m
+[2m10:51:47 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/InvoicePrint.jsx, /src/pages/salon/Profile.jsx, /src/pages/salon/ProductBrands.jsx, /src/pages/salon/LoyaltyRules.jsx, /src/pages/salon/ServiceCatalog.jsx, /src/pages/salon/Support.jsx, /src/pages/salon/StockMovements.jsx, /src/pages/salon/Coupons.jsx, /src/pages/salon/LoyaltyTransactions.jsx, /src/pages/Homepage.jsx, /src/pages/salon/Attendance.jsx, /src/pages/salon/Vendors.jsx, /src/pages/salon/StockAlerts.jsx, /src/pages/salon/ReorderSuggestions.jsx and 32 more[22m
+[2m10:52:14 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/ServicePackages.jsx[22m
+[2m10:53:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m10:53:46 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m10:53:51 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m10:54:22 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m10:54:32 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m10:57:02 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Billing.jsx[22m
+[2m10:57:30 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/InvoiceDetails.jsx[22m
+[2m10:57:36 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/route/Index.jsx[22m
+[2m10:57:47 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m10:58:12 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m10:58:33 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m10:58:42 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/InvoiceDetails.jsx[22m
+[2m10:58:52 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/InvoiceDetails.jsx[22m
+[2m10:59:25 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Billing.jsx[22m
+[2m11:55:16 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/FloatingAiAssistant.jsx[22m
+[2m11:59:41 AM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:39 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:49 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:00:58 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:01 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:14 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:19 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:40 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:01:43 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:06:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/ProductBrands.jsx, /src/pages/salon/LoyaltyRules.jsx, /src/pages/salon/ServiceCatalog.jsx, /src/pages/salon/Support.jsx, /src/pages/salon/StockMovements.jsx, /src/pages/salon/Coupons.jsx, /src/pages/salon/LoyaltyTransactions.jsx, /src/pages/Homepage.jsx, /src/pages/salon/Attendance.jsx, /src/pages/salon/Vendors.jsx, /src/pages/salon/StockAlerts.jsx, /src/pages/salon/ReorderSuggestions.jsx, /src/pages/salon/ShiftRoster.jsx, /src/pages/salon/ProfitSummary.jsx and 29 more[22m
+[2m12:06:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Customers.jsx[22m
+[2m12:06:37 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m12:06:59 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m12:07:12 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m12:07:20 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Appointments.jsx[22m
+[2m12:07:29 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Coupons.jsx[22m
+[2m12:07:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Leaves.jsx[22m
+[2m12:08:15 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/ShiftRoster.jsx[22m
+[2m12:08:24 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/SalaryConfig.jsx[22m
+[2m12:10:30 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/auth/AuthRoutes.jsx[22m
+[2m12:10:51 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/salon/DataGrid.jsx[22m
+[2m12:11:00 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/salon/DataGrid.jsx[22m
+[2m12:11:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/ProductBrands.jsx, /src/pages/salon/LoyaltyRules.jsx, /src/pages/salon/ServiceCatalog.jsx, /src/pages/salon/Support.jsx, /src/pages/salon/StockMovements.jsx, /src/pages/salon/Coupons.jsx, /src/pages/salon/LoyaltyTransactions.jsx, /src/pages/Homepage.jsx, /src/pages/salon/Attendance.jsx, /src/pages/salon/Vendors.jsx, /src/pages/salon/StockAlerts.jsx, /src/pages/salon/ReorderSuggestions.jsx, /src/pages/salon/ShiftRoster.jsx, /src/pages/salon/ProfitSummary.jsx and 29 more[22m
+[2m12:11:18 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Appointments.jsx[22m
+[2m12:11:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/Coupons.jsx[22m
+[2m12:11:31 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m12:11:33 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/salon/DataGrid.jsx[22m
+[2m12:11:34 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/salon/DataGrid.jsx[22m
+[2m12:11:53 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:11:58 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:17:42 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/public/PublicBooking.jsx[22m
+[2m12:23:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/public/PublicBooking.jsx[22m
+[2m12:23:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/Homepage.jsx[22m
+[2m12:23:42 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/components/salon/DataGrid.jsx[22m
+[2m12:34:57 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m12:53:26 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartCreate.jsx[22m
+[2m12:58:48 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/pages/salon/JobCartDetails.jsx[22m
+[2m1:47:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/sidebar/Sidebar.jsx[22m
+[2m1:47:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/sidebar/Sidebar.jsx[22m
+[2m2:00:42 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:00:43 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:00:44 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/assets/scss/salon-app.scss[22m
+[2m2:01:25 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/assets/scss/salon-app.scss[22m
+[2m2:03:36 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:04:03 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/assets/scss/salon-app.scss[22m
+[2m2:05:05 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:05:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:05:07 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/assets/scss/salon-app.scss[22m
+[2m2:11:09 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:11:10 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/sidebar/Sidebar.jsx[22m
+[2m2:11:11 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/layout/Index.jsx[22m
+[2m2:11:12 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/assets/scss/salon-app.scss[22m

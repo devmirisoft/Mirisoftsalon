@@ -347,7 +347,7 @@ export const CustomerModel = {
   salonId: string;
   invoiceId: string;
   billNo: string;
-  amount: number;
+  amount: number | Prisma.Decimal;
   narration?: string;
 }, tx?: Prisma.TransactionClient) => {
   const run = async (client: Prisma.TransactionClient) => {
@@ -372,7 +372,7 @@ export const CustomerModel = {
         type: "INVOICE",
         debit: data.amount,
         credit: 0,
-        balanceAfter: Number(customer.outstandingAmount),
+        balanceAfter: customer.outstandingAmount,
         status: "COMPLETE",
       },
     });

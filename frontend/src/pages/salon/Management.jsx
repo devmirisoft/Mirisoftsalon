@@ -1,6 +1,16 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Alert, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import {
+  Alert,
+  FormGroup,
+  Input,
+  Label,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+} from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import ResourcePanel from "@/components/salon/ResourcePanel";
@@ -19,6 +29,18 @@ const Management = () => {
   const [userContext, setUserContext] = useState(null);
   const [accountModal, setAccountModal] = useState(null);
   const [accountError, setAccountError] = useState("");
+  const [gstSalonId, setGstSalonId] = useState("");
+  const [gstForm, setGstForm] = useState({
+    gstEnabled: false,
+    gstNumber: "",
+    gstLegalName: "",
+    gstStateCode: "",
+    serviceGstRate: "5.00",
+    productGstRate: "18.00",
+  });
+  const [gstError, setGstError] = useState("");
+  const [gstMessage, setGstMessage] = useState("");
+  const [gstSaving, setGstSaving] = useState(false);
 
   const loadRefs = useCallback(async () => {
     const calls = [
@@ -52,8 +74,66 @@ const Management = () => {
     ...(isSuper ? [{ id: "salons", label: "Salons" }] : []),
     { id: "branches", label: "Branches" },
     { id: "staff", label: "Staff" },
+    ...(isManager ? [{ id: "gst", label: "GST" }] : []),
     ...(isManager ? [{ id: "accounts", label: "User accounts" }] : []),
   ];
+
+  const loadGstSettings = useCallback(
+    async (salonId = gstSalonId) => {
+      if (isSuper && !salonId) return;
+      setGstError("");
+      const response = await salonApi.salons.gstSettings(
+        isSuper ? salonId : undefined
+      );
+      const data = response.data || {};
+      setGstForm({
+        gstEnabled: Boolean(data.gstEnabled),
+        gstNumber: data.gstNumber || "",
+        gstLegalName: data.gstLegalName || "",
+        gstStateCode: data.gstStateCode || "",
+        serviceGstRate: String(data.serviceGstRate ?? "5.00"),
+        productGstRate: String(data.productGstRate ?? "18.00"),
+      });
+    },
+    [gstSalonId, isSuper]
+  );
+
+  useEffect(() => {
+    if (!isManager) return;
+    if (isSuper) {
+      const firstSalonId = gstSalonId || refs.salons[0]?.id || "";
+      if (firstSalonId && firstSalonId !== gstSalonId) {
+        setGstSalonId(firstSalonId);
+      } else if (firstSalonId) {
+        loadGstSettings(firstSalonId).catch((error) => setGstError(error.message));
+      }
+    } else {
+      loadGstSettings().catch((error) => setGstError(error.message));
+    }
+  }, [gstSalonId, isManager, isSuper, loadGstSettings, refs.salons]);
+
+  const saveGstSettings = async (event) => {
+    event.preventDefault();
+    setGstSaving(true);
+    setGstError("");
+    setGstMessage("");
+    try {
+      await salonApi.salons.updateGstSettings(
+        {
+          ...gstForm,
+          serviceGstRate: Number(gstForm.serviceGstRate),
+          productGstRate: Number(gstForm.productGstRate),
+        },
+        isSuper ? gstSalonId : undefined
+      );
+      setGstMessage("GST settings saved.");
+      await loadGstSettings(gstSalonId);
+    } catch (error) {
+      setGstError(error.message);
+    } finally {
+      setGstSaving(false);
+    }
+  };
 
   const branchFields = useMemo(
     () => [
@@ -283,6 +363,134 @@ const Management = () => {
                 : undefined
             }
           />
+        </TabPane>
+        <TabPane tabId="gst">
+          <div className="card card-bordered">
+            <div className="card-inner">
+              <h5 className="title">GST configuration</h5>
+              {gstError && <Alert color="danger">{gstError}</Alert>}
+              {gstMessage && <Alert color="success">{gstMessage}</Alert>}
+              <form onSubmit={saveGstSettings}>
+                {isSuper && (
+                  <FormGroup>
+                    <Label>Salon</Label>
+                    <Input
+                      type="select"
+                      value={gstSalonId}
+                      required
+                      onChange={(event) => setGstSalonId(event.target.value)}
+                    >
+                      {refs.salons.map((salon) => (
+                        <option key={salon.id} value={salon.id}>
+                          {salon.name}
+                        </option>
+                      ))}
+                    </Input>
+                  </FormGroup>
+                )}
+                <div className="custom-control custom-switch mb-3">
+                  <input
+                    type="checkbox"
+                    className="custom-control-input"
+                    id="gst-enabled"
+                    checked={gstForm.gstEnabled}
+                    onChange={(event) =>
+                      setGstForm((current) => ({
+                        ...current,
+                        gstEnabled: event.target.checked,
+                      }))
+                    }
+                  />
+                  <label className="custom-control-label" htmlFor="gst-enabled">
+                    Enable GST
+                  </label>
+                </div>
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <FormGroup>
+                      <Label>GST number</Label>
+                      <Input
+                        value={gstForm.gstNumber}
+                        onChange={(event) =>
+                          setGstForm((current) => ({
+                            ...current,
+                            gstNumber: event.target.value.toUpperCase(),
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                  <div className="col-md-6">
+                    <FormGroup>
+                      <Label>GST legal name</Label>
+                      <Input
+                        value={gstForm.gstLegalName}
+                        onChange={(event) =>
+                          setGstForm((current) => ({
+                            ...current,
+                            gstLegalName: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                  <div className="col-md-4">
+                    <FormGroup>
+                      <Label>State code</Label>
+                      <Input
+                        value={gstForm.gstStateCode}
+                        onChange={(event) =>
+                          setGstForm((current) => ({
+                            ...current,
+                            gstStateCode: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                  <div className="col-md-4">
+                    <FormGroup>
+                      <Label>Service GST rate</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={gstForm.serviceGstRate}
+                        onChange={(event) =>
+                          setGstForm((current) => ({
+                            ...current,
+                            serviceGstRate: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                  <div className="col-md-4">
+                    <FormGroup>
+                      <Label>Product GST rate</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={gstForm.productGstRate}
+                        onChange={(event) =>
+                          setGstForm((current) => ({
+                            ...current,
+                            productGstRate: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </div>
+                </div>
+                <Button color="primary" disabled={gstSaving || (isSuper && !gstSalonId)}>
+                  <Icon name="save" /> {gstSaving ? "Saving" : "Save GST"}
+                </Button>
+              </form>
+            </div>
+          </div>
         </TabPane>
         <TabPane tabId="accounts">
           {accountError && <Alert color="danger">{accountError}</Alert>}

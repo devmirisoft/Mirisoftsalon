@@ -1,6 +1,8 @@
 import request from "supertest";
 
 import { app } from "../app.js";
+import { prisma } from "../config/prisma.js";
+import { hashPass } from "../utils/password.js";
 
 const ALL_ROUTES = [
   "GET /",
@@ -113,17 +115,28 @@ describe("All API routes", () => {
     check("GET /api/health", await agent.get("/api/health"), 200);
 
     const superAdminEmail = `all-routes-super-${stamp}@example.com`;
-    const register = check(
+    check(
       "POST /api/auth/register",
       await agent.post("/api/auth/register").send({
-        name: "All Routes Super Admin",
-        email: superAdminEmail,
-        phone_number: "9000000001",
+        salonName: `All Routes Onboarding Salon ${stamp}`,
+        branchName: "Main Branch",
+        adminName: "All Routes Onboarding Admin",
+        email: `all-routes-onboarding-${stamp}@example.com`,
+        phone: "9000000001",
         password,
+        confirmPassword: password,
       }),
       201
     );
-    let superAdminToken = register.body.data.accessToken as string;
+    await prisma.user.create({
+      data: {
+        name: "All Routes Super Admin",
+        email: superAdminEmail,
+        passwordHash: await hashPass(password),
+        role: "SUPER_ADMIN",
+      },
+    });
+    let superAdminToken = "";
 
     const login = check(
       "POST /api/auth/login",

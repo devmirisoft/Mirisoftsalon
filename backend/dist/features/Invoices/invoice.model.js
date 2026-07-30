@@ -14,6 +14,15 @@ export const InvoiceModel = {
                 ...(data.salonEmail ? { salonEmail: data.salonEmail } : {}),
                 ...(data.salonAddress ? { salonAddress: data.salonAddress } : {}),
                 ...(data.salonGst ? { salonGst: data.salonGst } : {}),
+                serviceTaxableAmount: data.serviceTaxableAmount ?? 0,
+                productTaxableAmount: data.productTaxableAmount ?? 0,
+                serviceGstAmount: data.serviceGstAmount ?? 0,
+                productGstAmount: data.productGstAmount ?? 0,
+                totalGstAmount: data.totalGstAmount ?? data.taxAmount,
+                gstNumberSnapshot: data.gstNumberSnapshot ?? null,
+                gstLegalNameSnapshot: data.gstLegalNameSnapshot ?? null,
+                gstStateCodeSnapshot: data.gstStateCodeSnapshot ?? null,
+                gstEnabledSnapshot: data.gstEnabledSnapshot ?? false,
                 customerName: data.customerName,
                 ...(data.customerPhone ? { customerPhone: data.customerPhone } : {}),
                 ...(data.customerEmail ? { customerEmail: data.customerEmail } : {}),
@@ -35,6 +44,7 @@ export const InvoiceModel = {
                 items: {
                     create: data.items.map((item) => ({
                         ...(item.serviceId ? { serviceId: item.serviceId } : {}),
+                        ...(item.productId ? { productId: item.productId } : {}),
                         ...(item.itemType ? { itemType: item.itemType } : {}),
                         ...(item.packageId ? { packageId: item.packageId } : {}),
                         ...(item.soldByStaffId
@@ -46,6 +56,10 @@ export const InvoiceModel = {
                         quantity: item.quantity || 1,
                         unitPrice: item.unitPrice,
                         discountAmount: item.discountAmount || 0,
+                        taxableAmount: item.taxableAmount ?? 0,
+                        gstRateSnapshot: item.gstRateSnapshot ?? item.taxPercent ?? 0,
+                        gstAmount: item.gstAmount ?? item.taxAmount ?? 0,
+                        totalWithTax: item.totalWithTax ?? item.lineTotal,
                         taxPercent: item.taxPercent || 0,
                         taxAmount: item.taxAmount || 0,
                         lineTotal: item.lineTotal,
@@ -125,6 +139,13 @@ export const InvoiceModel = {
                                 status: true,
                             },
                         },
+                    },
+                },
+                appointment: {
+                    select: {
+                        id: true,
+                        appointmentCode: true,
+                        status: true,
                     },
                 },
                 items: true,

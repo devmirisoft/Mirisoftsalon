@@ -2,7 +2,9 @@ import { type Request, type Response } from "express";
 import { z } from "zod";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
 import {
+  copyCustomerCustomPackage,
   createPackageCategory,
+  createCustomPackageFromCart,
   createServicePackage,
   deletePackageCategory,
   deleteServicePackage,
@@ -13,6 +15,7 @@ import {
   getPackageCategory,
   getServicePackage,
   listCustomerPackages,
+  listCustomerCustomPackages,
   listPackageCategories,
   listServicePackages,
   PackageError,
@@ -25,6 +28,9 @@ import {
 } from "./package.service.js";
 import {
   categoryInputSchema,
+  copyCustomerCustomPackageSchema,
+  createCustomPackageFromCartSchema,
+  customerCustomPackageListSchema,
   customerPackageStatusSchema,
   packageListSchema,
   packageStatusSchema,
@@ -192,6 +198,21 @@ export const getPackages = async (req: Request, res: Response) => {
   }
 };
 
+export const getCustomerCustomPackages = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const query = customerCustomPackageListSchema.parse(req.query);
+    return res.json({
+      success: true,
+      ...(await listCustomerCustomPackages(actorFrom(req), query)),
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
 export const getPackageById = async (req: Request, res: Response) => {
   try {
     return res.json({
@@ -214,6 +235,48 @@ export const postPackage = async (req: Request, res: Response) => {
     return res.status(201).json({
       success: true,
       message: "Package created successfully",
+      data,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+export const postCustomPackageFromCart = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const input = createCustomPackageFromCartSchema.parse(req.body);
+    const data = await createCustomPackageFromCart(
+      actorFrom(req),
+      input,
+      requestAuditContext(req)
+    );
+    return res.status(201).json({
+      success: true,
+      message: "Custom package created from job cart",
+      data,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+export const postCopyCustomerCustomPackage = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const input = copyCustomerCustomPackageSchema.parse(req.body);
+    const data = await copyCustomerCustomPackage(
+      actorFrom(req),
+      input,
+      requestAuditContext(req)
+    );
+    return res.status(201).json({
+      success: true,
+      message: "Custom package copied successfully",
       data,
     });
   } catch (error) {

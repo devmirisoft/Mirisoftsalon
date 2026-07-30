@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Alert, Button, Input, Label } from "reactstrap";
 import PageShell from "@/components/salon/PageShell";
 import { salonApi } from "@/services/salonApi";
-import { formatMoney, labelize } from "@/utils/salonFormat";
+import { formatMoney, labelize, todayInputDate } from "@/utils/salonFormat";
 
 const initial = {
   staffId: "",
@@ -17,7 +17,7 @@ const initial = {
   serviceMinimumWorkThreshold: 0,
   retailCommissionPercentage: 0,
   retailMinimumSalesThreshold: 0,
-  effectiveFrom: new Date().toISOString().slice(0, 10),
+  effectiveFrom: todayInputDate(),
 };
 
 const formFromConfig = (staffId, config) => ({
@@ -96,6 +96,9 @@ const SalaryConfig = () => {
   const save = async () => {
     try {
       setError("");
+      if (form.effectiveFrom < todayInputDate()) {
+        throw new Error("Effective from date cannot be in the past.");
+      }
       const body = payloadFromForm(form);
       const response = active
         ? await salonApi.salaryConfigs.update(active.id, body)
@@ -106,7 +109,7 @@ const SalaryConfig = () => {
       setError(requestError.message);
     }
   };
-  const field=(name,label,type="number")=><div className="col-md-3"><Label>{label}</Label><Input type={type} value={form[name]??""} onChange={e=>setForm({...form,[name]:e.target.value})}/></div>;
+  const field=(name,label,type="number")=><div className="col-md-3"><Label>{label}</Label><Input type={type} min={type==="date"?todayInputDate():undefined} value={form[name]??""} onChange={e=>setForm({...form,[name]:e.target.value})}/></div>;
   return <PageShell title="Salary Config" description="Effective-dated salary, penalty, and commission rules.">{error&&<Alert color="danger">{error}</Alert>}<div className="card card-bordered"><div className="card-inner row g-3"><div className="col-md-4"><Label>Staff</Label><Input type="select" value={form.staffId} onChange={e=>select(e.target.value)}><option value="">Select staff</option>{staff.map(x=><option key={x.id} value={x.id}>{x.name}</option>)}</Input></div>{field("baseSalary","Base salary")}{field("workingDaysPerMonth","Working days")}{field("paidLeavesAllowed","Paid leaves allowed")}
   <div className="col-md-3"><Label>Salary type</Label><Input type="select" value={form.salaryType} onChange={e=>setForm({...form,salaryType:e.target.value})}>{["MONTHLY","DAILY"].map(x=><option key={x}>{labelize(x)}</option>)}</Input></div>{field("lateGraceMinutes","Late grace (minutes)")}<div className="col-md-3"><Label>Late penalty</Label><Input type="select" value={form.latePenaltyType} onChange={e=>setForm({...form,latePenaltyType:e.target.value})}>{["NONE","FIXED_PER_LATE_DAY","PER_LATE_MINUTE"].map(x=><option key={x}>{labelize(x)}</option>)}</Input></div>{field("latePenaltyAmount","Penalty amount")}{field("serviceCommissionPercentage","Service commission %")}{field("serviceMinimumWorkThreshold","Service threshold")}{field("retailCommissionPercentage","Retail commission %")}{field("retailMinimumSalesThreshold","Retail threshold")}{field("effectiveFrom","Effective from","date")}<div className="col-12"><Button color="primary" disabled={!form.staffId} onClick={save}>{active?"Update configuration":"Create configuration"}</Button>{active&&<span className="ms-3 text-soft">Active base: {formatMoney(active.baseSalary)}</span>}</div></div></div></PageShell>;
 };

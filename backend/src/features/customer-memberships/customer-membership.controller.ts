@@ -20,6 +20,22 @@ const assignmentSchema = z
     note: z.string().trim().max(2000).optional(),
   })
   .superRefine((value, context) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (value.startsAt && value.startsAt < today) {
+      context.addIssue({
+        code: "custom",
+        path: ["startsAt"],
+        message: "Membership start date cannot be in the past",
+      });
+    }
+    if (value.expiresAt && value.expiresAt < today) {
+      context.addIssue({
+        code: "custom",
+        path: ["expiresAt"],
+        message: "Membership expiry date cannot be in the past",
+      });
+    }
     if (value.startsAt && value.expiresAt && value.expiresAt < value.startsAt) {
       context.addIssue({
         code: "custom",

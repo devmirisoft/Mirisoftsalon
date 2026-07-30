@@ -149,6 +149,10 @@ export const PackageStatus = {
     ACTIVE: 'ACTIVE',
     INACTIVE: 'INACTIVE'
 };
+export const ServicePackageType = {
+    STANDARD: 'STANDARD',
+    CUSTOMER_CUSTOM: 'CUSTOMER_CUSTOM'
+};
 export const CustomerPackageStatus = {
     ACTIVE: 'ACTIVE',
     EXPIRED: 'EXPIRED',
@@ -165,6 +169,7 @@ export const PackageItemType = {
 };
 export const InvoiceItemType = {
     SERVICE: 'SERVICE',
+    PRODUCT: 'PRODUCT',
     PACKAGE: 'PACKAGE',
     PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION'
 };
@@ -220,6 +225,7 @@ export const AuditModule = {
     MEMBERSHIP: 'MEMBERSHIP',
     LOYALTY: 'LOYALTY',
     COUPON: 'COUPON',
+    GST: 'GST',
     PUBLIC_BOOKING: 'PUBLIC_BOOKING',
     JOB_CART: 'JOB_CART',
     PACKAGE: 'PACKAGE',
@@ -255,6 +261,16 @@ export const ExpenseCategory = {
     STAFF_ADVANCE: 'STAFF_ADVANCE',
     PETTY_CASH: 'PETTY_CASH',
     MISC: 'MISC'
+};
+export const SalonAssistantSenderType = {
+    USER: 'USER',
+    ASSISTANT: 'ASSISTANT'
+};
+export const SalonAssistantMessageStatus = {
+    STREAMING: 'STREAMING',
+    COMPLETED: 'COMPLETED',
+    FAILED: 'FAILED',
+    CANCELLED: 'CANCELLED'
 };
 export const SupportTicketCategory = {
     LOGIN_ISSUE: 'LOGIN_ISSUE',

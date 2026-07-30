@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { awardInvoiceLoyaltyInTransaction } from "../Invoices/invoice-retention.service.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 
@@ -13,7 +14,7 @@ export const PaymentModel = {
     branchId?: string;
     customerId: string;
     invoiceId: string;
-    amount: number;
+    amount: number | Prisma.Decimal;
     method: PaymentMethod;
     referenceNo?: string;
     note?: string;
@@ -34,6 +35,17 @@ export const PaymentModel = {
       if (lockedInvoice.status === "CANCELLED") {
         throw new PaymentConflictError("Cannot add payment to cancelled invoice");
       }
+      if (lockedInvoice.appointmentId) {
+        const appointment = await tx.appointment.findUnique({
+          where: { id: lockedInvoice.appointmentId },
+          select: { status: true },
+        });
+        if (appointment?.status === "CANCELLED") {
+          throw new PaymentConflictError(
+            "Cannot add payment to a cancelled appointment or job cart"
+          );
+        }
+      }
       if (lockedInvoice.status === "DRAFT") {
         throw new PaymentConflictError(
           "Draft invoice must be issued before payment"
@@ -43,18 +55,19 @@ export const PaymentModel = {
         throw new PaymentConflictError("Invoice is already fully paid");
       }
 
-      const currentPaidAmount = Number(lockedInvoice.paidAmount);
-      const currentBalanceAmount = Number(lockedInvoice.balanceAmount);
-      const totalAmount = Number(lockedInvoice.totalAmount);
-      if (data.amount > currentBalanceAmount) {
+      const paymentAmount = new Prisma.Decimal(data.amount).toDecimalPlaces(2);
+      const currentPaidAmount = lockedInvoice.paidAmount;
+      const currentBalanceAmount = lockedInvoice.balanceAmount;
+      const totalAmount = lockedInvoice.totalAmount;
+      if (paymentAmount.gt(currentBalanceAmount)) {
         throw new PaymentConflictError(
           "Payment amount cannot be greater than invoice balance"
         );
       }
-      const newPaidAmount = Number((currentPaidAmount + data.amount).toFixed(2));
-      const newBalanceAmount = Number((totalAmount - newPaidAmount).toFixed(2));
+      const newPaidAmount = currentPaidAmount.plus(paymentAmount).toDecimalPlaces(2);
+      const newBalanceAmount = totalAmount.minus(newPaidAmount).toDecimalPlaces(2);
       const newPaymentStatus: PaymentStatus =
-        newBalanceAmount <= 0 ? "PAID" : "PARTIALLY_PAID";
+        newBalanceAmount.lte(0) ? "PAID" : "PARTIALLY_PAID";
 
       const payment = await tx.payment.create({
         data: {
@@ -119,7 +132,7 @@ export const PaymentModel = {
 
       const customer = await tx.customer.update({
         where: { id: data.customerId },
-        data: { outstandingAmount: { decrement: data.amount } },
+        data: { outstandingAmount: { decrement: paymentAmount } },
       });
 
       await tx.customerTransaction.create({
@@ -132,7 +145,7 @@ export const PaymentModel = {
           narration: `Payment received via ${data.method}`,
           type: "PAYMENT",
           debit: 0,
-          credit: data.amount,
+          credit: paymentAmount,
           balanceAfter: customer.outstandingAmount,
           status: "COMPLETE",
         },
@@ -144,7 +157,7 @@ export const PaymentModel = {
               invoiceId: lockedInvoice.id,
               salonId: lockedInvoice.salonId,
               customerId: lockedInvoice.customerId,
-              finalPaidAmount: newPaidAmount,
+              finalPaidAmount: Number(newPaidAmount),
               ...(data.createdById
                 ? { createdById: data.createdById }
                 : {}),
@@ -168,7 +181,7 @@ export const PaymentModel = {
           paymentStatus: lockedInvoice.paymentStatus,
         },
         newData: {
-          amount: data.amount,
+          amount: paymentAmount,
           method: data.method,
           paidAmount: newPaidAmount,
           balanceAmount: newBalanceAmount,

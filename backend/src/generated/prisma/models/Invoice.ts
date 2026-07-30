@@ -28,6 +28,11 @@ export type AggregateInvoice = {
 
 export type InvoiceAvgAggregateOutputType = {
   couponDiscountAmount: runtime.Decimal | null
+  serviceTaxableAmount: runtime.Decimal | null
+  productTaxableAmount: runtime.Decimal | null
+  serviceGstAmount: runtime.Decimal | null
+  productGstAmount: runtime.Decimal | null
+  totalGstAmount: runtime.Decimal | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
@@ -39,6 +44,11 @@ export type InvoiceAvgAggregateOutputType = {
 
 export type InvoiceSumAggregateOutputType = {
   couponDiscountAmount: runtime.Decimal | null
+  serviceTaxableAmount: runtime.Decimal | null
+  productTaxableAmount: runtime.Decimal | null
+  serviceGstAmount: runtime.Decimal | null
+  productGstAmount: runtime.Decimal | null
+  totalGstAmount: runtime.Decimal | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
@@ -65,6 +75,15 @@ export type InvoiceMinAggregateOutputType = {
   salonEmail: string | null
   salonAddress: string | null
   salonGst: string | null
+  serviceTaxableAmount: runtime.Decimal | null
+  productTaxableAmount: runtime.Decimal | null
+  serviceGstAmount: runtime.Decimal | null
+  productGstAmount: runtime.Decimal | null
+  totalGstAmount: runtime.Decimal | null
+  gstNumberSnapshot: string | null
+  gstLegalNameSnapshot: string | null
+  gstStateCodeSnapshot: string | null
+  gstEnabledSnapshot: boolean | null
   customerName: string | null
   customerPhone: string | null
   customerEmail: string | null
@@ -102,6 +121,15 @@ export type InvoiceMaxAggregateOutputType = {
   salonEmail: string | null
   salonAddress: string | null
   salonGst: string | null
+  serviceTaxableAmount: runtime.Decimal | null
+  productTaxableAmount: runtime.Decimal | null
+  serviceGstAmount: runtime.Decimal | null
+  productGstAmount: runtime.Decimal | null
+  totalGstAmount: runtime.Decimal | null
+  gstNumberSnapshot: string | null
+  gstLegalNameSnapshot: string | null
+  gstStateCodeSnapshot: string | null
+  gstEnabledSnapshot: boolean | null
   customerName: string | null
   customerPhone: string | null
   customerEmail: string | null
@@ -139,6 +167,15 @@ export type InvoiceCountAggregateOutputType = {
   salonEmail: number
   salonAddress: number
   salonGst: number
+  serviceTaxableAmount: number
+  productTaxableAmount: number
+  serviceGstAmount: number
+  productGstAmount: number
+  totalGstAmount: number
+  gstNumberSnapshot: number
+  gstLegalNameSnapshot: number
+  gstStateCodeSnapshot: number
+  gstEnabledSnapshot: number
   customerName: number
   customerPhone: number
   customerEmail: number
@@ -163,6 +200,11 @@ export type InvoiceCountAggregateOutputType = {
 
 export type InvoiceAvgAggregateInputType = {
   couponDiscountAmount?: true
+  serviceTaxableAmount?: true
+  productTaxableAmount?: true
+  serviceGstAmount?: true
+  productGstAmount?: true
+  totalGstAmount?: true
   subtotalAmount?: true
   discountAmount?: true
   processingFeeAmount?: true
@@ -174,6 +216,11 @@ export type InvoiceAvgAggregateInputType = {
 
 export type InvoiceSumAggregateInputType = {
   couponDiscountAmount?: true
+  serviceTaxableAmount?: true
+  productTaxableAmount?: true
+  serviceGstAmount?: true
+  productGstAmount?: true
+  totalGstAmount?: true
   subtotalAmount?: true
   discountAmount?: true
   processingFeeAmount?: true
@@ -200,6 +247,15 @@ export type InvoiceMinAggregateInputType = {
   salonEmail?: true
   salonAddress?: true
   salonGst?: true
+  serviceTaxableAmount?: true
+  productTaxableAmount?: true
+  serviceGstAmount?: true
+  productGstAmount?: true
+  totalGstAmount?: true
+  gstNumberSnapshot?: true
+  gstLegalNameSnapshot?: true
+  gstStateCodeSnapshot?: true
+  gstEnabledSnapshot?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -237,6 +293,15 @@ export type InvoiceMaxAggregateInputType = {
   salonEmail?: true
   salonAddress?: true
   salonGst?: true
+  serviceTaxableAmount?: true
+  productTaxableAmount?: true
+  serviceGstAmount?: true
+  productGstAmount?: true
+  totalGstAmount?: true
+  gstNumberSnapshot?: true
+  gstLegalNameSnapshot?: true
+  gstStateCodeSnapshot?: true
+  gstEnabledSnapshot?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -274,6 +339,15 @@ export type InvoiceCountAggregateInputType = {
   salonEmail?: true
   salonAddress?: true
   salonGst?: true
+  serviceTaxableAmount?: true
+  productTaxableAmount?: true
+  serviceGstAmount?: true
+  productGstAmount?: true
+  totalGstAmount?: true
+  gstNumberSnapshot?: true
+  gstLegalNameSnapshot?: true
+  gstStateCodeSnapshot?: true
+  gstEnabledSnapshot?: true
   customerName?: true
   customerPhone?: true
   customerEmail?: true
@@ -398,6 +472,15 @@ export type InvoiceGroupByOutputType = {
   salonEmail: string | null
   salonAddress: string | null
   salonGst: string | null
+  serviceTaxableAmount: runtime.Decimal
+  productTaxableAmount: runtime.Decimal
+  serviceGstAmount: runtime.Decimal
+  productGstAmount: runtime.Decimal
+  totalGstAmount: runtime.Decimal
+  gstNumberSnapshot: string | null
+  gstLegalNameSnapshot: string | null
+  gstStateCodeSnapshot: string | null
+  gstEnabledSnapshot: boolean
   customerName: string
   customerPhone: string | null
   customerEmail: string | null
@@ -458,6 +541,15 @@ export type InvoiceWhereInput = {
   salonEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonAddress?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  serviceTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstLegalNameSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstStateCodeSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstEnabledSnapshot?: Prisma.BoolFilter<"Invoice"> | boolean
   customerName?: Prisma.StringFilter<"Invoice"> | string
   customerPhone?: Prisma.StringNullableFilter<"Invoice"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -506,6 +598,15 @@ export type InvoiceOrderByWithRelationInput = {
   salonEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   salonAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   salonGst?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
+  gstNumberSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstLegalNameSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstStateCodeSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstEnabledSnapshot?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   customerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -558,6 +659,15 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   salonEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonAddress?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  serviceTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstLegalNameSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstStateCodeSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstEnabledSnapshot?: Prisma.BoolFilter<"Invoice"> | boolean
   customerName?: Prisma.StringFilter<"Invoice"> | string
   customerPhone?: Prisma.StringNullableFilter<"Invoice"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -606,6 +716,15 @@ export type InvoiceOrderByWithAggregationInput = {
   salonEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   salonAddress?: Prisma.SortOrderInput | Prisma.SortOrder
   salonGst?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
+  gstNumberSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstLegalNameSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstStateCodeSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
+  gstEnabledSnapshot?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrderInput | Prisma.SortOrder
   customerEmail?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -651,6 +770,15 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   salonEmail?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   salonAddress?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   salonGst?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  serviceTaxableAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  gstLegalNameSnapshot?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  gstStateCodeSnapshot?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  gstEnabledSnapshot?: Prisma.BoolWithAggregatesFilter<"Invoice"> | boolean
   customerName?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   customerPhone?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   customerEmail?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
@@ -683,6 +811,15 @@ export type InvoiceCreateInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -731,6 +868,15 @@ export type InvoiceUncheckedCreateInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -769,6 +915,15 @@ export type InvoiceUpdateInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -817,6 +972,15 @@ export type InvoiceUncheckedUpdateInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -860,6 +1024,15 @@ export type InvoiceCreateManyInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -892,6 +1065,15 @@ export type InvoiceUpdateManyMutationInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -929,6 +1111,15 @@ export type InvoiceUncheckedUpdateManyInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -986,6 +1177,15 @@ export type InvoiceCountOrderByAggregateInput = {
   salonEmail?: Prisma.SortOrder
   salonAddress?: Prisma.SortOrder
   salonGst?: Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
+  gstNumberSnapshot?: Prisma.SortOrder
+  gstLegalNameSnapshot?: Prisma.SortOrder
+  gstStateCodeSnapshot?: Prisma.SortOrder
+  gstEnabledSnapshot?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -1008,6 +1208,11 @@ export type InvoiceCountOrderByAggregateInput = {
 
 export type InvoiceAvgOrderByAggregateInput = {
   couponDiscountAmount?: Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
@@ -1034,6 +1239,15 @@ export type InvoiceMaxOrderByAggregateInput = {
   salonEmail?: Prisma.SortOrder
   salonAddress?: Prisma.SortOrder
   salonGst?: Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
+  gstNumberSnapshot?: Prisma.SortOrder
+  gstLegalNameSnapshot?: Prisma.SortOrder
+  gstStateCodeSnapshot?: Prisma.SortOrder
+  gstEnabledSnapshot?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -1071,6 +1285,15 @@ export type InvoiceMinOrderByAggregateInput = {
   salonEmail?: Prisma.SortOrder
   salonAddress?: Prisma.SortOrder
   salonGst?: Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
+  gstNumberSnapshot?: Prisma.SortOrder
+  gstLegalNameSnapshot?: Prisma.SortOrder
+  gstStateCodeSnapshot?: Prisma.SortOrder
+  gstEnabledSnapshot?: Prisma.SortOrder
   customerName?: Prisma.SortOrder
   customerPhone?: Prisma.SortOrder
   customerEmail?: Prisma.SortOrder
@@ -1093,6 +1316,11 @@ export type InvoiceMinOrderByAggregateInput = {
 
 export type InvoiceSumOrderByAggregateInput = {
   couponDiscountAmount?: Prisma.SortOrder
+  serviceTaxableAmount?: Prisma.SortOrder
+  productTaxableAmount?: Prisma.SortOrder
+  serviceGstAmount?: Prisma.SortOrder
+  productGstAmount?: Prisma.SortOrder
+  totalGstAmount?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
@@ -1419,6 +1647,15 @@ export type InvoiceCreateWithoutSalonInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1465,6 +1702,15 @@ export type InvoiceUncheckedCreateWithoutSalonInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1537,6 +1783,15 @@ export type InvoiceScalarWhereInput = {
   salonEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonAddress?: Prisma.StringNullableFilter<"Invoice"> | string | null
   salonGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  serviceTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstLegalNameSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstStateCodeSnapshot?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  gstEnabledSnapshot?: Prisma.BoolFilter<"Invoice"> | boolean
   customerName?: Prisma.StringFilter<"Invoice"> | string
   customerPhone?: Prisma.StringNullableFilter<"Invoice"> | string | null
   customerEmail?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -1569,6 +1824,15 @@ export type InvoiceCreateWithoutCustomerInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1615,6 +1879,15 @@ export type InvoiceUncheckedCreateWithoutCustomerInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1679,6 +1952,15 @@ export type InvoiceCreateWithoutCustomerMembershipsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1726,6 +2008,15 @@ export type InvoiceUncheckedCreateWithoutCustomerMembershipsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1779,6 +2070,15 @@ export type InvoiceUpdateWithoutCustomerMembershipsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1826,6 +2126,15 @@ export type InvoiceUncheckedUpdateWithoutCustomerMembershipsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1863,6 +2172,15 @@ export type InvoiceCreateWithoutCustomerTransactionsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1910,6 +2228,15 @@ export type InvoiceUncheckedCreateWithoutCustomerTransactionsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -1963,6 +2290,15 @@ export type InvoiceUpdateWithoutCustomerTransactionsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2010,6 +2346,15 @@ export type InvoiceUncheckedUpdateWithoutCustomerTransactionsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2047,6 +2392,15 @@ export type InvoiceCreateWithoutCouponInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2093,6 +2447,15 @@ export type InvoiceUncheckedCreateWithoutCouponInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2157,6 +2520,15 @@ export type InvoiceCreateWithoutBranchInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2203,6 +2575,15 @@ export type InvoiceUncheckedCreateWithoutBranchInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2267,6 +2648,15 @@ export type InvoiceCreateWithoutAppointmentInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2313,6 +2703,15 @@ export type InvoiceUncheckedCreateWithoutAppointmentInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2367,6 +2766,15 @@ export type InvoiceUpdateWithoutAppointmentInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2413,6 +2821,15 @@ export type InvoiceUncheckedUpdateWithoutAppointmentInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2451,6 +2868,15 @@ export type InvoiceCreateWithoutItemsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2498,6 +2924,15 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2551,6 +2986,15 @@ export type InvoiceUpdateWithoutItemsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2598,6 +3042,15 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2635,6 +3088,15 @@ export type InvoiceCreateWithoutCustomerPackagesInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2682,6 +3144,15 @@ export type InvoiceUncheckedCreateWithoutCustomerPackagesInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2735,6 +3206,15 @@ export type InvoiceUpdateWithoutCustomerPackagesInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2782,6 +3262,15 @@ export type InvoiceUncheckedUpdateWithoutCustomerPackagesInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2819,6 +3308,15 @@ export type InvoiceCreateWithoutPackageUsagesInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2866,6 +3364,15 @@ export type InvoiceUncheckedCreateWithoutPackageUsagesInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -2919,6 +3426,15 @@ export type InvoiceUpdateWithoutPackageUsagesInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2966,6 +3482,15 @@ export type InvoiceUncheckedUpdateWithoutPackageUsagesInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3003,6 +3528,15 @@ export type InvoiceCreateWithoutPaymentsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3050,6 +3584,15 @@ export type InvoiceUncheckedCreateWithoutPaymentsInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3103,6 +3646,15 @@ export type InvoiceUpdateWithoutPaymentsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3150,6 +3702,15 @@ export type InvoiceUncheckedUpdateWithoutPaymentsInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3191,6 +3752,15 @@ export type InvoiceCreateManySalonInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3223,6 +3793,15 @@ export type InvoiceUpdateWithoutSalonInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3269,6 +3848,15 @@ export type InvoiceUncheckedUpdateWithoutSalonInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3311,6 +3899,15 @@ export type InvoiceUncheckedUpdateManyWithoutSalonInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3347,6 +3944,15 @@ export type InvoiceCreateManyCustomerInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3379,6 +3985,15 @@ export type InvoiceUpdateWithoutCustomerInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3425,6 +4040,15 @@ export type InvoiceUncheckedUpdateWithoutCustomerInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3467,6 +4091,15 @@ export type InvoiceUncheckedUpdateManyWithoutCustomerInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3503,6 +4136,15 @@ export type InvoiceCreateManyCouponInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3535,6 +4177,15 @@ export type InvoiceUpdateWithoutCouponInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3581,6 +4232,15 @@ export type InvoiceUncheckedUpdateWithoutCouponInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3623,6 +4283,15 @@ export type InvoiceUncheckedUpdateManyWithoutCouponInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3659,6 +4328,15 @@ export type InvoiceCreateManyBranchInput = {
   salonEmail?: string | null
   salonAddress?: string | null
   salonGst?: string | null
+  serviceTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: string | null
+  gstLegalNameSnapshot?: string | null
+  gstStateCodeSnapshot?: string | null
+  gstEnabledSnapshot?: boolean
   customerName: string
   customerPhone?: string | null
   customerEmail?: string | null
@@ -3691,6 +4369,15 @@ export type InvoiceUpdateWithoutBranchInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3737,6 +4424,15 @@ export type InvoiceUncheckedUpdateWithoutBranchInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3779,6 +4475,15 @@ export type InvoiceUncheckedUpdateManyWithoutBranchInput = {
   salonEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salonGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productTaxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  serviceGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalGstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstNumberSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalNameSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCodeSnapshot?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstEnabledSnapshot?: Prisma.BoolFieldUpdateOperationsInput | boolean
   customerName?: Prisma.StringFieldUpdateOperationsInput | string
   customerPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3892,6 +4597,15 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   salonEmail?: boolean
   salonAddress?: boolean
   salonGst?: boolean
+  serviceTaxableAmount?: boolean
+  productTaxableAmount?: boolean
+  serviceGstAmount?: boolean
+  productGstAmount?: boolean
+  totalGstAmount?: boolean
+  gstNumberSnapshot?: boolean
+  gstLegalNameSnapshot?: boolean
+  gstStateCodeSnapshot?: boolean
+  gstEnabledSnapshot?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -3941,6 +4655,15 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   salonEmail?: boolean
   salonAddress?: boolean
   salonGst?: boolean
+  serviceTaxableAmount?: boolean
+  productTaxableAmount?: boolean
+  serviceGstAmount?: boolean
+  productGstAmount?: boolean
+  totalGstAmount?: boolean
+  gstNumberSnapshot?: boolean
+  gstLegalNameSnapshot?: boolean
+  gstStateCodeSnapshot?: boolean
+  gstEnabledSnapshot?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -3983,6 +4706,15 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   salonEmail?: boolean
   salonAddress?: boolean
   salonGst?: boolean
+  serviceTaxableAmount?: boolean
+  productTaxableAmount?: boolean
+  serviceGstAmount?: boolean
+  productGstAmount?: boolean
+  totalGstAmount?: boolean
+  gstNumberSnapshot?: boolean
+  gstLegalNameSnapshot?: boolean
+  gstStateCodeSnapshot?: boolean
+  gstEnabledSnapshot?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -4025,6 +4757,15 @@ export type InvoiceSelectScalar = {
   salonEmail?: boolean
   salonAddress?: boolean
   salonGst?: boolean
+  serviceTaxableAmount?: boolean
+  productTaxableAmount?: boolean
+  serviceGstAmount?: boolean
+  productGstAmount?: boolean
+  totalGstAmount?: boolean
+  gstNumberSnapshot?: boolean
+  gstLegalNameSnapshot?: boolean
+  gstStateCodeSnapshot?: boolean
+  gstEnabledSnapshot?: boolean
   customerName?: boolean
   customerPhone?: boolean
   customerEmail?: boolean
@@ -4045,7 +4786,7 @@ export type InvoiceSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceCode" | "salonId" | "branchId" | "customerId" | "appointmentId" | "couponId" | "couponCodeSnapshot" | "couponDiscountAmount" | "invoiceType" | "invoiceDate" | "salonName" | "salonPhone" | "salonEmail" | "salonAddress" | "salonGst" | "customerName" | "customerPhone" | "customerEmail" | "customerAddress" | "customerGst" | "subtotalAmount" | "discountAmount" | "processingFeeAmount" | "taxAmount" | "totalAmount" | "paidAmount" | "balanceAmount" | "status" | "paymentStatus" | "billingNote" | "footerNote" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceCode" | "salonId" | "branchId" | "customerId" | "appointmentId" | "couponId" | "couponCodeSnapshot" | "couponDiscountAmount" | "invoiceType" | "invoiceDate" | "salonName" | "salonPhone" | "salonEmail" | "salonAddress" | "salonGst" | "serviceTaxableAmount" | "productTaxableAmount" | "serviceGstAmount" | "productGstAmount" | "totalGstAmount" | "gstNumberSnapshot" | "gstLegalNameSnapshot" | "gstStateCodeSnapshot" | "gstEnabledSnapshot" | "customerName" | "customerPhone" | "customerEmail" | "customerAddress" | "customerGst" | "subtotalAmount" | "discountAmount" | "processingFeeAmount" | "taxAmount" | "totalAmount" | "paidAmount" | "balanceAmount" | "status" | "paymentStatus" | "billingNote" | "footerNote" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.Invoice$branchArgs<ExtArgs>
@@ -4107,6 +4848,15 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     salonEmail: string | null
     salonAddress: string | null
     salonGst: string | null
+    serviceTaxableAmount: runtime.Decimal
+    productTaxableAmount: runtime.Decimal
+    serviceGstAmount: runtime.Decimal
+    productGstAmount: runtime.Decimal
+    totalGstAmount: runtime.Decimal
+    gstNumberSnapshot: string | null
+    gstLegalNameSnapshot: string | null
+    gstStateCodeSnapshot: string | null
+    gstEnabledSnapshot: boolean
     customerName: string
     customerPhone: string | null
     customerEmail: string | null
@@ -4575,6 +5325,15 @@ export interface InvoiceFieldRefs {
   readonly salonEmail: Prisma.FieldRef<"Invoice", 'String'>
   readonly salonAddress: Prisma.FieldRef<"Invoice", 'String'>
   readonly salonGst: Prisma.FieldRef<"Invoice", 'String'>
+  readonly serviceTaxableAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly productTaxableAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly serviceGstAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly productGstAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly totalGstAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly gstNumberSnapshot: Prisma.FieldRef<"Invoice", 'String'>
+  readonly gstLegalNameSnapshot: Prisma.FieldRef<"Invoice", 'String'>
+  readonly gstStateCodeSnapshot: Prisma.FieldRef<"Invoice", 'String'>
+  readonly gstEnabledSnapshot: Prisma.FieldRef<"Invoice", 'Boolean'>
   readonly customerName: Prisma.FieldRef<"Invoice", 'String'>
   readonly customerPhone: Prisma.FieldRef<"Invoice", 'String'>
   readonly customerEmail: Prisma.FieldRef<"Invoice", 'String'>

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Alert, Card, Col, Row, Spinner } from "reactstrap";
+import { Alert, Card, Col, Row } from "reactstrap";
 import { Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import StatusBadge from "@/components/salon/StatusBadge";
+import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
@@ -112,10 +113,9 @@ const Homepage = () => {
         new Date(left.startTime).getTime() -
         new Date(right.startTime).getTime()
     );
-  const outstanding = invoices.reduce(
-    (total, invoice) => total + Number(invoice.balanceAmount || 0),
-    0
-  );
+  const outstanding = invoices
+    .filter((invoice) => invoice.status !== "CANCELLED")
+    .reduce((total, invoice) => total + Number(invoice.balanceAmount || 0), 0);
   const received = payments.reduce(
     (total, payment) => total + Number(payment.amount || 0),
     0
@@ -130,12 +130,12 @@ const Homepage = () => {
       {state.error && <Alert color="danger">{state.error}</Alert>}
       {state.loading ? (
         <div className="text-center py-5">
-          <Spinner color="primary" />
-          <p className="text-soft mt-2">Building your live salon overview…</p>
+          <LoaderOne label="Building your live salon overview" />
+          <p className="text-soft mt-2">Building your live salon overview...</p>
         </div>
       ) : (
         <>
-          <Row className="g-gs">
+          <Row className="g-gs"> 
             {Object.entries(state.data).map(([key, rows]) => {
               const meta = statMeta[key];
               return (
@@ -181,7 +181,7 @@ const Homepage = () => {
               <Col md="4">
                 <Card className="card-bordered h-100">
                   <div className="card-inner">
-                    <div className="overline-title text-soft">Invoice balance</div>
+                    <div className="overline-title text-soft">Outstanding</div>
                     <div className="fs-2 fw-bold text-danger mt-1">
                       {formatMoney(outstanding)}
                     </div>

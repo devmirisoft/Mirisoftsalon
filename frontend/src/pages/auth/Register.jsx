@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Head from "@/layout/head/Head";
 import AuthFooter from "./AuthFooter";
@@ -16,16 +16,61 @@ import { Alert, Spinner } from "reactstrap";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
+import { ApiError } from "@/services/auth";
 
 const MirisoftLogo = "/mirisoftlogo.png";
+
+const FIELD_LABELS = {
+  salonName: "Salon Name",
+  branchName: "Main Branch Name",
+  adminName: "Admin Name",
+  email: "Email",
+  phone: "Phone Number",
+  password: "Passcode",
+  confirmPassword: "Confirm Passcode",
+};
+
+const SERVER_FIELD_ALIASES = {
+  name: "adminName",
+  phone_number: "phone",
+};
+
+const SERVER_FIELD_MESSAGES = {
+  name: "Admin Name is required. Example: Jatin Sharma.",
+  phone_number: "Phone Number is required. Example: 9876543210.",
+};
 
 const Register = () => {
   const [passState, setPassState] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorVal, setError] = useState("");
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setError: setFieldError,
+    clearErrors,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
   const navigate = useNavigate();
   const { register: createAccount } = useAuth();
+  const watchedValues = watch();
+
+  useEffect(() => {
+    const invalidFields = Object.keys(errors)
+      .map((field) => FIELD_LABELS[field] || field)
+      .filter(Boolean);
+
+    if (invalidFields.length > 0) {
+      setError(`Please fix: ${invalidFields.join(", ")}.`);
+      return;
+    }
+
+    if (errorVal) setError("");
+  }, [watchedValues, errors, errorVal]);
 
   const handleFormSubmit = async (formData) => {
     setLoading(true);
@@ -33,20 +78,38 @@ const Register = () => {
 
     try {
       await createAccount({
-        name: formData.name,
+        salonName: formData.salonName,
+        branchName: formData.branchName,
+        adminName: formData.adminName,
         email: formData.email,
-        phoneNumber: formData.phoneNumber,
+        phone: formData.phone,
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
       });
       navigate("/", { replace: true });
     } catch (error) {
+      if (error instanceof ApiError && error.errors) {
+        const invalidFields = [];
+        Object.entries(error.errors).forEach(([field, messages]) => {
+          const formField = SERVER_FIELD_ALIASES[field] || field;
+          if (Array.isArray(messages) && messages.length > 0) {
+            const message = SERVER_FIELD_MESSAGES[field] || messages[0];
+            setFieldError(formField, { type: "server", message });
+            invalidFields.push(FIELD_LABELS[formField] || formField);
+          }
+        });
+        if (invalidFields.length > 0) {
+          setError(`Please fix: ${invalidFields.join(", ")}.`);
+          return;
+        }
+      }
       setError(error instanceof Error ? error.message : "Unable to create the account.");
     } finally {
       setLoading(false);
     }
   };
   return <>
-    <Head title="Register" />
+    <Head title="Create Salon Account" />
       <Block className="nk-block-middle nk-auth-body  wide-xs">
         <div className="brand-logo pb-4 text-center">
           <Link to={`/`} className="logo-link">
@@ -57,33 +120,79 @@ const Register = () => {
         <PreviewCard className="card-bordered" bodyClass="card-inner-lg">
           <BlockHead>
             <BlockContent>
-              <BlockTitle tag="h4">Register</BlockTitle>
+              <BlockTitle tag="h4">Create Your Salon Account</BlockTitle>
               <BlockDes>
-                <p>Create a new salon SaaS administrator account.</p>
+                <p>Set up your salon and administrator account.</p>
               </BlockDes>
             </BlockContent>
           </BlockHead>
           <form className="is-alter" onSubmit={handleSubmit(handleFormSubmit)}>
             <div className="form-group">
-              <label className="form-label" htmlFor="name">
-                Name
+              <label className="form-label" htmlFor="salonName">
+                Salon Name
               </label>
               <div className="form-control-wrap">
                 <input
                   type="text"
-                  id="name"
-                  autoComplete="name"
+                  id="salonName"
+                  autoComplete="organization"
                   disabled={loading}
-                  {...register("name", {
-                    required: "Name is required",
+                  {...register("salonName", {
+                    onChange: () => clearErrors("salonName"),
+                    required: "Salon Name is required. Example: Glow Salon.",
                     minLength: {
-                      value: 3,
-                      message: "Name must be at least 3 characters",
+                      value: 2,
+                      message: "Salon Name is too short. Example: Glow Salon.",
                     },
                   })}
-                  placeholder="Enter your name"
+                  placeholder="Example: Glow Salon"
                   className="form-control-lg form-control" />
-                {errors.name && <p className="invalid">{errors.name.message}</p>}
+                {errors.salonName && <p className="invalid">{errors.salonName.message}</p>}
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="branchName">
+                Main Branch Name
+              </label>
+              <div className="form-control-wrap">
+                <input
+                  type="text"
+                  id="branchName"
+                  autoComplete="off"
+                  disabled={loading}
+                  {...register("branchName", {
+                    onChange: () => clearErrors("branchName"),
+                    minLength: {
+                      value: 2,
+                      message: "Main Branch Name is too short. Example: Main Branch.",
+                    },
+                  })}
+                  placeholder="Example: Main Branch"
+                  className="form-control-lg form-control" />
+                {errors.branchName && <p className="invalid">{errors.branchName.message}</p>}
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="adminName">
+                Admin Name
+              </label>
+              <div className="form-control-wrap">
+                <input
+                  type="text"
+                  id="adminName"
+                  autoComplete="name"
+                  disabled={loading}
+                  {...register("adminName", {
+                    onChange: () => clearErrors("adminName"),
+                    required: "Admin Name is required. Example: Jatin Sharma.",
+                    minLength: {
+                      value: 3,
+                      message: "Admin Name is too short. Example: Jatin Sharma.",
+                    },
+                  })}
+                  placeholder="Example: Jatin Sharma"
+                  className="form-control-lg form-control" />
+                {errors.adminName && <p className="invalid">{errors.adminName.message}</p>}
               </div>
             </div>
             <div className="form-group">
@@ -99,39 +208,40 @@ const Register = () => {
                   autoComplete="email"
                   disabled={loading}
                   {...register("email", {
-                    required: "Email is required",
+                    onChange: () => clearErrors("email"),
+                    required: "Email is required. Example: admin@glowsalon.com.",
                     pattern: {
                       value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Enter a valid email address",
+                      message: "Email is invalid. Example: admin@glowsalon.com.",
                     },
                   })}
                   className="form-control-lg form-control"
-                  placeholder="Enter your email address" />
+                  placeholder="Example: admin@glowsalon.com" />
                 {errors.email && <p className="invalid">{errors.email.message}</p>}
               </div>
             </div>
             <div className="form-group">
-              <label className="form-label" htmlFor="phone-number">
+              <label className="form-label" htmlFor="phone">
                 Phone Number
               </label>
               <div className="form-control-wrap">
                 <input
                   type="tel"
-                  id="phone-number"
+                  id="phone"
                   inputMode="numeric"
                   autoComplete="tel"
                   disabled={loading}
-                  {...register("phoneNumber", {
-                    required: "Phone number is required",
-                    pattern: {
-                      value: /^\d{10}$/,
-                      message: "Enter a valid 10-digit phone number",
-                    },
+                  {...register("phone", {
+                    onChange: () => clearErrors("phone"),
+                    required: "Phone Number is required. Example: 9876543210.",
+                    validate: (value) =>
+                      value.replace(/\D/g, "").length === 10 ||
+                      "Phone Number is invalid. Use 10 digits. Example: 9876543210.",
                   })}
                   className="form-control-lg form-control"
-                  placeholder="Enter 10-digit phone number"
+                  placeholder="Example: 9876543210"
                 />
-                {errors.phoneNumber && <p className="invalid">{errors.phoneNumber.message}</p>}
+                {errors.phone && <p className="invalid">{errors.phone.message}</p>}
               </div>
             </div>
             <div className="form-group">
@@ -159,15 +269,37 @@ const Register = () => {
                   autoComplete="new-password"
                   disabled={loading}
                   {...register("password", {
-                    required: "Password is required",
+                    onChange: () => clearErrors(["password", "confirmPassword"]),
+                    required: "Passcode is required. Example: StrongPass123.",
                     minLength: {
                       value: 6,
-                      message: "Password must be at least 6 characters",
+                      message: "Passcode is too short. Use at least 6 characters. Example: StrongPass123.",
                     },
                   })}
-                  placeholder="Enter your passcode"
+                  placeholder="Example: StrongPass123"
                   className={`form-control-lg form-control ${passState ? "is-hidden" : "is-shown"}`} />
                 {errors.password && <span className="invalid">{errors.password.message}</span>}
+              </div>
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="confirmPassword">
+                Confirm Passcode
+              </label>
+              <div className="form-control-wrap">
+                <input
+                  type={passState ? "text" : "password"}
+                  id="confirmPassword"
+                  autoComplete="new-password"
+                  disabled={loading}
+                  {...register("confirmPassword", {
+                    onChange: () => clearErrors("confirmPassword"),
+                    required: "Confirm Passcode is required. Re-enter the same passcode.",
+                    validate: (value, values) =>
+                      value === values.password || "Confirm Passcode does not match. Example: type the same value as Passcode.",
+                  })}
+                  placeholder="Example: StrongPass123"
+                  className="form-control-lg form-control" />
+                {errors.confirmPassword && <span className="invalid">{errors.confirmPassword.message}</span>}
               </div>
             </div>
             <div className="form-group">
@@ -177,7 +309,10 @@ const Register = () => {
                   className="custom-control-input"
                   id="terms"
                   disabled={loading}
-                  {...register("terms", { required: "You must accept the terms and privacy policy" })}
+                  {...register("terms", {
+                    onChange: () => clearErrors("terms"),
+                    required: "Terms and Privacy Policy must be accepted to create the account.",
+                  })}
                 />
                 <label className="custom-control-label" htmlFor="terms">
                   I agree to the <Link to="/pages/terms-policy">Terms and Privacy Policy</Link>.
@@ -194,7 +329,7 @@ const Register = () => {
             )}
             <div className="form-group">
               <Button type="submit" color="primary" size="lg" className="btn-block" disabled={loading}>
-                {loading ? <Spinner size="sm" color="light" /> : "Register"}
+                {loading ? <Spinner size="sm" color="light" /> : "Create Account"}
               </Button>
             </div>
           </form>

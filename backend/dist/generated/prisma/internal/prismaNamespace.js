@@ -122,6 +122,8 @@ export const ModelName = {
     ExpenseCategoryDefinition: 'ExpenseCategoryDefinition',
     SupportTicket: 'SupportTicket',
     SupportTicketMessage: 'SupportTicketMessage',
+    SalonAssistantConversation: 'SalonAssistantConversation',
+    SalonAssistantMessage: 'SalonAssistantMessage',
     SupportTicketStatusHistory: 'SupportTicketStatusHistory'
 };
 /**
@@ -136,9 +138,17 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export const SalonScalarFieldEnum = {
     id: 'id',
     name: 'name',
+    legalName: 'legalName',
     salonCode: 'salonCode',
     timezone: 'timezone',
     status: 'status',
+    gstEnabled: 'gstEnabled',
+    gstNumber: 'gstNumber',
+    gstLegalName: 'gstLegalName',
+    gstStateCode: 'gstStateCode',
+    serviceGstRate: 'serviceGstRate',
+    productGstRate: 'productGstRate',
+    gstVerifiedAt: 'gstVerifiedAt',
     addressLine1: 'addressLine1',
     addressLine2: 'addressLine2',
     city: 'city',
@@ -276,6 +286,7 @@ export const CouponScalarFieldEnum = {
 export const BranchScalarFieldEnum = {
     id: 'id',
     name: 'name',
+    branchCode: 'branchCode',
     status: 'status',
     salonId: 'salonId',
     addressLine1: 'addressLine1',
@@ -283,6 +294,9 @@ export const BranchScalarFieldEnum = {
     state: 'state',
     postalCode: 'postalCode',
     phone: 'phone',
+    email: 'email',
+    openingTime: 'openingTime',
+    closingTime: 'closingTime',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -484,6 +498,10 @@ export const ServicePackageScalarFieldEnum = {
     salonId: 'salonId',
     branchId: 'branchId',
     categoryId: 'categoryId',
+    type: 'type',
+    customerId: 'customerId',
+    sourceCustomerId: 'sourceCustomerId',
+    sourcePackageId: 'sourcePackageId',
     name: 'name',
     description: 'description',
     totalPrice: 'totalPrice',
@@ -644,6 +662,15 @@ export const InvoiceScalarFieldEnum = {
     salonEmail: 'salonEmail',
     salonAddress: 'salonAddress',
     salonGst: 'salonGst',
+    serviceTaxableAmount: 'serviceTaxableAmount',
+    productTaxableAmount: 'productTaxableAmount',
+    serviceGstAmount: 'serviceGstAmount',
+    productGstAmount: 'productGstAmount',
+    totalGstAmount: 'totalGstAmount',
+    gstNumberSnapshot: 'gstNumberSnapshot',
+    gstLegalNameSnapshot: 'gstLegalNameSnapshot',
+    gstStateCodeSnapshot: 'gstStateCodeSnapshot',
+    gstEnabledSnapshot: 'gstEnabledSnapshot',
     customerName: 'customerName',
     customerPhone: 'customerPhone',
     customerEmail: 'customerEmail',
@@ -667,6 +694,7 @@ export const InvoiceItemScalarFieldEnum = {
     id: 'id',
     invoiceId: 'invoiceId',
     serviceId: 'serviceId',
+    productId: 'productId',
     itemType: 'itemType',
     packageId: 'packageId',
     soldByStaffId: 'soldByStaffId',
@@ -677,6 +705,10 @@ export const InvoiceItemScalarFieldEnum = {
     quantity: 'quantity',
     unitPrice: 'unitPrice',
     discountAmount: 'discountAmount',
+    taxableAmount: 'taxableAmount',
+    gstRateSnapshot: 'gstRateSnapshot',
+    gstAmount: 'gstAmount',
+    totalWithTax: 'totalWithTax',
     taxPercent: 'taxPercent',
     taxAmount: 'taxAmount',
     lineTotal: 'lineTotal',
@@ -995,6 +1027,31 @@ export const SupportTicketMessageScalarFieldEnum = {
     isInternalNote: 'isInternalNote',
     createdAt: 'createdAt'
 };
+export const SalonAssistantConversationScalarFieldEnum = {
+    id: 'id',
+    salonId: 'salonId',
+    createdById: 'createdById',
+    title: 'title',
+    stateJson: 'stateJson',
+    stateVersion: 'stateVersion',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const SalonAssistantMessageScalarFieldEnum = {
+    id: 'id',
+    conversationId: 'conversationId',
+    senderType: 'senderType',
+    content: 'content',
+    status: 'status',
+    provider: 'provider',
+    model: 'model',
+    promptVersion: 'promptVersion',
+    usedFallback: 'usedFallback',
+    errorCode: 'errorCode',
+    createdById: 'createdById',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
 export const SupportTicketStatusHistoryScalarFieldEnum = {
     id: 'id',
     ticketId: 'ticketId',
@@ -1010,6 +1067,9 @@ export const SortOrder = {
 };
 export const NullableJsonNullValueInput = {
     DbNull: DbNull,
+    JsonNull: JsonNull
+};
+export const JsonNullValueInput = {
     JsonNull: JsonNull
 };
 export const QueryMode = {

@@ -3,6 +3,7 @@ import type { AiTool } from "../ai-tool.types.js";
 import { aiExactBranchScope } from "../ai-permission.service.js";
 
 const EXPIRY_WINDOW_DAYS = 30;
+const MAX_PACKAGES = 10;
 
 export const getPackageExpirySummaryTool: AiTool = {
   name: "getPackageExpirySummary",
@@ -29,15 +30,14 @@ export const getPackageExpirySummaryTool: AiTool = {
       prisma.customerPackage.findMany({
         where,
         select: {
-          id: true,
           packageNameSnapshot: true,
           validUntil: true,
           customer: {
-            select: { id: true, customerCode: true, name: true },
+            select: { customerCode: true, name: true },
           },
         },
         orderBy: { validUntil: "asc" },
-        take: 20,
+        take: MAX_PACKAGES,
       }),
       prisma.customerPackage.count({ where }),
     ]);

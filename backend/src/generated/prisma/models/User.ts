@@ -263,6 +263,8 @@ export type UserWhereInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipListRelationFilter
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleListRelationFilter
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockListRelationFilter
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationListRelationFilter
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -310,6 +312,8 @@ export type UserOrderByWithRelationInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipOrderByRelationAggregateInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleOrderByRelationAggregateInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockOrderByRelationAggregateInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationOrderByRelationAggregateInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -360,6 +364,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   removedCustomerMemberships?: Prisma.CustomerMembershipListRelationFilter
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleListRelationFilter
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockListRelationFilter
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationListRelationFilter
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageListRelationFilter
 }, "id" | "email" | "phone_number">
 
 export type UserOrderByWithAggregationInput = {
@@ -439,6 +445,8 @@ export type UserCreateInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -484,6 +492,8 @@ export type UserUncheckedCreateInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -529,6 +539,8 @@ export type UserUpdateInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -574,6 +586,8 @@ export type UserUncheckedUpdateInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1248,6 +1262,36 @@ export type UserUpdateOneWithoutSupportTicketMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSupportTicketMessagesInput, Prisma.UserUpdateWithoutSupportTicketMessagesInput>, Prisma.UserUncheckedUpdateWithoutSupportTicketMessagesInput>
 }
 
+export type UserCreateNestedOneWithoutCreatedSalonAssistantConversationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantConversationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSalonAssistantConversationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCreatedSalonAssistantConversationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantConversationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSalonAssistantConversationsInput
+  upsert?: Prisma.UserUpsertWithoutCreatedSalonAssistantConversationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUpdateWithoutCreatedSalonAssistantConversationsInput>, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantConversationsInput>
+}
+
+export type UserCreateNestedOneWithoutCreatedSalonAssistantMessagesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSalonAssistantMessagesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreatedSalonAssistantMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantMessagesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSalonAssistantMessagesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedSalonAssistantMessagesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUpdateWithoutCreatedSalonAssistantMessagesInput>, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantMessagesInput>
+}
+
 export type UserCreateNestedOneWithoutSupportTicketStatusChangesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutSupportTicketStatusChangesInput, Prisma.UserUncheckedCreateWithoutSupportTicketStatusChangesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutSupportTicketStatusChangesInput
@@ -1306,6 +1350,8 @@ export type UserCreateWithoutSalonInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSalonInput = {
@@ -1350,6 +1396,8 @@ export type UserUncheckedCreateWithoutSalonInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSalonInput = {
@@ -1437,6 +1485,8 @@ export type UserCreateWithoutAssignedCustomerMembershipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedCustomerMembershipsInput = {
@@ -1481,6 +1531,8 @@ export type UserUncheckedCreateWithoutAssignedCustomerMembershipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedCustomerMembershipsInput = {
@@ -1530,6 +1582,8 @@ export type UserCreateWithoutRemovedCustomerMembershipsInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutAssignedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutRemovedCustomerMembershipsInput = {
@@ -1574,6 +1628,8 @@ export type UserUncheckedCreateWithoutRemovedCustomerMembershipsInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutAssignedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutRemovedCustomerMembershipsInput = {
@@ -1634,6 +1690,8 @@ export type UserUpdateWithoutAssignedCustomerMembershipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedCustomerMembershipsInput = {
@@ -1678,6 +1736,8 @@ export type UserUncheckedUpdateWithoutAssignedCustomerMembershipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutRemovedCustomerMembershipsInput = {
@@ -1733,6 +1793,8 @@ export type UserUpdateWithoutRemovedCustomerMembershipsInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutAssignedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRemovedCustomerMembershipsInput = {
@@ -1777,6 +1839,8 @@ export type UserUncheckedUpdateWithoutRemovedCustomerMembershipsInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutAssignedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedLoyaltyTransactionsInput = {
@@ -1821,6 +1885,8 @@ export type UserCreateWithoutCreatedLoyaltyTransactionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedLoyaltyTransactionsInput = {
@@ -1865,6 +1931,8 @@ export type UserUncheckedCreateWithoutCreatedLoyaltyTransactionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedLoyaltyTransactionsInput = {
@@ -1925,6 +1993,8 @@ export type UserUpdateWithoutCreatedLoyaltyTransactionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedLoyaltyTransactionsInput = {
@@ -1969,6 +2039,8 @@ export type UserUncheckedUpdateWithoutCreatedLoyaltyTransactionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedCouponsInput = {
@@ -2013,6 +2085,8 @@ export type UserCreateWithoutCreatedCouponsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedCouponsInput = {
@@ -2057,6 +2131,8 @@ export type UserUncheckedCreateWithoutCreatedCouponsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedCouponsInput = {
@@ -2117,6 +2193,8 @@ export type UserUpdateWithoutCreatedCouponsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedCouponsInput = {
@@ -2161,6 +2239,8 @@ export type UserUncheckedUpdateWithoutCreatedCouponsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBranchInput = {
@@ -2205,6 +2285,8 @@ export type UserCreateWithoutBranchInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBranchInput = {
@@ -2249,6 +2331,8 @@ export type UserUncheckedCreateWithoutBranchInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBranchInput = {
@@ -2319,6 +2403,8 @@ export type UserCreateWithoutStaffProfileInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutStaffProfileInput = {
@@ -2363,6 +2449,8 @@ export type UserUncheckedCreateWithoutStaffProfileInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutStaffProfileInput = {
@@ -2423,6 +2511,8 @@ export type UserUpdateWithoutStaffProfileInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutStaffProfileInput = {
@@ -2467,6 +2557,8 @@ export type UserUncheckedUpdateWithoutStaffProfileInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -2511,6 +2603,8 @@ export type UserCreateWithoutSessionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -2555,6 +2649,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -2615,6 +2711,8 @@ export type UserUpdateWithoutSessionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -2659,6 +2757,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMarkedAttendancesInput = {
@@ -2703,6 +2803,8 @@ export type UserCreateWithoutMarkedAttendancesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMarkedAttendancesInput = {
@@ -2747,6 +2849,8 @@ export type UserUncheckedCreateWithoutMarkedAttendancesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMarkedAttendancesInput = {
@@ -2807,6 +2911,8 @@ export type UserUpdateWithoutMarkedAttendancesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMarkedAttendancesInput = {
@@ -2851,6 +2957,8 @@ export type UserUncheckedUpdateWithoutMarkedAttendancesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutApprovedLeavesInput = {
@@ -2895,6 +3003,8 @@ export type UserCreateWithoutApprovedLeavesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutApprovedLeavesInput = {
@@ -2939,6 +3049,8 @@ export type UserUncheckedCreateWithoutApprovedLeavesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutApprovedLeavesInput = {
@@ -2999,6 +3111,8 @@ export type UserUpdateWithoutApprovedLeavesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApprovedLeavesInput = {
@@ -3043,6 +3157,8 @@ export type UserUncheckedUpdateWithoutApprovedLeavesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedStaffAvailabilityRulesInput = {
@@ -3087,6 +3203,8 @@ export type UserCreateWithoutCreatedStaffAvailabilityRulesInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutAssignedByInput
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedStaffAvailabilityRulesInput = {
@@ -3131,6 +3249,8 @@ export type UserUncheckedCreateWithoutCreatedStaffAvailabilityRulesInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutAssignedByInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedStaffAvailabilityRulesInput = {
@@ -3191,6 +3311,8 @@ export type UserUpdateWithoutCreatedStaffAvailabilityRulesInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutAssignedByNestedInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedStaffAvailabilityRulesInput = {
@@ -3235,6 +3357,8 @@ export type UserUncheckedUpdateWithoutCreatedStaffAvailabilityRulesInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutAssignedByNestedInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedStaffTimeBlocksInput = {
@@ -3279,6 +3403,8 @@ export type UserCreateWithoutCreatedStaffTimeBlocksInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutAssignedByInput
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedStaffTimeBlocksInput = {
@@ -3323,6 +3449,8 @@ export type UserUncheckedCreateWithoutCreatedStaffTimeBlocksInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutAssignedByInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedStaffTimeBlocksInput = {
@@ -3383,6 +3511,8 @@ export type UserUpdateWithoutCreatedStaffTimeBlocksInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutAssignedByNestedInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedStaffTimeBlocksInput = {
@@ -3427,6 +3557,8 @@ export type UserUncheckedUpdateWithoutCreatedStaffTimeBlocksInput = {
   assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutAssignedByNestedInput
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutPaidSalarySlipsInput = {
@@ -3471,6 +3603,8 @@ export type UserCreateWithoutPaidSalarySlipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutPaidSalarySlipsInput = {
@@ -3515,6 +3649,8 @@ export type UserUncheckedCreateWithoutPaidSalarySlipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutPaidSalarySlipsInput = {
@@ -3575,6 +3711,8 @@ export type UserUpdateWithoutPaidSalarySlipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPaidSalarySlipsInput = {
@@ -3619,6 +3757,8 @@ export type UserUncheckedUpdateWithoutPaidSalarySlipsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedPackageCategoriesInput = {
@@ -3663,6 +3803,8 @@ export type UserCreateWithoutCreatedPackageCategoriesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedPackageCategoriesInput = {
@@ -3707,6 +3849,8 @@ export type UserUncheckedCreateWithoutCreatedPackageCategoriesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedPackageCategoriesInput = {
@@ -3767,6 +3911,8 @@ export type UserUpdateWithoutCreatedPackageCategoriesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedPackageCategoriesInput = {
@@ -3811,6 +3957,8 @@ export type UserUncheckedUpdateWithoutCreatedPackageCategoriesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedServicePackagesInput = {
@@ -3855,6 +4003,8 @@ export type UserCreateWithoutCreatedServicePackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedServicePackagesInput = {
@@ -3899,6 +4049,8 @@ export type UserUncheckedCreateWithoutCreatedServicePackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedServicePackagesInput = {
@@ -3959,6 +4111,8 @@ export type UserUpdateWithoutCreatedServicePackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedServicePackagesInput = {
@@ -4003,6 +4157,8 @@ export type UserUncheckedUpdateWithoutCreatedServicePackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedAppointmentsInput = {
@@ -4047,6 +4203,8 @@ export type UserCreateWithoutCreatedAppointmentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
@@ -4091,6 +4249,8 @@ export type UserUncheckedCreateWithoutCreatedAppointmentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedAppointmentsInput = {
@@ -4151,6 +4311,8 @@ export type UserUpdateWithoutCreatedAppointmentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
@@ -4195,6 +4357,8 @@ export type UserUncheckedUpdateWithoutCreatedAppointmentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAppointmentStatusChangesInput = {
@@ -4239,6 +4403,8 @@ export type UserCreateWithoutAppointmentStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAppointmentStatusChangesInput = {
@@ -4283,6 +4449,8 @@ export type UserUncheckedCreateWithoutAppointmentStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAppointmentStatusChangesInput = {
@@ -4343,6 +4511,8 @@ export type UserUpdateWithoutAppointmentStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAppointmentStatusChangesInput = {
@@ -4387,6 +4557,8 @@ export type UserUncheckedUpdateWithoutAppointmentStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSalesCreatedInput = {
@@ -4431,6 +4603,8 @@ export type UserCreateWithoutSalesCreatedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSalesCreatedInput = {
@@ -4475,6 +4649,8 @@ export type UserUncheckedCreateWithoutSalesCreatedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSalesCreatedInput = {
@@ -4524,6 +4700,8 @@ export type UserCreateWithoutSalesEditedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSalesEditedInput = {
@@ -4568,6 +4746,8 @@ export type UserUncheckedCreateWithoutSalesEditedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSalesEditedInput = {
@@ -4617,6 +4797,8 @@ export type UserCreateWithoutSalesDeletedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSalesDeletedInput = {
@@ -4661,6 +4843,8 @@ export type UserUncheckedCreateWithoutSalesDeletedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSalesDeletedInput = {
@@ -4721,6 +4905,8 @@ export type UserUpdateWithoutSalesCreatedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesCreatedInput = {
@@ -4765,6 +4951,8 @@ export type UserUncheckedUpdateWithoutSalesCreatedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutSalesEditedInput = {
@@ -4820,6 +5008,8 @@ export type UserUpdateWithoutSalesEditedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesEditedInput = {
@@ -4864,6 +5054,8 @@ export type UserUncheckedUpdateWithoutSalesEditedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutSalesDeletedInput = {
@@ -4919,6 +5111,8 @@ export type UserUpdateWithoutSalesDeletedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalesDeletedInput = {
@@ -4963,6 +5157,8 @@ export type UserUncheckedUpdateWithoutSalesDeletedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSalePaymentsReceivedInput = {
@@ -5007,6 +5203,8 @@ export type UserCreateWithoutSalePaymentsReceivedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSalePaymentsReceivedInput = {
@@ -5051,6 +5249,8 @@ export type UserUncheckedCreateWithoutSalePaymentsReceivedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSalePaymentsReceivedInput = {
@@ -5111,6 +5311,8 @@ export type UserUpdateWithoutSalePaymentsReceivedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalePaymentsReceivedInput = {
@@ -5155,6 +5357,8 @@ export type UserUncheckedUpdateWithoutSalePaymentsReceivedInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedCustomerPackagesInput = {
@@ -5199,6 +5403,8 @@ export type UserCreateWithoutCreatedCustomerPackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedCustomerPackagesInput = {
@@ -5243,6 +5449,8 @@ export type UserUncheckedCreateWithoutCreatedCustomerPackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedCustomerPackagesInput = {
@@ -5303,6 +5511,8 @@ export type UserUpdateWithoutCreatedCustomerPackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedCustomerPackagesInput = {
@@ -5347,6 +5557,8 @@ export type UserUncheckedUpdateWithoutCreatedCustomerPackagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedCustomerPackageUsagesInput = {
@@ -5391,6 +5603,8 @@ export type UserCreateWithoutCreatedCustomerPackageUsagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedCustomerPackageUsagesInput = {
@@ -5435,6 +5649,8 @@ export type UserUncheckedCreateWithoutCreatedCustomerPackageUsagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedCustomerPackageUsagesInput = {
@@ -5495,6 +5711,8 @@ export type UserUpdateWithoutCreatedCustomerPackageUsagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedCustomerPackageUsagesInput = {
@@ -5539,6 +5757,8 @@ export type UserUncheckedUpdateWithoutCreatedCustomerPackageUsagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedProductStockMovementsInput = {
@@ -5583,6 +5803,8 @@ export type UserCreateWithoutCreatedProductStockMovementsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedProductStockMovementsInput = {
@@ -5627,6 +5849,8 @@ export type UserUncheckedCreateWithoutCreatedProductStockMovementsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedProductStockMovementsInput = {
@@ -5687,6 +5911,8 @@ export type UserUpdateWithoutCreatedProductStockMovementsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedProductStockMovementsInput = {
@@ -5731,6 +5957,8 @@ export type UserUncheckedUpdateWithoutCreatedProductStockMovementsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedProductPurchasesInput = {
@@ -5775,6 +6003,8 @@ export type UserCreateWithoutCreatedProductPurchasesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedProductPurchasesInput = {
@@ -5819,6 +6049,8 @@ export type UserUncheckedCreateWithoutCreatedProductPurchasesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedProductPurchasesInput = {
@@ -5879,6 +6111,8 @@ export type UserUpdateWithoutCreatedProductPurchasesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedProductPurchasesInput = {
@@ -5923,6 +6157,8 @@ export type UserUncheckedUpdateWithoutCreatedProductPurchasesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedVendorPaymentsInput = {
@@ -5967,6 +6203,8 @@ export type UserCreateWithoutCreatedVendorPaymentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedVendorPaymentsInput = {
@@ -6011,6 +6249,8 @@ export type UserUncheckedCreateWithoutCreatedVendorPaymentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedVendorPaymentsInput = {
@@ -6071,6 +6311,8 @@ export type UserUpdateWithoutCreatedVendorPaymentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedVendorPaymentsInput = {
@@ -6115,6 +6357,8 @@ export type UserUncheckedUpdateWithoutCreatedVendorPaymentsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -6159,6 +6403,8 @@ export type UserCreateWithoutAuditLogsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -6203,6 +6449,8 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -6263,6 +6511,8 @@ export type UserUpdateWithoutAuditLogsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -6307,6 +6557,8 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedRetailSalesInput = {
@@ -6351,6 +6603,8 @@ export type UserCreateWithoutCreatedRetailSalesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedRetailSalesInput = {
@@ -6395,6 +6649,8 @@ export type UserUncheckedCreateWithoutCreatedRetailSalesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedRetailSalesInput = {
@@ -6455,6 +6711,8 @@ export type UserUpdateWithoutCreatedRetailSalesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedRetailSalesInput = {
@@ -6499,6 +6757,8 @@ export type UserUncheckedUpdateWithoutCreatedRetailSalesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCreatedExpensesInput = {
@@ -6543,6 +6803,8 @@ export type UserCreateWithoutCreatedExpensesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCreatedExpensesInput = {
@@ -6587,6 +6849,8 @@ export type UserUncheckedCreateWithoutCreatedExpensesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCreatedExpensesInput = {
@@ -6647,6 +6911,8 @@ export type UserUpdateWithoutCreatedExpensesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedExpensesInput = {
@@ -6691,6 +6957,8 @@ export type UserUncheckedUpdateWithoutCreatedExpensesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutReportedSupportTicketsInput = {
@@ -6735,6 +7003,8 @@ export type UserCreateWithoutReportedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutReportedSupportTicketsInput = {
@@ -6779,6 +7049,8 @@ export type UserUncheckedCreateWithoutReportedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutReportedSupportTicketsInput = {
@@ -6828,6 +7100,8 @@ export type UserCreateWithoutAssignedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAssignedSupportTicketsInput = {
@@ -6872,6 +7146,8 @@ export type UserUncheckedCreateWithoutAssignedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAssignedSupportTicketsInput = {
@@ -6932,6 +7208,8 @@ export type UserUpdateWithoutReportedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutReportedSupportTicketsInput = {
@@ -6976,6 +7254,8 @@ export type UserUncheckedUpdateWithoutReportedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUpsertWithoutAssignedSupportTicketsInput = {
@@ -7031,6 +7311,8 @@ export type UserUpdateWithoutAssignedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedSupportTicketsInput = {
@@ -7075,6 +7357,8 @@ export type UserUncheckedUpdateWithoutAssignedSupportTicketsInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSupportTicketMessagesInput = {
@@ -7119,6 +7403,8 @@ export type UserCreateWithoutSupportTicketMessagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSupportTicketMessagesInput = {
@@ -7163,6 +7449,8 @@ export type UserUncheckedCreateWithoutSupportTicketMessagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSupportTicketMessagesInput = {
@@ -7223,6 +7511,8 @@ export type UserUpdateWithoutSupportTicketMessagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSupportTicketMessagesInput = {
@@ -7267,6 +7557,408 @@ export type UserUncheckedUpdateWithoutSupportTicketMessagesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedSalonAssistantConversationsInput = {
+  id?: string
+  name: string
+  email: string
+  phone_number?: string | null
+  passwordHash: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch?: Prisma.BranchCreateNestedOneWithoutUsersInput
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryCreateNestedManyWithoutChangedByInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesEdited?: Prisma.SaleCreateNestedManyWithoutEditedByInput
+  salesDeleted?: Prisma.SaleCreateNestedManyWithoutDeletedByInput
+  salePaymentsReceived?: Prisma.SalePaymentCreateNestedManyWithoutReceivedByInput
+  staffProfile?: Prisma.StaffCreateNestedOneWithoutUserInput
+  sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  salon?: Prisma.SalonCreateNestedOneWithoutUsersInput
+  reportedSupportTickets?: Prisma.SupportTicketCreateNestedManyWithoutReporterInput
+  assignedSupportTickets?: Prisma.SupportTicketCreateNestedManyWithoutAssignedToInput
+  supportTicketMessages?: Prisma.SupportTicketMessageCreateNestedManyWithoutSenderInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryCreateNestedManyWithoutChangedByInput
+  createdProductStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutCreatedByInput
+  createdProductPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutCreatedByInput
+  createdRetailSales?: Prisma.RetailSaleCreateNestedManyWithoutCreatedByInput
+  createdVendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutCreatedByInput
+  createdExpenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
+  markedAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutMarkedByInput
+  approvedLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutApprovedByInput
+  paidSalarySlips?: Prisma.SalarySlipCreateNestedManyWithoutPaidByInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  createdCoupons?: Prisma.CouponCreateNestedManyWithoutCreatedByInput
+  createdPackageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutCreatedByInput
+  createdServicePackages?: Prisma.ServicePackageCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutCreatedByInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutAssignedByInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedSalonAssistantConversationsInput = {
+  id?: string
+  name: string
+  email: string
+  phone_number?: string | null
+  passwordHash: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  salonId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branchId?: string | null
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesEdited?: Prisma.SaleUncheckedCreateNestedManyWithoutEditedByInput
+  salesDeleted?: Prisma.SaleUncheckedCreateNestedManyWithoutDeletedByInput
+  salePaymentsReceived?: Prisma.SalePaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  staffProfile?: Prisma.StaffUncheckedCreateNestedOneWithoutUserInput
+  sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  reportedSupportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutReporterInput
+  assignedSupportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  createdProductPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRetailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutCreatedByInput
+  createdVendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdExpenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  markedAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutMarkedByInput
+  approvedLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutApprovedByInput
+  paidSalarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutPaidByInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCoupons?: Prisma.CouponUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPackageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+  createdServicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutAssignedByInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedSalonAssistantConversationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantConversationsInput>
+}
+
+export type UserUpsertWithoutCreatedSalonAssistantConversationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantConversationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantConversationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedSalonAssistantConversationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSalonAssistantConversationsInput, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantConversationsInput>
+}
+
+export type UserUpdateWithoutCreatedSalonAssistantConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneWithoutUsersNestedInput
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUpdateManyWithoutChangedByNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesEdited?: Prisma.SaleUpdateManyWithoutEditedByNestedInput
+  salesDeleted?: Prisma.SaleUpdateManyWithoutDeletedByNestedInput
+  salePaymentsReceived?: Prisma.SalePaymentUpdateManyWithoutReceivedByNestedInput
+  staffProfile?: Prisma.StaffUpdateOneWithoutUserNestedInput
+  sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  salon?: Prisma.SalonUpdateOneWithoutUsersNestedInput
+  reportedSupportTickets?: Prisma.SupportTicketUpdateManyWithoutReporterNestedInput
+  assignedSupportTickets?: Prisma.SupportTicketUpdateManyWithoutAssignedToNestedInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUpdateManyWithoutSenderNestedInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUpdateManyWithoutChangedByNestedInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutCreatedByNestedInput
+  createdProductPurchases?: Prisma.ProductPurchaseUpdateManyWithoutCreatedByNestedInput
+  createdRetailSales?: Prisma.RetailSaleUpdateManyWithoutCreatedByNestedInput
+  createdVendorPayments?: Prisma.VendorPaymentUpdateManyWithoutCreatedByNestedInput
+  createdExpenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
+  markedAttendances?: Prisma.StaffAttendanceUpdateManyWithoutMarkedByNestedInput
+  approvedLeaves?: Prisma.StaffLeaveUpdateManyWithoutApprovedByNestedInput
+  paidSalarySlips?: Prisma.SalarySlipUpdateManyWithoutPaidByNestedInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  createdCoupons?: Prisma.CouponUpdateManyWithoutCreatedByNestedInput
+  createdPackageCategories?: Prisma.PackageCategoryUpdateManyWithoutCreatedByNestedInput
+  createdServicePackages?: Prisma.ServicePackageUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutCreatedByNestedInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutAssignedByNestedInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedSalonAssistantConversationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  salonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesEdited?: Prisma.SaleUncheckedUpdateManyWithoutEditedByNestedInput
+  salesDeleted?: Prisma.SaleUncheckedUpdateManyWithoutDeletedByNestedInput
+  salePaymentsReceived?: Prisma.SalePaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  staffProfile?: Prisma.StaffUncheckedUpdateOneWithoutUserNestedInput
+  sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  reportedSupportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutReporterNestedInput
+  assignedSupportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdProductPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRetailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdVendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdExpenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  markedAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutMarkedByNestedInput
+  approvedLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutApprovedByNestedInput
+  paidSalarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutPaidByNestedInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCoupons?: Prisma.CouponUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPackageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdServicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutAssignedByNestedInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedSalonAssistantMessagesInput = {
+  id?: string
+  name: string
+  email: string
+  phone_number?: string | null
+  passwordHash: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branch?: Prisma.BranchCreateNestedOneWithoutUsersInput
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryCreateNestedManyWithoutChangedByInput
+  createdAppointments?: Prisma.AppointmentCreateNestedManyWithoutCreatedByInput
+  salesCreated?: Prisma.SaleCreateNestedManyWithoutCreatedByInput
+  salesEdited?: Prisma.SaleCreateNestedManyWithoutEditedByInput
+  salesDeleted?: Prisma.SaleCreateNestedManyWithoutDeletedByInput
+  salePaymentsReceived?: Prisma.SalePaymentCreateNestedManyWithoutReceivedByInput
+  staffProfile?: Prisma.StaffCreateNestedOneWithoutUserInput
+  sessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  salon?: Prisma.SalonCreateNestedOneWithoutUsersInput
+  reportedSupportTickets?: Prisma.SupportTicketCreateNestedManyWithoutReporterInput
+  assignedSupportTickets?: Prisma.SupportTicketCreateNestedManyWithoutAssignedToInput
+  supportTicketMessages?: Prisma.SupportTicketMessageCreateNestedManyWithoutSenderInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryCreateNestedManyWithoutChangedByInput
+  createdProductStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutCreatedByInput
+  createdProductPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutCreatedByInput
+  createdRetailSales?: Prisma.RetailSaleCreateNestedManyWithoutCreatedByInput
+  createdVendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutCreatedByInput
+  createdExpenses?: Prisma.ExpenseCreateNestedManyWithoutCreatedByInput
+  markedAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutMarkedByInput
+  approvedLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutApprovedByInput
+  paidSalarySlips?: Prisma.SalarySlipCreateNestedManyWithoutPaidByInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutCreatedByInput
+  createdCoupons?: Prisma.CouponCreateNestedManyWithoutCreatedByInput
+  createdPackageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutCreatedByInput
+  createdServicePackages?: Prisma.ServicePackageCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutCreatedByInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutAssignedByInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedSalonAssistantMessagesInput = {
+  id?: string
+  name: string
+  email: string
+  phone_number?: string | null
+  passwordHash: string
+  role?: $Enums.Role
+  status?: $Enums.UserStatus
+  salonId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branchId?: string | null
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  createdAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutCreatedByInput
+  salesCreated?: Prisma.SaleUncheckedCreateNestedManyWithoutCreatedByInput
+  salesEdited?: Prisma.SaleUncheckedCreateNestedManyWithoutEditedByInput
+  salesDeleted?: Prisma.SaleUncheckedCreateNestedManyWithoutDeletedByInput
+  salePaymentsReceived?: Prisma.SalePaymentUncheckedCreateNestedManyWithoutReceivedByInput
+  staffProfile?: Prisma.StaffUncheckedCreateNestedOneWithoutUserInput
+  sessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  reportedSupportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutReporterInput
+  assignedSupportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutAssignedToInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUncheckedCreateNestedManyWithoutSenderInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUncheckedCreateNestedManyWithoutChangedByInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutCreatedByInput
+  createdProductPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRetailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutCreatedByInput
+  createdVendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutCreatedByInput
+  createdExpenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutCreatedByInput
+  markedAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutMarkedByInput
+  approvedLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutApprovedByInput
+  paidSalarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutPaidByInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCoupons?: Prisma.CouponUncheckedCreateNestedManyWithoutCreatedByInput
+  createdPackageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutCreatedByInput
+  createdServicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutCreatedByInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutCreatedByInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutAssignedByInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedSalonAssistantMessagesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantMessagesInput>
+}
+
+export type UserUpsertWithoutCreatedSalonAssistantMessagesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantMessagesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedCreateWithoutCreatedSalonAssistantMessagesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedSalonAssistantMessagesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSalonAssistantMessagesInput, Prisma.UserUncheckedUpdateWithoutCreatedSalonAssistantMessagesInput>
+}
+
+export type UserUpdateWithoutCreatedSalonAssistantMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branch?: Prisma.BranchUpdateOneWithoutUsersNestedInput
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUpdateManyWithoutChangedByNestedInput
+  createdAppointments?: Prisma.AppointmentUpdateManyWithoutCreatedByNestedInput
+  salesCreated?: Prisma.SaleUpdateManyWithoutCreatedByNestedInput
+  salesEdited?: Prisma.SaleUpdateManyWithoutEditedByNestedInput
+  salesDeleted?: Prisma.SaleUpdateManyWithoutDeletedByNestedInput
+  salePaymentsReceived?: Prisma.SalePaymentUpdateManyWithoutReceivedByNestedInput
+  staffProfile?: Prisma.StaffUpdateOneWithoutUserNestedInput
+  sessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  salon?: Prisma.SalonUpdateOneWithoutUsersNestedInput
+  reportedSupportTickets?: Prisma.SupportTicketUpdateManyWithoutReporterNestedInput
+  assignedSupportTickets?: Prisma.SupportTicketUpdateManyWithoutAssignedToNestedInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUpdateManyWithoutSenderNestedInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUpdateManyWithoutChangedByNestedInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutCreatedByNestedInput
+  createdProductPurchases?: Prisma.ProductPurchaseUpdateManyWithoutCreatedByNestedInput
+  createdRetailSales?: Prisma.RetailSaleUpdateManyWithoutCreatedByNestedInput
+  createdVendorPayments?: Prisma.VendorPaymentUpdateManyWithoutCreatedByNestedInput
+  createdExpenses?: Prisma.ExpenseUpdateManyWithoutCreatedByNestedInput
+  markedAttendances?: Prisma.StaffAttendanceUpdateManyWithoutMarkedByNestedInput
+  approvedLeaves?: Prisma.StaffLeaveUpdateManyWithoutApprovedByNestedInput
+  paidSalarySlips?: Prisma.SalarySlipUpdateManyWithoutPaidByNestedInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutCreatedByNestedInput
+  createdCoupons?: Prisma.CouponUpdateManyWithoutCreatedByNestedInput
+  createdPackageCategories?: Prisma.PackageCategoryUpdateManyWithoutCreatedByNestedInput
+  createdServicePackages?: Prisma.ServicePackageUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutCreatedByNestedInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutAssignedByNestedInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedSalonAssistantMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  salonId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentStatusChanges?: Prisma.AppointmentStatusHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  createdAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesCreated?: Prisma.SaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  salesEdited?: Prisma.SaleUncheckedUpdateManyWithoutEditedByNestedInput
+  salesDeleted?: Prisma.SaleUncheckedUpdateManyWithoutDeletedByNestedInput
+  salePaymentsReceived?: Prisma.SalePaymentUncheckedUpdateManyWithoutReceivedByNestedInput
+  staffProfile?: Prisma.StaffUncheckedUpdateOneWithoutUserNestedInput
+  sessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  reportedSupportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutReporterNestedInput
+  assignedSupportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutAssignedToNestedInput
+  supportTicketMessages?: Prisma.SupportTicketMessageUncheckedUpdateManyWithoutSenderNestedInput
+  supportTicketStatusChanges?: Prisma.SupportTicketStatusHistoryUncheckedUpdateManyWithoutChangedByNestedInput
+  createdProductStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdProductPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRetailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdVendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdExpenses?: Prisma.ExpenseUncheckedUpdateManyWithoutCreatedByNestedInput
+  markedAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutMarkedByNestedInput
+  approvedLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutApprovedByNestedInput
+  paidSalarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutPaidByNestedInput
+  createdLoyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCoupons?: Prisma.CouponUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdPackageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdServicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdCustomerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutAssignedByNestedInput
+  removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
+  createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutSupportTicketStatusChangesInput = {
@@ -7311,6 +8003,8 @@ export type UserCreateWithoutSupportTicketStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutSupportTicketStatusChangesInput = {
@@ -7355,6 +8049,8 @@ export type UserUncheckedCreateWithoutSupportTicketStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutRemovedByInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutCreatedByInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutCreatedByInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutSupportTicketStatusChangesInput = {
@@ -7415,6 +8111,8 @@ export type UserUpdateWithoutSupportTicketStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSupportTicketStatusChangesInput = {
@@ -7459,6 +8157,8 @@ export type UserUncheckedUpdateWithoutSupportTicketStatusChangesInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManySalonInput = {
@@ -7516,6 +8216,8 @@ export type UserUpdateWithoutSalonInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSalonInput = {
@@ -7560,6 +8262,8 @@ export type UserUncheckedUpdateWithoutSalonInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutSalonInput = {
@@ -7630,6 +8334,8 @@ export type UserUpdateWithoutBranchInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBranchInput = {
@@ -7674,6 +8380,8 @@ export type UserUncheckedUpdateWithoutBranchInput = {
   removedCustomerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutRemovedByNestedInput
   createdStaffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutCreatedByNestedInput
   createdStaffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdSalonAssistantMessages?: Prisma.SalonAssistantMessageUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutBranchInput = {
@@ -7725,6 +8433,8 @@ export type UserCountOutputType = {
   removedCustomerMemberships: number
   createdStaffAvailabilityRules: number
   createdStaffTimeBlocks: number
+  createdSalonAssistantConversations: number
+  createdSalonAssistantMessages: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -7758,6 +8468,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   removedCustomerMemberships?: boolean | UserCountOutputTypeCountRemovedCustomerMembershipsArgs
   createdStaffAvailabilityRules?: boolean | UserCountOutputTypeCountCreatedStaffAvailabilityRulesArgs
   createdStaffTimeBlocks?: boolean | UserCountOutputTypeCountCreatedStaffTimeBlocksArgs
+  createdSalonAssistantConversations?: boolean | UserCountOutputTypeCountCreatedSalonAssistantConversationsArgs
+  createdSalonAssistantMessages?: boolean | UserCountOutputTypeCountCreatedSalonAssistantMessagesArgs
 }
 
 /**
@@ -7980,6 +8692,20 @@ export type UserCountOutputTypeCountCreatedStaffTimeBlocksArgs<ExtArgs extends r
   where?: Prisma.StaffTimeBlockWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedSalonAssistantConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SalonAssistantConversationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedSalonAssistantMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SalonAssistantMessageWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -8026,6 +8752,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   removedCustomerMemberships?: boolean | Prisma.User$removedCustomerMembershipsArgs<ExtArgs>
   createdStaffAvailabilityRules?: boolean | Prisma.User$createdStaffAvailabilityRulesArgs<ExtArgs>
   createdStaffTimeBlocks?: boolean | Prisma.User$createdStaffTimeBlocksArgs<ExtArgs>
+  createdSalonAssistantConversations?: boolean | Prisma.User$createdSalonAssistantConversationsArgs<ExtArgs>
+  createdSalonAssistantMessages?: boolean | Prisma.User$createdSalonAssistantMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -8110,6 +8838,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   removedCustomerMemberships?: boolean | Prisma.User$removedCustomerMembershipsArgs<ExtArgs>
   createdStaffAvailabilityRules?: boolean | Prisma.User$createdStaffAvailabilityRulesArgs<ExtArgs>
   createdStaffTimeBlocks?: boolean | Prisma.User$createdStaffTimeBlocksArgs<ExtArgs>
+  createdSalonAssistantConversations?: boolean | Prisma.User$createdSalonAssistantConversationsArgs<ExtArgs>
+  createdSalonAssistantMessages?: boolean | Prisma.User$createdSalonAssistantMessagesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8157,6 +8887,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     removedCustomerMemberships: Prisma.$CustomerMembershipPayload<ExtArgs>[]
     createdStaffAvailabilityRules: Prisma.$StaffAvailabilityRulePayload<ExtArgs>[]
     createdStaffTimeBlocks: Prisma.$StaffTimeBlockPayload<ExtArgs>[]
+    createdSalonAssistantConversations: Prisma.$SalonAssistantConversationPayload<ExtArgs>[]
+    createdSalonAssistantMessages: Prisma.$SalonAssistantMessagePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -8597,6 +9329,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   removedCustomerMemberships<T extends Prisma.User$removedCustomerMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$removedCustomerMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdStaffAvailabilityRules<T extends Prisma.User$createdStaffAvailabilityRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdStaffAvailabilityRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffAvailabilityRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdStaffTimeBlocks<T extends Prisma.User$createdStaffTimeBlocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdStaffTimeBlocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffTimeBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdSalonAssistantConversations<T extends Prisma.User$createdSalonAssistantConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdSalonAssistantConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalonAssistantConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdSalonAssistantMessages<T extends Prisma.User$createdSalonAssistantMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdSalonAssistantMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalonAssistantMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9812,6 +10546,54 @@ export type User$createdStaffTimeBlocksArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.StaffTimeBlockScalarFieldEnum | Prisma.StaffTimeBlockScalarFieldEnum[]
+}
+
+/**
+ * User.createdSalonAssistantConversations
+ */
+export type User$createdSalonAssistantConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SalonAssistantConversation
+   */
+  select?: Prisma.SalonAssistantConversationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SalonAssistantConversation
+   */
+  omit?: Prisma.SalonAssistantConversationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SalonAssistantConversationInclude<ExtArgs> | null
+  where?: Prisma.SalonAssistantConversationWhereInput
+  orderBy?: Prisma.SalonAssistantConversationOrderByWithRelationInput | Prisma.SalonAssistantConversationOrderByWithRelationInput[]
+  cursor?: Prisma.SalonAssistantConversationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SalonAssistantConversationScalarFieldEnum | Prisma.SalonAssistantConversationScalarFieldEnum[]
+}
+
+/**
+ * User.createdSalonAssistantMessages
+ */
+export type User$createdSalonAssistantMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SalonAssistantMessage
+   */
+  select?: Prisma.SalonAssistantMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SalonAssistantMessage
+   */
+  omit?: Prisma.SalonAssistantMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SalonAssistantMessageInclude<ExtArgs> | null
+  where?: Prisma.SalonAssistantMessageWhereInput
+  orderBy?: Prisma.SalonAssistantMessageOrderByWithRelationInput | Prisma.SalonAssistantMessageOrderByWithRelationInput[]
+  cursor?: Prisma.SalonAssistantMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SalonAssistantMessageScalarFieldEnum | Prisma.SalonAssistantMessageScalarFieldEnum[]
 }
 
 /**

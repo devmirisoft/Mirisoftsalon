@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Button, Icon } from "@/components/Component";
-import { Spinner } from "reactstrap";
+import { LoaderOne } from "@/components/ui/loader";
 
 const DataGrid = ({
   rows,
@@ -29,8 +29,10 @@ const DataGrid = ({
           {loading ? (
             <tr>
               <td colSpan={columns.length + 1} className="text-center py-5">
-                <Spinner size="sm" color="primary" className="me-2" />
-                Loading live data…
+                <div className="d-flex flex-column align-items-center gap-2 text-primary">
+                  <LoaderOne label="Loading live data" />
+                  <span>Loading live data...</span>
+                </div>
               </td>
             </tr>
           ) : rows.length === 0 ? (

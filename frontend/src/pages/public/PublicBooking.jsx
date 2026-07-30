@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { salonApi } from "@/services/salonApi";
+import { LoaderOne } from "@/components/ui/loader";
 
 const today = () => {
   const date = new Date();
@@ -137,7 +138,12 @@ const PublicBooking = () => {
   };
 
   if (loading) {
-    return <div className="container py-5 text-center">Loading online booking…</div>;
+    return (
+      <div className="container py-5 text-center">
+        <LoaderOne label="Loading online booking" />
+        <p className="text-soft mt-2 mb-0">Loading online booking...</p>
+      </div>
+    );
   }
   if (!config) {
     return (

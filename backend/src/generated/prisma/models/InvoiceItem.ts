@@ -30,6 +30,10 @@ export type InvoiceItemAvgAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxableAmount: runtime.Decimal | null
+  gstRateSnapshot: runtime.Decimal | null
+  gstAmount: runtime.Decimal | null
+  totalWithTax: runtime.Decimal | null
   taxPercent: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
   lineTotal: runtime.Decimal | null
@@ -39,6 +43,10 @@ export type InvoiceItemSumAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxableAmount: runtime.Decimal | null
+  gstRateSnapshot: runtime.Decimal | null
+  gstAmount: runtime.Decimal | null
+  totalWithTax: runtime.Decimal | null
   taxPercent: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
   lineTotal: runtime.Decimal | null
@@ -48,6 +56,7 @@ export type InvoiceItemMinAggregateOutputType = {
   id: string | null
   invoiceId: string | null
   serviceId: string | null
+  productId: string | null
   itemType: $Enums.InvoiceItemType | null
   packageId: string | null
   soldByStaffId: string | null
@@ -58,6 +67,10 @@ export type InvoiceItemMinAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxableAmount: runtime.Decimal | null
+  gstRateSnapshot: runtime.Decimal | null
+  gstAmount: runtime.Decimal | null
+  totalWithTax: runtime.Decimal | null
   taxPercent: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
   lineTotal: runtime.Decimal | null
@@ -68,6 +81,7 @@ export type InvoiceItemMaxAggregateOutputType = {
   id: string | null
   invoiceId: string | null
   serviceId: string | null
+  productId: string | null
   itemType: $Enums.InvoiceItemType | null
   packageId: string | null
   soldByStaffId: string | null
@@ -78,6 +92,10 @@ export type InvoiceItemMaxAggregateOutputType = {
   quantity: number | null
   unitPrice: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxableAmount: runtime.Decimal | null
+  gstRateSnapshot: runtime.Decimal | null
+  gstAmount: runtime.Decimal | null
+  totalWithTax: runtime.Decimal | null
   taxPercent: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
   lineTotal: runtime.Decimal | null
@@ -88,6 +106,7 @@ export type InvoiceItemCountAggregateOutputType = {
   id: number
   invoiceId: number
   serviceId: number
+  productId: number
   itemType: number
   packageId: number
   soldByStaffId: number
@@ -98,6 +117,10 @@ export type InvoiceItemCountAggregateOutputType = {
   quantity: number
   unitPrice: number
   discountAmount: number
+  taxableAmount: number
+  gstRateSnapshot: number
+  gstAmount: number
+  totalWithTax: number
   taxPercent: number
   taxAmount: number
   lineTotal: number
@@ -110,6 +133,10 @@ export type InvoiceItemAvgAggregateInputType = {
   quantity?: true
   unitPrice?: true
   discountAmount?: true
+  taxableAmount?: true
+  gstRateSnapshot?: true
+  gstAmount?: true
+  totalWithTax?: true
   taxPercent?: true
   taxAmount?: true
   lineTotal?: true
@@ -119,6 +146,10 @@ export type InvoiceItemSumAggregateInputType = {
   quantity?: true
   unitPrice?: true
   discountAmount?: true
+  taxableAmount?: true
+  gstRateSnapshot?: true
+  gstAmount?: true
+  totalWithTax?: true
   taxPercent?: true
   taxAmount?: true
   lineTotal?: true
@@ -128,6 +159,7 @@ export type InvoiceItemMinAggregateInputType = {
   id?: true
   invoiceId?: true
   serviceId?: true
+  productId?: true
   itemType?: true
   packageId?: true
   soldByStaffId?: true
@@ -138,6 +170,10 @@ export type InvoiceItemMinAggregateInputType = {
   quantity?: true
   unitPrice?: true
   discountAmount?: true
+  taxableAmount?: true
+  gstRateSnapshot?: true
+  gstAmount?: true
+  totalWithTax?: true
   taxPercent?: true
   taxAmount?: true
   lineTotal?: true
@@ -148,6 +184,7 @@ export type InvoiceItemMaxAggregateInputType = {
   id?: true
   invoiceId?: true
   serviceId?: true
+  productId?: true
   itemType?: true
   packageId?: true
   soldByStaffId?: true
@@ -158,6 +195,10 @@ export type InvoiceItemMaxAggregateInputType = {
   quantity?: true
   unitPrice?: true
   discountAmount?: true
+  taxableAmount?: true
+  gstRateSnapshot?: true
+  gstAmount?: true
+  totalWithTax?: true
   taxPercent?: true
   taxAmount?: true
   lineTotal?: true
@@ -168,6 +209,7 @@ export type InvoiceItemCountAggregateInputType = {
   id?: true
   invoiceId?: true
   serviceId?: true
+  productId?: true
   itemType?: true
   packageId?: true
   soldByStaffId?: true
@@ -178,6 +220,10 @@ export type InvoiceItemCountAggregateInputType = {
   quantity?: true
   unitPrice?: true
   discountAmount?: true
+  taxableAmount?: true
+  gstRateSnapshot?: true
+  gstAmount?: true
+  totalWithTax?: true
   taxPercent?: true
   taxAmount?: true
   lineTotal?: true
@@ -275,6 +321,7 @@ export type InvoiceItemGroupByOutputType = {
   id: string
   invoiceId: string
   serviceId: string | null
+  productId: string | null
   itemType: $Enums.InvoiceItemType
   packageId: string | null
   soldByStaffId: string | null
@@ -285,6 +332,10 @@ export type InvoiceItemGroupByOutputType = {
   quantity: number
   unitPrice: runtime.Decimal
   discountAmount: runtime.Decimal
+  taxableAmount: runtime.Decimal
+  gstRateSnapshot: runtime.Decimal
+  gstAmount: runtime.Decimal
+  totalWithTax: runtime.Decimal
   taxPercent: runtime.Decimal
   taxAmount: runtime.Decimal
   lineTotal: runtime.Decimal
@@ -318,6 +369,7 @@ export type InvoiceItemWhereInput = {
   id?: Prisma.StringFilter<"InvoiceItem"> | string
   invoiceId?: Prisma.StringFilter<"InvoiceItem"> | string
   serviceId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
+  productId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
   packageId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   soldByStaffId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
@@ -328,12 +380,17 @@ export type InvoiceItemWhereInput = {
   quantity?: Prisma.IntFilter<"InvoiceItem"> | number
   unitPrice?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"InvoiceItem"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   package?: Prisma.XOR<Prisma.ServicePackageNullableScalarRelationFilter, Prisma.ServicePackageWhereInput> | null
   soldByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
   customerPackageUsageItem?: Prisma.XOR<Prisma.CustomerPackageUsageItemNullableScalarRelationFilter, Prisma.CustomerPackageUsageItemWhereInput> | null
@@ -343,6 +400,7 @@ export type InvoiceItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   serviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   itemType?: Prisma.SortOrder
   packageId?: Prisma.SortOrderInput | Prisma.SortOrder
   soldByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -353,12 +411,17 @@ export type InvoiceItemOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   invoice?: Prisma.InvoiceOrderByWithRelationInput
   service?: Prisma.ServiceOrderByWithRelationInput
+  product?: Prisma.ProductOrderByWithRelationInput
   package?: Prisma.ServicePackageOrderByWithRelationInput
   soldByStaff?: Prisma.StaffOrderByWithRelationInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemOrderByWithRelationInput
@@ -372,6 +435,7 @@ export type InvoiceItemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.InvoiceItemWhereInput | Prisma.InvoiceItemWhereInput[]
   invoiceId?: Prisma.StringFilter<"InvoiceItem"> | string
   serviceId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
+  productId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
   packageId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   soldByStaffId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
@@ -381,12 +445,17 @@ export type InvoiceItemWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"InvoiceItem"> | number
   unitPrice?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"InvoiceItem"> | Date | string
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  product?: Prisma.XOR<Prisma.ProductNullableScalarRelationFilter, Prisma.ProductWhereInput> | null
   package?: Prisma.XOR<Prisma.ServicePackageNullableScalarRelationFilter, Prisma.ServicePackageWhereInput> | null
   soldByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
   customerPackageUsageItem?: Prisma.XOR<Prisma.CustomerPackageUsageItemNullableScalarRelationFilter, Prisma.CustomerPackageUsageItemWhereInput> | null
@@ -396,6 +465,7 @@ export type InvoiceItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   serviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  productId?: Prisma.SortOrderInput | Prisma.SortOrder
   itemType?: Prisma.SortOrder
   packageId?: Prisma.SortOrderInput | Prisma.SortOrder
   soldByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -406,6 +476,10 @@ export type InvoiceItemOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -424,6 +498,7 @@ export type InvoiceItemScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"InvoiceItem"> | string
   invoiceId?: Prisma.StringWithAggregatesFilter<"InvoiceItem"> | string
   serviceId?: Prisma.StringNullableWithAggregatesFilter<"InvoiceItem"> | string | null
+  productId?: Prisma.StringNullableWithAggregatesFilter<"InvoiceItem"> | string | null
   itemType?: Prisma.EnumInvoiceItemTypeWithAggregatesFilter<"InvoiceItem"> | $Enums.InvoiceItemType
   packageId?: Prisma.StringNullableWithAggregatesFilter<"InvoiceItem"> | string | null
   soldByStaffId?: Prisma.StringNullableWithAggregatesFilter<"InvoiceItem"> | string | null
@@ -434,6 +509,10 @@ export type InvoiceItemScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"InvoiceItem"> | number
   unitPrice?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalWithAggregatesFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -449,12 +528,17 @@ export type InvoiceItemCreateInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
   service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
   soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
@@ -464,6 +548,7 @@ export type InvoiceItemUncheckedCreateInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -474,6 +559,10 @@ export type InvoiceItemUncheckedCreateInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -489,12 +578,17 @@ export type InvoiceItemUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
   soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
@@ -504,6 +598,7 @@ export type InvoiceItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -514,6 +609,10 @@ export type InvoiceItemUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -524,6 +623,7 @@ export type InvoiceItemCreateManyInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -534,6 +634,10 @@ export type InvoiceItemCreateManyInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -549,6 +653,10 @@ export type InvoiceItemUpdateManyMutationInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -559,6 +667,7 @@ export type InvoiceItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -569,6 +678,10 @@ export type InvoiceItemUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -589,6 +702,7 @@ export type InvoiceItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   serviceId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   itemType?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
   soldByStaffId?: Prisma.SortOrder
@@ -599,6 +713,10 @@ export type InvoiceItemCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -609,6 +727,10 @@ export type InvoiceItemAvgOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -618,6 +740,7 @@ export type InvoiceItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   serviceId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   itemType?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
   soldByStaffId?: Prisma.SortOrder
@@ -628,6 +751,10 @@ export type InvoiceItemMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -638,6 +765,7 @@ export type InvoiceItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   serviceId?: Prisma.SortOrder
+  productId?: Prisma.SortOrder
   itemType?: Prisma.SortOrder
   packageId?: Prisma.SortOrder
   soldByStaffId?: Prisma.SortOrder
@@ -648,6 +776,10 @@ export type InvoiceItemMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -658,6 +790,10 @@ export type InvoiceItemSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxableAmount?: Prisma.SortOrder
+  gstRateSnapshot?: Prisma.SortOrder
+  gstAmount?: Prisma.SortOrder
+  totalWithTax?: Prisma.SortOrder
   taxPercent?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
   lineTotal?: Prisma.SortOrder
@@ -872,6 +1008,48 @@ export type InvoiceItemUncheckedUpdateOneWithoutCustomerPackageUsageItemNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.InvoiceItemUpdateToOneWithWhereWithoutCustomerPackageUsageItemInput, Prisma.InvoiceItemUpdateWithoutCustomerPackageUsageItemInput>, Prisma.InvoiceItemUncheckedUpdateWithoutCustomerPackageUsageItemInput>
 }
 
+export type InvoiceItemCreateNestedManyWithoutProductInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput> | Prisma.InvoiceItemCreateWithoutProductInput[] | Prisma.InvoiceItemUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutProductInput | Prisma.InvoiceItemCreateOrConnectWithoutProductInput[]
+  createMany?: Prisma.InvoiceItemCreateManyProductInputEnvelope
+  connect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+}
+
+export type InvoiceItemUncheckedCreateNestedManyWithoutProductInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput> | Prisma.InvoiceItemCreateWithoutProductInput[] | Prisma.InvoiceItemUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutProductInput | Prisma.InvoiceItemCreateOrConnectWithoutProductInput[]
+  createMany?: Prisma.InvoiceItemCreateManyProductInputEnvelope
+  connect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+}
+
+export type InvoiceItemUpdateManyWithoutProductNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput> | Prisma.InvoiceItemCreateWithoutProductInput[] | Prisma.InvoiceItemUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutProductInput | Prisma.InvoiceItemCreateOrConnectWithoutProductInput[]
+  upsert?: Prisma.InvoiceItemUpsertWithWhereUniqueWithoutProductInput | Prisma.InvoiceItemUpsertWithWhereUniqueWithoutProductInput[]
+  createMany?: Prisma.InvoiceItemCreateManyProductInputEnvelope
+  set?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  delete?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  connect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  update?: Prisma.InvoiceItemUpdateWithWhereUniqueWithoutProductInput | Prisma.InvoiceItemUpdateWithWhereUniqueWithoutProductInput[]
+  updateMany?: Prisma.InvoiceItemUpdateManyWithWhereWithoutProductInput | Prisma.InvoiceItemUpdateManyWithWhereWithoutProductInput[]
+  deleteMany?: Prisma.InvoiceItemScalarWhereInput | Prisma.InvoiceItemScalarWhereInput[]
+}
+
+export type InvoiceItemUncheckedUpdateManyWithoutProductNestedInput = {
+  create?: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput> | Prisma.InvoiceItemCreateWithoutProductInput[] | Prisma.InvoiceItemUncheckedCreateWithoutProductInput[]
+  connectOrCreate?: Prisma.InvoiceItemCreateOrConnectWithoutProductInput | Prisma.InvoiceItemCreateOrConnectWithoutProductInput[]
+  upsert?: Prisma.InvoiceItemUpsertWithWhereUniqueWithoutProductInput | Prisma.InvoiceItemUpsertWithWhereUniqueWithoutProductInput[]
+  createMany?: Prisma.InvoiceItemCreateManyProductInputEnvelope
+  set?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  disconnect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  delete?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  connect?: Prisma.InvoiceItemWhereUniqueInput | Prisma.InvoiceItemWhereUniqueInput[]
+  update?: Prisma.InvoiceItemUpdateWithWhereUniqueWithoutProductInput | Prisma.InvoiceItemUpdateWithWhereUniqueWithoutProductInput[]
+  updateMany?: Prisma.InvoiceItemUpdateManyWithWhereWithoutProductInput | Prisma.InvoiceItemUpdateManyWithWhereWithoutProductInput[]
+  deleteMany?: Prisma.InvoiceItemScalarWhereInput | Prisma.InvoiceItemScalarWhereInput[]
+}
+
 export type InvoiceItemCreateWithoutSoldByStaffInput = {
   id?: string
   itemType?: $Enums.InvoiceItemType
@@ -881,12 +1059,17 @@ export type InvoiceItemCreateWithoutSoldByStaffInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
   service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
 }
@@ -895,6 +1078,7 @@ export type InvoiceItemUncheckedCreateWithoutSoldByStaffInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   customerPackageUsageItemId?: string | null
@@ -904,6 +1088,10 @@ export type InvoiceItemUncheckedCreateWithoutSoldByStaffInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -943,6 +1131,7 @@ export type InvoiceItemScalarWhereInput = {
   id?: Prisma.StringFilter<"InvoiceItem"> | string
   invoiceId?: Prisma.StringFilter<"InvoiceItem"> | string
   serviceId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
+  productId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFilter<"InvoiceItem"> | $Enums.InvoiceItemType
   packageId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
   soldByStaffId?: Prisma.StringNullableFilter<"InvoiceItem"> | string | null
@@ -953,6 +1142,10 @@ export type InvoiceItemScalarWhereInput = {
   quantity?: Prisma.IntFilter<"InvoiceItem"> | number
   unitPrice?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFilter<"InvoiceItem"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -968,11 +1161,16 @@ export type InvoiceItemCreateWithoutServiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
   soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
@@ -981,6 +1179,7 @@ export type InvoiceItemCreateWithoutServiceInput = {
 export type InvoiceItemUncheckedCreateWithoutServiceInput = {
   id?: string
   invoiceId: string
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -991,6 +1190,10 @@ export type InvoiceItemUncheckedCreateWithoutServiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1032,12 +1235,17 @@ export type InvoiceItemCreateWithoutPackageInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
   service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
 }
@@ -1046,6 +1254,7 @@ export type InvoiceItemUncheckedCreateWithoutPackageInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   soldByStaffId?: string | null
   customerPackageUsageItemId?: string | null
@@ -1055,6 +1264,10 @@ export type InvoiceItemUncheckedCreateWithoutPackageInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1096,11 +1309,16 @@ export type InvoiceItemCreateWithoutInvoiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
   soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
@@ -1109,6 +1327,7 @@ export type InvoiceItemCreateWithoutInvoiceInput = {
 export type InvoiceItemUncheckedCreateWithoutInvoiceInput = {
   id?: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -1119,6 +1338,10 @@ export type InvoiceItemUncheckedCreateWithoutInvoiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1160,12 +1383,17 @@ export type InvoiceItemCreateWithoutCustomerPackageUsageItemInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
   service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  product?: Prisma.ProductCreateNestedOneWithoutInvoiceItemsInput
   package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
   soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
 }
@@ -1174,6 +1402,7 @@ export type InvoiceItemUncheckedCreateWithoutCustomerPackageUsageItemInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -1183,6 +1412,10 @@ export type InvoiceItemUncheckedCreateWithoutCustomerPackageUsageItemInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1214,12 +1447,17 @@ export type InvoiceItemUpdateWithoutCustomerPackageUsageItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
   soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
 }
@@ -1228,6 +1466,7 @@ export type InvoiceItemUncheckedUpdateWithoutCustomerPackageUsageItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1237,16 +1476,95 @@ export type InvoiceItemUncheckedUpdateWithoutCustomerPackageUsageItemInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+export type InvoiceItemCreateWithoutProductInput = {
+  id?: string
+  itemType?: $Enums.InvoiceItemType
+  itemCode?: string | null
+  description: string
+  serviceName: string
+  quantity?: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+  invoice: Prisma.InvoiceCreateNestedOneWithoutItemsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutInvoiceItemsInput
+  package?: Prisma.ServicePackageCreateNestedOneWithoutInvoiceItemsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutPackageInvoiceItemsInput
+  customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutInvoiceItemInput
+}
+
+export type InvoiceItemUncheckedCreateWithoutProductInput = {
+  id?: string
+  invoiceId: string
+  serviceId?: string | null
+  itemType?: $Enums.InvoiceItemType
+  packageId?: string | null
+  soldByStaffId?: string | null
+  customerPackageUsageItemId?: string | null
+  itemCode?: string | null
+  description: string
+  serviceName: string
+  quantity?: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+}
+
+export type InvoiceItemCreateOrConnectWithoutProductInput = {
+  where: Prisma.InvoiceItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput>
+}
+
+export type InvoiceItemCreateManyProductInputEnvelope = {
+  data: Prisma.InvoiceItemCreateManyProductInput | Prisma.InvoiceItemCreateManyProductInput[]
+  skipDuplicates?: boolean
+}
+
+export type InvoiceItemUpsertWithWhereUniqueWithoutProductInput = {
+  where: Prisma.InvoiceItemWhereUniqueInput
+  update: Prisma.XOR<Prisma.InvoiceItemUpdateWithoutProductInput, Prisma.InvoiceItemUncheckedUpdateWithoutProductInput>
+  create: Prisma.XOR<Prisma.InvoiceItemCreateWithoutProductInput, Prisma.InvoiceItemUncheckedCreateWithoutProductInput>
+}
+
+export type InvoiceItemUpdateWithWhereUniqueWithoutProductInput = {
+  where: Prisma.InvoiceItemWhereUniqueInput
+  data: Prisma.XOR<Prisma.InvoiceItemUpdateWithoutProductInput, Prisma.InvoiceItemUncheckedUpdateWithoutProductInput>
+}
+
+export type InvoiceItemUpdateManyWithWhereWithoutProductInput = {
+  where: Prisma.InvoiceItemScalarWhereInput
+  data: Prisma.XOR<Prisma.InvoiceItemUpdateManyMutationInput, Prisma.InvoiceItemUncheckedUpdateManyWithoutProductInput>
+}
+
 export type InvoiceItemCreateManySoldByStaffInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   customerPackageUsageItemId?: string | null
@@ -1256,6 +1574,10 @@ export type InvoiceItemCreateManySoldByStaffInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1271,12 +1593,17 @@ export type InvoiceItemUpdateWithoutSoldByStaffInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
 }
@@ -1285,6 +1612,7 @@ export type InvoiceItemUncheckedUpdateWithoutSoldByStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1294,6 +1622,10 @@ export type InvoiceItemUncheckedUpdateWithoutSoldByStaffInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1304,6 +1636,7 @@ export type InvoiceItemUncheckedUpdateManyWithoutSoldByStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1313,6 +1646,10 @@ export type InvoiceItemUncheckedUpdateManyWithoutSoldByStaffInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1322,6 +1659,7 @@ export type InvoiceItemUncheckedUpdateManyWithoutSoldByStaffInput = {
 export type InvoiceItemCreateManyServiceInput = {
   id?: string
   invoiceId: string
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -1332,6 +1670,10 @@ export type InvoiceItemCreateManyServiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1347,11 +1689,16 @@ export type InvoiceItemUpdateWithoutServiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
   soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
@@ -1360,6 +1707,7 @@ export type InvoiceItemUpdateWithoutServiceInput = {
 export type InvoiceItemUncheckedUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1370,6 +1718,10 @@ export type InvoiceItemUncheckedUpdateWithoutServiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1379,6 +1731,7 @@ export type InvoiceItemUncheckedUpdateWithoutServiceInput = {
 export type InvoiceItemUncheckedUpdateManyWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1389,6 +1742,10 @@ export type InvoiceItemUncheckedUpdateManyWithoutServiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1399,6 +1756,7 @@ export type InvoiceItemCreateManyPackageInput = {
   id?: string
   invoiceId: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   soldByStaffId?: string | null
   customerPackageUsageItemId?: string | null
@@ -1408,6 +1766,10 @@ export type InvoiceItemCreateManyPackageInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1423,12 +1785,17 @@ export type InvoiceItemUpdateWithoutPackageInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
   service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
 }
@@ -1437,6 +1804,7 @@ export type InvoiceItemUncheckedUpdateWithoutPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1446,6 +1814,10 @@ export type InvoiceItemUncheckedUpdateWithoutPackageInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1456,6 +1828,7 @@ export type InvoiceItemUncheckedUpdateManyWithoutPackageInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1465,6 +1838,10 @@ export type InvoiceItemUncheckedUpdateManyWithoutPackageInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1474,6 +1851,7 @@ export type InvoiceItemUncheckedUpdateManyWithoutPackageInput = {
 export type InvoiceItemCreateManyInvoiceInput = {
   id?: string
   serviceId?: string | null
+  productId?: string | null
   itemType?: $Enums.InvoiceItemType
   packageId?: string | null
   soldByStaffId?: string | null
@@ -1484,6 +1862,10 @@ export type InvoiceItemCreateManyInvoiceInput = {
   quantity?: number
   unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1499,11 +1881,16 @@ export type InvoiceItemUpdateWithoutInvoiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  product?: Prisma.ProductUpdateOneWithoutInvoiceItemsNestedInput
   package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
   soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
@@ -1512,6 +1899,7 @@ export type InvoiceItemUpdateWithoutInvoiceInput = {
 export type InvoiceItemUncheckedUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1522,6 +1910,10 @@ export type InvoiceItemUncheckedUpdateWithoutInvoiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1531,6 +1923,7 @@ export type InvoiceItemUncheckedUpdateWithoutInvoiceInput = {
 export type InvoiceItemUncheckedUpdateManyWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
   packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1541,6 +1934,106 @@ export type InvoiceItemUncheckedUpdateManyWithoutInvoiceInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceItemCreateManyProductInput = {
+  id?: string
+  invoiceId: string
+  serviceId?: string | null
+  itemType?: $Enums.InvoiceItemType
+  packageId?: string | null
+  soldByStaffId?: string | null
+  customerPackageUsageItemId?: string | null
+  itemCode?: string | null
+  description: string
+  serviceName: string
+  quantity?: number
+  unitPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal: runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Date | string
+}
+
+export type InvoiceItemUpdateWithoutProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+  itemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invoice?: Prisma.InvoiceUpdateOneRequiredWithoutItemsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutInvoiceItemsNestedInput
+  package?: Prisma.ServicePackageUpdateOneWithoutInvoiceItemsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutPackageInvoiceItemsNestedInput
+  customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutInvoiceItemNestedInput
+}
+
+export type InvoiceItemUncheckedUpdateWithoutProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+  packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  itemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type InvoiceItemUncheckedUpdateManyWithoutProductInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  itemType?: Prisma.EnumInvoiceItemTypeFieldUpdateOperationsInput | $Enums.InvoiceItemType
+  packageId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  itemCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceName?: Prisma.StringFieldUpdateOperationsInput | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  unitPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxableAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstRateSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalWithTax?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   lineTotal?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -1553,6 +2046,7 @@ export type InvoiceItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   id?: boolean
   invoiceId?: boolean
   serviceId?: boolean
+  productId?: boolean
   itemType?: boolean
   packageId?: boolean
   soldByStaffId?: boolean
@@ -1563,12 +2057,17 @@ export type InvoiceItemSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   quantity?: boolean
   unitPrice?: boolean
   discountAmount?: boolean
+  taxableAmount?: boolean
+  gstRateSnapshot?: boolean
+  gstAmount?: boolean
+  totalWithTax?: boolean
   taxPercent?: boolean
   taxAmount?: boolean
   lineTotal?: boolean
   createdAt?: boolean
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1578,6 +2077,7 @@ export type InvoiceItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   invoiceId?: boolean
   serviceId?: boolean
+  productId?: boolean
   itemType?: boolean
   packageId?: boolean
   soldByStaffId?: boolean
@@ -1588,12 +2088,17 @@ export type InvoiceItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   quantity?: boolean
   unitPrice?: boolean
   discountAmount?: boolean
+  taxableAmount?: boolean
+  gstRateSnapshot?: boolean
+  gstAmount?: boolean
+  totalWithTax?: boolean
   taxPercent?: boolean
   taxAmount?: boolean
   lineTotal?: boolean
   createdAt?: boolean
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1603,6 +2108,7 @@ export type InvoiceItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   id?: boolean
   invoiceId?: boolean
   serviceId?: boolean
+  productId?: boolean
   itemType?: boolean
   packageId?: boolean
   soldByStaffId?: boolean
@@ -1613,12 +2119,17 @@ export type InvoiceItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   quantity?: boolean
   unitPrice?: boolean
   discountAmount?: boolean
+  taxableAmount?: boolean
+  gstRateSnapshot?: boolean
+  gstAmount?: boolean
+  totalWithTax?: boolean
   taxPercent?: boolean
   taxAmount?: boolean
   lineTotal?: boolean
   createdAt?: boolean
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1628,6 +2139,7 @@ export type InvoiceItemSelectScalar = {
   id?: boolean
   invoiceId?: boolean
   serviceId?: boolean
+  productId?: boolean
   itemType?: boolean
   packageId?: boolean
   soldByStaffId?: boolean
@@ -1638,16 +2150,21 @@ export type InvoiceItemSelectScalar = {
   quantity?: boolean
   unitPrice?: boolean
   discountAmount?: boolean
+  taxableAmount?: boolean
+  gstRateSnapshot?: boolean
+  gstAmount?: boolean
+  totalWithTax?: boolean
   taxPercent?: boolean
   taxAmount?: boolean
   lineTotal?: boolean
   createdAt?: boolean
 }
 
-export type InvoiceItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "serviceId" | "itemType" | "packageId" | "soldByStaffId" | "customerPackageUsageItemId" | "itemCode" | "description" | "serviceName" | "quantity" | "unitPrice" | "discountAmount" | "taxPercent" | "taxAmount" | "lineTotal" | "createdAt", ExtArgs["result"]["invoiceItem"]>
+export type InvoiceItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceId" | "serviceId" | "productId" | "itemType" | "packageId" | "soldByStaffId" | "customerPackageUsageItemId" | "itemCode" | "description" | "serviceName" | "quantity" | "unitPrice" | "discountAmount" | "taxableAmount" | "gstRateSnapshot" | "gstAmount" | "totalWithTax" | "taxPercent" | "taxAmount" | "lineTotal" | "createdAt", ExtArgs["result"]["invoiceItem"]>
 export type InvoiceItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1655,6 +2172,7 @@ export type InvoiceItemInclude<ExtArgs extends runtime.Types.Extensions.Internal
 export type InvoiceItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1662,6 +2180,7 @@ export type InvoiceItemIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.
 export type InvoiceItemIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   service?: boolean | Prisma.InvoiceItem$serviceArgs<ExtArgs>
+  product?: boolean | Prisma.InvoiceItem$productArgs<ExtArgs>
   package?: boolean | Prisma.InvoiceItem$packageArgs<ExtArgs>
   soldByStaff?: boolean | Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>
@@ -1672,6 +2191,7 @@ export type $InvoiceItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     invoice: Prisma.$InvoicePayload<ExtArgs>
     service: Prisma.$ServicePayload<ExtArgs> | null
+    product: Prisma.$ProductPayload<ExtArgs> | null
     package: Prisma.$ServicePackagePayload<ExtArgs> | null
     soldByStaff: Prisma.$StaffPayload<ExtArgs> | null
     customerPackageUsageItem: Prisma.$CustomerPackageUsageItemPayload<ExtArgs> | null
@@ -1680,6 +2200,7 @@ export type $InvoiceItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     id: string
     invoiceId: string
     serviceId: string | null
+    productId: string | null
     itemType: $Enums.InvoiceItemType
     packageId: string | null
     soldByStaffId: string | null
@@ -1690,6 +2211,10 @@ export type $InvoiceItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
     quantity: number
     unitPrice: runtime.Decimal
     discountAmount: runtime.Decimal
+    taxableAmount: runtime.Decimal
+    gstRateSnapshot: runtime.Decimal
+    gstAmount: runtime.Decimal
+    totalWithTax: runtime.Decimal
     taxPercent: runtime.Decimal
     taxAmount: runtime.Decimal
     lineTotal: runtime.Decimal
@@ -2090,6 +2615,7 @@ export interface Prisma__InvoiceItemClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   invoice<T extends Prisma.InvoiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceDefaultArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.InvoiceItem$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$serviceArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  product<T extends Prisma.InvoiceItem$productArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$productArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   package<T extends Prisma.InvoiceItem$packageArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$packageArgs<ExtArgs>>): Prisma.Prisma__ServicePackageClient<runtime.Types.Result.GetResult<Prisma.$ServicePackagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   soldByStaff<T extends Prisma.InvoiceItem$soldByStaffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$soldByStaffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customerPackageUsageItem<T extends Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceItem$customerPackageUsageItemArgs<ExtArgs>>): Prisma.Prisma__CustomerPackageUsageItemClient<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsageItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -2125,6 +2651,7 @@ export interface InvoiceItemFieldRefs {
   readonly id: Prisma.FieldRef<"InvoiceItem", 'String'>
   readonly invoiceId: Prisma.FieldRef<"InvoiceItem", 'String'>
   readonly serviceId: Prisma.FieldRef<"InvoiceItem", 'String'>
+  readonly productId: Prisma.FieldRef<"InvoiceItem", 'String'>
   readonly itemType: Prisma.FieldRef<"InvoiceItem", 'InvoiceItemType'>
   readonly packageId: Prisma.FieldRef<"InvoiceItem", 'String'>
   readonly soldByStaffId: Prisma.FieldRef<"InvoiceItem", 'String'>
@@ -2135,6 +2662,10 @@ export interface InvoiceItemFieldRefs {
   readonly quantity: Prisma.FieldRef<"InvoiceItem", 'Int'>
   readonly unitPrice: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
   readonly discountAmount: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
+  readonly taxableAmount: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
+  readonly gstRateSnapshot: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
+  readonly gstAmount: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
+  readonly totalWithTax: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
   readonly taxPercent: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
   readonly taxAmount: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
   readonly lineTotal: Prisma.FieldRef<"InvoiceItem", 'Decimal'>
@@ -2556,6 +3087,25 @@ export type InvoiceItem$serviceArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.ServiceInclude<ExtArgs> | null
   where?: Prisma.ServiceWhereInput
+}
+
+/**
+ * InvoiceItem.product
+ */
+export type InvoiceItem$productArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Product
+   */
+  select?: Prisma.ProductSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Product
+   */
+  omit?: Prisma.ProductOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductInclude<ExtArgs> | null
+  where?: Prisma.ProductWhereInput
 }
 
 /**

@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import request from "supertest";
 
 import { app } from "../app.js";
+import { prisma } from "../config/prisma.js";
+import { generateAccessToken } from "../utils/jwt.js";
 
 const auth = (token: string) => ({
   Authorization: `Bearer ${token}`,
@@ -32,15 +34,18 @@ describe("Receptionist role", () => {
     const stamp = Date.now();
     const password = "Password@123";
 
-    const register = await request(app).post("/api/auth/register").send({
-      name: "Receptionist Test Super Admin",
-      email: `receptionist-super-${stamp}@example.com`,
-      phone_number: `90${String(stamp).slice(-8)}`,
-      password,
+    const superAdmin = await prisma.user.create({
+      data: {
+        name: "Receptionist Test Super Admin",
+        email: `receptionist-super-${stamp}@example.com`,
+        passwordHash: "not-used",
+        role: "SUPER_ADMIN",
+      },
     });
-    expectSuccess(register, 201);
-
-    const superAdminToken = register.body.data.accessToken as string;
+    const superAdminToken = generateAccessToken({
+      userId: superAdmin.id,
+      role: superAdmin.role,
+    });
 
     const salonA = await request(app)
       .post("/api/salons")

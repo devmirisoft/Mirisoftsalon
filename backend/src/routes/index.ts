@@ -53,12 +53,14 @@ import {
   staffTimeBlockRouter,
 } from "../features/staff-availability/staffAvailability.routes.js";
 import aiAssistantRoutes from "../features/ai-assistant/ai-assistant.routes.js";
+import profileRoutes from "../features/profile/profile.routes.js";
 
 
 
 const router = Router();
 
 router.use("/auth", authRoutes);
+router.use("/", profileRoutes);
 router.use("/users", userRoutes);
 router.use("/salons", salonRoutes);
 router.use("/branches", branchRoutes);

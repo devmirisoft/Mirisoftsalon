@@ -1,0 +1,811 @@
+(node:1948) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+((node:32764) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:22200) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:36424) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:20748) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:33172) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:37416) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:15140) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:27456) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:24132) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:33012) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:23120) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:16212) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:30604) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:26060) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:19028) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+tEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+(node:16068) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:22568) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:35096) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:42880) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PrismaClientValidationError: 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:34
+
+  184 const userId = req.user?.userId;
+  185 if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+  186 
+→ 187 const user = await prisma.user.findUnique({
+        where: {
+          id: "450e9599-2299-4735-97e6-c04d4900a25d"
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone_number: true,
+          role: true,
+          status: true,
+          salonId: true,
+          branchId: true,
+          createdAt: true,
+          updatedAt: true,
+          salon: {
+            select: {
+              id: true,
+              name: true,
+              salonCode: true
+            }
+          },
+          branch: {
+            select: {
+              id: true,
+              name: true,
+              branchCode: true,
+              ~~~~~~~~~~
+      ?       status?: true,
+      ?       salonId?: true,
+      ?       addressLine1?: true,
+      ?       city?: true,
+      ?       state?: true,
+      ?       postalCode?: true,
+      ?       phone?: true,
+      ?       createdAt?: true,
+      ?       updatedAt?: true,
+      ?       salon?: true,
+      ?       staff?: true,
+      ?       customers?: true,
+      ?       services?: true,
+      ?       users?: true,
+      ?       sales?: true,
+      ?       invoices?: true,
+      ?       payments?: true,
+      ?       appointments?: true,
+      ?       supportTickets?: true,
+      ?       products?: true,
+      ?       productStockMovements?: true,
+      ?       productPurchases?: true,
+      ?       stockAlerts?: true,
+      ?       reorderSuggestions?: true,
+      ?       auditLogs?: true,
+      ?       retailSales?: true,
+      ?       vendorPayments?: true,
+      ?       expenses?: true,
+      ?       staffAttendances?: true,
+      ?       staffLeaves?: true,
+      ?       staffAvailabilityRules?: true,
+      ?       staffTimeBlocks?: true,
+      ?       staffSalaryConfigs?: true,
+      ?       salarySlips?: true,
+      ?       coupons?: true,
+      ?       publicBookingSettings?: true,
+      ?       packageCategories?: true,
+      ?       servicePackages?: true,
+      ?       customerPackages?: true,
+      ?       packageServiceBalances?: true,
+      ?       packageUsages?: true,
+      ?       customerMemberships?: true,
+      ?       _count?: true
+            }
+          }
+        }
+      })
+
+Unknown field `branchCode` for select statement on model `Branch`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:16) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma.salon.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:36
+
+  243 export const getSalonProfile = async (req: Request, res: Response) => {
+  244   const salonId = currentSalonId(req);
+  245   if (!salonId) return res.status(400).json({ success: false, message: "Salon ID is missing" });
+→ 246   const salon = await prisma.salon.findUnique({
+          where: {
+            id: "a08afed1-65a9-4d2e-b33f-5f923742b7a9"
+          },
+          select: {
+            id: true,
+            name: true,
+            legalName: true,
+            ~~~~~~~~~
+            salonCode: true,
+            email: true,
+            phone: true,
+            addressLine1: true,
+            addressLine2: true,
+            city: true,
+            state: true,
+            postalCode: true,
+            timezone: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+        ?   gstEnabled?: true,
+        ?   gstNumber?: true,
+        ?   gstLegalName?: true,
+        ?   gstStateCode?: true,
+        ?   serviceGstRate?: true,
+        ?   productGstRate?: true,
+        ?   gstVerifiedAt?: true,
+        ?   country?: true,
+        ?   branches?: true,
+        ?   publicBookingSettings?: true,
+        ?   sales?: true,
+        ?   mainServices?: true,
+        ?   services?: true,
+        ?   serviceConsumables?: true,
+        ?   appointments?: true,
+        ?   invoices?: true,
+        ?   payments?: true,
+        ?   users?: true,
+        ?   staff?: true,
+        ?   customers?: true,
+        ?   memberships?: true,
+        ?   loyaltyRules?: true,
+        ?   loyaltyTransactions?: true,
+        ?   coupons?: true,
+        ?   customerTransactions?: true,
+        ?   supportTickets?: true,
+        ?   productBrands?: true,
+        ?   products?: true,
+        ?   productStockMovements?: true,
+        ?   productPurchases?: true,
+        ?   stockAlerts?: true,
+        ?   reorderSuggestions?: true,
+        ?   auditLogs?: true,
+        ?   retailSales?: true,
+        ?   vendors?: true,
+        ?   vendorPayments?: true,
+        ?   expenses?: true,
+        ?   expenseCategories?: true,
+        ?   staffAttendances?: true,
+        ?   staffLeaves?: true,
+        ?   staffAvailabilityRules?: true,
+        ?   staffTimeBlocks?: true,
+        ?   staffSalaryConfigs?: true,
+        ?   salarySlips?: true,
+        ?   packageCategories?: true,
+        ?   servicePackages?: true,
+        ?   servicePackageItems?: true,
+        ?   customerPackages?: true,
+        ?   customerPackageServiceBalances?: true,
+        ?   customerPackageUsages?: true,
+        ?   customerPackageUsageItems?: true,
+        ?   customerMemberships?: true,
+        ?   salonAssistantConversations?: true,
+        ?   _count?: true
+          }
+        })
+
+Unknown field `legalName` for select statement on model `Salon`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getSalonProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:17) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma.branch.findFirst()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:38
+
+  320 const branchId = currentBranchId(req);
+  321 const salonId = currentSalonId(req);
+  322 if (!branchId) return res.status(400).json({ success: false, message: "Branch ID is missing" });
+→ 323 const branch = await prisma.branch.findFirst({
+        where: {
+          id: "18202e24-800d-4977-856b-a4d240b9962c",
+          salonId: "a08afed1-65a9-4d2e-b33f-5f923742b7a9"
+        },
+        select: {
+          id: true,
+          name: true,
+          branchCode: true,
+          ~~~~~~~~~~
+          salonId: true,
+          email: true,
+          phone: true,
+          addressLine1: true,
+          city: true,
+          state: true,
+          postalCode: true,
+          openingTime: true,
+          closingTime: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+      ?   salon?: true,
+      ?   staff?: true,
+      ?   customers?: true,
+      ?   services?: true,
+      ?   users?: true,
+      ?   sales?: true,
+      ?   invoices?: true,
+      ?   payments?: true,
+      ?   appointments?: true,
+      ?   supportTickets?: true,
+      ?   products?: true,
+      ?   productStockMovements?: true,
+      ?   productPurchases?: true,
+      ?   stockAlerts?: true,
+      ?   reorderSuggestions?: true,
+      ?   auditLogs?: true,
+      ?   retailSales?: true,
+      ?   vendorPayments?: true,
+      ?   expenses?: true,
+      ?   staffAttendances?: true,
+      ?   staffLeaves?: true,
+      ?   staffAvailabilityRules?: true,
+      ?   staffTimeBlocks?: true,
+      ?   staffSalaryConfigs?: true,
+      ?   salarySlips?: true,
+      ?   coupons?: true,
+      ?   publicBookingSettings?: true,
+      ?   packageCategories?: true,
+      ?   servicePackages?: true,
+      ?   customerPackages?: true,
+      ?   packageServiceBalances?: true,
+      ?   packageUsages?: true,
+      ?   customerMemberships?: true,
+      ?   _count?: true
+        }
+      })
+
+Unknown field `branchCode` for select statement on model `Branch`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:34
+
+  184 const userId = req.user?.userId;
+  185 if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+  186 
+→ 187 const user = await prisma.user.findUnique({
+        where: {
+          id: "450e9599-2299-4735-97e6-c04d4900a25d"
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone_number: true,
+          role: true,
+          status: true,
+          salonId: true,
+          branchId: true,
+          createdAt: true,
+          updatedAt: true,
+          salon: {
+            select: {
+              id: true,
+              name: true,
+              salonCode: true
+            }
+          },
+          branch: {
+            select: {
+              id: true,
+              name: true,
+              branchCode: true,
+              ~~~~~~~~~~
+      ?       status?: true,
+      ?       salonId?: true,
+      ?       addressLine1?: true,
+      ?       city?: true,
+      ?       state?: true,
+      ?       postalCode?: true,
+      ?       phone?: true,
+      ?       createdAt?: true,
+      ?       updatedAt?: true,
+      ?       salon?: true,
+      ?       staff?: true,
+      ?       customers?: true,
+      ?       services?: true,
+      ?       users?: true,
+      ?       sales?: true,
+      ?       invoices?: true,
+      ?       payments?: true,
+      ?       appointments?: true,
+      ?       supportTickets?: true,
+      ?       products?: true,
+      ?       productStockMovements?: true,
+      ?       productPurchases?: true,
+      ?       stockAlerts?: true,
+      ?       reorderSuggestions?: true,
+      ?       auditLogs?: true,
+      ?       retailSales?: true,
+      ?       vendorPayments?: true,
+      ?       expenses?: true,
+      ?       staffAttendances?: true,
+      ?       staffLeaves?: true,
+      ?       staffAvailabilityRules?: true,
+      ?       staffTimeBlocks?: true,
+      ?       staffSalaryConfigs?: true,
+      ?       salarySlips?: true,
+      ?       coupons?: true,
+      ?       publicBookingSettings?: true,
+      ?       packageCategories?: true,
+      ?       servicePackages?: true,
+      ?       customerPackages?: true,
+      ?       packageServiceBalances?: true,
+      ?       packageUsages?: true,
+      ?       customerMemberships?: true,
+      ?       _count?: true
+            }
+          }
+        }
+      })
+
+Unknown field `branchCode` for select statement on model `Branch`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:16) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma.salon.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:36
+
+  243 export const getSalonProfile = async (req: Request, res: Response) => {
+  244   const salonId = currentSalonId(req);
+  245   if (!salonId) return res.status(400).json({ success: false, message: "Salon ID is missing" });
+→ 246   const salon = await prisma.salon.findUnique({
+          where: {
+            id: "a08afed1-65a9-4d2e-b33f-5f923742b7a9"
+          },
+          select: {
+            id: true,
+            name: true,
+            legalName: true,
+            ~~~~~~~~~
+            salonCode: true,
+            email: true,
+            phone: true,
+            addressLine1: true,
+            addressLine2: true,
+            city: true,
+            state: true,
+            postalCode: true,
+            timezone: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+        ?   gstEnabled?: true,
+        ?   gstNumber?: true,
+        ?   gstLegalName?: true,
+        ?   gstStateCode?: true,
+        ?   serviceGstRate?: true,
+        ?   productGstRate?: true,
+        ?   gstVerifiedAt?: true,
+        ?   country?: true,
+        ?   branches?: true,
+        ?   publicBookingSettings?: true,
+        ?   sales?: true,
+        ?   mainServices?: true,
+        ?   services?: true,
+        ?   serviceConsumables?: true,
+        ?   appointments?: true,
+        ?   invoices?: true,
+        ?   payments?: true,
+        ?   users?: true,
+        ?   staff?: true,
+        ?   customers?: true,
+        ?   memberships?: true,
+        ?   loyaltyRules?: true,
+        ?   loyaltyTransactions?: true,
+        ?   coupons?: true,
+        ?   customerTransactions?: true,
+        ?   supportTickets?: true,
+        ?   productBrands?: true,
+        ?   products?: true,
+        ?   productStockMovements?: true,
+        ?   productPurchases?: true,
+        ?   stockAlerts?: true,
+        ?   reorderSuggestions?: true,
+        ?   auditLogs?: true,
+        ?   retailSales?: true,
+        ?   vendors?: true,
+        ?   vendorPayments?: true,
+        ?   expenses?: true,
+        ?   expenseCategories?: true,
+        ?   staffAttendances?: true,
+        ?   staffLeaves?: true,
+        ?   staffAvailabilityRules?: true,
+        ?   staffTimeBlocks?: true,
+        ?   staffSalaryConfigs?: true,
+        ?   salarySlips?: true,
+        ?   packageCategories?: true,
+        ?   servicePackages?: true,
+        ?   servicePackageItems?: true,
+        ?   customerPackages?: true,
+        ?   customerPackageServiceBalances?: true,
+        ?   customerPackageUsages?: true,
+        ?   customerPackageUsageItems?: true,
+        ?   customerMemberships?: true,
+        ?   salonAssistantConversations?: true,
+        ?   _count?: true
+          }
+        })
+
+Unknown field `legalName` for select statement on model `Salon`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getSalonProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:17) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma.branch.findFirst()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:38
+
+  320 const branchId = currentBranchId(req);
+  321 const salonId = currentSalonId(req);
+  322 if (!branchId) return res.status(400).json({ success: false, message: "Branch ID is missing" });
+→ 323 const branch = await prisma.branch.findFirst({
+        where: {
+          id: "18202e24-800d-4977-856b-a4d240b9962c",
+          salonId: "a08afed1-65a9-4d2e-b33f-5f923742b7a9"
+        },
+        select: {
+          id: true,
+          name: true,
+          branchCode: true,
+          ~~~~~~~~~~
+          salonId: true,
+          email: true,
+          phone: true,
+          addressLine1: true,
+          city: true,
+          state: true,
+          postalCode: true,
+          openingTime: true,
+          closingTime: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+      ?   salon?: true,
+      ?   staff?: true,
+      ?   customers?: true,
+      ?   services?: true,
+      ?   users?: true,
+      ?   sales?: true,
+      ?   invoices?: true,
+      ?   payments?: true,
+      ?   appointments?: true,
+      ?   supportTickets?: true,
+      ?   products?: true,
+      ?   productStockMovements?: true,
+      ?   productPurchases?: true,
+      ?   stockAlerts?: true,
+      ?   reorderSuggestions?: true,
+      ?   auditLogs?: true,
+      ?   retailSales?: true,
+      ?   vendorPayments?: true,
+      ?   expenses?: true,
+      ?   staffAttendances?: true,
+      ?   staffLeaves?: true,
+      ?   staffAvailabilityRules?: true,
+      ?   staffTimeBlocks?: true,
+      ?   staffSalaryConfigs?: true,
+      ?   salarySlips?: true,
+      ?   coupons?: true,
+      ?   publicBookingSettings?: true,
+      ?   packageCategories?: true,
+      ?   servicePackages?: true,
+      ?   customerPackages?: true,
+      ?   packageServiceBalances?: true,
+      ?   packageUsages?: true,
+      ?   customerMemberships?: true,
+      ?   _count?: true
+        }
+      })
+
+Unknown field `branchCode` for select statement on model `Branch`. Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:34
+
+  184 const userId = req.user?.userId;
+  185 if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+  186 
+→ 187 const user = await prisma.user.findUnique(
+The column `Branch.branchCode` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:16) {
+  code: 'P2022',
+  meta: {
+    modelName: 'User',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:246:28)
+        at async Promise.all (index 1)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:243:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.salon.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:36
+
+  243 export const getSalonProfile = async (req: Request, res: Response) => {
+  244   const salonId = currentSalonId(req);
+  245   if (!salonId) return res.status(400).json({ success: false, message: "Salon ID is missing" });
+→ 246   const salon = await prisma.salon.findUnique(
+The column `Salon.legalName` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getSalonProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:17) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Salon',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.branch.findFirst()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:38
+
+  320 const branchId = currentBranchId(req);
+  321 const salonId = currentSalonId(req);
+  322 if (!branchId) return res.status(400).json({ success: false, message: "Branch ID is missing" });
+→ 323 const branch = await prisma.branch.findFirst(
+The column `Branch.branchCode` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Branch',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26)
+        at async zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:149:14)
+        at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+        at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.salon.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:36
+
+  243 export const getSalonProfile = async (req: Request, res: Response) => {
+  244   const salonId = currentSalonId(req);
+  245   if (!salonId) return res.status(400).json({ success: false, message: "Salon ID is missing" });
+→ 246   const salon = await prisma.salon.findUnique(
+The column `Salon.legalName` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getSalonProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:246:17) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Salon',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:34
+
+  184 const userId = req.user?.userId;
+  185 if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
+  186 
+→ 187 const user = await prisma.user.findUnique(
+The column `Branch.branchCode` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:16) {
+  code: 'P2022',
+  meta: {
+    modelName: 'User',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:246:28)
+        at async Promise.all (index 1)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:243:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma.branch.findFirst()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:38
+
+  320 const branchId = currentBranchId(req);
+  321 const salonId = currentSalonId(req);
+  322 if (!branchId) return res.status(400).json({ success: false, message: "Branch ID is missing" });
+→ 323 const branch = await prisma.branch.findFirst(
+The column `Branch.branchCode` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Branch',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PrismaPgAdapter.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PrismaPgAdapter.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PrismaPgAdapter.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26)
+        at async zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:149:14)
+        at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+        at async getBranchProfile (C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:323:18) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+(node:11896) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:30300) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:26680) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:10860) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:24120) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:11524) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:4960) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:44288) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)

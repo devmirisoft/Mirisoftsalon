@@ -23,11 +23,23 @@ import StatusBadge from "@/components/salon/StatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
+  addMonthsInputDate,
   formatDate,
   formatMoney,
   roleCanManage,
+  todayInputDate,
 } from "@/utils/salonFormat";
 import ReportExportButtons from "@/components/salon/ReportExportButtons";
+
+const defaultMembershipForm = () => {
+  const startsAt = todayInputDate();
+  return {
+    membershipId: "",
+    startsAt,
+    expiresAt: addMonthsInputDate(startsAt, 1),
+    note: "",
+  };
+};
 
 const Customers = () => {
   const { user } = useAuth();
@@ -37,12 +49,7 @@ const Customers = () => {
   const [membershipLoading, setMembershipLoading] = useState(false);
   const [membershipSaving, setMembershipSaving] = useState(false);
   const [membershipError, setMembershipError] = useState("");
-  const [membershipForm, setMembershipForm] = useState({
-    membershipId: "",
-    startsAt: new Date().toISOString().slice(0, 10),
-    expiresAt: "",
-    note: "",
-  });
+  const [membershipForm, setMembershipForm] = useState(defaultMembershipForm);
   const [walletCustomer, setWalletCustomer] = useState(null);
   const [ledgerCustomer, setLedgerCustomer] = useState(null);
   const [transactions, setTransactions] = useState([]);
@@ -191,6 +198,15 @@ const Customers = () => {
   const submitMembership = async (event) => {
     event.preventDefault();
     if (!membershipCustomer?.id || !membershipForm.membershipId) return;
+    const today = todayInputDate();
+    if (membershipForm.startsAt && membershipForm.startsAt < today) {
+      setMembershipError("Membership start date cannot be in the past.");
+      return;
+    }
+    if (membershipForm.expiresAt && membershipForm.expiresAt < today) {
+      setMembershipError("Membership expiry date cannot be in the past.");
+      return;
+    }
     setMembershipSaving(true);
     setMembershipError("");
     try {
@@ -212,12 +228,7 @@ const Customers = () => {
           : {}),
         ...(membershipForm.note ? { note: membershipForm.note } : {}),
       });
-      setMembershipForm({
-        membershipId: "",
-        startsAt: new Date().toISOString().slice(0, 10),
-        expiresAt: "",
-        note: "",
-      });
+      setMembershipForm(defaultMembershipForm());
       await refreshCustomerMembership();
     } catch (error) {
       setMembershipError(error.message);
@@ -411,11 +422,17 @@ const Customers = () => {
                         <Label>Starts at</Label>
                         <Input
                           type="date"
+                          min={todayInputDate()}
                           value={membershipForm.startsAt}
                           onChange={(event) =>
                             setMembershipForm((value) => ({
                               ...value,
                               startsAt: event.target.value,
+                              expiresAt:
+                                value.expiresAt &&
+                                value.expiresAt >= event.target.value
+                                  ? value.expiresAt
+                                  : addMonthsInputDate(event.target.value, 1),
                             }))
                           }
                         />
@@ -426,6 +443,7 @@ const Customers = () => {
                         <Label>Expires at</Label>
                         <Input
                           type="date"
+                          min={membershipForm.startsAt || todayInputDate()}
                           value={membershipForm.expiresAt}
                           onChange={(event) =>
                             setMembershipForm((value) => ({

@@ -86,6 +86,13 @@ export const createPayment = async (req: Request, res: Response) => {
       });
     }
 
+    if (invoice.appointment?.status === "CANCELLED") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot add payment to a cancelled appointment or job cart",
+      });
+    }
+
     if (invoice.paymentStatus === "PAID") {
       return res.status(400).json({
         success: false,

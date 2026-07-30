@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import getMenu from "./sidebar/MenuData";
 import Sidebar from "./sidebar/Sidebar";
 import Head from "./head/Head";
@@ -12,13 +12,15 @@ import { useAuth } from "@/auth/AuthContext";
 
 const Layout = ({title}) => {
   const { user } = useAuth();
+  const location = useLocation();
   const menu = getMenu(user?.role);
+  const isJobCartPage = location.pathname.startsWith("/job-carts");
   return (
     <>
       <Head title={!title && 'Loading'} />
       <AppRoot>
         <AppMain>
-          <Sidebar menuData={menu} fixed />
+          <Sidebar menuData={menu} fixed compact={isJobCartPage} />
           <AppWrap>
             <Header fixed />
               <Outlet />

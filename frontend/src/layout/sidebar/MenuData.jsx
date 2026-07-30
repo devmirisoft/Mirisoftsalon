@@ -61,7 +61,10 @@ const getMenu = (role) => {
               {
                 icon: "cart-fill",
                 text: "Job Cart",
-                link: "/job-carts",
+                subMenu: [
+                  { text: "Create Job Cart", link: "/job-carts/create" },
+                  { text: "View Job Cart", link: "/job-carts" },
+                ],
               },
               {
                 icon: "package-fill",

@@ -7,10 +7,11 @@ import Toggle from "./Toggle";
 
 import { useTheme, useThemeUpdate } from '@/layout/provider/Theme';
 
-const Sidebar = ({ fixed, className, menuData, ...props }) => {
+const Sidebar = ({ fixed, className, compact = false, menuData, ...props }) => {
 
   const theme = useTheme();
   const themeUpdate = useThemeUpdate();
+  const isCompact = compact || theme.sidebarCompact;
 
   const [mouseEnter, setMouseEnter] = useState(false);
 
@@ -22,8 +23,8 @@ const Sidebar = ({ fixed, className, menuData, ...props }) => {
     "nk-sidebar-fixed": fixed,
     "nk-sidebar-active": theme.sidebarVisibility,
     "nk-sidebar-mobile": theme.sidebarMobile,
-    "is-compact": theme.sidebarCompact,
-    "has-hover": theme.sidebarCompact && mouseEnter,
+    "is-compact": isCompact,
+    "has-hover": isCompact && mouseEnter,
     [`is-light`]: theme.sidebar === "white",
     [`is-${theme.sidebar}`]: theme.sidebar !== "white" && theme.sidebar !== "light",
     [`${className}`]: className,
@@ -37,7 +38,7 @@ const Sidebar = ({ fixed, className, menuData, ...props }) => {
             <Toggle className="nk-nav-toggle nk-quick-nav-icon d-xl-none me-n2" icon="arrow-left" click={themeUpdate.sidebarVisibility} />
             <Toggle
               className={`nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex ${
-                theme.sidebarCompact ? "compact-active" : ""
+                isCompact ? "compact-active" : ""
               }`}
               click={themeUpdate.sidebarCompact}
               icon="menu"

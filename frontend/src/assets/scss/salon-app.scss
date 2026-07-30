@@ -251,6 +251,45 @@
   color: #f4a524 !important;
 }
 
+@media (min-width: 1200px) {
+  .nk-sidebar {
+    width: 220px;
+  }
+
+  .nk-sidebar + .nk-wrap,
+  .nk-sidebar-overlay + .nk-wrap {
+    padding-left: 220px;
+  }
+
+  .nk-sidebar + .nk-wrap > .nk-header-fixed,
+  .nk-sidebar-overlay + .nk-wrap > .nk-header-fixed {
+    left: 220px;
+  }
+
+  .nk-sidebar-head {
+    width: 220px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .nk-sidebar .nk-menu-link {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .nk-sidebar .nk-menu-sub .nk-menu-link {
+    padding-left: 54px;
+  }
+}
+
+.nk-sidebar .logo-img,
+.nk-header-brand .logo-img {
+  height: 47px;
+  width: auto;
+  max-width: 170px;
+  object-fit: contain;
+}
+
 @media (max-width: 767.98px) {
   .service-category-panel {
     position: static;

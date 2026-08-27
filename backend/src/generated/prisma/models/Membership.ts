@@ -28,10 +28,16 @@ export type AggregateMembership = {
 
 export type MembershipAvgAggregateOutputType = {
   discountPercentage: runtime.Decimal | null
+  durationMonths: number | null
+  price: runtime.Decimal | null
+  walletCreditAmount: runtime.Decimal | null
 }
 
 export type MembershipSumAggregateOutputType = {
   discountPercentage: runtime.Decimal | null
+  durationMonths: number | null
+  price: runtime.Decimal | null
+  walletCreditAmount: runtime.Decimal | null
 }
 
 export type MembershipMinAggregateOutputType = {
@@ -41,6 +47,9 @@ export type MembershipMinAggregateOutputType = {
   description: string | null
   discountPercentage: runtime.Decimal | null
   status: boolean | null
+  durationMonths: number | null
+  price: runtime.Decimal | null
+  walletCreditAmount: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -52,6 +61,9 @@ export type MembershipMaxAggregateOutputType = {
   description: string | null
   discountPercentage: runtime.Decimal | null
   status: boolean | null
+  durationMonths: number | null
+  price: runtime.Decimal | null
+  walletCreditAmount: runtime.Decimal | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -63,6 +75,9 @@ export type MembershipCountAggregateOutputType = {
   description: number
   discountPercentage: number
   status: number
+  durationMonths: number
+  price: number
+  walletCreditAmount: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -71,10 +86,16 @@ export type MembershipCountAggregateOutputType = {
 
 export type MembershipAvgAggregateInputType = {
   discountPercentage?: true
+  durationMonths?: true
+  price?: true
+  walletCreditAmount?: true
 }
 
 export type MembershipSumAggregateInputType = {
   discountPercentage?: true
+  durationMonths?: true
+  price?: true
+  walletCreditAmount?: true
 }
 
 export type MembershipMinAggregateInputType = {
@@ -84,6 +105,9 @@ export type MembershipMinAggregateInputType = {
   description?: true
   discountPercentage?: true
   status?: true
+  durationMonths?: true
+  price?: true
+  walletCreditAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -95,6 +119,9 @@ export type MembershipMaxAggregateInputType = {
   description?: true
   discountPercentage?: true
   status?: true
+  durationMonths?: true
+  price?: true
+  walletCreditAmount?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +133,9 @@ export type MembershipCountAggregateInputType = {
   description?: true
   discountPercentage?: true
   status?: true
+  durationMonths?: true
+  price?: true
+  walletCreditAmount?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -204,6 +234,9 @@ export type MembershipGroupByOutputType = {
   description: string | null
   discountPercentage: runtime.Decimal
   status: boolean
+  durationMonths: number | null
+  price: runtime.Decimal
+  walletCreditAmount: runtime.Decimal
   createdAt: Date
   updatedAt: Date
   _count: MembershipCountAggregateOutputType | null
@@ -238,6 +271,9 @@ export type MembershipWhereInput = {
   description?: Prisma.StringNullableFilter<"Membership"> | string | null
   discountPercentage?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFilter<"Membership"> | boolean
+  durationMonths?: Prisma.IntNullableFilter<"Membership"> | number | null
+  price?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
@@ -252,6 +288,9 @@ export type MembershipOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPercentage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrderInput | Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   salon?: Prisma.SalonOrderByWithRelationInput
@@ -270,6 +309,9 @@ export type MembershipWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Membership"> | string | null
   discountPercentage?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFilter<"Membership"> | boolean
+  durationMonths?: Prisma.IntNullableFilter<"Membership"> | number | null
+  price?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
@@ -284,6 +326,9 @@ export type MembershipOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   discountPercentage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrderInput | Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MembershipCountOrderByAggregateInput
@@ -303,6 +348,9 @@ export type MembershipScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Membership"> | string | null
   discountPercentage?: Prisma.DecimalWithAggregatesFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolWithAggregatesFilter<"Membership"> | boolean
+  durationMonths?: Prisma.IntNullableWithAggregatesFilter<"Membership"> | number | null
+  price?: Prisma.DecimalWithAggregatesFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalWithAggregatesFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Membership"> | Date | string
 }
@@ -313,6 +361,9 @@ export type MembershipCreateInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutMembershipsInput
@@ -327,6 +378,9 @@ export type MembershipUncheckedCreateInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutMembershipInput
@@ -339,6 +393,9 @@ export type MembershipUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutMembershipsNestedInput
@@ -353,6 +410,9 @@ export type MembershipUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutMembershipNestedInput
@@ -366,6 +426,9 @@ export type MembershipCreateManyInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -376,6 +439,9 @@ export type MembershipUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -387,6 +453,9 @@ export type MembershipUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -418,12 +487,18 @@ export type MembershipCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   discountPercentage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type MembershipAvgOrderByAggregateInput = {
   discountPercentage?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
 }
 
 export type MembershipMaxOrderByAggregateInput = {
@@ -433,6 +508,9 @@ export type MembershipMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   discountPercentage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -444,12 +522,18 @@ export type MembershipMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   discountPercentage?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type MembershipSumOrderByAggregateInput = {
   discountPercentage?: Prisma.SortOrder
+  durationMonths?: Prisma.SortOrder
+  price?: Prisma.SortOrder
+  walletCreditAmount?: Prisma.SortOrder
 }
 
 export type MembershipScalarRelationFilter = {
@@ -515,6 +599,14 @@ export type MembershipUpdateOneWithoutCustomersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MembershipUpdateToOneWithWhereWithoutCustomersInput, Prisma.MembershipUpdateWithoutCustomersInput>, Prisma.MembershipUncheckedUpdateWithoutCustomersInput>
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type MembershipCreateNestedOneWithoutCustomerMembershipsInput = {
   create?: Prisma.XOR<Prisma.MembershipCreateWithoutCustomerMembershipsInput, Prisma.MembershipUncheckedCreateWithoutCustomerMembershipsInput>
   connectOrCreate?: Prisma.MembershipCreateOrConnectWithoutCustomerMembershipsInput
@@ -535,6 +627,9 @@ export type MembershipCreateWithoutSalonInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   customers?: Prisma.CustomerCreateNestedManyWithoutMembershipInput
@@ -547,6 +642,9 @@ export type MembershipUncheckedCreateWithoutSalonInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutMembershipInput
@@ -589,6 +687,9 @@ export type MembershipScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"Membership"> | string | null
   discountPercentage?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFilter<"Membership"> | boolean
+  durationMonths?: Prisma.IntNullableFilter<"Membership"> | number | null
+  price?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFilter<"Membership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Membership"> | Date | string
 }
@@ -599,6 +700,9 @@ export type MembershipCreateWithoutCustomersInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutMembershipsInput
@@ -612,6 +716,9 @@ export type MembershipUncheckedCreateWithoutCustomersInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutMembershipInput
@@ -639,6 +746,9 @@ export type MembershipUpdateWithoutCustomersInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutMembershipsNestedInput
@@ -652,6 +762,9 @@ export type MembershipUncheckedUpdateWithoutCustomersInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutMembershipNestedInput
@@ -663,6 +776,9 @@ export type MembershipCreateWithoutCustomerMembershipsInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   salon: Prisma.SalonCreateNestedOneWithoutMembershipsInput
@@ -676,6 +792,9 @@ export type MembershipUncheckedCreateWithoutCustomerMembershipsInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutMembershipInput
@@ -703,6 +822,9 @@ export type MembershipUpdateWithoutCustomerMembershipsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   salon?: Prisma.SalonUpdateOneRequiredWithoutMembershipsNestedInput
@@ -716,6 +838,9 @@ export type MembershipUncheckedUpdateWithoutCustomerMembershipsInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutMembershipNestedInput
@@ -727,6 +852,9 @@ export type MembershipCreateManySalonInput = {
   description?: string | null
   discountPercentage?: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: boolean
+  durationMonths?: number | null
+  price?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -737,6 +865,9 @@ export type MembershipUpdateWithoutSalonInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customers?: Prisma.CustomerUpdateManyWithoutMembershipNestedInput
@@ -749,6 +880,9 @@ export type MembershipUncheckedUpdateWithoutSalonInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutMembershipNestedInput
@@ -761,6 +895,9 @@ export type MembershipUncheckedUpdateManyWithoutSalonInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discountPercentage?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  durationMonths?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -812,6 +949,9 @@ export type MembershipSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   description?: boolean
   discountPercentage?: boolean
   status?: boolean
+  durationMonths?: boolean
+  price?: boolean
+  walletCreditAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -827,6 +967,9 @@ export type MembershipSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   description?: boolean
   discountPercentage?: boolean
   status?: boolean
+  durationMonths?: boolean
+  price?: boolean
+  walletCreditAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -839,6 +982,9 @@ export type MembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   description?: boolean
   discountPercentage?: boolean
   status?: boolean
+  durationMonths?: boolean
+  price?: boolean
+  walletCreditAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -851,11 +997,14 @@ export type MembershipSelectScalar = {
   description?: boolean
   discountPercentage?: boolean
   status?: boolean
+  durationMonths?: boolean
+  price?: boolean
+  walletCreditAmount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "name" | "description" | "discountPercentage" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["membership"]>
+export type MembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "name" | "description" | "discountPercentage" | "status" | "durationMonths" | "price" | "walletCreditAmount" | "createdAt" | "updatedAt", ExtArgs["result"]["membership"]>
 export type MembershipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   customers?: boolean | Prisma.Membership$customersArgs<ExtArgs>
@@ -883,6 +1032,9 @@ export type $MembershipPayload<ExtArgs extends runtime.Types.Extensions.Internal
     description: string | null
     discountPercentage: runtime.Decimal
     status: boolean
+    durationMonths: number | null
+    price: runtime.Decimal
+    walletCreditAmount: runtime.Decimal
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["membership"]>
@@ -1317,6 +1469,9 @@ export interface MembershipFieldRefs {
   readonly description: Prisma.FieldRef<"Membership", 'String'>
   readonly discountPercentage: Prisma.FieldRef<"Membership", 'Decimal'>
   readonly status: Prisma.FieldRef<"Membership", 'Boolean'>
+  readonly durationMonths: Prisma.FieldRef<"Membership", 'Int'>
+  readonly price: Prisma.FieldRef<"Membership", 'Decimal'>
+  readonly walletCreditAmount: Prisma.FieldRef<"Membership", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Membership", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Membership", 'DateTime'>
 }

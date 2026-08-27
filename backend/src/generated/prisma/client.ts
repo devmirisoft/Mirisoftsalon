@@ -67,6 +67,11 @@ export type Membership = Prisma.MembershipModel
  */
 export type CustomerMembership = Prisma.CustomerMembershipModel
 /**
+ * Model MembershipWalletTransaction
+ * 
+ */
+export type MembershipWalletTransaction = Prisma.MembershipWalletTransactionModel
+/**
  * Model CustomerTransaction
  * 
  */

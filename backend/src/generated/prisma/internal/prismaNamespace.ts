@@ -389,6 +389,7 @@ export const ModelName = {
   Customer: 'Customer',
   Membership: 'Membership',
   CustomerMembership: 'CustomerMembership',
+  MembershipWalletTransaction: 'MembershipWalletTransaction',
   CustomerTransaction: 'CustomerTransaction',
   LoyaltyRule: 'LoyaltyRule',
   LoyaltyTransaction: 'LoyaltyTransaction',
@@ -456,7 +457,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "salonAssistantConversation" | "salonAssistantMessage" | "supportTicketStatusHistory"
+    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "membershipWalletTransaction" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "salonAssistantConversation" | "salonAssistantMessage" | "supportTicketStatusHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -827,6 +828,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CustomerMembershipCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CustomerMembershipCountAggregateOutputType> | number
+        }
+      }
+    }
+    MembershipWalletTransaction: {
+      payload: Prisma.$MembershipWalletTransactionPayload<ExtArgs>
+      fields: Prisma.MembershipWalletTransactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MembershipWalletTransactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MembershipWalletTransactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        findFirst: {
+          args: Prisma.MembershipWalletTransactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MembershipWalletTransactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        findMany: {
+          args: Prisma.MembershipWalletTransactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>[]
+        }
+        create: {
+          args: Prisma.MembershipWalletTransactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        createMany: {
+          args: Prisma.MembershipWalletTransactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MembershipWalletTransactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>[]
+        }
+        delete: {
+          args: Prisma.MembershipWalletTransactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        update: {
+          args: Prisma.MembershipWalletTransactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.MembershipWalletTransactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MembershipWalletTransactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MembershipWalletTransactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.MembershipWalletTransactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MembershipWalletTransactionPayload>
+        }
+        aggregate: {
+          args: Prisma.MembershipWalletTransactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMembershipWalletTransaction>
+        }
+        groupBy: {
+          args: Prisma.MembershipWalletTransactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MembershipWalletTransactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MembershipWalletTransactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MembershipWalletTransactionCountAggregateOutputType> | number
         }
       }
     }
@@ -4794,6 +4869,9 @@ export const MembershipScalarFieldEnum = {
   description: 'description',
   discountPercentage: 'discountPercentage',
   status: 'status',
+  durationMonths: 'durationMonths',
+  price: 'price',
+  walletCreditAmount: 'walletCreditAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4809,9 +4887,15 @@ export const CustomerMembershipScalarFieldEnum = {
   membershipId: 'membershipId',
   membershipNameSnapshot: 'membershipNameSnapshot',
   discountPercentageSnapshot: 'discountPercentageSnapshot',
+  durationMonthsSnapshot: 'durationMonthsSnapshot',
   startsAt: 'startsAt',
   expiresAt: 'expiresAt',
   status: 'status',
+  walletCredited: 'walletCredited',
+  walletDebited: 'walletDebited',
+  walletBalance: 'walletBalance',
+  forfeitedAmount: 'forfeitedAmount',
+  forfeitedAt: 'forfeitedAt',
   assignedById: 'assignedById',
   removedById: 'removedById',
   removedAt: 'removedAt',
@@ -4823,6 +4907,27 @@ export const CustomerMembershipScalarFieldEnum = {
 } as const
 
 export type CustomerMembershipScalarFieldEnum = (typeof CustomerMembershipScalarFieldEnum)[keyof typeof CustomerMembershipScalarFieldEnum]
+
+
+export const MembershipWalletTransactionScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  customerMembershipId: 'customerMembershipId',
+  type: 'type',
+  credit: 'credit',
+  debit: 'debit',
+  balanceAfter: 'balanceAfter',
+  narration: 'narration',
+  invoiceId: 'invoiceId',
+  paymentId: 'paymentId',
+  jobCartAppointmentId: 'jobCartAppointmentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type MembershipWalletTransactionScalarFieldEnum = (typeof MembershipWalletTransactionScalarFieldEnum)[keyof typeof MembershipWalletTransactionScalarFieldEnum]
 
 
 export const CustomerTransactionScalarFieldEnum = {
@@ -5268,6 +5373,7 @@ export const AppointmentServiceScalarFieldEnum = {
   serviceId: 'serviceId',
   serviceName: 'serviceName',
   price: 'price',
+  staffId: 'staffId',
   durationValue: 'durationValue',
   durationUnit: 'durationUnit',
   customerPackageUsageItemId: 'customerPackageUsageItemId',
@@ -5727,6 +5833,8 @@ export const RetailSaleScalarFieldEnum = {
   saleDate: 'saleDate',
   subtotalAmount: 'subtotalAmount',
   discountAmount: 'discountAmount',
+  taxPercent: 'taxPercent',
+  taxAmount: 'taxAmount',
   totalAmount: 'totalAmount',
   paymentMethod: 'paymentMethod',
   note: 'note',
@@ -6041,6 +6149,20 @@ export type EnumCustomerMembershipStatusFieldRefInput<$PrismaModel> = FieldRefIn
  * Reference to a field of type 'CustomerMembershipStatus[]'
  */
 export type ListEnumCustomerMembershipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerMembershipStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MembershipWalletTransactionType'
+ */
+export type EnumMembershipWalletTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MembershipWalletTransactionType'>
+    
+
+
+/**
+ * Reference to a field of type 'MembershipWalletTransactionType[]'
+ */
+export type ListEnumMembershipWalletTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MembershipWalletTransactionType[]'>
     
 
 
@@ -6718,6 +6840,7 @@ export type GlobalOmitConfig = {
   customer?: Prisma.CustomerOmit
   membership?: Prisma.MembershipOmit
   customerMembership?: Prisma.CustomerMembershipOmit
+  membershipWalletTransaction?: Prisma.MembershipWalletTransactionOmit
   customerTransaction?: Prisma.CustomerTransactionOmit
   loyaltyRule?: Prisma.LoyaltyRuleOmit
   loyaltyTransaction?: Prisma.LoyaltyTransactionOmit

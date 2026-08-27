@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
     () => ({
       session,
       user: session?.user || null,
+      branch: session?.branch || null,
       isAuthenticated: Boolean(session),
       checkingSession,
       login: async (credentials) => {

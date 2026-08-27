@@ -51,3 +51,69 @@ export const compactId = (value = "") =>
 
 export const roleCanManage = (role) =>
   role === "SUPER_ADMIN" || role === "SALON_ADMIN";
+
+const displayNameKeys = [
+  "displayName",
+  "fullName",
+  "name",
+  "title",
+  "label",
+  "serviceName",
+  "packageName",
+  "categoryName",
+  "brandName",
+  "productName",
+  "customerName",
+  "staffName",
+  "branchName",
+  "salonName",
+  "invoiceCode",
+  "appointmentCode",
+  "jobCartCode",
+  "code",
+  "email",
+  "phone",
+  "mobile",
+  "id",
+];
+
+const isPlainDisplayValue = (value) =>
+  value === null ||
+  value === undefined ||
+  typeof value === "string" ||
+  typeof value === "number" ||
+  typeof value === "boolean" ||
+  value instanceof Date;
+
+export const formatDisplayValue = (value, emptyText = "\u2014") => {
+  if (value === null || value === undefined || value === "") return emptyText;
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "number") return String(value);
+  if (value instanceof Date) return formatDate(value, true);
+  if (typeof value === "string") return value.replaceAll("_", " ");
+  if (Array.isArray(value)) {
+    if (!value.length) return emptyText;
+    return value
+      .map((item) => formatDisplayValue(item, ""))
+      .filter(Boolean)
+      .join(", ");
+  }
+  if (typeof value !== "object") return String(value);
+
+  for (const key of displayNameKeys) {
+    if (value[key] !== null && value[key] !== undefined && value[key] !== "") {
+      return formatDisplayValue(value[key], emptyText);
+    }
+  }
+
+  const scalarEntries = Object.entries(value).filter(([, entryValue]) =>
+    isPlainDisplayValue(entryValue)
+  );
+
+  if (!scalarEntries.length) return emptyText;
+
+  return scalarEntries
+    .slice(0, 4)
+    .map(([key, entryValue]) => `${labelize(key)}: ${formatDisplayValue(entryValue, emptyText)}`)
+    .join(" | ");
+};

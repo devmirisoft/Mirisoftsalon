@@ -30,6 +30,9 @@ export const AppointmentModel = {
                         },
                         serviceName: service.serviceName,
                         price: service.price,
+                        ...(service.staffId
+                            ? { staff: { connect: { id: service.staffId } } }
+                            : {}),
                         ...(service.durationValue !== undefined
                             ? { durationValue: service.durationValue }
                             : {}),

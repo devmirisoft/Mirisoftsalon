@@ -82,7 +82,7 @@ const createSessionFromResponse = (body) => {
     throw new ApiError("The server returned an incomplete authentication response.");
   }
 
-  return saveSession({ user, accessToken });
+  return saveSession({ user, accessToken, branch: body.data?.branch || null });
 };
 
 export const login = async ({ email, password }) => {
@@ -148,16 +148,16 @@ export const restoreSession = async () => {
   if (!session) return null;
 
   try {
-    await verifySession(session.accessToken);
-    return session;
+    const verified = await verifySession(session.accessToken);
+    return saveSession({ ...session, branch: verified?.branch || null });
   } catch (error) {
     if (!(error instanceof ApiError) || error.status !== 401) throw error;
   }
 
   try {
     const refreshedSession = await refreshSession(session);
-    await verifySession(refreshedSession.accessToken);
-    return refreshedSession;
+    const verified = await verifySession(refreshedSession.accessToken);
+    return saveSession({ ...refreshedSession, branch: verified?.branch || null });
   } catch {
     clearSession();
     return null;

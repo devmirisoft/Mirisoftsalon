@@ -125,6 +125,19 @@ export const salonApi = {
     expire: (id) =>
       request(`/api/customer-memberships/${id}/expire`, { method: "PATCH" }),
   },
+  membershipWallets: {
+    get: (id) => request(`/api/membership-wallets/${id}`),
+    transactions: (query) =>
+      request("/api/membership-wallets/transactions", { query }),
+    topUp: (id, body) =>
+      request(`/api/membership-wallets/${id}/topup`, { method: "POST", body }),
+    adjust: (id, body) =>
+      request(`/api/membership-wallets/${id}/adjust`, { method: "POST", body }),
+    payInvoice: (body) =>
+      request("/api/membership-wallets/pay", { method: "POST", body }),
+    forCustomer: (customerId) =>
+      request(`/api/membership-wallets/customer/${customerId}`),
+  },
   packageCategories: {
     list: (query) => request("/api/package-categories", { query }),
     get: (id) => request(`/api/package-categories/${id}`),
@@ -289,8 +302,8 @@ export const salonApi = {
       request(`/api/job-carts/${id}/package-redemptions/${usageId}`, {
         method: "DELETE",
       }),
-    confirm: (id) =>
-      request(`/api/job-carts/${id}/confirm`, { method: "POST" }),
+    confirm: (id, body = {}) =>
+      request(`/api/job-carts/${id}/confirm`, { method: "POST", body }),
     cancel: (id) =>
       request(`/api/job-carts/${id}/cancel`, { method: "POST" }),
   },

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Alert,
   Nav,
@@ -25,9 +25,18 @@ import {
 } from "@/utils/salonFormat";
 import ReportExportButtons from "@/components/salon/ReportExportButtons";
 
+const TAX_OPTIONS = [
+  { value: 0, label: "No tax" },
+  { value: 5, label: "GST 5%" },
+  { value: 12, label: "GST 12%" },
+  { value: 18, label: "GST 18%" },
+  { value: 28, label: "GST 28%" },
+];
+
 const Billing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [tab, setTab] = useState("invoices");
   const [invoices, setInvoices] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -38,6 +47,13 @@ const Billing = () => {
   const [action, setAction] = useState(null);
   const [selected, setSelected] = useState(null);
   const [paymentDetails, setPaymentDetails] = useState(null);
+  const [invoiceDefaults, setInvoiceDefaults] = useState({});
+  const [handledAppointmentInvoiceId, setHandledAppointmentInvoiceId] =
+    useState("");
+  // Spendable membership wallet for the customer on the invoice being paid,
+  // keyed by invoice id so switching invoices in the form refetches.
+  const [wallet, setWallet] = useState(null);
+  const [walletInvoiceId, setWalletInvoiceId] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -88,11 +104,28 @@ const Billing = () => {
       .some((value) => String(value).toLowerCase().includes(query));
   });
 
+  useEffect(() => {
+    const appointmentId = new URLSearchParams(location.search).get(
+      "appointmentId"
+    );
+    if (!appointmentId || handledAppointmentInvoiceId === appointmentId) return;
+    if (!completedWithoutInvoice.some((item) => item.id === appointmentId)) {
+      return;
+    }
+    setInvoiceDefaults({ appointmentId });
+    setSelected(null);
+    setAction("invoice");
+    setHandledAppointmentInvoiceId(appointmentId);
+  }, [completedWithoutInvoice, handledAppointmentInvoiceId, location.search]);
+
+  const walletBalance = Number(wallet?.spendableBalance ?? 0);
+
   const form = useMemo(() => {
     if (action === "invoice") {
       return {
         title: "Generate invoice from appointment",
         submitLabel: "Generate invoice",
+        initialValues: invoiceDefaults,
         fields: [
           {
             name: "appointmentId",
@@ -126,6 +159,13 @@ const Billing = () => {
             ],
           },
           { name: "discountAmount", label: "Discount", type: "number", min: 0, step: "0.01", defaultValue: 0 },
+          {
+            name: "taxPercent",
+            label: "Tax",
+            type: "select",
+            defaultValue: 0,
+            options: TAX_OPTIONS,
+          },
           { name: "processingFeeAmount", label: "Processing fee", type: "number", min: 0, step: "0.01", defaultValue: 0 },
           { name: "billingNote", label: "Billing note", type: "textarea", fullWidth: true },
           { name: "footerNote", label: "Footer note", type: "textarea", fullWidth: true },
@@ -166,10 +206,21 @@ const Billing = () => {
           label: "Payment method",
           type: "select",
           required: true,
-          options: ["CASH", "CARD", "UPI", "OTHER"].map((value) => ({
-            value,
-            label: value,
-          })),
+          options: [
+            ...["CASH", "CARD", "UPI", "OTHER"].map((value) => ({
+              value,
+              label: value,
+            })),
+            // Only offered when the customer actually has spendable funds.
+            ...(walletBalance > 0
+              ? [
+                  {
+                    value: "MEMBERSHIP_WALLET",
+                    label: `Membership wallet (${formatMoney(walletBalance)} available)`,
+                  },
+                ]
+              : []),
+          ],
         },
         { name: "referenceNo", label: "Reference number" },
         {
@@ -180,15 +231,65 @@ const Billing = () => {
         },
         { name: "note", label: "Payment note", type: "textarea", fullWidth: true },
       ],
-      submit: (values) =>
-        salonApi.payments.create({
+      submit: (values) => {
+        // A wallet payment debits the membership and records the payment in
+        // one server-side transaction, so it uses its own endpoint.
+        if (values.method === "MEMBERSHIP_WALLET") {
+          return salonApi.membershipWallets.payInvoice({
+            invoiceId: values.invoiceId,
+            amount: Number(values.amount),
+            ...(values.note ? { note: values.note } : {}),
+          });
+        }
+        return salonApi.payments.create({
           ...values,
           ...(values.paidAt
             ? { paidAt: new Date(values.paidAt).toISOString() }
             : {}),
-        }),
+        });
+      },
     };
-  }, [action, completedWithoutInvoice, payableInvoices, selected]);
+  }, [
+    action,
+    completedWithoutInvoice,
+    invoiceDefaults,
+    payableInvoices,
+    selected,
+    walletBalance,
+  ]);
+
+  // Load the spendable membership wallet for whichever invoice the payment
+  // form is aimed at, so the form can offer paying from it.
+  useEffect(() => {
+    if (action !== "payment") {
+      setWallet(null);
+      setWalletInvoiceId("");
+      return;
+    }
+    const invoice = selected || payableInvoices[0];
+    const customerId = invoice?.customerId || invoice?.customer?.id;
+    if (!invoice || !customerId) {
+      setWallet(null);
+      setWalletInvoiceId("");
+      return;
+    }
+    if (walletInvoiceId === invoice.id) return;
+
+    let cancelled = false;
+    setWalletInvoiceId(invoice.id);
+    salonApi.membershipWallets
+      .forCustomer(customerId)
+      .then((response) => {
+        if (!cancelled) setWallet(response.data);
+      })
+      .catch(() => {
+        // A missing or unreadable wallet just means the option is not offered.
+        if (!cancelled) setWallet(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [action, selected, payableInvoices, walletInvoiceId]);
 
   const viewPayment = async (row) => {
     try {
@@ -224,7 +325,7 @@ const Billing = () => {
             </Button>
           )}
           {["SUPER_ADMIN", "SALON_ADMIN", "STAFF"].includes(user?.role) && (
-            <Button color="primary" onClick={() => { setSelected(null); setAction("invoice"); }}>
+            <Button color="primary" onClick={() => { setSelected(null); setInvoiceDefaults({}); setAction("invoice"); }}>
               <Icon name="file-plus" /> Generate invoice
             </Button>
           )}
@@ -383,6 +484,7 @@ const Billing = () => {
         toggle={() => setAction(null)}
         title={form.title}
         fields={form.fields}
+        initialValues={form.initialValues}
         submitLabel={form.submitLabel}
         onSubmit={async (values) => {
           const response = await form.submit(values);

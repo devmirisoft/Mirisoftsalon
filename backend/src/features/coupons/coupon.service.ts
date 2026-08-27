@@ -386,9 +386,7 @@ const recalculateDraftGst = async (
     new Prisma.Decimal(0)
   );
   const settings =
-    !invoice.salon.gstEnabled &&
-    invoice.invoiceType === "GST_INVOICE" &&
-    fallbackRate.gt(0)
+    invoice.invoiceType === "GST_INVOICE" && fallbackRate.gt(0)
       ? {
           ...invoice.salon,
           gstEnabled: true,

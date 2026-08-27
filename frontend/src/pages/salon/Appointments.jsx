@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Col,
@@ -62,6 +63,7 @@ const nextAvailableTime = (dateInfo) => {
 
 const Appointments = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [refs, setRefs] = useState({
     salons: [],
@@ -609,8 +611,13 @@ const Appointments = () => {
         initialValues={formConfig.initialValues}
         submitLabel={formConfig.submitLabel}
         onSubmit={async (values) => {
-          await formConfig.submit(values);
+          const response = await formConfig.submit(values);
           await load();
+          if (values.status === "COMPLETED") {
+            navigate(
+              `/billing?appointmentId=${response?.data?.id || selected?.id || ""}`
+            );
+          }
         }}
       />
       <SchemaModal

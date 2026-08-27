@@ -22,8 +22,13 @@ import StatusBadge from "@/components/salon/StatusBadge";
 
 const option = (item) => ({ value: item.id, label: item.name });
 
+// Branch-locked roles always work inside their own branch, so the server
+// forces it on create and the picker would only offer a choice it ignores.
+const BRANCH_LOCKED_ROLES = ["BRANCH_MANAGER", "RECEPTIONIST", "STAFF"];
+
 const Management = () => {
   const { user } = useAuth();
+  const isBranchLocked = BRANCH_LOCKED_ROLES.includes(user?.role);
   const [tab, setTab] = useState(user?.role === "SUPER_ADMIN" ? "salons" : "branches");
   const [refs, setRefs] = useState({ salons: [], branches: [], staff: [] });
   const [userContext, setUserContext] = useState(null);
@@ -187,13 +192,17 @@ const Management = () => {
             },
           ]
         : []),
-      {
-        name: "branchId",
-        label: "Branch",
-        type: "select",
-        nullable: true,
-        options: refs.branches.map(option),
-      },
+      ...(isBranchLocked
+        ? []
+        : [
+            {
+              name: "branchId",
+              label: "Branch",
+              type: "select",
+              nullable: true,
+              options: refs.branches.map(option),
+            },
+          ]),
       {
         name: "reportingManagerId",
         label: "Reporting manager",
@@ -202,7 +211,7 @@ const Management = () => {
         options: refs.staff.map(option),
       },
     ],
-    [isSuper, refs]
+    [isBranchLocked, isSuper, refs]
   );
 
   const accountFields = useMemo(
@@ -222,19 +231,19 @@ const Management = () => {
             },
           ]
         : []),
-      ...(accountModal === "receptionist"
+      ...(accountModal === "receptionist" && !isBranchLocked
         ? [
             {
               name: "branchId",
               label: "Branch",
               type: "select",
-              nullable: true,
+              required: true,
               options: refs.branches.map(option),
             },
           ]
         : []),
     ],
-    [accountModal, isSuper, refs]
+    [accountModal, isBranchLocked, isSuper, refs]
   );
 
   const createAccount = async (values) => {

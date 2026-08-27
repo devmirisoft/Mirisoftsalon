@@ -17,17 +17,17 @@ router.param("id", validateUuidParam("id"));
 
 router.use(authenticate);
 
-router.post("/", requireRole("SUPER_ADMIN", "SALON_ADMIN"), createStaff);
+router.post("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), createStaff);
 
-router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"), getStaff);
+router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"), getStaff);
 
-router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"), getStaffById);
+router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"), getStaffById);
 
-router.put("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), updateStaff);
+router.put("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), updateStaff);
 
 router.patch(
   "/:id/status",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"),
   updateStaffStatus
 );
 

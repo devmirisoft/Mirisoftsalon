@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Alert, Button, Input, Label, Table } from "reactstrap";
 import PageShell from "@/components/salon/PageShell";
 import { useAuth } from "@/auth/AuthContext";
+import RowActionsMenu from "@/components/salon/RowActionsMenu";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, labelize, todayInputDate } from "@/utils/salonFormat";
 
@@ -22,7 +23,7 @@ const Leaves = () => {
       <div className="col-md-2"><Label>From</Label><Input type="date" min={todayInputDate()} value={form.startDate} onChange={e=>setForm({...form,startDate:e.target.value,endDate:form.endDate&&form.endDate<e.target.value?e.target.value:form.endDate})}/></div><div className="col-md-2"><Label>To</Label><Input type="date" min={form.startDate||todayInputDate()} value={form.endDate} onChange={e=>setForm({...form,endDate:e.target.value})}/></div>
       <div className="col-md-3"><Label>Reason</Label><Input value={form.reason} onChange={e=>setForm({...form,reason:e.target.value})}/></div><div><Button color="primary" onClick={submit}>Request leave</Button></div>
     </div></div>
-    <div className="card card-bordered"><Table responsive className="mb-0"><thead><tr><th>Staff</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th>Actions</th></tr></thead><tbody>{rows.map(x=><tr key={x.id}><td>{x.staff?.name}</td><td>{labelize(x.leaveType)}</td><td>{formatDate(x.startDate)} – {formatDate(x.endDate)}</td><td>{x.totalDays}</td><td>{labelize(x.status)}</td><td className="d-flex gap-1">{manager&&x.status==="PENDING"&&<><Button size="sm" color="success" onClick={()=>action(()=>salonApi.leaves.approve(x.id))}>Approve</Button><Button size="sm" color="danger" outline onClick={()=>action(()=>salonApi.leaves.reject(x.id,"Rejected by manager"))}>Reject</Button></>}{x.status==="PENDING"&&<Button size="sm" color="secondary" outline onClick={()=>action(()=>salonApi.leaves.cancel(x.id))}>Cancel</Button>}</td></tr>)}</tbody></Table></div>
+    <div className="card card-bordered"><Table responsive className="mb-0"><thead><tr><th>Staff</th><th>Type</th><th>Dates</th><th>Days</th><th>Status</th><th className="text-end">Actions</th></tr></thead><tbody>{rows.map(x=><tr key={x.id}><td>{x.staff?.name}</td><td>{labelize(x.leaveType)}</td><td>{formatDate(x.startDate)} – {formatDate(x.endDate)}</td><td>{x.totalDays}</td><td>{labelize(x.status)}</td><td className="text-end"><RowActionsMenu>{manager&&x.status==="PENDING"&&<><Button size="sm" color="success" onClick={()=>action(()=>salonApi.leaves.approve(x.id))}>Approve</Button><Button size="sm" color="danger" outline onClick={()=>action(()=>salonApi.leaves.reject(x.id,"Rejected by manager"))}>Reject</Button></>}{x.status==="PENDING"&&<Button size="sm" color="secondary" outline onClick={()=>action(()=>salonApi.leaves.cancel(x.id))}>Cancel</Button>}</RowActionsMenu></td></tr>)}</tbody></Table></div>
   </PageShell>;
 };
 export default Leaves;

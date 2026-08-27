@@ -408,6 +408,7 @@ export type SalonWhereInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
   salonAssistantConversations?: Prisma.SalonAssistantConversationListRelationFilter
 }
 
@@ -479,6 +480,7 @@ export type SalonOrderByWithRelationInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageOrderByRelationAggregateInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemOrderByRelationAggregateInput
   customerMemberships?: Prisma.CustomerMembershipOrderByRelationAggregateInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionOrderByRelationAggregateInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationOrderByRelationAggregateInput
 }
 
@@ -553,6 +555,7 @@ export type SalonWhereUniqueInput = Prisma.AtLeast<{
   customerPackageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
   salonAssistantConversations?: Prisma.SalonAssistantConversationListRelationFilter
 }, "id" | "salonCode">
 
@@ -684,6 +687,7 @@ export type SalonCreateInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -755,6 +759,7 @@ export type SalonUncheckedCreateInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -826,6 +831,7 @@ export type SalonUpdateInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -897,6 +903,7 @@ export type SalonUncheckedUpdateInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -1160,6 +1167,20 @@ export type SalonUpdateOneRequiredWithoutCustomerMembershipsNestedInput = {
   upsert?: Prisma.SalonUpsertWithoutCustomerMembershipsInput
   connect?: Prisma.SalonWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.SalonUpdateToOneWithWhereWithoutCustomerMembershipsInput, Prisma.SalonUpdateWithoutCustomerMembershipsInput>, Prisma.SalonUncheckedUpdateWithoutCustomerMembershipsInput>
+}
+
+export type SalonCreateNestedOneWithoutMembershipWalletTransactionsInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutMembershipWalletTransactionsInput
+  connect?: Prisma.SalonWhereUniqueInput
+}
+
+export type SalonUpdateOneRequiredWithoutMembershipWalletTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutMembershipWalletTransactionsInput
+  upsert?: Prisma.SalonUpsertWithoutMembershipWalletTransactionsInput
+  connect?: Prisma.SalonWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SalonUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput, Prisma.SalonUpdateWithoutMembershipWalletTransactionsInput>, Prisma.SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput>
 }
 
 export type SalonCreateNestedOneWithoutCustomerTransactionsInput = {
@@ -1807,6 +1828,7 @@ export type SalonCreateWithoutUsersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -1877,6 +1899,7 @@ export type SalonUncheckedCreateWithoutUsersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -1963,6 +1986,7 @@ export type SalonUpdateWithoutUsersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -2033,6 +2057,7 @@ export type SalonUncheckedUpdateWithoutUsersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -2103,6 +2128,7 @@ export type SalonCreateWithoutCustomersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -2173,6 +2199,7 @@ export type SalonUncheckedCreateWithoutCustomersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -2259,6 +2286,7 @@ export type SalonUpdateWithoutCustomersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -2329,6 +2357,7 @@ export type SalonUncheckedUpdateWithoutCustomersInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -2399,6 +2428,7 @@ export type SalonCreateWithoutMembershipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -2469,6 +2499,7 @@ export type SalonUncheckedCreateWithoutMembershipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -2555,6 +2586,7 @@ export type SalonUpdateWithoutMembershipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -2625,6 +2657,7 @@ export type SalonUncheckedUpdateWithoutMembershipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -2695,6 +2728,7 @@ export type SalonCreateWithoutCustomerMembershipsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -2765,6 +2799,7 @@ export type SalonUncheckedCreateWithoutCustomerMembershipsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -2851,6 +2886,7 @@ export type SalonUpdateWithoutCustomerMembershipsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -2921,6 +2957,307 @@ export type SalonUncheckedUpdateWithoutCustomerMembershipsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
+}
+
+export type SalonUncheckedCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceUncheckedCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorUncheckedCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
+}
+
+export type SalonCreateOrConnectWithoutMembershipWalletTransactionsInput = {
+  where: Prisma.SalonWhereUniqueInput
+  create: Prisma.XOR<Prisma.SalonCreateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedCreateWithoutMembershipWalletTransactionsInput>
+}
+
+export type SalonUpsertWithoutMembershipWalletTransactionsInput = {
+  update: Prisma.XOR<Prisma.SalonUpdateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+  create: Prisma.XOR<Prisma.SalonCreateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  where?: Prisma.SalonWhereInput
+}
+
+export type SalonUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput = {
+  where?: Prisma.SalonWhereInput
+  data: Prisma.XOR<Prisma.SalonUpdateWithoutMembershipWalletTransactionsInput, Prisma.SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
+export type SalonUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUncheckedUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUncheckedUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -2991,6 +3328,7 @@ export type SalonCreateWithoutCustomerTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -3061,6 +3399,7 @@ export type SalonUncheckedCreateWithoutCustomerTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -3147,6 +3486,7 @@ export type SalonUpdateWithoutCustomerTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -3217,6 +3557,7 @@ export type SalonUncheckedUpdateWithoutCustomerTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -3287,6 +3628,7 @@ export type SalonCreateWithoutLoyaltyRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -3357,6 +3699,7 @@ export type SalonUncheckedCreateWithoutLoyaltyRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -3443,6 +3786,7 @@ export type SalonUpdateWithoutLoyaltyRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -3513,6 +3857,7 @@ export type SalonUncheckedUpdateWithoutLoyaltyRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -3583,6 +3928,7 @@ export type SalonCreateWithoutLoyaltyTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -3653,6 +3999,7 @@ export type SalonUncheckedCreateWithoutLoyaltyTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -3739,6 +4086,7 @@ export type SalonUpdateWithoutLoyaltyTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -3809,6 +4157,7 @@ export type SalonUncheckedUpdateWithoutLoyaltyTransactionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -3879,6 +4228,7 @@ export type SalonCreateWithoutCouponsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -3949,6 +4299,7 @@ export type SalonUncheckedCreateWithoutCouponsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -4035,6 +4386,7 @@ export type SalonUpdateWithoutCouponsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -4105,6 +4457,7 @@ export type SalonUncheckedUpdateWithoutCouponsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -4175,6 +4528,7 @@ export type SalonCreateWithoutBranchesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -4245,6 +4599,7 @@ export type SalonUncheckedCreateWithoutBranchesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -4331,6 +4686,7 @@ export type SalonUpdateWithoutBranchesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -4401,6 +4757,7 @@ export type SalonUncheckedUpdateWithoutBranchesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -4471,6 +4828,7 @@ export type SalonCreateWithoutStaffInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -4541,6 +4899,7 @@ export type SalonUncheckedCreateWithoutStaffInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -4627,6 +4986,7 @@ export type SalonUpdateWithoutStaffInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -4697,6 +5057,7 @@ export type SalonUncheckedUpdateWithoutStaffInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -4767,6 +5128,7 @@ export type SalonCreateWithoutStaffAttendancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -4837,6 +5199,7 @@ export type SalonUncheckedCreateWithoutStaffAttendancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -4923,6 +5286,7 @@ export type SalonUpdateWithoutStaffAttendancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -4993,6 +5357,7 @@ export type SalonUncheckedUpdateWithoutStaffAttendancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -5063,6 +5428,7 @@ export type SalonCreateWithoutStaffLeavesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -5133,6 +5499,7 @@ export type SalonUncheckedCreateWithoutStaffLeavesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -5219,6 +5586,7 @@ export type SalonUpdateWithoutStaffLeavesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -5289,6 +5657,7 @@ export type SalonUncheckedUpdateWithoutStaffLeavesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -5359,6 +5728,7 @@ export type SalonCreateWithoutStaffAvailabilityRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -5429,6 +5799,7 @@ export type SalonUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -5515,6 +5886,7 @@ export type SalonUpdateWithoutStaffAvailabilityRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -5585,6 +5957,7 @@ export type SalonUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -5655,6 +6028,7 @@ export type SalonCreateWithoutStaffTimeBlocksInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -5725,6 +6099,7 @@ export type SalonUncheckedCreateWithoutStaffTimeBlocksInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -5811,6 +6186,7 @@ export type SalonUpdateWithoutStaffTimeBlocksInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -5881,6 +6257,7 @@ export type SalonUncheckedUpdateWithoutStaffTimeBlocksInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -5951,6 +6328,7 @@ export type SalonCreateWithoutStaffSalaryConfigsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -6021,6 +6399,7 @@ export type SalonUncheckedCreateWithoutStaffSalaryConfigsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -6107,6 +6486,7 @@ export type SalonUpdateWithoutStaffSalaryConfigsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -6177,6 +6557,7 @@ export type SalonUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -6247,6 +6628,7 @@ export type SalonCreateWithoutSalarySlipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -6317,6 +6699,7 @@ export type SalonUncheckedCreateWithoutSalarySlipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -6403,6 +6786,7 @@ export type SalonUpdateWithoutSalarySlipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -6473,6 +6857,7 @@ export type SalonUncheckedUpdateWithoutSalarySlipsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -6543,6 +6928,7 @@ export type SalonCreateWithoutMainServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -6613,6 +6999,7 @@ export type SalonUncheckedCreateWithoutMainServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -6699,6 +7086,7 @@ export type SalonUpdateWithoutMainServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -6769,6 +7157,7 @@ export type SalonUncheckedUpdateWithoutMainServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -6839,6 +7228,7 @@ export type SalonCreateWithoutServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -6909,6 +7299,7 @@ export type SalonUncheckedCreateWithoutServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -6995,6 +7386,7 @@ export type SalonUpdateWithoutServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -7065,6 +7457,7 @@ export type SalonUncheckedUpdateWithoutServicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -7135,6 +7528,7 @@ export type SalonCreateWithoutServiceConsumablesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -7205,6 +7599,7 @@ export type SalonUncheckedCreateWithoutServiceConsumablesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -7291,6 +7686,7 @@ export type SalonUpdateWithoutServiceConsumablesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -7361,6 +7757,7 @@ export type SalonUncheckedUpdateWithoutServiceConsumablesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -7431,6 +7828,7 @@ export type SalonCreateWithoutPackageCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -7501,6 +7899,7 @@ export type SalonUncheckedCreateWithoutPackageCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -7587,6 +7986,7 @@ export type SalonUpdateWithoutPackageCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -7657,6 +8057,7 @@ export type SalonUncheckedUpdateWithoutPackageCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -7727,6 +8128,7 @@ export type SalonCreateWithoutServicePackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -7797,6 +8199,7 @@ export type SalonUncheckedCreateWithoutServicePackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -7883,6 +8286,7 @@ export type SalonUpdateWithoutServicePackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -7953,6 +8357,7 @@ export type SalonUncheckedUpdateWithoutServicePackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -8023,6 +8428,7 @@ export type SalonCreateWithoutServicePackageItemsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -8093,6 +8499,7 @@ export type SalonUncheckedCreateWithoutServicePackageItemsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -8179,6 +8586,7 @@ export type SalonUpdateWithoutServicePackageItemsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -8249,6 +8657,7 @@ export type SalonUncheckedUpdateWithoutServicePackageItemsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -8319,6 +8728,7 @@ export type SalonCreateWithoutAppointmentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -8389,6 +8799,7 @@ export type SalonUncheckedCreateWithoutAppointmentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -8475,6 +8886,7 @@ export type SalonUpdateWithoutAppointmentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -8545,6 +8957,7 @@ export type SalonUncheckedUpdateWithoutAppointmentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -8615,6 +9028,7 @@ export type SalonCreateWithoutPublicBookingSettingsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -8685,6 +9099,7 @@ export type SalonUncheckedCreateWithoutPublicBookingSettingsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -8771,6 +9186,7 @@ export type SalonUpdateWithoutPublicBookingSettingsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -8841,6 +9257,7 @@ export type SalonUncheckedUpdateWithoutPublicBookingSettingsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -8911,6 +9328,7 @@ export type SalonCreateWithoutSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -8981,6 +9399,7 @@ export type SalonUncheckedCreateWithoutSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -9067,6 +9486,7 @@ export type SalonUpdateWithoutSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -9137,6 +9557,7 @@ export type SalonUncheckedUpdateWithoutSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -9207,6 +9628,7 @@ export type SalonCreateWithoutInvoicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -9277,6 +9699,7 @@ export type SalonUncheckedCreateWithoutInvoicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -9363,6 +9786,7 @@ export type SalonUpdateWithoutInvoicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -9433,6 +9857,7 @@ export type SalonUncheckedUpdateWithoutInvoicesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -9503,6 +9928,7 @@ export type SalonCreateWithoutCustomerPackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -9573,6 +9999,7 @@ export type SalonUncheckedCreateWithoutCustomerPackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -9659,6 +10086,7 @@ export type SalonUpdateWithoutCustomerPackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -9729,6 +10157,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackagesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -9799,6 +10228,7 @@ export type SalonCreateWithoutCustomerPackageServiceBalancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -9869,6 +10299,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageServiceBalancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -9955,6 +10386,7 @@ export type SalonUpdateWithoutCustomerPackageServiceBalancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -10025,6 +10457,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageServiceBalancesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -10095,6 +10528,7 @@ export type SalonCreateWithoutCustomerPackageUsagesInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -10165,6 +10599,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsagesInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -10251,6 +10686,7 @@ export type SalonUpdateWithoutCustomerPackageUsagesInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -10321,6 +10757,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsagesInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -10391,6 +10828,7 @@ export type SalonCreateWithoutCustomerPackageUsageItemsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -10461,6 +10899,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsageItemsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -10547,6 +10986,7 @@ export type SalonUpdateWithoutCustomerPackageUsageItemsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -10617,6 +11057,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsageItemsInput = {
   customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -10687,6 +11128,7 @@ export type SalonCreateWithoutPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -10757,6 +11199,7 @@ export type SalonUncheckedCreateWithoutPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -10843,6 +11286,7 @@ export type SalonUpdateWithoutPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -10913,6 +11357,7 @@ export type SalonUncheckedUpdateWithoutPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -10983,6 +11428,7 @@ export type SalonCreateWithoutProductBrandsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -11053,6 +11499,7 @@ export type SalonUncheckedCreateWithoutProductBrandsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -11139,6 +11586,7 @@ export type SalonUpdateWithoutProductBrandsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -11209,6 +11657,7 @@ export type SalonUncheckedUpdateWithoutProductBrandsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -11279,6 +11728,7 @@ export type SalonCreateWithoutProductsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -11349,6 +11799,7 @@ export type SalonUncheckedCreateWithoutProductsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -11435,6 +11886,7 @@ export type SalonUpdateWithoutProductsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -11505,6 +11957,7 @@ export type SalonUncheckedUpdateWithoutProductsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -11575,6 +12028,7 @@ export type SalonCreateWithoutProductStockMovementsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -11645,6 +12099,7 @@ export type SalonUncheckedCreateWithoutProductStockMovementsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -11731,6 +12186,7 @@ export type SalonUpdateWithoutProductStockMovementsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -11801,6 +12257,7 @@ export type SalonUncheckedUpdateWithoutProductStockMovementsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -11871,6 +12328,7 @@ export type SalonCreateWithoutProductPurchasesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -11941,6 +12399,7 @@ export type SalonUncheckedCreateWithoutProductPurchasesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -12027,6 +12486,7 @@ export type SalonUpdateWithoutProductPurchasesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -12097,6 +12557,7 @@ export type SalonUncheckedUpdateWithoutProductPurchasesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -12167,6 +12628,7 @@ export type SalonCreateWithoutVendorsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -12237,6 +12699,7 @@ export type SalonUncheckedCreateWithoutVendorsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -12323,6 +12786,7 @@ export type SalonUpdateWithoutVendorsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -12393,6 +12857,7 @@ export type SalonUncheckedUpdateWithoutVendorsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -12463,6 +12928,7 @@ export type SalonCreateWithoutVendorPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -12533,6 +12999,7 @@ export type SalonUncheckedCreateWithoutVendorPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -12619,6 +13086,7 @@ export type SalonUpdateWithoutVendorPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -12689,6 +13157,7 @@ export type SalonUncheckedUpdateWithoutVendorPaymentsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -12759,6 +13228,7 @@ export type SalonCreateWithoutStockAlertsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -12829,6 +13299,7 @@ export type SalonUncheckedCreateWithoutStockAlertsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -12915,6 +13386,7 @@ export type SalonUpdateWithoutStockAlertsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -12985,6 +13457,7 @@ export type SalonUncheckedUpdateWithoutStockAlertsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -13055,6 +13528,7 @@ export type SalonCreateWithoutReorderSuggestionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -13125,6 +13599,7 @@ export type SalonUncheckedCreateWithoutReorderSuggestionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -13211,6 +13686,7 @@ export type SalonUpdateWithoutReorderSuggestionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -13281,6 +13757,7 @@ export type SalonUncheckedUpdateWithoutReorderSuggestionsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -13351,6 +13828,7 @@ export type SalonCreateWithoutAuditLogsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -13421,6 +13899,7 @@ export type SalonUncheckedCreateWithoutAuditLogsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -13507,6 +13986,7 @@ export type SalonUpdateWithoutAuditLogsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -13577,6 +14057,7 @@ export type SalonUncheckedUpdateWithoutAuditLogsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -13647,6 +14128,7 @@ export type SalonCreateWithoutRetailSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -13717,6 +14199,7 @@ export type SalonUncheckedCreateWithoutRetailSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -13803,6 +14286,7 @@ export type SalonUpdateWithoutRetailSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -13873,6 +14357,7 @@ export type SalonUncheckedUpdateWithoutRetailSalesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -13943,6 +14428,7 @@ export type SalonCreateWithoutExpensesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -14013,6 +14499,7 @@ export type SalonUncheckedCreateWithoutExpensesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -14099,6 +14586,7 @@ export type SalonUpdateWithoutExpensesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -14169,6 +14657,7 @@ export type SalonUncheckedUpdateWithoutExpensesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -14239,6 +14728,7 @@ export type SalonCreateWithoutExpenseCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -14309,6 +14799,7 @@ export type SalonUncheckedCreateWithoutExpenseCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -14395,6 +14886,7 @@ export type SalonUpdateWithoutExpenseCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -14465,6 +14957,7 @@ export type SalonUncheckedUpdateWithoutExpenseCategoriesInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -14535,6 +15028,7 @@ export type SalonCreateWithoutSupportTicketsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
 }
 
@@ -14605,6 +15099,7 @@ export type SalonUncheckedCreateWithoutSupportTicketsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
 }
 
@@ -14691,6 +15186,7 @@ export type SalonUpdateWithoutSupportTicketsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
 }
 
@@ -14761,6 +15257,7 @@ export type SalonUncheckedUpdateWithoutSupportTicketsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
   salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
 }
 
@@ -14832,6 +15329,7 @@ export type SalonCreateWithoutSalonAssistantConversationsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
 }
 
 export type SalonUncheckedCreateWithoutSalonAssistantConversationsInput = {
@@ -14902,6 +15400,7 @@ export type SalonUncheckedCreateWithoutSalonAssistantConversationsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
 }
 
 export type SalonCreateOrConnectWithoutSalonAssistantConversationsInput = {
@@ -14988,6 +15487,7 @@ export type SalonUpdateWithoutSalonAssistantConversationsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
 }
 
 export type SalonUncheckedUpdateWithoutSalonAssistantConversationsInput = {
@@ -15058,6 +15558,7 @@ export type SalonUncheckedUpdateWithoutSalonAssistantConversationsInput = {
   customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
   customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
 }
 
 
@@ -15110,6 +15611,7 @@ export type SalonCountOutputType = {
   customerPackageUsages: number
   customerPackageUsageItems: number
   customerMemberships: number
+  membershipWalletTransactions: number
   salonAssistantConversations: number
 }
 
@@ -15158,6 +15660,7 @@ export type SalonCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   customerPackageUsages?: boolean | SalonCountOutputTypeCountCustomerPackageUsagesArgs
   customerPackageUsageItems?: boolean | SalonCountOutputTypeCountCustomerPackageUsageItemsArgs
   customerMemberships?: boolean | SalonCountOutputTypeCountCustomerMembershipsArgs
+  membershipWalletTransactions?: boolean | SalonCountOutputTypeCountMembershipWalletTransactionsArgs
   salonAssistantConversations?: boolean | SalonCountOutputTypeCountSalonAssistantConversationsArgs
 }
 
@@ -15482,6 +15985,13 @@ export type SalonCountOutputTypeCountCustomerMembershipsArgs<ExtArgs extends run
 /**
  * SalonCountOutputType without action
  */
+export type SalonCountOutputTypeCountMembershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MembershipWalletTransactionWhereInput
+}
+
+/**
+ * SalonCountOutputType without action
+ */
 export type SalonCountOutputTypeCountSalonAssistantConversationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SalonAssistantConversationWhereInput
 }
@@ -15555,6 +16065,7 @@ export type SalonSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   customerPackageUsages?: boolean | Prisma.Salon$customerPackageUsagesArgs<ExtArgs>
   customerPackageUsageItems?: boolean | Prisma.Salon$customerPackageUsageItemsArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Salon$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Salon$membershipWalletTransactionsArgs<ExtArgs>
   salonAssistantConversations?: boolean | Prisma.Salon$salonAssistantConversationsArgs<ExtArgs>
   _count?: boolean | Prisma.SalonCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["salon"]>
@@ -15683,6 +16194,7 @@ export type SalonInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   customerPackageUsages?: boolean | Prisma.Salon$customerPackageUsagesArgs<ExtArgs>
   customerPackageUsageItems?: boolean | Prisma.Salon$customerPackageUsageItemsArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Salon$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Salon$membershipWalletTransactionsArgs<ExtArgs>
   salonAssistantConversations?: boolean | Prisma.Salon$salonAssistantConversationsArgs<ExtArgs>
   _count?: boolean | Prisma.SalonCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -15736,6 +16248,7 @@ export type $SalonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     customerPackageUsages: Prisma.$CustomerPackageUsagePayload<ExtArgs>[]
     customerPackageUsageItems: Prisma.$CustomerPackageUsageItemPayload<ExtArgs>[]
     customerMemberships: Prisma.$CustomerMembershipPayload<ExtArgs>[]
+    membershipWalletTransactions: Prisma.$MembershipWalletTransactionPayload<ExtArgs>[]
     salonAssistantConversations: Prisma.$SalonAssistantConversationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -16200,6 +16713,7 @@ export interface Prisma__SalonClient<T, Null = never, ExtArgs extends runtime.Ty
   customerPackageUsages<T extends Prisma.Salon$customerPackageUsagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$customerPackageUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerPackageUsageItems<T extends Prisma.Salon$customerPackageUsageItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$customerPackageUsageItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsageItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerMemberships<T extends Prisma.Salon$customerMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$customerMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  membershipWalletTransactions<T extends Prisma.Salon$membershipWalletTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$membershipWalletTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipWalletTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   salonAssistantConversations<T extends Prisma.Salon$salonAssistantConversationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$salonAssistantConversationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SalonAssistantConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -17699,6 +18213,30 @@ export type Salon$customerMembershipsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+}
+
+/**
+ * Salon.membershipWalletTransactions
+ */
+export type Salon$membershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembershipWalletTransaction
+   */
+  select?: Prisma.MembershipWalletTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MembershipWalletTransaction
+   */
+  omit?: Prisma.MembershipWalletTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MembershipWalletTransactionInclude<ExtArgs> | null
+  where?: Prisma.MembershipWalletTransactionWhereInput
+  orderBy?: Prisma.MembershipWalletTransactionOrderByWithRelationInput | Prisma.MembershipWalletTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.MembershipWalletTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
 }
 
 /**

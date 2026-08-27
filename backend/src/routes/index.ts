@@ -47,6 +47,7 @@ import {
   servicePackageRoutes,
 } from "../features/packages/package.routes.js";
 import customerMembershipRoutes from "../features/customer-memberships/customer-membership.routes.js";
+import membershipWalletRoutes from "../features/membership-wallets/membership-wallet.routes.js";
 import {
   staffAvailabilityRouter,
   staffRosterRouter,
@@ -101,6 +102,7 @@ router.use("/package-categories", packageCategoryRoutes);
 router.use("/packages", servicePackageRoutes);
 router.use("/customer-packages", customerPackageRoutes);
 router.use("/customer-memberships", customerMembershipRoutes);
+router.use("/membership-wallets", membershipWalletRoutes);
 router.use("/staff-availability", staffAvailabilityRouter);
 router.use("/staff-time-blocks", staffTimeBlockRouter);
 router.use("/staff-roster", staffRosterRouter);

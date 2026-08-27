@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Input, Label, Spinner, Table } from "reactstrap";
 import { useAuth } from "@/auth/AuthContext";
 import PageShell from "@/components/salon/PageShell";
+import RowActionsMenu from "@/components/salon/RowActionsMenu";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
 import {
@@ -814,7 +815,7 @@ const ShiftRoster = () => {
                     <th>Date</th>
                     <th>Time</th>
                     <th>Type</th>
-                    {canManage && <th>Actions</th>}
+                    {canManage && <th className="text-end">Actions</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -842,18 +843,20 @@ const ShiftRoster = () => {
                         </td>
                         <td>{labelize(block.type)}</td>
                         {canManage && (
-                          <td className="d-flex gap-1">
-                            <Button size="sm" outline onClick={() => editBlock(block)}>
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              color="danger"
-                              outline
-                              onClick={() => removeBlock(block)}
-                            >
-                              Delete
-                            </Button>
+                          <td className="text-end">
+                            <RowActionsMenu>
+                              <Button size="sm" outline onClick={() => editBlock(block)}>
+                                Edit
+                              </Button>
+                              <Button
+                                size="sm"
+                                color="danger"
+                                outline
+                                onClick={() => removeBlock(block)}
+                              >
+                                Delete
+                              </Button>
+                            </RowActionsMenu>
                           </td>
                         )}
                       </tr>

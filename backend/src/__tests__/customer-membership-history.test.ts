@@ -177,6 +177,47 @@ const assign = (
     .set(auth(token))
     .send(body);
 
+/**
+ * Seeds a membership that already started, and optionally already elapsed.
+ * The assignment endpoint refuses start and expiry dates in the past, so a
+ * scenario that needs a lapsed membership has to be written directly rather
+ * than through the API.
+ */
+const seedMembership = async (
+  f: Awaited<ReturnType<typeof fixture>>,
+  input: {
+    membership: { id: string; name: string; discountPercentage: unknown };
+    startsAt: Date;
+    expiresAt: Date | null;
+    customerId?: string;
+    branchId?: string | null;
+  }
+) => {
+  const customerId = input.customerId ?? f.customer.id;
+  const created = await prisma.customerMembership.create({
+    data: {
+      salonId: f.salon.id,
+      branchId: input.branchId === undefined ? f.branch.id : input.branchId,
+      customerId,
+      membershipId: input.membership.id,
+      membershipNameSnapshot: input.membership.name,
+      discountPercentageSnapshot:
+        input.membership.discountPercentage as never,
+      startsAt: input.startsAt,
+      expiresAt: input.expiresAt,
+      status: "ACTIVE",
+    },
+  });
+  await prisma.customer.update({
+    where: { id: customerId },
+    data: { membershipId: input.membership.id },
+  });
+  return created;
+};
+
+const daysAgo = (days: number) =>
+  new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
 const createInvoice = async (
   f: Awaited<ReturnType<typeof fixture>>,
   suffix: string
@@ -215,7 +256,6 @@ describe("Customer membership lifecycle history", () => {
     const f = await fixture();
     const response = await assign(f, {
       membershipId: f.silver.id,
-      startsAt: "2026-07-01T00:00:00.000Z",
       expiresAt: "2030-12-02T23:59:59.000Z",
       note: "Annual silver plan",
     });
@@ -290,10 +330,10 @@ describe("Customer membership lifecycle history", () => {
 
   it("expires an elapsed membership and excludes it from invoice discounts", async () => {
     const f = await fixture();
-    await assign(f, {
-      membershipId: f.silver.id,
-      startsAt: "2020-01-01T00:00:00.000Z",
-      expiresAt: "2021-01-01T00:00:00.000Z",
+    await seedMembership(f, {
+      membership: f.silver,
+      startsAt: daysAgo(400),
+      expiresAt: daysAgo(30),
     });
     const invoice = await createInvoice(f, "11");
     expect(invoice.status).toBe(201);
@@ -313,10 +353,10 @@ describe("Customer membership lifecycle history", () => {
 
   it("counts only currently valid memberships as active customers", async () => {
     const f = await fixture();
-    await assign(f, {
-      membershipId: f.silver.id,
-      startsAt: "2020-01-01T00:00:00.000Z",
-      expiresAt: "2021-01-01T00:00:00.000Z",
+    await seedMembership(f, {
+      membership: f.silver,
+      startsAt: daysAgo(400),
+      expiresAt: daysAgo(30),
     });
     await assign(
       f,
@@ -351,10 +391,10 @@ describe("Customer membership lifecycle history", () => {
 
   it("soft-deletes a membership that has expired customer history", async () => {
     const f = await fixture();
-    await assign(f, {
-      membershipId: f.silver.id,
-      startsAt: "2020-01-01T00:00:00.000Z",
-      expiresAt: "2021-01-01T00:00:00.000Z",
+    await seedMembership(f, {
+      membership: f.silver,
+      startsAt: daysAgo(400),
+      expiresAt: daysAgo(30),
     });
 
     const response = await request(app)

@@ -22,6 +22,7 @@ import {
   requestAuditContext,
 } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
+import { isBranchLockedRole } from "../../utils/branch-scope.js";
 
 const PUBLIC_REGISTER_PROTECTED_FIELDS = new Set([
   "role",
@@ -319,6 +320,27 @@ export const login = async (req: Request, res: Response) => {
             });
         }
 
+        if (isBranchLockedRole(user.role) && !user.branchId) {
+            await createBestEffortAuditLog({
+                salonId: user.salonId,
+                userId: user.id,
+                userName: user.name,
+                userRole: user.role,
+                module: "AUTH",
+                action: "LOGIN_FAILED",
+                entityId: user.id,
+                entityName: user.name,
+                description: `Blocked login for ${user.email} with no branch assigned`,
+                newData: { email: user.email, reason: "NO_BRANCH_ASSIGNED" },
+                ...requestAuditContext(req),
+            });
+            return res.status(403).json({
+                success: false,
+                message:
+                    "Your account is not assigned to a branch. Contact your salon admin.",
+            });
+        }
+
         const tokenPayload = {
             userId: user.id,
             role: user.role,
@@ -330,6 +352,13 @@ export const login = async (req: Request, res: Response) => {
         const refreshToken = generateRefreshToken(tokenPayload);
         await createRefreshSession(user.id, refreshToken);
         const { passwordHash, ...safeUser } = user;
+
+        const branch = user.branchId
+            ? await prisma.branch.findUnique({
+                  where: { id: user.branchId },
+                  select: { id: true, name: true },
+              })
+            : null;
 
         res.cookie("refreshToken", refreshToken, refreshCookieOptions);
 
@@ -353,6 +382,7 @@ export const login = async (req: Request, res: Response) => {
             message: "Login successful",
             data: {
                 user: safeUser,
+                branch,
                 accessToken,
             },
         });
@@ -365,10 +395,18 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const me = async (req: Request, res: Response) => {
+  const branch = req.user?.branchId
+    ? await prisma.branch.findUnique({
+        where: { id: req.user.branchId },
+        select: { id: true, name: true },
+      })
+    : null;
+
   return res.status(200).json({
     success: true,
     message: "Authenticated user",
     user: req.user,
+    branch,
   });
 };
 

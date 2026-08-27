@@ -2,6 +2,10 @@ import { type Request, type Response } from "express";
 import { UserModel } from "./user.model.js";
 import { hashPass } from "../../utils/password.js";
 import { BranchModel } from "../branches/branch.model.js";
+import {
+  isBranchAccessible,
+  resolveWritableBranchId,
+} from "../../utils/branch-scope.js";
 import { StaffModel } from "../staff/staff.model.js";
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -85,15 +89,35 @@ export const createReceptionist = async (req: Request, res: Response) => {
       });
     }
 
-    if (branchId) {
-      const branch = await BranchModel.findByIdAndSalon(branchId, finalSalonId);
+    const branchResolution = resolveWritableBranchId(req, branchId);
 
-      if (!branch) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid branch for this salon",
-        });
-      }
+    if (!branchResolution.ok) {
+      return res.status(400).json({
+        success: false,
+        message: branchResolution.message,
+      });
+    }
+
+    const finalBranchId = branchResolution.branchId;
+
+    // A receptionist is always branch-locked, so a branch is mandatory here.
+    if (!finalBranchId) {
+      return res.status(400).json({
+        success: false,
+        message: "branchId is required to create a receptionist",
+      });
+    }
+
+    const branch = await BranchModel.findByIdAndSalon(
+      finalBranchId,
+      finalSalonId
+    );
+
+    if (!branch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid branch for this salon",
+      });
     }
 
     if (await UserModel.findByEmail(email)) {
@@ -116,7 +140,7 @@ export const createReceptionist = async (req: Request, res: Response) => {
       phone_number,
       passwordHash: await hashPass(password),
       salonId: finalSalonId,
-      ...(branchId ? { branchId } : {}),
+      branchId: finalBranchId,
     });
 
     return res.status(201).json({
@@ -157,6 +181,24 @@ export const createStaffAccount = async (req: Request, res: Response) => {
       });
     }
 
+    if (!isBranchAccessible(req, staff.branchId)) {
+      return res.status(404).json({
+        success: false,
+        message: "Staff not found",
+      });
+    }
+
+    // The login inherits the staff member's branch, and STAFF is branch-locked,
+    // so provisioning a login for an unassigned staff row would create a user
+    // that no branch filter applies to.
+    if (!staff.branchId) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Assign this staff member to a branch before creating their login",
+      });
+    }
+
     if (staff.userId) {
       return res.status(409).json({
         success: false,
@@ -192,7 +234,7 @@ export const createStaffAccount = async (req: Request, res: Response) => {
       phone_number: staff.phone,
       passwordHash: await hashPass(password),
       salonId: staff.salonId,
-      ...(staff.branchId ? { branchId: staff.branchId } : {}),
+      branchId: staff.branchId,
     });
 
     return res.status(201).json({

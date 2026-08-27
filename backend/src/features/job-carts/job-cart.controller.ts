@@ -146,7 +146,12 @@ export const postJobCart = async (req: Request, res: Response) => {
         branchId: parsed.branchId,
         customerName: parsed.customerName,
         phone: parsed.phone,
-        serviceIds: parsed.serviceIds,
+        serviceIds:
+          parsed.serviceItems?.map((item) => item.serviceId) ??
+          parsed.serviceIds,
+        ...(parsed.serviceItems
+          ? { serviceItems: parsed.serviceItems }
+          : {}),
         startTime: new Date(parsed.startTime),
         ...(parsed.salonId ? { salonId: parsed.salonId } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
@@ -316,10 +321,30 @@ export const deleteJobCartPackageRedemption = async (
 
 export const postConfirmJobCart = async (req: Request, res: Response) => {
   try {
+    const parsed = z
+      .object({
+        invoiceType: z.enum(["GST_INVOICE", "BILL_OF_SUPPLY"]).optional(),
+        status: z.enum(["DRAFT", "ISSUED"]).optional(),
+        discountAmount: z.coerce.number().min(0).optional(),
+        processingFeeAmount: z.coerce.number().min(0).optional(),
+        taxPercent: z.coerce.number().min(0).max(100).optional(),
+        billingNote: z.string().optional().nullable(),
+        footerNote: z.string().optional().nullable(),
+      })
+      .safeParse(req.body || {});
+
+    if (!parsed.success) {
+      return res.status(400).json({
+        success: false,
+        message: parsed.error.issues[0]?.message || "Invalid billing data",
+      });
+    }
+
     const data = await confirmJobCart(
       actorFrom(req),
       param(req, "id"),
-      requestAuditContext(req)
+      requestAuditContext(req),
+      parsed.data
     );
     return res.status(200).json({
       success: true,

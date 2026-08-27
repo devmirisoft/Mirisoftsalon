@@ -4,6 +4,10 @@ import {
   type CustomerMembershipStatus,
 } from "../../generated/prisma/client.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
+import {
+  creditPurchaseWallet,
+  forfeitMembershipWallet,
+} from "../membership-wallets/membership-wallet.service.js";
 
 type TransactionClient = Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -187,6 +191,12 @@ const expireMembershipRows = async (
       });
     }
 
+    const forfeit = await forfeitMembershipWallet(tx, {
+      customerMembershipId: row.id,
+      ...(input.actor.userId ? { actorUserId: input.actor.userId } : {}),
+      reason: `Wallet forfeited when ${row.membershipNameSnapshot} expired`,
+    });
+
     await createAuditLog({
       tx,
       salonId: row.salonId,
@@ -198,8 +208,16 @@ const expireMembershipRows = async (
       entityCode: row.customer.customerCode,
       entityName: row.customer.name,
       description: `Customer membership ${row.membershipNameSnapshot} expired`,
-      oldData: { status: "ACTIVE", expiresAt: row.expiresAt },
-      newData: { status: "EXPIRED", expiresAt: row.expiresAt },
+      oldData: {
+        status: "ACTIVE",
+        expiresAt: row.expiresAt,
+        walletBalance: row.walletBalance,
+      },
+      newData: {
+        status: "EXPIRED",
+        expiresAt: row.expiresAt,
+        forfeitedAmount: forfeit?.forfeitedAmount ?? 0,
+      },
       ...input.audit,
     });
   }
@@ -297,6 +315,7 @@ export const assignCustomerMembershipHistory = async (
     membershipId: string;
     startsAt?: Date;
     expiresAt?: Date | null;
+    walletCreditAmount?: number;
     note?: string;
     invoiceId?: string;
     jobCartAppointmentId?: string;
@@ -342,8 +361,15 @@ export const assignCustomerMembershipHistory = async (
     }
 
     const startsAt = input.startsAt ?? new Date();
+    // Validity comes from the plan. A plan with no durationMonths never
+    // expires. An explicit expiresAt on the request still wins, so an admin
+    // can override a single enrollment.
     const expiresAt =
-      input.expiresAt === undefined ? addMonths(startsAt, 1) : input.expiresAt;
+      input.expiresAt !== undefined
+        ? input.expiresAt
+        : membership.durationMonths
+          ? addMonths(startsAt, membership.durationMonths)
+          : null;
     if (expiresAt && expiresAt < startsAt) {
       throw new CustomerMembershipError(
         400,
@@ -379,6 +405,11 @@ export const assignCustomerMembershipHistory = async (
             : {}),
         },
       });
+      await forfeitMembershipWallet(tx, {
+        customerMembershipId: row.id,
+        actorUserId: actor.userId,
+        reason: `Wallet forfeited when ${row.membershipNameSnapshot} was superseded`,
+      });
     }
 
     const created = await tx.customerMembership.create({
@@ -389,6 +420,7 @@ export const assignCustomerMembershipHistory = async (
         membershipId: membership.id,
         membershipNameSnapshot: membership.name,
         discountPercentageSnapshot: membership.discountPercentage,
+        durationMonthsSnapshot: membership.durationMonths,
         startsAt,
         expiresAt,
         assignedById: actor.userId,
@@ -403,6 +435,22 @@ export const assignCustomerMembershipHistory = async (
     await tx.customer.update({
       where: { id: customer.id },
       data: { membershipId: membership.id },
+    });
+
+    // Selling the plan funds its wallet. walletCreditAmount can differ from
+    // price when a plan is sold at a discount (pay 5000, get 6000 to spend).
+    const walletCredit =
+      input.walletCreditAmount !== undefined
+        ? new Prisma.Decimal(input.walletCreditAmount)
+        : membership.walletCreditAmount;
+    const walletMovement = await creditPurchaseWallet(tx, {
+      membership: created,
+      amount: walletCredit,
+      createdById: actor.userId,
+      ...(input.invoiceId ? { invoiceId: input.invoiceId } : {}),
+      ...(input.jobCartAppointmentId
+        ? { jobCartAppointmentId: input.jobCartAppointmentId }
+        : {}),
     });
 
     const renewed =
@@ -430,10 +478,14 @@ export const assignCustomerMembershipHistory = async (
         startsAt,
         expiresAt,
         status: created.status,
+        durationMonths: membership.durationMonths,
+        walletCredited: walletMovement?.balanceAfter ?? created.walletBalance,
       },
       ...audit,
     });
-    return created;
+    return walletMovement
+      ? { ...created, ...walletMovement.membership }
+      : created;
   });
 
 export const endCustomerMembership = async (
@@ -461,7 +513,7 @@ export const endCustomerMembership = async (
 
     const removed = status === "REMOVED" || status === "CANCELLED";
     const now = new Date();
-    const updated = await tx.customerMembership.update({
+    await tx.customerMembership.update({
       where: { id },
       data: {
         status,
@@ -472,6 +524,14 @@ export const endCustomerMembership = async (
             }
           : {}),
       },
+    });
+    const forfeit = await forfeitMembershipWallet(tx, {
+      customerMembershipId: id,
+      actorUserId: actor.userId,
+      reason: `Wallet forfeited when ${existing.membershipNameSnapshot} was ${status.toLowerCase()}`,
+    });
+    const updated = await tx.customerMembership.findUniqueOrThrow({
+      where: { id },
       include: historyInclude,
     });
     await tx.customer.updateMany({
@@ -492,11 +552,15 @@ export const endCustomerMembership = async (
       entityCode: existing.customer.customerCode,
       entityName: existing.customer.name,
       description: `Customer membership ${existing.membershipNameSnapshot} ${status.toLowerCase()}`,
-      oldData: { status: existing.status },
+      oldData: {
+        status: existing.status,
+        walletBalance: existing.walletBalance,
+      },
       newData: {
         status,
         removedAt: updated.removedAt,
         removedById: updated.removedById,
+        forfeitedAmount: forfeit?.forfeitedAmount ?? 0,
       },
       ...audit,
     });

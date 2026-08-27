@@ -277,6 +277,7 @@ export type PaymentWhereInput = {
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   customerTransactions?: Prisma.CustomerTransactionListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }
 
 export type PaymentOrderByWithRelationInput = {
@@ -297,6 +298,7 @@ export type PaymentOrderByWithRelationInput = {
   customer?: Prisma.CustomerOrderByWithRelationInput
   invoice?: Prisma.InvoiceOrderByWithRelationInput
   customerTransactions?: Prisma.CustomerTransactionOrderByRelationAggregateInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionOrderByRelationAggregateInput
 }
 
 export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -320,6 +322,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   invoice?: Prisma.XOR<Prisma.InvoiceScalarRelationFilter, Prisma.InvoiceWhereInput>
   customerTransactions?: Prisma.CustomerTransactionListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }, "id">
 
 export type PaymentOrderByWithAggregationInput = {
@@ -374,6 +377,7 @@ export type PaymentCreateInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
   invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
   customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateInput = {
@@ -390,6 +394,7 @@ export type PaymentUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUpdateInput = {
@@ -406,6 +411,7 @@ export type PaymentUpdateInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
   customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateInput = {
@@ -422,6 +428,7 @@ export type PaymentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentCreateManyInput = {
@@ -617,6 +624,22 @@ export type PaymentUncheckedUpdateManyWithoutCustomerNestedInput = {
   deleteMany?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
 }
 
+export type PaymentCreateNestedOneWithoutMembershipWalletTransactionsInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutMembershipWalletTransactionsInput
+  connect?: Prisma.PaymentWhereUniqueInput
+}
+
+export type PaymentUpdateOneWithoutMembershipWalletTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PaymentCreateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutMembershipWalletTransactionsInput
+  upsert?: Prisma.PaymentUpsertWithoutMembershipWalletTransactionsInput
+  disconnect?: Prisma.PaymentWhereInput | boolean
+  delete?: Prisma.PaymentWhereInput | boolean
+  connect?: Prisma.PaymentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PaymentUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput, Prisma.PaymentUpdateWithoutMembershipWalletTransactionsInput>, Prisma.PaymentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
 export type PaymentCreateNestedOneWithoutCustomerTransactionsInput = {
   create?: Prisma.XOR<Prisma.PaymentCreateWithoutCustomerTransactionsInput, Prisma.PaymentUncheckedCreateWithoutCustomerTransactionsInput>
   connectOrCreate?: Prisma.PaymentCreateOrConnectWithoutCustomerTransactionsInput
@@ -730,6 +753,7 @@ export type PaymentCreateWithoutSalonInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
   invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
   customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutSalonInput = {
@@ -745,6 +769,7 @@ export type PaymentUncheckedCreateWithoutSalonInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutSalonInput = {
@@ -804,6 +829,7 @@ export type PaymentCreateWithoutCustomerInput = {
   branch?: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
   customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutCustomerInput = {
@@ -819,6 +845,7 @@ export type PaymentUncheckedCreateWithoutCustomerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutCustomerInput = {
@@ -847,6 +874,86 @@ export type PaymentUpdateManyWithWhereWithoutCustomerInput = {
   data: Prisma.XOR<Prisma.PaymentUpdateManyMutationInput, Prisma.PaymentUncheckedUpdateManyWithoutCustomerInput>
 }
 
+export type PaymentCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  method: $Enums.PaymentMethod
+  referenceNo?: string | null
+  note?: string | null
+  paidAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutPaymentsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutPaymentsInput
+  customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
+  invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
+  customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentUncheckedCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  customerId: string
+  invoiceId: string
+  amount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  method: $Enums.PaymentMethod
+  referenceNo?: string | null
+  note?: string | null
+  paidAt?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+}
+
+export type PaymentCreateOrConnectWithoutMembershipWalletTransactionsInput = {
+  where: Prisma.PaymentWhereUniqueInput
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+}
+
+export type PaymentUpsertWithoutMembershipWalletTransactionsInput = {
+  update: Prisma.XOR<Prisma.PaymentUpdateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+  create: Prisma.XOR<Prisma.PaymentCreateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  where?: Prisma.PaymentWhereInput
+}
+
+export type PaymentUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput = {
+  where?: Prisma.PaymentWhereInput
+  data: Prisma.XOR<Prisma.PaymentUpdateWithoutMembershipWalletTransactionsInput, Prisma.PaymentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
+export type PaymentUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutPaymentsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutPaymentsNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
+  invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+}
+
+export type PaymentUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  method?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  referenceNo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+}
+
 export type PaymentCreateWithoutCustomerTransactionsInput = {
   id?: string
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -860,6 +967,7 @@ export type PaymentCreateWithoutCustomerTransactionsInput = {
   branch?: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
   invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutCustomerTransactionsInput = {
@@ -875,6 +983,7 @@ export type PaymentUncheckedCreateWithoutCustomerTransactionsInput = {
   paidAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutCustomerTransactionsInput = {
@@ -906,6 +1015,7 @@ export type PaymentUpdateWithoutCustomerTransactionsInput = {
   branch?: Prisma.BranchUpdateOneWithoutPaymentsNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutCustomerTransactionsInput = {
@@ -921,6 +1031,7 @@ export type PaymentUncheckedUpdateWithoutCustomerTransactionsInput = {
   paidAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentCreateWithoutBranchInput = {
@@ -936,6 +1047,7 @@ export type PaymentCreateWithoutBranchInput = {
   customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
   invoice: Prisma.InvoiceCreateNestedOneWithoutPaymentsInput
   customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutBranchInput = {
@@ -951,6 +1063,7 @@ export type PaymentUncheckedCreateWithoutBranchInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutBranchInput = {
@@ -992,6 +1105,7 @@ export type PaymentCreateWithoutInvoiceInput = {
   branch?: Prisma.BranchCreateNestedOneWithoutPaymentsInput
   customer: Prisma.CustomerCreateNestedOneWithoutPaymentsInput
   customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentUncheckedCreateWithoutInvoiceInput = {
@@ -1007,6 +1121,7 @@ export type PaymentUncheckedCreateWithoutInvoiceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutPaymentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutPaymentInput
 }
 
 export type PaymentCreateOrConnectWithoutInvoiceInput = {
@@ -1062,6 +1177,7 @@ export type PaymentUpdateWithoutSalonInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
   customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutSalonInput = {
@@ -1077,6 +1193,7 @@ export type PaymentUncheckedUpdateWithoutSalonInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutSalonInput = {
@@ -1120,6 +1237,7 @@ export type PaymentUpdateWithoutCustomerInput = {
   branch?: Prisma.BranchUpdateOneWithoutPaymentsNestedInput
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
   customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutCustomerInput = {
@@ -1135,6 +1253,7 @@ export type PaymentUncheckedUpdateWithoutCustomerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutCustomerInput = {
@@ -1178,6 +1297,7 @@ export type PaymentUpdateWithoutBranchInput = {
   customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
   invoice?: Prisma.InvoiceUpdateOneRequiredWithoutPaymentsNestedInput
   customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutBranchInput = {
@@ -1193,6 +1313,7 @@ export type PaymentUncheckedUpdateWithoutBranchInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutBranchInput = {
@@ -1236,6 +1357,7 @@ export type PaymentUpdateWithoutInvoiceInput = {
   branch?: Prisma.BranchUpdateOneWithoutPaymentsNestedInput
   customer?: Prisma.CustomerUpdateOneRequiredWithoutPaymentsNestedInput
   customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateWithoutInvoiceInput = {
@@ -1251,6 +1373,7 @@ export type PaymentUncheckedUpdateWithoutInvoiceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutPaymentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutPaymentNestedInput
 }
 
 export type PaymentUncheckedUpdateManyWithoutInvoiceInput = {
@@ -1274,10 +1397,12 @@ export type PaymentUncheckedUpdateManyWithoutInvoiceInput = {
 
 export type PaymentCountOutputType = {
   customerTransactions: number
+  membershipWalletTransactions: number
 }
 
 export type PaymentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customerTransactions?: boolean | PaymentCountOutputTypeCountCustomerTransactionsArgs
+  membershipWalletTransactions?: boolean | PaymentCountOutputTypeCountMembershipWalletTransactionsArgs
 }
 
 /**
@@ -1295,6 +1420,13 @@ export type PaymentCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
  */
 export type PaymentCountOutputTypeCountCustomerTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CustomerTransactionWhereInput
+}
+
+/**
+ * PaymentCountOutputType without action
+ */
+export type PaymentCountOutputTypeCountMembershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MembershipWalletTransactionWhereInput
 }
 
 
@@ -1316,6 +1448,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   customerTransactions?: boolean | Prisma.Payment$customerTransactionsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Payment$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["payment"]>
 
@@ -1379,6 +1512,7 @@ export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   invoice?: boolean | Prisma.InvoiceDefaultArgs<ExtArgs>
   customerTransactions?: boolean | Prisma.Payment$customerTransactionsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Payment$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.PaymentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PaymentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1402,6 +1536,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     customer: Prisma.$CustomerPayload<ExtArgs>
     invoice: Prisma.$InvoicePayload<ExtArgs>
     customerTransactions: Prisma.$CustomerTransactionPayload<ExtArgs>[]
+    membershipWalletTransactions: Prisma.$MembershipWalletTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1815,6 +1950,7 @@ export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.
   customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   invoice<T extends Prisma.InvoiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvoiceDefaultArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   customerTransactions<T extends Prisma.Payment$customerTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$customerTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  membershipWalletTransactions<T extends Prisma.Payment$membershipWalletTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Payment$membershipWalletTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipWalletTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2297,6 +2433,30 @@ export type Payment$customerTransactionsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.CustomerTransactionScalarFieldEnum | Prisma.CustomerTransactionScalarFieldEnum[]
+}
+
+/**
+ * Payment.membershipWalletTransactions
+ */
+export type Payment$membershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembershipWalletTransaction
+   */
+  select?: Prisma.MembershipWalletTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MembershipWalletTransaction
+   */
+  omit?: Prisma.MembershipWalletTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MembershipWalletTransactionInclude<ExtArgs> | null
+  where?: Prisma.MembershipWalletTransactionWhereInput
+  orderBy?: Prisma.MembershipWalletTransactionOrderByWithRelationInput | Prisma.MembershipWalletTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.MembershipWalletTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
 }
 
 /**

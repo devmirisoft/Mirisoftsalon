@@ -12,6 +12,7 @@ import { InvoiceModel } from "../Invoices/invoice.model.js";
 import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
 import { normalizePhone } from "../public-booking/public-booking.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
+import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
 import {
   getCurrentMembershipForCustomer,
   getCustomerMembershipHistory,
@@ -26,6 +27,16 @@ export type JobCartActor = {
   role: string;
   salonId?: string;
   branchId?: string;
+};
+
+type JobCartBillingInput = {
+  invoiceType?: "GST_INVOICE" | "BILL_OF_SUPPLY" | undefined;
+  status?: "DRAFT" | "ISSUED" | undefined;
+  discountAmount?: number | undefined;
+  processingFeeAmount?: number | undefined;
+  taxPercent?: number | undefined;
+  billingNote?: string | null | undefined;
+  footerNote?: string | null | undefined;
 };
 
 type AuditContext = {
@@ -51,7 +62,19 @@ const activeAppointmentStatuses = [
 ] as const;
 
 const jobCartInclude = {
-  salon: { select: { id: true, name: true, timezone: true } },
+  salon: {
+    select: {
+      id: true,
+      name: true,
+      timezone: true,
+      gstEnabled: true,
+      gstNumber: true,
+      gstLegalName: true,
+      gstStateCode: true,
+      serviceGstRate: true,
+      productGstRate: true,
+    },
+  },
   branch: { select: { id: true, name: true } },
   customer: {
     select: {
@@ -86,6 +109,7 @@ const jobCartInclude = {
           durationUnit: true,
         },
       },
+      staff: { select: { id: true, name: true, jobRole: true } },
       customerPackageUsageItem: {
         select: { id: true, usageId: true },
       },
@@ -149,7 +173,7 @@ const mappedStatus = (cart: JobCartRecord) => {
   if (
     cart.status === "COMPLETED" &&
     cart.invoice &&
-    ["ISSUED"].includes(cart.invoice.status)
+    ["DRAFT", "ISSUED"].includes(cart.invoice.status)
   ) {
     return "COMPLETED" as const;
   }
@@ -387,6 +411,32 @@ const assertNoConflict = async (
   }
 };
 
+const assertNoStaffConflicts = async (
+  tx: TransactionClient,
+  input: {
+    salonId: string;
+    branchId: string;
+    staffIds: Array<string | null | undefined>;
+    startTime: Date;
+    endTime: Date;
+    excludeAppointmentId?: string;
+  }
+) => {
+  const staffIds = [...new Set(input.staffIds.filter(Boolean))] as string[];
+  for (const staffId of staffIds) {
+    await assertNoConflict(tx, {
+      salonId: input.salonId,
+      branchId: input.branchId,
+      staffId,
+      startTime: input.startTime,
+      endTime: input.endTime,
+      ...(input.excludeAppointmentId
+        ? { excludeAppointmentId: input.excludeAppointmentId }
+        : {}),
+    });
+  }
+};
+
 const loadCart = async (
   client: typeof prisma | TransactionClient,
   id: string,
@@ -425,6 +475,16 @@ const requireMutable = (cart: JobCartRecord) => {
     cart.invoice.paidAmount.gt(0)
   ) {
     throw new JobCartError(409, "Paid job carts cannot be edited");
+  }
+};
+
+const decimalOrZero = (value: unknown) => {
+  try {
+    return new Prisma.Decimal(
+      (value ?? 0) as string | number | Prisma.Decimal
+    ).toDecimalPlaces(2);
+  } catch {
+    return new Prisma.Decimal(0);
   }
 };
 
@@ -512,10 +572,13 @@ const recalculateCart = async (
     cart.startTime.getTime() +
       Math.max(totalDurationMinutes, 30) * 60_000
   );
-  await assertNoConflict(tx, {
+  await assertNoStaffConflicts(tx, {
     salonId: cart.salonId,
     branchId: cart.branchId!,
-    staffId: cart.staffId,
+    staffIds: [
+      cart.staffId,
+      ...cart.services.map((item) => item.staffId),
+    ],
     startTime: cart.startTime,
     endTime,
     excludeAppointmentId: cart.id,
@@ -538,6 +601,7 @@ const recalculateCart = async (
         create: paidServices.map((item) => ({
           itemType: "SERVICE",
           serviceId: item.serviceId,
+          soldByStaffId: item.staffId,
           itemCode: item.serviceId.slice(0, 8),
           description: item.serviceName,
           serviceName: item.serviceName,
@@ -737,6 +801,15 @@ export const getJobCartReferences = async (
   if (!salonId) {
     return { salons, branches: [], staff: [], services: [] };
   }
+  const salon = await prisma.salon.findFirst({
+    where: { id: salonId, status: true },
+    select: {
+      id: true,
+      name: true,
+      gstEnabled: true,
+      serviceGstRate: true,
+    },
+  });
   const branchId = branchScopedRoles.has(actor.role)
     ? actor.branchId
     : requestedBranchId;
@@ -770,6 +843,8 @@ export const getJobCartReferences = async (
         durationValue: true,
         durationUnit: true,
         branchId: true,
+        mainServiceId: true,
+        mainService: { select: { id: true, name: true } },
       },
       orderBy: { name: "asc" },
     }),
@@ -794,7 +869,7 @@ export const getJobCartReferences = async (
     },
     orderBy: { name: "asc" },
   });
-  return { salons, branches, staff, services, packages };
+  return { salons, salon, branches, staff, services, packages };
 };
 
 export const getJobCartCustomerSummary = async (
@@ -1015,6 +1090,7 @@ export const createJobCart = async (
     startTime: Date;
     staffId?: string;
     serviceIds: string[];
+    serviceItems?: Array<{ serviceId: string; staffId?: string | undefined }>;
     bookingNote?: string;
     internalNote?: string;
   },
@@ -1034,12 +1110,26 @@ export const createJobCart = async (
     ]);
     if (!salon) throw new JobCartError(400, "Invalid salon");
     await validateStaff(tx, salonId, branchId, input.staffId);
+    for (const serviceItem of input.serviceItems ?? []) {
+      await validateStaff(tx, salonId, branchId, serviceItem.staffId);
+    }
     const services = await validateServices(
       tx,
       salonId,
       branchId,
       input.serviceIds
     );
+    const staffByServiceId = new Map(
+      (input.serviceItems ?? []).map((item) => [
+        item.serviceId,
+        item.staffId,
+      ])
+    );
+    const appointmentStaffId =
+      input.staffId ??
+      services
+        .map((service) => staffByServiceId.get(service.id))
+        .find(Boolean);
     const duration = services.reduce(
       (sum, service) => sum + durationMinutes(service),
       0
@@ -1050,10 +1140,13 @@ export const createJobCart = async (
     const endTime = new Date(
       input.startTime.getTime() + Math.max(duration, 30) * 60_000
     );
-    await assertNoConflict(tx, {
+    await assertNoStaffConflicts(tx, {
       salonId,
       branchId,
-      ...(input.staffId ? { staffId: input.staffId } : {}),
+      staffIds: [
+        appointmentStaffId,
+        ...services.map((service) => staffByServiceId.get(service.id)),
+      ],
       startTime: input.startTime,
       endTime,
     });
@@ -1086,7 +1179,7 @@ export const createJobCart = async (
         salonId,
         branchId,
         customerId: customer.id,
-        ...(input.staffId ? { staffId: input.staffId } : {}),
+        ...(appointmentStaffId ? { staffId: appointmentStaffId } : {}),
         createdById: actor.userId,
         startTime: input.startTime,
         endTime,
@@ -1100,15 +1193,19 @@ export const createJobCart = async (
         walkInJobCart: true,
         ...(input.bookingNote ? { bookingNote: input.bookingNote } : {}),
         ...(input.internalNote ? { internalNote: input.internalNote } : {}),
-        services: services.map((service) => ({
-          serviceId: service.id,
-          serviceName: service.name,
-          price: Number(service.price),
-          ...(service.durationValue !== null
-            ? { durationValue: service.durationValue }
-            : {}),
-          durationUnit: service.durationUnit,
-        })),
+        services: services.map((service) => {
+          const serviceStaffId = staffByServiceId.get(service.id);
+          return {
+            serviceId: service.id,
+            serviceName: service.name,
+            price: Number(service.price),
+            ...(serviceStaffId ? { staffId: serviceStaffId } : {}),
+            ...(service.durationValue !== null
+              ? { durationValue: service.durationValue }
+              : {}),
+            durationUnit: service.durationUnit,
+          };
+        }),
       },
       tx
     );
@@ -1173,19 +1270,23 @@ export const createJobCart = async (
         status: "DRAFT",
         paymentStatus: "UNPAID",
         billingNote: `Walk-in job cart ${appointment.appointmentCode}`,
-        items: services.map((service) => ({
-          itemType: "SERVICE",
-          serviceId: service.id,
-          itemCode: service.id.slice(0, 8),
-          description: service.name,
-          serviceName: service.name,
-          quantity: 1,
-          unitPrice: Number(service.price),
-          discountAmount: 0,
-          taxPercent: 0,
-          taxAmount: 0,
-          lineTotal: Number(service.price),
-        })),
+        items: services.map((service) => {
+          const serviceStaffId = staffByServiceId.get(service.id);
+          return {
+            itemType: "SERVICE",
+            serviceId: service.id,
+            ...(serviceStaffId ? { soldByStaffId: serviceStaffId } : {}),
+            itemCode: service.id.slice(0, 8),
+            description: service.name,
+            serviceName: service.name,
+            quantity: 1,
+            unitPrice: Number(service.price),
+            discountAmount: 0,
+            taxPercent: 0,
+            taxAmount: 0,
+            lineTotal: Number(service.price),
+          };
+        }),
       },
       tx
     );
@@ -1205,6 +1306,10 @@ export const createJobCart = async (
         staffId: appointment.staffId,
         startTime: appointment.startTime,
         serviceIds: services.map((service) => service.id),
+        serviceItems: services.map((service) => ({
+          serviceId: service.id,
+          staffId: staffByServiceId.get(service.id) ?? null,
+        })),
         invoiceId: invoice.id,
       },
       ...audit,
@@ -1256,10 +1361,13 @@ export const updateJobCart = async (
       startTime.getTime() +
         Math.max(existing.totalDurationMinutes, 30) * 60_000
     );
-    await assertNoConflict(tx, {
+    await assertNoStaffConflicts(tx, {
       salonId: existing.salonId,
       branchId: existing.branchId!,
-      staffId,
+      staffIds: [
+        staffId,
+        ...existing.services.map((item) => item.staffId),
+      ],
       startTime,
       endTime,
       excludeAppointmentId: existing.id,
@@ -1451,12 +1559,21 @@ export const addJobCartItem = async (
           );
         }
       }
+      if (input.staffId) {
+        await validateStaff(
+          tx,
+          existing.salonId,
+          existing.branchId!,
+          input.staffId
+        );
+      }
       const item = await tx.appointmentService.create({
         data: {
           appointmentId: existing.id,
           serviceId: service.id,
           serviceName: service.name,
           price: service.price,
+          staffId: input.staffId ?? null,
           durationValue: service.durationValue,
           durationUnit: service.durationUnit,
         },
@@ -1479,6 +1596,7 @@ export const addJobCartItem = async (
           serviceId: service.id,
           serviceName: service.name,
           price: service.price,
+          staffId: input.staffId,
         },
         ...audit,
       });
@@ -1892,7 +2010,8 @@ const useReservedPackageRedemptions = async (
 export const confirmJobCart = async (
   actor: JobCartActor,
   id: string,
-  audit: AuditContext
+  audit: AuditContext,
+  billing: JobCartBillingInput = {}
 ) =>
   prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
@@ -1904,15 +2023,104 @@ export const confirmJobCart = async (
         "Add at least one service or package before confirming"
       );
     }
-    await assertNoConflict(tx, {
+    await assertNoStaffConflicts(tx, {
       salonId: existing.salonId,
       branchId: existing.branchId!,
-      staffId: existing.staffId,
+      staffIds: [
+        existing.staffId,
+        ...existing.services.map((item) => item.staffId),
+      ],
       startTime: existing.startTime,
       endTime: existing.endTime,
       excludeAppointmentId: existing.id,
     });
     await useReservedPackageRedemptions(tx, existing, actor, audit);
+    const invoiceType = billing.invoiceType ?? existing.invoice.invoiceType;
+    const manualDiscount = Prisma.Decimal.min(
+      decimalOrZero(billing.discountAmount),
+      existing.invoice.subtotalAmount
+    ).toDecimalPlaces(2);
+    const processingFee = decimalOrZero(billing.processingFeeAmount);
+    const currentMembership = await resolveCurrentCustomerMembership(tx, {
+      customerId: existing.customerId,
+      actor,
+      audit,
+    });
+    const membershipDiscount = currentMembership
+      ? Prisma.Decimal.min(
+          existing.invoice.subtotalAmount
+            .mul(currentMembership.discountPercentageSnapshot)
+            .div(100),
+          existing.invoice.subtotalAmount.minus(manualDiscount)
+        ).toDecimalPlaces(2)
+      : new Prisma.Decimal(0);
+    const discountAmount = Prisma.Decimal.min(
+      manualDiscount.plus(membershipDiscount),
+      existing.invoice.subtotalAmount
+    ).toDecimalPlaces(2);
+    const taxPercent =
+      billing.taxPercent === undefined ? null : decimalOrZero(billing.taxPercent);
+    const gstSettings =
+      taxPercent && invoiceType === "GST_INVOICE"
+        ? {
+            ...existing.salon,
+            gstEnabled: true,
+            serviceGstRate: taxPercent,
+            productGstRate: taxPercent,
+          }
+        : existing.salon;
+    const calculation = calculateInvoiceGst(
+      {
+        invoiceType,
+        discountAmount,
+        couponDiscountAmount: existing.invoice.couponDiscountAmount,
+        processingFeeAmount: processingFee,
+        items: existing.invoice.items,
+      },
+      gstSettings
+    );
+    for (const [index, item] of existing.invoice.items.entries()) {
+      const line = calculation.lines[index];
+      if (!line) continue;
+      await tx.invoiceItem.update({
+        where: { id: item.id },
+        data: {
+          taxableAmount: line.taxableAmount,
+          gstRateSnapshot: line.gstRateSnapshot,
+          gstAmount: line.gstAmount,
+          totalWithTax: line.totalWithTax,
+          taxPercent: line.taxPercent,
+          taxAmount: line.taxAmount,
+          lineTotal: line.lineTotal,
+        },
+      });
+    }
+    await tx.invoice.update({
+      where: { id: existing.invoice.id },
+      data: {
+        invoiceType,
+        discountAmount,
+        processingFeeAmount: processingFee,
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
+        taxAmount: calculation.totalGstAmount,
+        totalAmount: calculation.totalAmount,
+        balanceAmount: calculation.totalAmount,
+        ...(billing.billingNote !== undefined
+          ? { billingNote: billing.billingNote }
+          : {}),
+        ...(billing.footerNote !== undefined
+          ? { footerNote: billing.footerNote }
+          : {}),
+      },
+    });
     await AppointmentModel.updateStatusWithHistory(
       id,
       {
@@ -1923,14 +2131,16 @@ export const confirmJobCart = async (
       },
       tx
     );
-    await issueInvoice({
-      invoiceId: existing.invoice.id,
-      salonId: existing.salonId,
-      userId: actor.userId,
-      tx,
-      allowWalkInJobCart: true,
-      ...audit,
-    });
+    if (billing.status !== "DRAFT") {
+      await issueInvoice({
+        invoiceId: existing.invoice.id,
+        salonId: existing.salonId,
+        userId: actor.userId,
+        tx,
+        allowWalkInJobCart: true,
+        ...audit,
+      });
+    }
     const packageItems = existing.invoice.items.filter(
       (item) => item.itemType === "PACKAGE" && item.packageId
     );
@@ -2013,7 +2223,9 @@ export const confirmJobCart = async (
       },
       newData: {
         appointmentStatus: "COMPLETED",
-        invoiceStatus: "ISSUED",
+        invoiceStatus: billing.status === "DRAFT" ? "DRAFT" : "ISSUED",
+        manualDiscountAmount: manualDiscount,
+        membershipDiscountAmount: membershipDiscount,
       },
       ...audit,
     });

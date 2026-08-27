@@ -86,6 +86,7 @@ model Salon {
   customerPackageUsages          CustomerPackageUsage[]
   customerPackageUsageItems      CustomerPackageUsageItem[]
   customerMemberships            CustomerMembership[]
+  membershipWalletTransactions   MembershipWalletTransaction[]
   salonAssistantConversations    SalonAssistantConversation[]
 }
 
@@ -138,6 +139,7 @@ model User {
   createdCustomerPackageUsages       CustomerPackageUsage[]       @relation("CustomerPackageUsageCreatedBy")
   assignedCustomerMemberships        CustomerMembership[]         @relation("CustomerMembershipAssignedBy")
   removedCustomerMemberships         CustomerMembership[]         @relation("CustomerMembershipRemovedBy")
+  createdMembershipWalletTransactions MembershipWalletTransaction[] @relation("MembershipWalletTransactionCreatedBy")
   createdStaffAvailabilityRules      StaffAvailabilityRule[]      @relation("StaffAvailabilityRuleCreatedBy")
   createdStaffTimeBlocks             StaffTimeBlock[]             @relation("StaffTimeBlockCreatedBy")
   createdSalonAssistantConversations SalonAssistantConversation[] @relation("SalonAssistantConversationCreatedBy")
@@ -188,6 +190,7 @@ model Customer {
   packageServiceBalances CustomerPackageServiceBalance[]
   packageUsages          CustomerPackageUsage[]
   membershipHistory      CustomerMembership[]
+  membershipWalletTransactions MembershipWalletTransaction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -205,6 +208,17 @@ model Membership {
   description         String?
   discountPercentage  Decimal              @default(0) @db.Decimal(5, 2)
   status              Boolean              @default(true)
+
+  // Validity of an enrollment created from this plan, in months.
+  // Null means the membership never expires.
+  durationMonths Int?
+
+  // Price charged to buy the membership, and the wallet credit the
+  // customer receives on purchase. They differ when a plan is sold at a
+  // discount (pay 5000, get 6000 of wallet value).
+  price               Decimal              @default(0) @db.Decimal(10, 2)
+  walletCreditAmount  Decimal              @default(0) @db.Decimal(10, 2)
+
   customers           Customer[]
   customerMemberships CustomerMembership[]
   createdAt           DateTime             @default(now())
@@ -232,9 +246,22 @@ model CustomerMembership {
 
   membershipNameSnapshot     String
   discountPercentageSnapshot Decimal                  @db.Decimal(5, 2)
+  durationMonthsSnapshot     Int?
   startsAt                   DateTime                 @default(now())
   expiresAt                  DateTime?
   status                     CustomerMembershipStatus @default(ACTIVE)
+
+  // Membership wallet. walletBalance is the live spendable amount and is
+  // maintained alongside MembershipWalletTransaction rows, which are the
+  // audit trail. Funds are forfeited when the membership stops being
+  // ACTIVE; forfeitedAmount records what was left at that moment.
+  walletCredited  Decimal   @default(0) @db.Decimal(10, 2)
+  walletDebited   Decimal   @default(0) @db.Decimal(10, 2)
+  walletBalance   Decimal   @default(0) @db.Decimal(10, 2)
+  forfeitedAmount Decimal   @default(0) @db.Decimal(10, 2)
+  forfeitedAt     DateTime?
+
+  walletTransactions MembershipWalletTransaction[]
 
   assignedById String?
   assignedBy   User?   @relation("CustomerMembershipAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
@@ -270,6 +297,66 @@ enum CustomerMembershipStatus {
   EXPIRED
   CANCELLED
   REMOVED
+}
+
+model MembershipWalletTransaction {
+  id String @id @default(uuid())
+
+  salonId String
+  salon   Salon  @relation(fields: [salonId], references: [id])
+
+  branchId String?
+  branch   Branch? @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  customerMembershipId String
+  customerMembership   CustomerMembership @relation(fields: [customerMembershipId], references: [id], onDelete: Cascade)
+
+  type MembershipWalletTransactionType
+
+  // Exactly one of credit/debit is non-zero on any given row.
+  credit Decimal @default(0) @db.Decimal(10, 2)
+  debit  Decimal @default(0) @db.Decimal(10, 2)
+
+  // Wallet balance after this row was applied, for statement rendering.
+  balanceAfter Decimal @db.Decimal(10, 2)
+
+  narration String?
+
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  paymentId String?
+  payment   Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  jobCartAppointmentId String?
+  jobCartAppointment   Appointment? @relation(fields: [jobCartAppointmentId], references: [id], onDelete: SetNull)
+
+  createdById String?
+  createdBy   User?   @relation("MembershipWalletTransactionCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([salonId])
+  @@index([branchId])
+  @@index([customerId])
+  @@index([customerMembershipId])
+  @@index([type])
+  @@index([invoiceId])
+  @@index([paymentId])
+  @@index([jobCartAppointmentId])
+  @@index([createdAt])
+}
+
+enum MembershipWalletTransactionType {
+  PURCHASE_CREDIT
+  TOPUP
+  SPEND
+  REFUND
+  FORFEIT
+  ADJUSTMENT
 }
 
 enum CustomerStatus {
@@ -466,6 +553,7 @@ model Branch {
   packageServiceBalances CustomerPackageServiceBalance[]
   packageUsages          CustomerPackageUsage[]
   customerMemberships    CustomerMembership[]
+  membershipWalletTransactions MembershipWalletTransaction[]
 
   @@unique([salonId, name])
   @@unique([salonId, branchCode])
@@ -504,6 +592,7 @@ model Staff {
   user  User? @relation(fields: [userId], references: [id])
 
   appointments         Appointment[]
+  appointmentServices  AppointmentService[]
   attendances          StaffAttendance[]
   leaves               StaffLeave[]
   availabilityRules    StaffAvailabilityRule[]
@@ -1055,6 +1144,7 @@ model Appointment {
   packageUsageAppointments CustomerPackageUsage[]     @relation("PackageUsageAppointment")
   packageUsageJobCarts     CustomerPackageUsage[]     @relation("PackageUsageJobCart")
   customerMemberships      CustomerMembership[]
+  membershipWalletTransactions MembershipWalletTransaction[]
 
   @@unique([salonId, appointmentCode])
   @@index([salonId])
@@ -1133,6 +1223,9 @@ model AppointmentService {
   serviceName String
   price       Decimal @db.Decimal(10, 2)
 
+  staffId String?
+  staff   Staff?  @relation(fields: [staffId], references: [id])
+
   durationValue Int?
   durationUnit  DurationUnit?
 
@@ -1143,6 +1236,7 @@ model AppointmentService {
 
   @@index([appointmentId])
   @@index([serviceId])
+  @@index([staffId])
   @@index([customerPackageUsageItemId])
 }
 
@@ -1185,6 +1279,7 @@ enum PaymentMethod {
   CARD
   BANK_TRANSFER
   CHEQUE
+  MEMBERSHIP_WALLET
   OTHER
 }
 
@@ -1398,6 +1493,7 @@ model Invoice {
   customerPackages     CustomerPackage[]
   packageUsages        CustomerPackageUsage[]
   customerMemberships  CustomerMembership[]
+  membershipWalletTransactions MembershipWalletTransaction[]
 
   @@unique([salonId, invoiceCode])
   @@index([salonId])
@@ -1623,6 +1719,7 @@ model Payment {
   updatedAt DateTime @updatedAt
 
   customerTransactions CustomerTransaction[]
+  membershipWalletTransactions MembershipWalletTransaction[]
 
   @@index([salonId])
   @@index([branchId])
@@ -2016,6 +2113,8 @@ model RetailSale {
   saleDate       DateTime         @default(now())
   subtotalAmount Decimal          @default(0) @db.Decimal(10, 2)
   discountAmount Decimal          @default(0) @db.Decimal(10, 2)
+  taxPercent     Decimal          @default(0) @db.Decimal(5, 2)
+  taxAmount      Decimal          @default(0) @db.Decimal(10, 2)
   totalAmount    Decimal          @default(0) @db.Decimal(10, 2)
   paymentMethod  PaymentMethod?
   note           String?

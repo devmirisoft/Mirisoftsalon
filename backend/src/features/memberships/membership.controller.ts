@@ -4,9 +4,14 @@ import { MembershipModel } from "./membership.model.js";
 import { prisma } from "../../config/prisma.js";
 import { createAuditLog, requestAuditContext } from "../audit-logs/audit-log.service.js";
 
-const safeMembership = (value: { id: string; name: string; discountPercentage: unknown; status: boolean }) => ({
+const safeMembership = (value: {
+  id: string; name: string; discountPercentage: unknown; status: boolean;
+  durationMonths?: number | null; price?: unknown; walletCreditAmount?: unknown;
+}) => ({
   membershipId: value.id, name: value.name,
   discountPercentage: value.discountPercentage, status: value.status,
+  durationMonths: value.durationMonths ?? null,
+  price: value.price, walletCreditAmount: value.walletCreditAmount,
 });
 
 const membershipIdParam = (req: Request) =>
@@ -38,6 +43,43 @@ const parseDiscountPercentage = (value: unknown) => {
     : null;
 };
 
+/**
+ * Validity of the plan in whole months. An explicit null (or empty string)
+ * means the membership never expires, which is distinct from the field being
+ * absent from the request. Returns `undefined` when absent and `false` when
+ * the supplied value is not a usable duration.
+ */
+const parseDurationMonths = (value: unknown) => {
+  if (value === undefined) return undefined;
+  if (value === null || (typeof value === "string" && !value.trim())) {
+    return null;
+  }
+  if (typeof value !== "number" && typeof value !== "string") return false;
+
+  const durationMonths = Number(value);
+  return Number.isInteger(durationMonths) &&
+    durationMonths > 0 &&
+    durationMonths <= 600
+    ? durationMonths
+    : false;
+};
+
+/** Non-negative money amount. Returns `false` when the value is unusable. */
+const parseAmount = (value: unknown) => {
+  if (value === undefined) return undefined;
+  if (
+    (typeof value !== "number" && typeof value !== "string") ||
+    (typeof value === "string" && !value.trim())
+  ) {
+    return false;
+  }
+
+  const amount = Number(value);
+  return Number.isFinite(amount) && amount >= 0 && amount <= 10_000_000
+    ? amount
+    : false;
+};
+
 const sendMembershipError = (res: Response, error: unknown) => {
   if (
     typeof error === "object" &&
@@ -66,6 +108,9 @@ export const createMembership = async (req: Request, res: Response) => {
       req.body.discountPercentage === undefined
         ? 0
         : parseDiscountPercentage(req.body.discountPercentage);
+    const durationMonths = parseDurationMonths(req.body.durationMonths);
+    const price = parseAmount(req.body.price);
+    const walletCreditAmount = parseAmount(req.body.walletCreditAmount);
 
     if (!salonId || !name) {
       return res.status(400).json({
@@ -78,6 +123,21 @@ export const createMembership = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "Discount percentage must be between 0 and 100",
+      });
+    }
+
+    if (durationMonths === false) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Duration must be a whole number of months between 1 and 600, or blank for no expiry",
+      });
+    }
+
+    if (price === false || walletCreditAmount === false) {
+      return res.status(400).json({
+        success: false,
+        message: "Price and wallet credit must be amounts of 0 or more",
       });
     }
 
@@ -96,7 +156,13 @@ export const createMembership = async (req: Request, res: Response) => {
     }
 
     const data = await prisma.$transaction(async (tx) => {
-      const created = await MembershipModel.create({ salonId, name, discountPercentage, ...(description ? { description } : {}) }, tx);
+      const created = await MembershipModel.create({
+        salonId, name, discountPercentage,
+        ...(description ? { description } : {}),
+        ...(durationMonths !== undefined ? { durationMonths } : {}),
+        ...(price !== undefined ? { price } : {}),
+        ...(walletCreditAmount !== undefined ? { walletCreditAmount } : {}),
+      }, tx);
       await createAuditLog({ tx, salonId, userId: req.user?.userId, module: "MEMBERSHIP", action: "CREATE",
         entityId: created.id, entityName: created.name,
         description: `Admin created ${created.name} membership with ${Number(created.discountPercentage)}% discount`,
@@ -184,6 +250,9 @@ export const updateMembership = async (req: Request, res: Response) => {
       req.body.discountPercentage === undefined
         ? undefined
         : parseDiscountPercentage(req.body.discountPercentage);
+    const durationMonths = parseDurationMonths(req.body.durationMonths);
+    const price = parseAmount(req.body.price);
+    const walletCreditAmount = parseAmount(req.body.walletCreditAmount);
 
     if (req.body.name !== undefined && !name) {
       return res.status(400).json({
@@ -196,6 +265,21 @@ export const updateMembership = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "Discount percentage must be between 0 and 100",
+      });
+    }
+
+    if (durationMonths === false) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Duration must be a whole number of months between 1 and 600, or blank for no expiry",
+      });
+    }
+
+    if (price === false || walletCreditAmount === false) {
+      return res.status(400).json({
+        success: false,
+        message: "Price and wallet credit must be amounts of 0 or more",
       });
     }
 
@@ -214,6 +298,9 @@ export const updateMembership = async (req: Request, res: Response) => {
       ...(name ? { name } : {}),
       ...(description !== undefined ? { description } : {}),
       ...(discountPercentage !== undefined ? { discountPercentage } : {}),
+      ...(durationMonths !== undefined ? { durationMonths } : {}),
+      ...(price !== undefined ? { price } : {}),
+      ...(walletCreditAmount !== undefined ? { walletCreditAmount } : {}),
       }, tx);
       await createAuditLog({ tx, salonId: existing.salonId, userId: req.user?.userId, module: "MEMBERSHIP", action: "UPDATE",
         entityId: existing.id, entityName: updated.name, description: `Admin updated ${updated.name} membership`,

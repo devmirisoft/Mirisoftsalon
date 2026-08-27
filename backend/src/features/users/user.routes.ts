@@ -34,13 +34,13 @@ router.patch(
 
 router.post(
   "/receptionist",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"),
   createReceptionist
 );
 
 router.post(
   "/staff",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"),
   createStaffAccount
 );
 

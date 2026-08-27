@@ -295,6 +295,7 @@ export type BranchWhereInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceListRelationFilter
   packageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }
 
 export type BranchOrderByWithRelationInput = {
@@ -346,6 +347,7 @@ export type BranchOrderByWithRelationInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceOrderByRelationAggregateInput
   packageUsages?: Prisma.CustomerPackageUsageOrderByRelationAggregateInput
   customerMemberships?: Prisma.CustomerMembershipOrderByRelationAggregateInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionOrderByRelationAggregateInput
 }
 
 export type BranchWhereUniqueInput = Prisma.AtLeast<{
@@ -402,6 +404,7 @@ export type BranchWhereUniqueInput = Prisma.AtLeast<{
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceListRelationFilter
   packageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }, "id" | "salonId_name" | "salonId_branchCode">
 
 export type BranchOrderByWithAggregationInput = {
@@ -494,6 +497,7 @@ export type BranchCreateInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateInput = {
@@ -544,6 +548,7 @@ export type BranchUncheckedCreateInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUpdateInput = {
@@ -594,6 +599,7 @@ export type BranchUpdateInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateInput = {
@@ -644,6 +650,7 @@ export type BranchUncheckedUpdateInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManyInput = {
@@ -871,6 +878,22 @@ export type BranchUpdateOneWithoutCustomerMembershipsNestedInput = {
   delete?: Prisma.BranchWhereInput | boolean
   connect?: Prisma.BranchWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutCustomerMembershipsInput, Prisma.BranchUpdateWithoutCustomerMembershipsInput>, Prisma.BranchUncheckedUpdateWithoutCustomerMembershipsInput>
+}
+
+export type BranchCreateNestedOneWithoutMembershipWalletTransactionsInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutMembershipWalletTransactionsInput
+  connect?: Prisma.BranchWhereUniqueInput
+}
+
+export type BranchUpdateOneWithoutMembershipWalletTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.BranchCreateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.BranchCreateOrConnectWithoutMembershipWalletTransactionsInput
+  upsert?: Prisma.BranchUpsertWithoutMembershipWalletTransactionsInput
+  disconnect?: Prisma.BranchWhereInput | boolean
+  delete?: Prisma.BranchWhereInput | boolean
+  connect?: Prisma.BranchWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BranchUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput, Prisma.BranchUpdateWithoutMembershipWalletTransactionsInput>, Prisma.BranchUncheckedUpdateWithoutMembershipWalletTransactionsInput>
 }
 
 export type BranchCreateNestedOneWithoutCouponsInput = {
@@ -1374,6 +1397,7 @@ export type BranchCreateWithoutSalonInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSalonInput = {
@@ -1423,6 +1447,7 @@ export type BranchUncheckedCreateWithoutSalonInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSalonInput = {
@@ -1519,6 +1544,7 @@ export type BranchCreateWithoutUsersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutUsersInput = {
@@ -1568,6 +1594,7 @@ export type BranchUncheckedCreateWithoutUsersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutUsersInput = {
@@ -1633,6 +1660,7 @@ export type BranchUpdateWithoutUsersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutUsersInput = {
@@ -1682,6 +1710,7 @@ export type BranchUncheckedUpdateWithoutUsersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCustomersInput = {
@@ -1731,6 +1760,7 @@ export type BranchCreateWithoutCustomersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCustomersInput = {
@@ -1780,6 +1810,7 @@ export type BranchUncheckedCreateWithoutCustomersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCustomersInput = {
@@ -1845,6 +1876,7 @@ export type BranchUpdateWithoutCustomersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCustomersInput = {
@@ -1894,6 +1926,7 @@ export type BranchUncheckedUpdateWithoutCustomersInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCustomerMembershipsInput = {
@@ -1943,6 +1976,7 @@ export type BranchCreateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutBranchInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCustomerMembershipsInput = {
@@ -1992,6 +2026,7 @@ export type BranchUncheckedCreateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutBranchInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCustomerMembershipsInput = {
@@ -2057,6 +2092,7 @@ export type BranchUpdateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutBranchNestedInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCustomerMembershipsInput = {
@@ -2106,6 +2142,223 @@ export type BranchUncheckedUpdateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutBranchNestedInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  name: string
+  branchCode?: string | null
+  status?: boolean
+  addressLine1?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutBranchesInput
+  staff?: Prisma.StaffCreateNestedManyWithoutBranchInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutBranchInput
+  services?: Prisma.ServiceCreateNestedManyWithoutBranchInput
+  users?: Prisma.UserCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutBranchInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutBranchInput
+  supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutBranchInput
+  products?: Prisma.ProductCreateNestedManyWithoutBranchInput
+  productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutBranchInput
+  productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutBranchInput
+  stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutBranchInput
+  reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutBranchInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutBranchInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutBranchInput
+  vendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutBranchInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutBranchInput
+  staffAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutBranchInput
+  staffLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutBranchInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutBranchInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutBranchInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutBranchInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutBranchInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutBranchInput
+  publicBookingSettings?: Prisma.PublicBookingSettingCreateNestedManyWithoutBranchInput
+  packageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutBranchInput
+  servicePackages?: Prisma.ServicePackageCreateNestedManyWithoutBranchInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutBranchInput
+  packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
+  packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
+  customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+}
+
+export type BranchUncheckedCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  name: string
+  branchCode?: string | null
+  status?: boolean
+  salonId: string
+  addressLine1?: string | null
+  city?: string | null
+  state?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  openingTime?: string | null
+  closingTime?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutBranchInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutBranchInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutBranchInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutBranchInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutBranchInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutBranchInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutBranchInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutBranchInput
+  supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutBranchInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutBranchInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutBranchInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutBranchInput
+  stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutBranchInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutBranchInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutBranchInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutBranchInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutBranchInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutBranchInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutBranchInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutBranchInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutBranchInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutBranchInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutBranchInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutBranchInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutBranchInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedCreateNestedManyWithoutBranchInput
+  packageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutBranchInput
+  servicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutBranchInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutBranchInput
+  packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
+  packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+}
+
+export type BranchCreateOrConnectWithoutMembershipWalletTransactionsInput = {
+  where: Prisma.BranchWhereUniqueInput
+  create: Prisma.XOR<Prisma.BranchCreateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedCreateWithoutMembershipWalletTransactionsInput>
+}
+
+export type BranchUpsertWithoutMembershipWalletTransactionsInput = {
+  update: Prisma.XOR<Prisma.BranchUpdateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+  create: Prisma.XOR<Prisma.BranchCreateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  where?: Prisma.BranchWhereInput
+}
+
+export type BranchUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput = {
+  where?: Prisma.BranchWhereInput
+  data: Prisma.XOR<Prisma.BranchUpdateWithoutMembershipWalletTransactionsInput, Prisma.BranchUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
+export type BranchUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutBranchesNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutBranchNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutBranchNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutBranchNestedInput
+  users?: Prisma.UserUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutBranchNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutBranchNestedInput
+  supportTickets?: Prisma.SupportTicketUpdateManyWithoutBranchNestedInput
+  products?: Prisma.ProductUpdateManyWithoutBranchNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutBranchNestedInput
+  productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutBranchNestedInput
+  stockAlerts?: Prisma.StockAlertUpdateManyWithoutBranchNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutBranchNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutBranchNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutBranchNestedInput
+  vendorPayments?: Prisma.VendorPaymentUpdateManyWithoutBranchNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutBranchNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUpdateManyWithoutBranchNestedInput
+  staffLeaves?: Prisma.StaffLeaveUpdateManyWithoutBranchNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutBranchNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutBranchNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutBranchNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutBranchNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutBranchNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUpdateManyWithoutBranchNestedInput
+  packageCategories?: Prisma.PackageCategoryUpdateManyWithoutBranchNestedInput
+  servicePackages?: Prisma.ServicePackageUpdateManyWithoutBranchNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutBranchNestedInput
+  packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
+  packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+}
+
+export type BranchUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  branchCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  openingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  closingTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutBranchNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutBranchNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutBranchNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutBranchNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutBranchNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutBranchNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutBranchNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutBranchNestedInput
+  supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutBranchNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutBranchNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutBranchNestedInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutBranchNestedInput
+  stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutBranchNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutBranchNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutBranchNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutBranchNestedInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutBranchNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutBranchNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutBranchNestedInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutBranchNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutBranchNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutBranchNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutBranchNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutBranchNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutBranchNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedUpdateManyWithoutBranchNestedInput
+  packageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutBranchNestedInput
+  servicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutBranchNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutBranchNestedInput
+  packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
+  packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCouponsInput = {
@@ -2155,6 +2408,7 @@ export type BranchCreateWithoutCouponsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCouponsInput = {
@@ -2204,6 +2458,7 @@ export type BranchUncheckedCreateWithoutCouponsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCouponsInput = {
@@ -2269,6 +2524,7 @@ export type BranchUpdateWithoutCouponsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCouponsInput = {
@@ -2318,6 +2574,7 @@ export type BranchUncheckedUpdateWithoutCouponsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffInput = {
@@ -2367,6 +2624,7 @@ export type BranchCreateWithoutStaffInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffInput = {
@@ -2416,6 +2674,7 @@ export type BranchUncheckedCreateWithoutStaffInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffInput = {
@@ -2481,6 +2740,7 @@ export type BranchUpdateWithoutStaffInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffInput = {
@@ -2530,6 +2790,7 @@ export type BranchUncheckedUpdateWithoutStaffInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffAttendancesInput = {
@@ -2579,6 +2840,7 @@ export type BranchCreateWithoutStaffAttendancesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffAttendancesInput = {
@@ -2628,6 +2890,7 @@ export type BranchUncheckedCreateWithoutStaffAttendancesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffAttendancesInput = {
@@ -2693,6 +2956,7 @@ export type BranchUpdateWithoutStaffAttendancesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffAttendancesInput = {
@@ -2742,6 +3006,7 @@ export type BranchUncheckedUpdateWithoutStaffAttendancesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffLeavesInput = {
@@ -2791,6 +3056,7 @@ export type BranchCreateWithoutStaffLeavesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffLeavesInput = {
@@ -2840,6 +3106,7 @@ export type BranchUncheckedCreateWithoutStaffLeavesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffLeavesInput = {
@@ -2905,6 +3172,7 @@ export type BranchUpdateWithoutStaffLeavesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffLeavesInput = {
@@ -2954,6 +3222,7 @@ export type BranchUncheckedUpdateWithoutStaffLeavesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffAvailabilityRulesInput = {
@@ -3003,6 +3272,7 @@ export type BranchCreateWithoutStaffAvailabilityRulesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffAvailabilityRulesInput = {
@@ -3052,6 +3322,7 @@ export type BranchUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffAvailabilityRulesInput = {
@@ -3117,6 +3388,7 @@ export type BranchUpdateWithoutStaffAvailabilityRulesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
@@ -3166,6 +3438,7 @@ export type BranchUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffTimeBlocksInput = {
@@ -3215,6 +3488,7 @@ export type BranchCreateWithoutStaffTimeBlocksInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffTimeBlocksInput = {
@@ -3264,6 +3538,7 @@ export type BranchUncheckedCreateWithoutStaffTimeBlocksInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffTimeBlocksInput = {
@@ -3329,6 +3604,7 @@ export type BranchUpdateWithoutStaffTimeBlocksInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffTimeBlocksInput = {
@@ -3378,6 +3654,7 @@ export type BranchUncheckedUpdateWithoutStaffTimeBlocksInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStaffSalaryConfigsInput = {
@@ -3427,6 +3704,7 @@ export type BranchCreateWithoutStaffSalaryConfigsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStaffSalaryConfigsInput = {
@@ -3476,6 +3754,7 @@ export type BranchUncheckedCreateWithoutStaffSalaryConfigsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStaffSalaryConfigsInput = {
@@ -3541,6 +3820,7 @@ export type BranchUpdateWithoutStaffSalaryConfigsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStaffSalaryConfigsInput = {
@@ -3590,6 +3870,7 @@ export type BranchUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSalarySlipsInput = {
@@ -3639,6 +3920,7 @@ export type BranchCreateWithoutSalarySlipsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSalarySlipsInput = {
@@ -3688,6 +3970,7 @@ export type BranchUncheckedCreateWithoutSalarySlipsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSalarySlipsInput = {
@@ -3753,6 +4036,7 @@ export type BranchUpdateWithoutSalarySlipsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSalarySlipsInput = {
@@ -3802,6 +4086,7 @@ export type BranchUncheckedUpdateWithoutSalarySlipsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutServicesInput = {
@@ -3851,6 +4136,7 @@ export type BranchCreateWithoutServicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutServicesInput = {
@@ -3900,6 +4186,7 @@ export type BranchUncheckedCreateWithoutServicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutServicesInput = {
@@ -3965,6 +4252,7 @@ export type BranchUpdateWithoutServicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutServicesInput = {
@@ -4014,6 +4302,7 @@ export type BranchUncheckedUpdateWithoutServicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPackageCategoriesInput = {
@@ -4063,6 +4352,7 @@ export type BranchCreateWithoutPackageCategoriesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPackageCategoriesInput = {
@@ -4112,6 +4402,7 @@ export type BranchUncheckedCreateWithoutPackageCategoriesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPackageCategoriesInput = {
@@ -4177,6 +4468,7 @@ export type BranchUpdateWithoutPackageCategoriesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPackageCategoriesInput = {
@@ -4226,6 +4518,7 @@ export type BranchUncheckedUpdateWithoutPackageCategoriesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutServicePackagesInput = {
@@ -4275,6 +4568,7 @@ export type BranchCreateWithoutServicePackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutServicePackagesInput = {
@@ -4324,6 +4618,7 @@ export type BranchUncheckedCreateWithoutServicePackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutServicePackagesInput = {
@@ -4389,6 +4684,7 @@ export type BranchUpdateWithoutServicePackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutServicePackagesInput = {
@@ -4438,6 +4734,7 @@ export type BranchUncheckedUpdateWithoutServicePackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutAppointmentsInput = {
@@ -4487,6 +4784,7 @@ export type BranchCreateWithoutAppointmentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutAppointmentsInput = {
@@ -4536,6 +4834,7 @@ export type BranchUncheckedCreateWithoutAppointmentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutAppointmentsInput = {
@@ -4601,6 +4900,7 @@ export type BranchUpdateWithoutAppointmentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutAppointmentsInput = {
@@ -4650,6 +4950,7 @@ export type BranchUncheckedUpdateWithoutAppointmentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPublicBookingSettingsInput = {
@@ -4699,6 +5000,7 @@ export type BranchCreateWithoutPublicBookingSettingsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPublicBookingSettingsInput = {
@@ -4748,6 +5050,7 @@ export type BranchUncheckedCreateWithoutPublicBookingSettingsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPublicBookingSettingsInput = {
@@ -4813,6 +5116,7 @@ export type BranchUpdateWithoutPublicBookingSettingsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPublicBookingSettingsInput = {
@@ -4862,6 +5166,7 @@ export type BranchUncheckedUpdateWithoutPublicBookingSettingsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSalesInput = {
@@ -4911,6 +5216,7 @@ export type BranchCreateWithoutSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSalesInput = {
@@ -4960,6 +5266,7 @@ export type BranchUncheckedCreateWithoutSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSalesInput = {
@@ -5025,6 +5332,7 @@ export type BranchUpdateWithoutSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSalesInput = {
@@ -5074,6 +5382,7 @@ export type BranchUncheckedUpdateWithoutSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutInvoicesInput = {
@@ -5123,6 +5432,7 @@ export type BranchCreateWithoutInvoicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutInvoicesInput = {
@@ -5172,6 +5482,7 @@ export type BranchUncheckedCreateWithoutInvoicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutInvoicesInput = {
@@ -5237,6 +5548,7 @@ export type BranchUpdateWithoutInvoicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutInvoicesInput = {
@@ -5286,6 +5598,7 @@ export type BranchUncheckedUpdateWithoutInvoicesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutCustomerPackagesInput = {
@@ -5335,6 +5648,7 @@ export type BranchCreateWithoutCustomerPackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutCustomerPackagesInput = {
@@ -5384,6 +5698,7 @@ export type BranchUncheckedCreateWithoutCustomerPackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutCustomerPackagesInput = {
@@ -5449,6 +5764,7 @@ export type BranchUpdateWithoutCustomerPackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutCustomerPackagesInput = {
@@ -5498,6 +5814,7 @@ export type BranchUncheckedUpdateWithoutCustomerPackagesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPackageServiceBalancesInput = {
@@ -5547,6 +5864,7 @@ export type BranchCreateWithoutPackageServiceBalancesInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPackageServiceBalancesInput = {
@@ -5596,6 +5914,7 @@ export type BranchUncheckedCreateWithoutPackageServiceBalancesInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPackageServiceBalancesInput = {
@@ -5661,6 +5980,7 @@ export type BranchUpdateWithoutPackageServiceBalancesInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPackageServiceBalancesInput = {
@@ -5710,6 +6030,7 @@ export type BranchUncheckedUpdateWithoutPackageServiceBalancesInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPackageUsagesInput = {
@@ -5759,6 +6080,7 @@ export type BranchCreateWithoutPackageUsagesInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutBranchInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPackageUsagesInput = {
@@ -5808,6 +6130,7 @@ export type BranchUncheckedCreateWithoutPackageUsagesInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutBranchInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPackageUsagesInput = {
@@ -5873,6 +6196,7 @@ export type BranchUpdateWithoutPackageUsagesInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutBranchNestedInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPackageUsagesInput = {
@@ -5922,6 +6246,7 @@ export type BranchUncheckedUpdateWithoutPackageUsagesInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutBranchNestedInput
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutPaymentsInput = {
@@ -5971,6 +6296,7 @@ export type BranchCreateWithoutPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutPaymentsInput = {
@@ -6020,6 +6346,7 @@ export type BranchUncheckedCreateWithoutPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutPaymentsInput = {
@@ -6085,6 +6412,7 @@ export type BranchUpdateWithoutPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutPaymentsInput = {
@@ -6134,6 +6462,7 @@ export type BranchUncheckedUpdateWithoutPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutProductsInput = {
@@ -6183,6 +6512,7 @@ export type BranchCreateWithoutProductsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutProductsInput = {
@@ -6232,6 +6562,7 @@ export type BranchUncheckedCreateWithoutProductsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutProductsInput = {
@@ -6297,6 +6628,7 @@ export type BranchUpdateWithoutProductsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutProductsInput = {
@@ -6346,6 +6678,7 @@ export type BranchUncheckedUpdateWithoutProductsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutProductStockMovementsInput = {
@@ -6395,6 +6728,7 @@ export type BranchCreateWithoutProductStockMovementsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutProductStockMovementsInput = {
@@ -6444,6 +6778,7 @@ export type BranchUncheckedCreateWithoutProductStockMovementsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutProductStockMovementsInput = {
@@ -6509,6 +6844,7 @@ export type BranchUpdateWithoutProductStockMovementsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutProductStockMovementsInput = {
@@ -6558,6 +6894,7 @@ export type BranchUncheckedUpdateWithoutProductStockMovementsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutProductPurchasesInput = {
@@ -6607,6 +6944,7 @@ export type BranchCreateWithoutProductPurchasesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutProductPurchasesInput = {
@@ -6656,6 +6994,7 @@ export type BranchUncheckedCreateWithoutProductPurchasesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutProductPurchasesInput = {
@@ -6721,6 +7060,7 @@ export type BranchUpdateWithoutProductPurchasesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutProductPurchasesInput = {
@@ -6770,6 +7110,7 @@ export type BranchUncheckedUpdateWithoutProductPurchasesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutVendorPaymentsInput = {
@@ -6819,6 +7160,7 @@ export type BranchCreateWithoutVendorPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutVendorPaymentsInput = {
@@ -6868,6 +7210,7 @@ export type BranchUncheckedCreateWithoutVendorPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutVendorPaymentsInput = {
@@ -6933,6 +7276,7 @@ export type BranchUpdateWithoutVendorPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutVendorPaymentsInput = {
@@ -6982,6 +7326,7 @@ export type BranchUncheckedUpdateWithoutVendorPaymentsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutStockAlertsInput = {
@@ -7031,6 +7376,7 @@ export type BranchCreateWithoutStockAlertsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutStockAlertsInput = {
@@ -7080,6 +7426,7 @@ export type BranchUncheckedCreateWithoutStockAlertsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutStockAlertsInput = {
@@ -7145,6 +7492,7 @@ export type BranchUpdateWithoutStockAlertsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutStockAlertsInput = {
@@ -7194,6 +7542,7 @@ export type BranchUncheckedUpdateWithoutStockAlertsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutReorderSuggestionsInput = {
@@ -7243,6 +7592,7 @@ export type BranchCreateWithoutReorderSuggestionsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutReorderSuggestionsInput = {
@@ -7292,6 +7642,7 @@ export type BranchUncheckedCreateWithoutReorderSuggestionsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutReorderSuggestionsInput = {
@@ -7357,6 +7708,7 @@ export type BranchUpdateWithoutReorderSuggestionsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutReorderSuggestionsInput = {
@@ -7406,6 +7758,7 @@ export type BranchUncheckedUpdateWithoutReorderSuggestionsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutAuditLogsInput = {
@@ -7455,6 +7808,7 @@ export type BranchCreateWithoutAuditLogsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutAuditLogsInput = {
@@ -7504,6 +7858,7 @@ export type BranchUncheckedCreateWithoutAuditLogsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutAuditLogsInput = {
@@ -7569,6 +7924,7 @@ export type BranchUpdateWithoutAuditLogsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutAuditLogsInput = {
@@ -7618,6 +7974,7 @@ export type BranchUncheckedUpdateWithoutAuditLogsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutRetailSalesInput = {
@@ -7667,6 +8024,7 @@ export type BranchCreateWithoutRetailSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutRetailSalesInput = {
@@ -7716,6 +8074,7 @@ export type BranchUncheckedCreateWithoutRetailSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutRetailSalesInput = {
@@ -7781,6 +8140,7 @@ export type BranchUpdateWithoutRetailSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutRetailSalesInput = {
@@ -7830,6 +8190,7 @@ export type BranchUncheckedUpdateWithoutRetailSalesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutExpensesInput = {
@@ -7879,6 +8240,7 @@ export type BranchCreateWithoutExpensesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutExpensesInput = {
@@ -7928,6 +8290,7 @@ export type BranchUncheckedCreateWithoutExpensesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutExpensesInput = {
@@ -7993,6 +8356,7 @@ export type BranchUpdateWithoutExpensesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutExpensesInput = {
@@ -8042,6 +8406,7 @@ export type BranchUncheckedUpdateWithoutExpensesInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateWithoutSupportTicketsInput = {
@@ -8091,6 +8456,7 @@ export type BranchCreateWithoutSupportTicketsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutBranchInput
 }
 
 export type BranchUncheckedCreateWithoutSupportTicketsInput = {
@@ -8140,6 +8506,7 @@ export type BranchUncheckedCreateWithoutSupportTicketsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutBranchInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutBranchInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutBranchInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutBranchInput
 }
 
 export type BranchCreateOrConnectWithoutSupportTicketsInput = {
@@ -8205,6 +8572,7 @@ export type BranchUpdateWithoutSupportTicketsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSupportTicketsInput = {
@@ -8254,6 +8622,7 @@ export type BranchUncheckedUpdateWithoutSupportTicketsInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchCreateManySalonInput = {
@@ -8320,6 +8689,7 @@ export type BranchUpdateWithoutSalonInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateWithoutSalonInput = {
@@ -8369,6 +8739,7 @@ export type BranchUncheckedUpdateWithoutSalonInput = {
   packageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutBranchNestedInput
   packageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutBranchNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutBranchNestedInput
 }
 
 export type BranchUncheckedUpdateManyWithoutSalonInput = {
@@ -8426,6 +8797,7 @@ export type BranchCountOutputType = {
   packageServiceBalances: number
   packageUsages: number
   customerMemberships: number
+  membershipWalletTransactions: number
 }
 
 export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8461,6 +8833,7 @@ export type BranchCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   packageServiceBalances?: boolean | BranchCountOutputTypeCountPackageServiceBalancesArgs
   packageUsages?: boolean | BranchCountOutputTypeCountPackageUsagesArgs
   customerMemberships?: boolean | BranchCountOutputTypeCountCustomerMembershipsArgs
+  membershipWalletTransactions?: boolean | BranchCountOutputTypeCountMembershipWalletTransactionsArgs
 }
 
 /**
@@ -8697,6 +9070,13 @@ export type BranchCountOutputTypeCountCustomerMembershipsArgs<ExtArgs extends ru
   where?: Prisma.CustomerMembershipWhereInput
 }
 
+/**
+ * BranchCountOutputType without action
+ */
+export type BranchCountOutputTypeCountMembershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MembershipWalletTransactionWhereInput
+}
+
 
 export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -8747,6 +9127,7 @@ export type BranchSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   packageServiceBalances?: boolean | Prisma.Branch$packageServiceBalancesArgs<ExtArgs>
   packageUsages?: boolean | Prisma.Branch$packageUsagesArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Branch$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Branch$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["branch"]>
 
@@ -8841,6 +9222,7 @@ export type BranchInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   packageServiceBalances?: boolean | Prisma.Branch$packageServiceBalancesArgs<ExtArgs>
   packageUsages?: boolean | Prisma.Branch$packageUsagesArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Branch$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Branch$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.BranchCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BranchIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -8886,6 +9268,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     packageServiceBalances: Prisma.$CustomerPackageServiceBalancePayload<ExtArgs>[]
     packageUsages: Prisma.$CustomerPackageUsagePayload<ExtArgs>[]
     customerMemberships: Prisma.$CustomerMembershipPayload<ExtArgs>[]
+    membershipWalletTransactions: Prisma.$MembershipWalletTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -9330,6 +9713,7 @@ export interface Prisma__BranchClient<T, Null = never, ExtArgs extends runtime.T
   packageServiceBalances<T extends Prisma.Branch$packageServiceBalancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$packageServiceBalancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageServiceBalancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageUsages<T extends Prisma.Branch$packageUsagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$packageUsagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerMemberships<T extends Prisma.Branch$customerMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$customerMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  membershipWalletTransactions<T extends Prisma.Branch$membershipWalletTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Branch$membershipWalletTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipWalletTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10540,6 +10924,30 @@ export type Branch$customerMembershipsArgs<ExtArgs extends runtime.Types.Extensi
   take?: number
   skip?: number
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+}
+
+/**
+ * Branch.membershipWalletTransactions
+ */
+export type Branch$membershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembershipWalletTransaction
+   */
+  select?: Prisma.MembershipWalletTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MembershipWalletTransaction
+   */
+  omit?: Prisma.MembershipWalletTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MembershipWalletTransactionInclude<ExtArgs> | null
+  where?: Prisma.MembershipWalletTransactionWhereInput
+  orderBy?: Prisma.MembershipWalletTransactionOrderByWithRelationInput | Prisma.MembershipWalletTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.MembershipWalletTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
 }
 
 /**

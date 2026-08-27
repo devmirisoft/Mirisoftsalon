@@ -32,15 +32,6 @@ const APPOINTMENT_STATUSES = [
 
 type AppointmentStatus = (typeof APPOINTMENT_STATUSES)[number];
 
-const STATUS_TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
-    SCHEDULED: ["CONFIRMED", "CANCELLED", "NO_SHOW"],
-    CONFIRMED: ["CHECKED_IN", "CANCELLED", "NO_SHOW"],
-    CHECKED_IN: ["COMPLETED", "CANCELLED"],
-    COMPLETED: ["CANCELLED"],
-    CANCELLED: [],
-    NO_SHOW: [],
-};
-
 const isValidAppointmentStatus = (
     status: string
 ): status is AppointmentStatus => {
@@ -497,13 +488,6 @@ export const updateAppointmentStatus = async (
             return res.status(400).json({
                 success: false,
                 message: "Appointment already has this status",
-            });
-        }
-
-        if (!STATUS_TRANSITIONS[existingAppointment.status].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: `Invalid appointment status transition from ${existingAppointment.status} to ${status}`,
             });
         }
 

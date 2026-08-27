@@ -537,14 +537,6 @@ export type LoyaltyRuleUncheckedUpdateManyWithoutSalonNestedInput = {
   deleteMany?: Prisma.LoyaltyRuleScalarWhereInput | Prisma.LoyaltyRuleScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type LoyaltyRuleCreateWithoutSalonInput = {
   id?: string
   earnPointsPerAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string

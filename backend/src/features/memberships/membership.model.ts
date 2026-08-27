@@ -38,6 +38,9 @@ export const MembershipModel = {
     name: string;
     description?: string;
     discountPercentage?: number;
+    durationMonths?: number | null;
+    price?: number;
+    walletCreditAmount?: number;
   }, tx?: Prisma.TransactionClient) => (tx ?? prisma).membership.create({ data, include: include() }),
 
   list: (salonId?: string) =>
@@ -99,6 +102,9 @@ export const MembershipModel = {
       name?: string;
       description?: string | null;
       discountPercentage?: number;
+      durationMonths?: number | null;
+      price?: number;
+      walletCreditAmount?: number;
       status?: boolean;
     },
     tx?: Prisma.TransactionClient

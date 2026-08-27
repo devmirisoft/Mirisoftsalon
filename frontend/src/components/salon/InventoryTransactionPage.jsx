@@ -9,6 +9,13 @@ import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney } from "@/utils/salonFormat";
 
 const emptyLine = () => ({ productId: "", quantity: 1, price: 0 });
+const TAX_OPTIONS = [
+  { value: 0, label: "No tax" },
+  { value: 5, label: "GST 5%" },
+  { value: 12, label: "GST 12%" },
+  { value: 18, label: "GST 18%" },
+  { value: 28, label: "GST 28%" },
+];
 
 const InventoryTransactionPage = ({ mode }) => {
   const purchase = mode === "purchase";
@@ -26,6 +33,7 @@ const InventoryTransactionPage = ({ mode }) => {
     customerId: "",
     paymentMethod: "CASH",
     discountAmount: 0,
+    taxPercent: 0,
     note: "",
   });
   const [items, setItems] = useState([emptyLine()]);
@@ -69,7 +77,19 @@ const InventoryTransactionPage = ({ mode }) => {
     () => items.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.price || 0), 0),
     [items]
   );
-  const finalTotal = purchase ? total : Math.max(total - Number(form.discountAmount || 0), 0);
+  const selectedCustomer = refs.customers.find((item) => item.id === form.customerId);
+  const membershipPercent = Number(selectedCustomer?.membership?.discountPercentage || 0);
+  const manualDiscount = Math.min(Number(form.discountAmount || 0), total);
+  const membershipDiscount = purchase
+    ? 0
+    : Math.min(
+        total * (membershipPercent / 100),
+        Math.max(total - manualDiscount, 0)
+      );
+  const discountTotal = manualDiscount + membershipDiscount;
+  const taxableTotal = Math.max(total - discountTotal, 0);
+  const taxAmount = purchase ? 0 : taxableTotal * (Number(form.taxPercent || 0) / 100);
+  const finalTotal = purchase ? total : taxableTotal + taxAmount;
 
   const updateLine = (index, patch) => setItems((current) =>
     current.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item)
@@ -114,6 +134,7 @@ const InventoryTransactionPage = ({ mode }) => {
               ...(form.customerId ? { customerId: form.customerId } : {}),
               paymentMethod: form.paymentMethod,
               discountAmount: Number(form.discountAmount || 0),
+              taxPercent: Number(form.taxPercent || 0),
               items: items.map((item) => ({
                 productId: item.productId,
                 quantity: Number(item.quantity),
@@ -159,6 +180,7 @@ const InventoryTransactionPage = ({ mode }) => {
                 <>
                   <Col md="4"><FormGroup><Label>Customer (optional)</Label><Input type="select" value={form.customerId} onChange={(e) => setForm((x) => ({ ...x, customerId: e.target.value }))}><option value="">Walk-in customer</option>{refs.customers.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Input></FormGroup></Col>
                   <Col md="4"><FormGroup><Label>Payment method</Label><Input type="select" value={form.paymentMethod} onChange={(e) => setForm((x) => ({ ...x, paymentMethod: e.target.value }))}>{["CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD", "BANK_TRANSFER", "CHEQUE", "OTHER"].map((x) => <option key={x}>{x}</option>)}</Input></FormGroup></Col>
+                  <Col md="4"><FormGroup><Label>Tax</Label><Input type="select" value={form.taxPercent} onChange={(e) => setForm((x) => ({ ...x, taxPercent: e.target.value }))}>{TAX_OPTIONS.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}</Input></FormGroup></Col>
                 </>
               )}
             </Row>
@@ -182,7 +204,14 @@ const InventoryTransactionPage = ({ mode }) => {
             <Row className="g-3 mt-2 align-items-end">
               <Col md="8"><FormGroup><Label>Note</Label><Input type="textarea" value={form.note} onChange={(e) => setForm((x) => ({ ...x, note: e.target.value }))} /></FormGroup></Col>
               {!purchase && <Col md="2"><FormGroup><Label>Discount</Label><Input type="number" min="0" step="0.01" value={form.discountAmount} onChange={(e) => setForm((x) => ({ ...x, discountAmount: e.target.value }))} /></FormGroup></Col>}
-              <Col md={purchase ? "4" : "2"} className="text-end"><div className="mb-2 text-soft">Total</div><h4>{formatMoney(finalTotal)}</h4><Button color="primary" type="submit" disabled={saving}>{saving && <Spinner size="sm" className="me-1" />}{purchase ? "Save purchase" : "Complete sale"}</Button></Col>
+              <Col md={purchase ? "4" : "2"} className="text-end">
+                {!purchase && (
+                  <div className="small text-soft mb-2">
+                    {membershipDiscount > 0 && <div>Membership -{formatMoney(membershipDiscount)}</div>}
+                    {taxAmount > 0 && <div>Tax {formatMoney(taxAmount)}</div>}
+                  </div>
+                )}
+                <div className="mb-2 text-soft">Total</div><h4>{formatMoney(finalTotal)}</h4><Button color="primary" type="submit" disabled={saving}>{saving && <Spinner size="sm" className="me-1" />}{purchase ? "Save purchase" : "Complete sale"}</Button></Col>
             </Row>
           </Form>
         </div>
@@ -196,6 +225,8 @@ const InventoryTransactionPage = ({ mode }) => {
           { key: purchase ? "purchaseDate" : "saleDate", label: "Date", render: (v) => formatDate(v, true) },
           { key: purchase ? "supplierName" : "customer", label: purchase ? "Supplier" : "Customer", render: (v) => purchase ? (v || "—") : (v?.name || "Walk-in") },
           { key: "items", label: "Items", render: (v) => v?.length || 0 },
+          ...(!purchase ? [{ key: "taxAmount", label: "Tax", render: formatMoney }] : []),
+          ...(!purchase ? [{ key: "discountAmount", label: "Discount", render: formatMoney }] : []),
           { key: "totalAmount", label: "Total", render: formatMoney },
           ...(purchase ? [{ key: "paymentStatus", label: "Payment" }] : []),
           ...(purchase ? [{ key: "balanceAmount", label: "Balance", render: formatMoney }] : []),

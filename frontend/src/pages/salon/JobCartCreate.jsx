@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import {
   Alert,
@@ -9,6 +10,9 @@ import {
   FormGroup,
   Input,
   Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -21,6 +25,7 @@ import {
   formatDate,
   formatMoney,
   todayInputDate,
+  toLocalInput,
 } from "@/utils/salonFormat";
 
 const nowParts = () => {
@@ -29,6 +34,13 @@ const nowParts = () => {
     time: currentInputTime(),
   };
 };
+
+const newServiceRow = () => ({
+  rowId: `service-${Date.now()}-${Math.random()}`,
+  mainServiceId: "",
+  serviceId: "",
+  staffId: "",
+});
 
 const JobCartCreate = () => {
   const navigate = useNavigate();
@@ -41,11 +53,14 @@ const JobCartCreate = () => {
     phone: "",
     date: initial.date,
     time: initial.time,
-    staffId: "",
-    serviceIds: [],
     packageIds: [],
-    bookingNote: "",
   });
+  const [serviceRows, setServiceRows] = useState([newServiceRow()]);
+  // Staff chosen in the picker; services picked afterwards attach to them.
+  const [pickerStaffId, setPickerStaffId] = useState("");
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerCategoryId, setPickerCategoryId] = useState("");
+  const [pickerSearch, setPickerSearch] = useState("");
   const [customPackage, setCustomPackage] = useState({
     serviceIds: [],
     name: "",
@@ -61,12 +76,16 @@ const JobCartCreate = () => {
     staff: [],
     services: [],
     packages: [],
+    salon: null,
   });
   const [loadingRefs, setLoadingRefs] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [customerSummary, setCustomerSummary] = useState(null);
   const [lookingUp, setLookingUp] = useState(false);
+  const [packageModalOpen, setPackageModalOpen] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   const loadCustomerSummary = useCallback(async (query, options = {}) => {
     const suppressNotFound = options.suppressNotFound ?? false;
@@ -104,6 +123,18 @@ const JobCartCreate = () => {
     return () => window.clearTimeout(timer);
   }, [form.phone, loadCustomerSummary]);
 
+  const serviceIds = useMemo(
+    () => serviceRows.map((row) => row.serviceId).filter(Boolean),
+    [serviceRows]
+  );
+
+  useEffect(() => {
+    setCustomPackage((current) => ({
+      ...current,
+      serviceIds: current.serviceIds.filter((id) => serviceIds.includes(id)),
+    }));
+  }, [serviceIds]);
+
   useEffect(() => {
     let active = true;
     setLoadingRefs(true);
@@ -127,6 +158,7 @@ const JobCartCreate = () => {
           staff: [],
           services: [],
           packages: [],
+          salon: null,
           }),
           customers:
             customerResult.status === "fulfilled"
@@ -185,9 +217,9 @@ const JobCartCreate = () => {
   const selectedServices = useMemo(
     () =>
       refs.services.filter((service) =>
-        form.serviceIds.includes(service.id)
+        serviceIds.includes(service.id)
       ),
-    [refs.services, form.serviceIds]
+    [refs.services, serviceIds]
   );
   const subtotal = selectedServices.reduce(
     (sum, service) => sum + Number(service.price || 0),
@@ -230,43 +262,247 @@ const JobCartCreate = () => {
     });
     return ids;
   }, [selectedPackages]);
+  const serviceGstPercent =
+    refs.salon?.gstEnabled === false
+      ? 0
+      : Number(refs.salon?.serviceGstRate ?? 0);
+  const mainServices = useMemo(
+    () =>
+      Array.from(
+        refs.services.reduce((map, service) => {
+          const id = service.mainService?.id || service.mainServiceId || "";
+          const name = service.mainService?.name || service.mainServiceName;
+          if (id && name) map.set(id, name);
+          return map;
+        }, new Map())
+      ).map(([id, name]) => ({ id, name })),
+    [refs.services]
+  );
+  const selectedStartKey = `${form.date}T${form.time}`;
+  // Slots are generated on a fixed grid (15-minute steps), so the form's
+  // live "current time" default almost never lands on a boundary exactly.
+  // Match each staff member's slot nearest to (at or before) the selected
+  // time instead of requiring an exact string match.
+  const slotsAtSelectedTime = useMemo(() => {
+    const bestByStaff = new Map();
+    availableSlots.forEach((slot) => {
+      const slotKey = toLocalInput(slot.startTime);
+      if (slotKey > selectedStartKey) return;
+      const current = bestByStaff.get(slot.staffId);
+      if (!current || slotKey > toLocalInput(current.startTime)) {
+        bestByStaff.set(slot.staffId, slot);
+      }
+    });
+    return [...bestByStaff.values()];
+  }, [availableSlots, selectedStartKey]);
+  const availableStaffAtSelectedTime = useMemo(() => {
+    const staffById = new Map(refs.staff.map((member) => [member.id, member]));
+    const seen = new Map();
+    slotsAtSelectedTime.forEach((slot) => {
+      const member = staffById.get(slot.staffId);
+      if (member) seen.set(member.id, member);
+    });
+    return [...seen.values()];
+  }, [refs.staff, slotsAtSelectedTime]);
+  // Availability slots are only fetched once the cart has services (the API
+  // needs a duration). Before that, offer all branch staff so a staff member
+  // can be chosen up front; the per-row dropdown still enforces real
+  // availability once services are added.
+  const pickerStaffOptions = useMemo(
+    () =>
+      serviceIds.length ? availableStaffAtSelectedTime : refs.staff,
+    [serviceIds.length, availableStaffAtSelectedTime, refs.staff]
+  );
+
+  const availableStaffIds = useMemo(
+    () => new Set(availableStaffAtSelectedTime.map((member) => member.id)),
+    [availableStaffAtSelectedTime]
+  );
+  const slotOptions = useMemo(() => {
+    const seen = new Map();
+    availableSlots.forEach((slot) => {
+      const local = toLocalInput(slot.startTime);
+      const time = local.slice(11, 16);
+      const key = `${local}-${slot.staffId}`;
+      if (!seen.has(key)) {
+        seen.set(key, {
+          value: key,
+          slot,
+          label: `${time} - ${slot.staffName}`,
+        });
+      }
+    });
+    return [...seen.values()];
+  }, [availableSlots]);
+  const selectedSlotOption = useMemo(
+    () =>
+      slotOptions.find(
+        (option) =>
+          toLocalInput(option.slot.startTime) === selectedStartKey &&
+          serviceRows.some((row) => row.staffId === option.slot.staffId)
+      ) || null,
+    [selectedStartKey, serviceRows, slotOptions]
+  );
+
+  useEffect(() => {
+    let active = true;
+    if (!form.branchId || !form.date || !serviceIds.length) {
+      setAvailableSlots([]);
+      setLoadingSlots(false);
+      return undefined;
+    }
+    setLoadingSlots(true);
+    salonApi.staffAvailability
+      .slots({
+        branchId: form.branchId,
+        date: form.date,
+        serviceIds: serviceIds.join(","),
+      })
+      .then((response) => {
+        if (active) setAvailableSlots(response.data?.slots || []);
+      })
+      .catch(() => {
+        if (active) setAvailableSlots([]);
+      })
+      .finally(() => {
+        if (active) setLoadingSlots(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [form.branchId, form.date, serviceIds]);
 
   const togglePackage = (packageId) => {
+    const packageIds = form.packageIds.includes(packageId)
+      ? form.packageIds.filter((id) => id !== packageId)
+      : [...form.packageIds, packageId];
+    const coveredServices = new Set();
+    (refs.packages || [])
+      .filter((servicePackage) => packageIds.includes(servicePackage.id))
+      .forEach((servicePackage) => {
+        (servicePackage.items || []).forEach((item) =>
+          coveredServices.add(item.serviceId)
+        );
+      });
     setForm((current) => {
-      const packageIds = current.packageIds.includes(packageId)
-        ? current.packageIds.filter((id) => id !== packageId)
-        : [...current.packageIds, packageId];
-      const coveredServices = new Set();
-      (refs.packages || [])
-        .filter((servicePackage) => packageIds.includes(servicePackage.id))
-        .forEach((servicePackage) => {
-          (servicePackage.items || []).forEach((item) =>
-            coveredServices.add(item.serviceId)
-          );
-        });
-      return {
-        ...current,
-        packageIds,
-        serviceIds: current.serviceIds.filter(
-          (serviceId) => !coveredServices.has(serviceId)
-        ),
+      return { ...current, packageIds };
+    });
+    setServiceRows((current) =>
+      current
+        .map((row) =>
+          coveredServices.has(row.serviceId)
+            ? { ...row, serviceId: "", mainServiceId: "" }
+            : row
+        )
+        .filter(
+          (row, index, rows) => row.serviceId || rows.length === 1 || index === 0
+        )
+    );
+  };
+
+  const updateServiceRow = (rowId, updates) => {
+    setServiceRows((current) =>
+      current.map((row) => {
+        if (row.rowId !== rowId) return row;
+        const next = { ...row, ...updates };
+        if (
+          updates.mainServiceId !== undefined &&
+          updates.serviceId === undefined
+        ) {
+          next.serviceId = "";
+        }
+        return next;
+      })
+    );
+  };
+
+  const pickerStaffName = useMemo(
+    () =>
+      pickerStaffOptions.find((member) => member.id === pickerStaffId)?.name ||
+      "",
+    [pickerStaffOptions, pickerStaffId]
+  );
+
+  // Rows keyed by service, so the list can show what is already in the cart
+  // and which staff each one went to.
+  const rowsByServiceId = useMemo(() => {
+    const map = new Map();
+    serviceRows.forEach((row) => {
+      if (row.serviceId) map.set(row.serviceId, row);
+    });
+    return map;
+  }, [serviceRows]);
+
+  // Everything not covered by a selected package. Services already in the cart
+  // stay listed (shown checked) so they can be unchecked to remove them.
+  const pickerServiceOptions = useMemo(
+    () =>
+      refs.services
+        .filter((service) => !selectedPackageServiceIds.has(service.id))
+        .map((service) => ({
+          id: service.id,
+          name: service.name,
+          price: service.price,
+          mainServiceId: service.mainService?.id || service.mainServiceId || "",
+          mainServiceName:
+            service.mainService?.name || service.mainServiceName || "Other",
+        })),
+    [refs.services, selectedPackageServiceIds]
+  );
+
+  // Main-service categories offered by the services still available to add.
+  const pickerCategories = useMemo(() => {
+    const seen = new Map();
+    pickerServiceOptions.forEach((option) => {
+      if (option.mainServiceId && !seen.has(option.mainServiceId)) {
+        seen.set(option.mainServiceId, option.mainServiceName);
+      }
+    });
+    return [...seen.entries()].map(([id, name]) => ({ id, name }));
+  }, [pickerServiceOptions]);
+
+  // Narrow the checkbox list by the chosen category and the search box.
+  const pickerVisibleServices = useMemo(() => {
+    const term = pickerSearch.trim().toLowerCase();
+    return pickerServiceOptions.filter((option) => {
+      if (pickerCategoryId && option.mainServiceId !== pickerCategoryId) {
+        return false;
+      }
+      return !term || option.name.toLowerCase().includes(term);
+    });
+  }, [pickerServiceOptions, pickerCategoryId, pickerSearch]);
+
+  // Checking a service adds it to the cart immediately, assigned to whoever
+  // is selected in the staff dropdown at that moment. Unchecking removes it.
+  // Rows added earlier keep their original staff, so switching staff only
+  // affects services checked from that point on.
+  const togglePickerService = (serviceId) => {
+    const service = refs.services.find((item) => item.id === serviceId);
+    if (!service) return;
+    setServiceRows((current) => {
+      const existing = current.find((row) => row.serviceId === serviceId);
+      if (existing) {
+        const next = current.filter((row) => row.serviceId !== serviceId);
+        return next.length ? next : [newServiceRow()];
+      }
+      const row = {
+        ...newServiceRow(),
+        rowId: `service-${Date.now()}-${Math.random()}`,
+        serviceId,
+        mainServiceId: service.mainService?.id || service.mainServiceId || "",
+        staffId: pickerStaffId || "",
       };
+      // Drop the leading blank row so the first add does not leave a gap.
+      const kept = current.filter((item) => item.serviceId);
+      return [...kept, row];
     });
   };
 
-  const toggleService = (serviceId) => {
-    if (selectedPackageServiceIds.has(serviceId)) return;
-    setForm((current) => ({
-      ...current,
-      serviceIds: current.serviceIds.includes(serviceId)
-        ? current.serviceIds.filter((id) => id !== serviceId)
-        : [...current.serviceIds, serviceId],
-    }));
-    setCustomPackage((current) => ({
-      ...current,
-      serviceIds: current.serviceIds.filter((id) => id !== serviceId),
-    }));
-  };
+  const removeServiceRow = (rowId) =>
+    setServiceRows((current) => {
+      const next = current.filter((row) => row.rowId !== rowId);
+      return next.length ? next : [newServiceRow()];
+    });
 
   const toggleCustomPackageService = (serviceId) =>
     setCustomPackage((current) => ({
@@ -288,6 +524,20 @@ const JobCartCreate = () => {
       if (startTime < new Date()) {
         throw new Error("Choose a start date and time from now onward.");
       }
+      const selectedServiceIds = serviceRows
+        .map((row) => row.serviceId)
+        .filter(Boolean);
+      if (new Set(selectedServiceIds).size !== selectedServiceIds.length) {
+        throw new Error("Each service can be selected only once.");
+      }
+      const invalidStaff = serviceRows.find(
+        (row) => row.staffId && !availableStaffIds.has(row.staffId)
+      );
+      if (invalidStaff) {
+        throw new Error(
+          "Selected staff is not available at this start time. Choose an available slot or leave staff unassigned."
+        );
+      }
       if (customPackage.serviceIds.length && !customPackage.name.trim()) {
         throw new Error("Enter a custom package name");
       }
@@ -299,23 +549,27 @@ const JobCartCreate = () => {
         throw new Error("Enter a usage limit from 1 to 100");
       }
       const customServiceIds = customPackage.serviceIds.filter((serviceId) =>
-        form.serviceIds.includes(serviceId)
+        selectedServiceIds.includes(serviceId)
       );
+      const serviceItems = serviceRows
+        .filter((row) => row.serviceId)
+        .map((row) => ({
+          serviceId: row.serviceId,
+          ...(row.staffId ? { staffId: row.staffId } : {}),
+        }));
       const response = await salonApi.jobCarts.create({
         ...(form.salonId ? { salonId: form.salonId } : {}),
         branchId: form.branchId,
         customerName: form.customerName,
         phone: form.phone,
         startTime: startTime.toISOString(),
-        ...(form.staffId ? { staffId: form.staffId } : {}),
-        serviceIds: form.serviceIds,
-        ...(form.bookingNote ? { bookingNote: form.bookingNote } : {}),
+        serviceIds: selectedServiceIds,
+        serviceItems,
       });
       for (const packageId of form.packageIds) {
         await salonApi.jobCarts.addItem(response.data.id, {
           itemType: "PACKAGE",
           packageId,
-          ...(form.staffId ? { staffId: form.staffId } : {}),
         });
       }
       if (customServiceIds.length) {
@@ -368,16 +622,19 @@ const JobCartCreate = () => {
                       type="select"
                       required
                       value={form.salonId}
-                      onChange={(event) =>
+                      onChange={(event) => {
                         setForm((current) => ({
                           ...current,
                           salonId: event.target.value,
                           branchId: "",
-                          staffId: "",
-                          serviceIds: [],
                           packageIds: [],
-                        }))
-                      }
+                        }));
+                        setServiceRows([newServiceRow()]);
+                        setPickerStaffId("");
+                        setPickerOpen(false);
+                        setPickerSearch("");
+                        setPickerCategoryId("");
+                      }}
                     >
                       <option value="">Select salon</option>
                       {refs.salons.map((salon) => (
@@ -389,6 +646,22 @@ const JobCartCreate = () => {
                   </FormGroup>
                 )}
                 <Row>
+                  <Col md="6">
+                    <FormGroup>
+                      <Label>Phone Number</Label>
+                      <Input
+                        required
+                        placeholder="Customer phone"
+                        value={form.phone}
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            phone: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
                   <Col md="6">
                     <FormGroup>
                       <Label>Customer</Label>
@@ -439,22 +712,7 @@ const JobCartCreate = () => {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Label>Phone Number</Label>
-                      <Input
-                        required
-                        placeholder="Customer phone"
-                        value={form.phone}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            phone: event.target.value,
-                          }))
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
+                  
                 </Row>
                 {lookingUp && (
                   <div className="small text-soft mb-3">
@@ -514,15 +772,18 @@ const JobCartCreate = () => {
                         required
                         value={form.branchId}
                         disabled={loadingRefs}
-                        onChange={(event) =>
+                        onChange={(event) => {
                           setForm((current) => ({
                             ...current,
                             branchId: event.target.value,
-                            staffId: "",
-                            serviceIds: [],
                             packageIds: [],
-                          }))
-                        }
+                          }));
+                          setServiceRows([newServiceRow()]);
+                          setPickerStaffId("");
+                          setPickerOpen(false);
+                          setPickerSearch("");
+                          setPickerCategoryId("");
+                        }}
                       >
                         <option value="">Select branch</option>
                         {refs.branches.map((branch) => (
@@ -534,155 +795,298 @@ const JobCartCreate = () => {
                     </FormGroup>
                   </Col>
                 </Row>
-                <FormGroup>
-                  <Label>Staff (optional)</Label>
-                  <Input
-                    type="select"
-                    value={form.staffId}
-                    disabled={!form.branchId}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        staffId: event.target.value,
-                      }))
-                    }
-                  >
-                    <option value="">Assign later</option>
-                    {refs.staff.map((member) => (
-                      <option key={member.id} value={member.id}>
-                        {member.name} — {member.jobRole}
-                      </option>
-                    ))}
-                  </Input>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Add Packages</Label>
-                  <div className="border rounded p-3">
-                    {(refs.packages || []).length ? (
-                      (refs.packages || []).map((servicePackage) => (
-                        <div
-                          key={servicePackage.id}
-                          className="form-check mb-2"
-                        >
-                          <Input
-                            type="checkbox"
-                            id={`package-${servicePackage.id}`}
-                            checked={form.packageIds.includes(
-                              servicePackage.id
-                            )}
-                            disabled={!form.branchId}
-                            onChange={() => togglePackage(servicePackage.id)}
-                          />
-                          <Label
-                            className="form-check-label"
-                            htmlFor={`package-${servicePackage.id}`}
-                          >
-                            {servicePackage.name} -{" "}
-                            {formatMoney(servicePackage.specialPrice)}
-                            <span className="d-block small text-soft">
-                              {(servicePackage.items || [])
-                                .map((item) => item.serviceNameSnapshot)
-                                .join(", ")}
-                            </span>
-                          </Label>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-soft small">No packages available.</div>
-                    )}
-                  </div>
-                  <Input
-                    className="d-none"
-                    type="select"
-                    multiple
-                    value={form.packageIds}
-                    disabled={!form.branchId}
-                    style={{ minHeight: 120 }}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        packageIds: Array.from(
-                          event.target.selectedOptions,
-                          (option) => option.value
-                        ),
-                      }))
-                    }
-                  >
-                    {(refs.packages || []).map((servicePackage) => (
-                      <option key={servicePackage.id} value={servicePackage.id}>
-                        {servicePackage.name} —{" "}
-                        {formatMoney(servicePackage.specialPrice)}
-                      </option>
-                    ))}
-                  </Input>
-                  <small className="text-soft">
-                    Selected packages are added to the draft invoice after the
-                    cart is created.
-                  </small>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Add Services</Label>
-                  <div className="border rounded p-3">
-                    {refs.services.length ? (
-                      refs.services.map((service) => {
-                        const covered = selectedPackageServiceIds.has(
-                          service.id
+                {serviceIds.length > 0 && (
+                  <div className="border rounded p-3 mb-3">
+                    <Label className="form-label">Available Staff Slots</Label>
+                    <Select
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                      isClearable
+                      isLoading={loadingSlots}
+                      isDisabled={!form.branchId || saving}
+                      options={slotOptions}
+                      value={selectedSlotOption}
+                      placeholder={
+                        loadingSlots
+                          ? "Checking slots"
+                          : slotOptions.length
+                            ? "Choose a staff slot"
+                            : "No staff slot for selected services"
+                      }
+                      noOptionsMessage={() => "No available staff slots"}
+                      onChange={(option) => {
+                        if (!option?.slot) {
+                          setServiceRows((current) =>
+                            current.map((row) => ({ ...row, staffId: "" }))
+                          );
+                          return;
+                        }
+                        const local = toLocalInput(option.slot.startTime);
+                        setForm((current) => ({
+                          ...current,
+                          time: local.slice(11, 16),
+                        }));
+                        setServiceRows((current) =>
+                          current.map((row) =>
+                            row.serviceId
+                              ? { ...row, staffId: option.slot.staffId }
+                              : row
+                          )
                         );
-                        return (
-                          <div key={service.id} className="form-check mb-2">
-                            <Input
-                              type="checkbox"
-                              id={`service-${service.id}`}
-                              checked={form.serviceIds.includes(service.id)}
-                              disabled={!form.branchId || covered}
-                              onChange={() => toggleService(service.id)}
-                            />
-                            <Label
-                              className="form-check-label"
-                              htmlFor={`service-${service.id}`}
-                            >
-                              {service.name} - {formatMoney(service.price)}
-                              {covered && (
-                                <span className="d-block small text-soft">
-                                  Covered by selected package
-                                </span>
-                              )}
-                            </Label>
-                          </div>
-                        );
-                      })
-                    ) : (
-                      <div className="text-soft small">No services available.</div>
-                    )}
+                      }}
+                    />
+                    <small className="text-soft">
+                      Staff is optional. If assigned, the selected start time
+                      must fit staff availability for the full cart duration.
+                    </small>
                   </div>
-                  <Input
-                    className="d-none"
-                    type="select"
-                    multiple
-                    value={form.serviceIds}
-                    disabled={!form.branchId}
-                    style={{ minHeight: 180 }}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        serviceIds: Array.from(
-                          event.target.selectedOptions,
-                          (option) => option.value
-                        ),
-                      }))
-                    }
-                  >
-                    {refs.services.map((service) => (
-                      <option key={service.id} value={service.id}>
-                        {service.name} — {formatMoney(service.price)}
-                      </option>
-                    ))}
-                  </Input>
+                )}
+                <FormGroup>
+                  <div className="d-flex justify-content-between align-items-center mb-2 gap-5">
+                    <Label className="mb-0">Add Services</Label>
+                    <div className="d-flex gap-2">
+                      <Button
+                        color="primary"
+                        type="button"
+                        className="text-nowrap px-3 py-2"
+                        style={{ minWidth: 112 }}
+                        disabled={!form.branchId || loadingRefs || saving}
+                        onClick={() => setPickerOpen(true)}
+                      >
+                        + Service
+                      </Button>
+                      <Button
+                        color="primary"
+                        outline
+                        type="button"
+                        className="text-nowrap px-3 py-2"
+                        style={{ minWidth: 112 }}
+                        disabled={!form.branchId || loadingRefs || saving}
+                        onClick={() => setPackageModalOpen(true)}
+                      >
+                        + Package
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="table-responsive">
+                    <table className="table table-sm table-bordered mb-2">
+                      <thead>
+                        <tr>
+                          {/* <th>Main Service</th> */}
+                          <th>Service</th>
+                          <th>Staff</th>
+                          <th style={{ width: 90 }}>Qty</th>
+                          <th style={{ width: 130 }}>Price</th>
+                          <th style={{ width: 100 }}>GST %</th>
+                          <th style={{ width: 130 }}>Total</th>
+                          <th style={{ width: 70 }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {serviceRows.map((row) => {
+                          const selectedService = refs.services.find(
+                            (service) => service.id === row.serviceId
+                          );
+                          const selectedIds = new Set(
+                            serviceRows
+                              .filter((item) => item.rowId !== row.rowId)
+                              .map((item) => item.serviceId)
+                              .filter(Boolean)
+                          );
+                          const rowServices = refs.services.filter((service) => {
+                            const mainServiceId =
+                              service.mainService?.id ||
+                              service.mainServiceId ||
+                              "";
+                            return (
+                              !selectedPackageServiceIds.has(service.id) &&
+                              !selectedIds.has(service.id) &&
+                              (!row.mainServiceId ||
+                                mainServiceId === row.mainServiceId)
+                            );
+                          });
+                          return (
+                            <tr key={row.rowId}>
+                              {/* <td>
+                                <Input
+                                  type="select"
+                                  value={row.mainServiceId}
+                                  disabled={!form.branchId || saving}
+                                  onChange={(event) =>
+                                    updateServiceRow(row.rowId, {
+                                      mainServiceId: event.target.value,
+                                    })
+                                  }
+                                >
+                                  <option value="">Select main service</option>
+                                  {mainServices.map((mainService) => (
+                                    <option
+                                      key={mainService.id}
+                                      value={mainService.id}
+                                    >
+                                      {mainService.name}
+                                    </option>
+                                  ))}
+                                </Input>
+                              </td> */}
+                              <td>
+                                <Select
+                                  className="react-select-container"
+                                  classNamePrefix="react-select"
+                                  isClearable
+                                  isDisabled={!form.branchId || saving}
+                                  options={rowServices.map((service) => ({
+                                    value: service.id,
+                                    label: `${service.name} - ${formatMoney(
+                                      service.price
+                                    )}`,
+                                  }))}
+                                  value={
+                                    selectedService
+                                      ? {
+                                          value: selectedService.id,
+                                          label: `${selectedService.name} - ${formatMoney(
+                                            selectedService.price
+                                          )}`,
+                                        }
+                                      : null
+                                  }
+                                  placeholder="Search service"
+                                  noOptionsMessage={() => "No services"}
+                                  onChange={(option) => {
+                                    const service = refs.services.find(
+                                      (item) => item.id === option?.value
+                                    );
+                                    updateServiceRow(row.rowId, {
+                                      serviceId: option?.value || "",
+                                      mainServiceId:
+                                        service?.mainService?.id ||
+                                        service?.mainServiceId ||
+                                        row.mainServiceId,
+                                      staffId: "",
+                                    });
+                                  }}
+                                />
+                              </td>
+                              <td>
+                                <Input
+                                  type="select"
+                                  value={row.staffId}
+                                  disabled={
+                                    !form.branchId ||
+                                    !row.serviceId ||
+                                    loadingSlots ||
+                                    saving
+                                  }
+                                  onChange={(event) =>
+                                    updateServiceRow(row.rowId, {
+                                      staffId: event.target.value,
+                                    })
+                                  }
+                                >
+                                  <option value="">Assign later</option>
+                                  {/* Keep an assigned-but-unavailable staff
+                                      visible so the cell never looks blank;
+                                      submit still blocks on this. */}
+                                  {row.staffId &&
+                                    !availableStaffIds.has(row.staffId) && (
+                                      <option value={row.staffId}>
+                                        {refs.staff.find(
+                                          (member) => member.id === row.staffId
+                                        )?.name || "Assigned staff"}{" "}
+                                        (unavailable)
+                                      </option>
+                                    )}
+                                  {availableStaffAtSelectedTime.map((member) => (
+                                    <option key={member.id} value={member.id}>
+                                      {member.name} - {member.jobRole}
+                                    </option>
+                                  ))}
+                                </Input>
+                              </td>
+                              <td>
+                                <Input value="1" disabled />
+                              </td>
+                              <td>
+                                <Input
+                                  value={
+                                    selectedService
+                                      ? formatMoney(selectedService.price)
+                                      : ""
+                                  }
+                                  disabled
+                                />
+                              </td>
+                              <td>
+                                <Input value={serviceGstPercent} disabled />
+                              </td>
+                              <td>
+                                <Input
+                                  value={
+                                    selectedService
+                                      ? formatMoney(selectedService.price * (1 - 1 / (1 + serviceGstPercent)))
+                                      : ""
+                                  }
+                                  disabled
+                                />
+                              </td>
+                              <td className="text-end">
+                                <Button
+                                  color="danger"
+                                  outline
+                                  size="sm"
+                                  type="button"
+                                  disabled={saving}
+                                  onClick={() => removeServiceRow(row.rowId)}
+                                >
+                                  X
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                   <small className="text-soft">
                     Services covered by selected packages cannot be added as
                     standalone services.
                   </small>
                 </FormGroup>
+                {selectedPackages.length > 0 && (
+                  <div className="border rounded p-3 mb-3">
+                    <h6 className="mb-3">Selected Packages</h6>
+                    {selectedPackages.map((servicePackage) => (
+                      <div
+                        key={servicePackage.id}
+                        className="d-flex justify-content-between align-items-start border-bottom py-2"
+                      >
+                        <div>
+                          <strong>{servicePackage.name}</strong>
+                          <span className="d-block small text-soft">
+                            {(servicePackage.items || [])
+                              .map((item) => item.serviceNameSnapshot)
+                              .join(", ")}
+                          </span>
+                        </div>
+                        <div className="text-end">
+                          <strong>{formatMoney(servicePackage.specialPrice)}</strong>
+                          <Button
+                            color="danger"
+                            outline
+                            size="sm"
+                            type="button"
+                            className="ms-2"
+                            disabled={saving}
+                            onClick={() => togglePackage(servicePackage.id)}
+                          >
+                            X
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {selectedServices.length > 0 && (
                   <div className="border rounded p-3 mb-3">
                     <h6>Create Customer Custom Package</h6>
@@ -798,20 +1202,6 @@ const JobCartCreate = () => {
                     </small>
                   </div>
                 )}
-                <FormGroup>
-                  <Label>Booking Note</Label>
-                  <Input
-                    type="textarea"
-                    rows="3"
-                    value={form.bookingNote}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        bookingNote: event.target.value,
-                      }))
-                    }
-                  />
-                </FormGroup>
               </div>
             </div>
           </Col>
@@ -930,6 +1320,189 @@ const JobCartCreate = () => {
           </Col>
         </Row>
       </Form>
+      <Modal
+        isOpen={pickerOpen}
+        toggle={() => setPickerOpen(false)}
+        centered
+        size="xl"
+        contentClassName="border-0"
+      >
+        <ModalHeader toggle={() => setPickerOpen(false)}>
+          Add Services
+        </ModalHeader>
+        <ModalBody>
+          {/* Choose the staff first; every service checked below is added
+              to the cart assigned to them. */}
+          <Row className="g-3 mb-3">
+            <Col md="4">
+              <Label className="mb-1">Category</Label>
+              <Input
+                type="select"
+                value={pickerCategoryId}
+                onChange={(event) => setPickerCategoryId(event.target.value)}
+              >
+                <option value="">All services</option>
+                {pickerCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+            <Col md="4">
+              <Label className="mb-1">Assign next to</Label>
+              <Input
+                type="select"
+                value={pickerStaffId}
+                disabled={saving}
+                onChange={(event) => setPickerStaffId(event.target.value)}
+              >
+                <option value="">Assign later</option>
+                {pickerStaffOptions.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name}
+                    {member.jobRole ? ` - ${member.jobRole}` : ""}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+            <Col md="4">
+              <Label className="mb-1">Search</Label>
+              <Input
+                type="search"
+                placeholder="Search services"
+                value={pickerSearch}
+                onChange={(event) => setPickerSearch(event.target.value)}
+              />
+            </Col>
+          </Row>
+          <div
+            className="border rounded"
+            style={{ maxHeight: 380, overflowY: "auto" }}
+          >
+            {pickerVisibleServices.length === 0 ? (
+              <div className="text-soft text-center py-4">
+                No services match this search
+              </div>
+            ) : (
+              // Two columns so the wider modal is not mostly empty space.
+              // CSS grid rather than a Bootstrap row: .row's negative margins
+              // overflow this scroll container and collapse the cells.
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                }}
+              >
+                {pickerVisibleServices.map((option) => {
+                  const addedRow = rowsByServiceId.get(option.id);
+                  // Staff is decided solely by "Assign next to" above, at the
+                  // moment a service is checked; the row just reflects it.
+                  const assignedName = addedRow?.staffId
+                    ? pickerStaffOptions.find(
+                        (member) => member.id === addedRow.staffId
+                      )?.name
+                    : "";
+                  return (
+                    <div key={option.id} style={{ minWidth: 0 }}>
+                      <label
+                        className="d-flex align-items-center gap-2 px-3 py-2 border-bottom mb-0 h-100"
+                        style={{ cursor: "pointer", minWidth: 0 }}
+                      >
+                        <input
+                          type="checkbox"
+                          className="form-check-input mt-0 flex-shrink-0"
+                          checked={Boolean(addedRow)}
+                          onChange={() => togglePickerService(option.id)}
+                        />
+                        <span className="text-truncate" style={{ minWidth: 0 }}>
+                          <span className="d-block text-truncate">
+                            {option.name}
+                          </span>
+                          <small className="text-soft">
+                            {option.mainServiceName} -{" "}
+                            {formatMoney(option.price)}
+                            {addedRow ? ` - ${assignedName || "unassigned"}` : ""}
+                          </small>
+                        </span>
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <span className="text-soft">
+              {rowsByServiceId.size} in cart
+              {pickerStaffName ? ` - adding for ${pickerStaffName}` : ""}
+            </span>
+            <Button
+              color="primary"
+              type="button"
+              onClick={() => setPickerOpen(false)}
+            >
+              Done
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
+      <Modal
+        isOpen={packageModalOpen}
+        toggle={() => setPackageModalOpen(false)}
+        centered
+        size="lg"
+      >
+        <ModalHeader toggle={() => setPackageModalOpen(false)}>
+          Add Package
+        </ModalHeader>
+        <ModalBody>
+          {(refs.packages || []).length ? (
+            (refs.packages || []).map((servicePackage) => {
+              const selected = form.packageIds.includes(servicePackage.id);
+              return (
+                <div
+                  key={servicePackage.id}
+                  className="d-flex justify-content-between align-items-start border-bottom py-3"
+                >
+                  <div className="form-check">
+                    <Input
+                      type="checkbox"
+                      id={`package-${servicePackage.id}`}
+                      checked={selected}
+                      disabled={!form.branchId || saving}
+                      onChange={() => togglePackage(servicePackage.id)}
+                    />
+                    <Label
+                      className="form-check-label"
+                      htmlFor={`package-${servicePackage.id}`}
+                    >
+                      <strong>{servicePackage.name}</strong>
+                      <span className="d-block small text-soft">
+                        {(servicePackage.items || [])
+                          .map((item) => item.serviceNameSnapshot)
+                          .join(", ")}
+                      </span>
+                    </Label>
+                  </div>
+                  <strong>{formatMoney(servicePackage.specialPrice)}</strong>
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-soft small">No packages available.</div>
+          )}
+          <div className="d-flex justify-content-end mt-3">
+            <Button
+              color="primary"
+              type="button"
+              onClick={() => setPackageModalOpen(false)}
+            >
+              Done
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
     </PageShell>
   );
 };

@@ -17,6 +17,13 @@ const assignmentSchema = z
     membershipId: uuid,
     startsAt: z.coerce.date().optional(),
     expiresAt: z.coerce.date().nullable().optional(),
+    // Overrides the wallet credit configured on the plan for this one sale.
+    walletCreditAmount: z
+      .preprocess(
+        (value) => (value === undefined ? undefined : Number(value)),
+        z.number().min(0).max(10_000_000)
+      )
+      .optional(),
     note: z.string().trim().max(2000).optional(),
   })
   .superRefine((value, context) => {
@@ -134,6 +141,9 @@ export const postCustomerMembership = async (
         ...(input.startsAt ? { startsAt: input.startsAt } : {}),
         ...(input.expiresAt !== undefined
           ? { expiresAt: input.expiresAt }
+          : {}),
+        ...(input.walletCreditAmount !== undefined
+          ? { walletCreditAmount: input.walletCreditAmount }
           : {}),
         ...(input.note ? { note: input.note } : {}),
       },

@@ -20,8 +20,26 @@ export const createJobCartSchema = z.object({
   startTime: z.iso.datetime({ offset: true }),
   staffId: uuid.optional(),
   serviceIds: z.array(uuid).max(30).default([]),
+  serviceItems: z
+    .array(
+      z.object({
+        serviceId: uuid,
+        staffId: uuid.optional(),
+      })
+    )
+    .max(30)
+    .optional(),
   bookingNote: z.string().trim().max(1000).optional(),
   internalNote: z.string().trim().max(1000).optional(),
+}).superRefine((value, context) => {
+  const serviceIds = value.serviceItems?.map((item) => item.serviceId) ?? value.serviceIds;
+  if (new Set(serviceIds).size !== serviceIds.length) {
+    context.addIssue({
+      code: "custom",
+      path: [value.serviceItems ? "serviceItems" : "serviceIds"],
+      message: "Duplicate services are not allowed",
+    });
+  }
 });
 
 export const updateJobCartSchema = z

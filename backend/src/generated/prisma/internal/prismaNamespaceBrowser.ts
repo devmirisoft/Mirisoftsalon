@@ -56,6 +56,7 @@ export const ModelName = {
   Customer: 'Customer',
   Membership: 'Membership',
   CustomerMembership: 'CustomerMembership',
+  MembershipWalletTransaction: 'MembershipWalletTransaction',
   CustomerTransaction: 'CustomerTransaction',
   LoyaltyRule: 'LoyaltyRule',
   LoyaltyTransaction: 'LoyaltyTransaction',
@@ -203,6 +204,9 @@ export const MembershipScalarFieldEnum = {
   description: 'description',
   discountPercentage: 'discountPercentage',
   status: 'status',
+  durationMonths: 'durationMonths',
+  price: 'price',
+  walletCreditAmount: 'walletCreditAmount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -218,9 +222,15 @@ export const CustomerMembershipScalarFieldEnum = {
   membershipId: 'membershipId',
   membershipNameSnapshot: 'membershipNameSnapshot',
   discountPercentageSnapshot: 'discountPercentageSnapshot',
+  durationMonthsSnapshot: 'durationMonthsSnapshot',
   startsAt: 'startsAt',
   expiresAt: 'expiresAt',
   status: 'status',
+  walletCredited: 'walletCredited',
+  walletDebited: 'walletDebited',
+  walletBalance: 'walletBalance',
+  forfeitedAmount: 'forfeitedAmount',
+  forfeitedAt: 'forfeitedAt',
   assignedById: 'assignedById',
   removedById: 'removedById',
   removedAt: 'removedAt',
@@ -232,6 +242,27 @@ export const CustomerMembershipScalarFieldEnum = {
 } as const
 
 export type CustomerMembershipScalarFieldEnum = (typeof CustomerMembershipScalarFieldEnum)[keyof typeof CustomerMembershipScalarFieldEnum]
+
+
+export const MembershipWalletTransactionScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  customerId: 'customerId',
+  customerMembershipId: 'customerMembershipId',
+  type: 'type',
+  credit: 'credit',
+  debit: 'debit',
+  balanceAfter: 'balanceAfter',
+  narration: 'narration',
+  invoiceId: 'invoiceId',
+  paymentId: 'paymentId',
+  jobCartAppointmentId: 'jobCartAppointmentId',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type MembershipWalletTransactionScalarFieldEnum = (typeof MembershipWalletTransactionScalarFieldEnum)[keyof typeof MembershipWalletTransactionScalarFieldEnum]
 
 
 export const CustomerTransactionScalarFieldEnum = {
@@ -677,6 +708,7 @@ export const AppointmentServiceScalarFieldEnum = {
   serviceId: 'serviceId',
   serviceName: 'serviceName',
   price: 'price',
+  staffId: 'staffId',
   durationValue: 'durationValue',
   durationUnit: 'durationUnit',
   customerPackageUsageItemId: 'customerPackageUsageItemId',
@@ -1136,6 +1168,8 @@ export const RetailSaleScalarFieldEnum = {
   saleDate: 'saleDate',
   subtotalAmount: 'subtotalAmount',
   discountAmount: 'discountAmount',
+  taxPercent: 'taxPercent',
+  taxAmount: 'taxAmount',
   totalAmount: 'totalAmount',
   paymentMethod: 'paymentMethod',
   note: 'note',

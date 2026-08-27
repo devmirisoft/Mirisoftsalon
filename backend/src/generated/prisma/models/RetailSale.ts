@@ -29,12 +29,16 @@ export type AggregateRetailSale = {
 export type RetailSaleAvgAggregateOutputType = {
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxPercent: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
 }
 
 export type RetailSaleSumAggregateOutputType = {
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxPercent: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
 }
 
@@ -48,6 +52,8 @@ export type RetailSaleMinAggregateOutputType = {
   saleDate: Date | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxPercent: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paymentMethod: $Enums.PaymentMethod | null
   note: string | null
@@ -66,6 +72,8 @@ export type RetailSaleMaxAggregateOutputType = {
   saleDate: Date | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  taxPercent: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paymentMethod: $Enums.PaymentMethod | null
   note: string | null
@@ -84,6 +92,8 @@ export type RetailSaleCountAggregateOutputType = {
   saleDate: number
   subtotalAmount: number
   discountAmount: number
+  taxPercent: number
+  taxAmount: number
   totalAmount: number
   paymentMethod: number
   note: number
@@ -97,12 +107,16 @@ export type RetailSaleCountAggregateOutputType = {
 export type RetailSaleAvgAggregateInputType = {
   subtotalAmount?: true
   discountAmount?: true
+  taxPercent?: true
+  taxAmount?: true
   totalAmount?: true
 }
 
 export type RetailSaleSumAggregateInputType = {
   subtotalAmount?: true
   discountAmount?: true
+  taxPercent?: true
+  taxAmount?: true
   totalAmount?: true
 }
 
@@ -116,6 +130,8 @@ export type RetailSaleMinAggregateInputType = {
   saleDate?: true
   subtotalAmount?: true
   discountAmount?: true
+  taxPercent?: true
+  taxAmount?: true
   totalAmount?: true
   paymentMethod?: true
   note?: true
@@ -134,6 +150,8 @@ export type RetailSaleMaxAggregateInputType = {
   saleDate?: true
   subtotalAmount?: true
   discountAmount?: true
+  taxPercent?: true
+  taxAmount?: true
   totalAmount?: true
   paymentMethod?: true
   note?: true
@@ -152,6 +170,8 @@ export type RetailSaleCountAggregateInputType = {
   saleDate?: true
   subtotalAmount?: true
   discountAmount?: true
+  taxPercent?: true
+  taxAmount?: true
   totalAmount?: true
   paymentMethod?: true
   note?: true
@@ -257,6 +277,8 @@ export type RetailSaleGroupByOutputType = {
   saleDate: Date
   subtotalAmount: runtime.Decimal
   discountAmount: runtime.Decimal
+  taxPercent: runtime.Decimal
+  taxAmount: runtime.Decimal
   totalAmount: runtime.Decimal
   paymentMethod: $Enums.PaymentMethod | null
   note: string | null
@@ -298,6 +320,8 @@ export type RetailSaleWhereInput = {
   saleDate?: Prisma.DateTimeFilter<"RetailSale"> | Date | string
   subtotalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"RetailSale"> | $Enums.PaymentMethod | null
   note?: Prisma.StringNullableFilter<"RetailSale"> | string | null
@@ -322,6 +346,8 @@ export type RetailSaleOrderByWithRelationInput = {
   saleDate?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -350,6 +376,8 @@ export type RetailSaleWhereUniqueInput = Prisma.AtLeast<{
   saleDate?: Prisma.DateTimeFilter<"RetailSale"> | Date | string
   subtotalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"RetailSale"> | $Enums.PaymentMethod | null
   note?: Prisma.StringNullableFilter<"RetailSale"> | string | null
@@ -374,6 +402,8 @@ export type RetailSaleOrderByWithAggregationInput = {
   saleDate?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -400,6 +430,8 @@ export type RetailSaleScalarWhereWithAggregatesInput = {
   saleDate?: Prisma.DateTimeWithAggregatesFilter<"RetailSale"> | Date | string
   subtotalAmount?: Prisma.DecimalWithAggregatesFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalWithAggregatesFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalWithAggregatesFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalWithAggregatesFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.EnumPaymentMethodNullableWithAggregatesFilter<"RetailSale"> | $Enums.PaymentMethod | null
   note?: Prisma.StringNullableWithAggregatesFilter<"RetailSale"> | string | null
@@ -414,6 +446,8 @@ export type RetailSaleCreateInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -437,6 +471,8 @@ export type RetailSaleUncheckedCreateInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -452,6 +488,8 @@ export type RetailSaleUpdateInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -475,6 +513,8 @@ export type RetailSaleUncheckedUpdateInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -494,6 +534,8 @@ export type RetailSaleCreateManyInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -508,6 +550,8 @@ export type RetailSaleUpdateManyMutationInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -525,6 +569,8 @@ export type RetailSaleUncheckedUpdateManyInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -558,6 +604,8 @@ export type RetailSaleCountOrderByAggregateInput = {
   saleDate?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -569,6 +617,8 @@ export type RetailSaleCountOrderByAggregateInput = {
 export type RetailSaleAvgOrderByAggregateInput = {
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
 }
 
@@ -582,6 +632,8 @@ export type RetailSaleMaxOrderByAggregateInput = {
   saleDate?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -600,6 +652,8 @@ export type RetailSaleMinOrderByAggregateInput = {
   saleDate?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paymentMethod?: Prisma.SortOrder
   note?: Prisma.SortOrder
@@ -611,6 +665,8 @@ export type RetailSaleMinOrderByAggregateInput = {
 export type RetailSaleSumOrderByAggregateInput = {
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  taxPercent?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
 }
 
@@ -849,6 +905,8 @@ export type RetailSaleCreateWithoutSalonInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -870,6 +928,8 @@ export type RetailSaleUncheckedCreateWithoutSalonInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -918,6 +978,8 @@ export type RetailSaleScalarWhereInput = {
   saleDate?: Prisma.DateTimeFilter<"RetailSale"> | Date | string
   subtotalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"RetailSale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"RetailSale"> | $Enums.PaymentMethod | null
   note?: Prisma.StringNullableFilter<"RetailSale"> | string | null
@@ -932,6 +994,8 @@ export type RetailSaleCreateWithoutCreatedByInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -954,6 +1018,8 @@ export type RetailSaleUncheckedCreateWithoutCreatedByInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -994,6 +1060,8 @@ export type RetailSaleCreateWithoutCustomerInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1015,6 +1083,8 @@ export type RetailSaleUncheckedCreateWithoutCustomerInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1056,6 +1126,8 @@ export type RetailSaleCreateWithoutBranchInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1077,6 +1149,8 @@ export type RetailSaleUncheckedCreateWithoutBranchInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1118,6 +1192,8 @@ export type RetailSaleCreateWithoutStaffInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1139,6 +1215,8 @@ export type RetailSaleUncheckedCreateWithoutStaffInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1180,6 +1258,8 @@ export type RetailSaleCreateWithoutItemsInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1202,6 +1282,8 @@ export type RetailSaleUncheckedCreateWithoutItemsInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1232,6 +1314,8 @@ export type RetailSaleUpdateWithoutItemsInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1254,6 +1338,8 @@ export type RetailSaleUncheckedUpdateWithoutItemsInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1271,6 +1357,8 @@ export type RetailSaleCreateManySalonInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1285,6 +1373,8 @@ export type RetailSaleUpdateWithoutSalonInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1306,6 +1396,8 @@ export type RetailSaleUncheckedUpdateWithoutSalonInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1324,6 +1416,8 @@ export type RetailSaleUncheckedUpdateManyWithoutSalonInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1342,6 +1436,8 @@ export type RetailSaleCreateManyCreatedByInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1355,6 +1451,8 @@ export type RetailSaleUpdateWithoutCreatedByInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1377,6 +1475,8 @@ export type RetailSaleUncheckedUpdateWithoutCreatedByInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1395,6 +1495,8 @@ export type RetailSaleUncheckedUpdateManyWithoutCreatedByInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1411,6 +1513,8 @@ export type RetailSaleCreateManyCustomerInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1425,6 +1529,8 @@ export type RetailSaleUpdateWithoutCustomerInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1446,6 +1552,8 @@ export type RetailSaleUncheckedUpdateWithoutCustomerInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1464,6 +1572,8 @@ export type RetailSaleUncheckedUpdateManyWithoutCustomerInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1481,6 +1591,8 @@ export type RetailSaleCreateManyBranchInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1495,6 +1607,8 @@ export type RetailSaleUpdateWithoutBranchInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1516,6 +1630,8 @@ export type RetailSaleUncheckedUpdateWithoutBranchInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1534,6 +1650,8 @@ export type RetailSaleUncheckedUpdateManyWithoutBranchInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1551,6 +1669,8 @@ export type RetailSaleCreateManyStaffInput = {
   saleDate?: Date | string
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: $Enums.PaymentMethod | null
   note?: string | null
@@ -1565,6 +1685,8 @@ export type RetailSaleUpdateWithoutStaffInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1586,6 +1708,8 @@ export type RetailSaleUncheckedUpdateWithoutStaffInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1604,6 +1728,8 @@ export type RetailSaleUncheckedUpdateManyWithoutStaffInput = {
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxPercent?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1653,6 +1779,8 @@ export type RetailSaleSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   saleDate?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  taxPercent?: boolean
+  taxAmount?: boolean
   totalAmount?: boolean
   paymentMethod?: boolean
   note?: boolean
@@ -1678,6 +1806,8 @@ export type RetailSaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   saleDate?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  taxPercent?: boolean
+  taxAmount?: boolean
   totalAmount?: boolean
   paymentMethod?: boolean
   note?: boolean
@@ -1701,6 +1831,8 @@ export type RetailSaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   saleDate?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  taxPercent?: boolean
+  taxAmount?: boolean
   totalAmount?: boolean
   paymentMethod?: boolean
   note?: boolean
@@ -1724,6 +1856,8 @@ export type RetailSaleSelectScalar = {
   saleDate?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  taxPercent?: boolean
+  taxAmount?: boolean
   totalAmount?: boolean
   paymentMethod?: boolean
   note?: boolean
@@ -1732,7 +1866,7 @@ export type RetailSaleSelectScalar = {
   updatedAt?: boolean
 }
 
-export type RetailSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCode" | "salonId" | "branchId" | "customerId" | "staffId" | "saleDate" | "subtotalAmount" | "discountAmount" | "totalAmount" | "paymentMethod" | "note" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["retailSale"]>
+export type RetailSaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleCode" | "salonId" | "branchId" | "customerId" | "staffId" | "saleDate" | "subtotalAmount" | "discountAmount" | "taxPercent" | "taxAmount" | "totalAmount" | "paymentMethod" | "note" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["retailSale"]>
 export type RetailSaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.RetailSale$branchArgs<ExtArgs>
@@ -1777,6 +1911,8 @@ export type $RetailSalePayload<ExtArgs extends runtime.Types.Extensions.Internal
     saleDate: Date
     subtotalAmount: runtime.Decimal
     discountAmount: runtime.Decimal
+    taxPercent: runtime.Decimal
+    taxAmount: runtime.Decimal
     totalAmount: runtime.Decimal
     paymentMethod: $Enums.PaymentMethod | null
     note: string | null
@@ -2221,6 +2357,8 @@ export interface RetailSaleFieldRefs {
   readonly saleDate: Prisma.FieldRef<"RetailSale", 'DateTime'>
   readonly subtotalAmount: Prisma.FieldRef<"RetailSale", 'Decimal'>
   readonly discountAmount: Prisma.FieldRef<"RetailSale", 'Decimal'>
+  readonly taxPercent: Prisma.FieldRef<"RetailSale", 'Decimal'>
+  readonly taxAmount: Prisma.FieldRef<"RetailSale", 'Decimal'>
   readonly totalAmount: Prisma.FieldRef<"RetailSale", 'Decimal'>
   readonly paymentMethod: Prisma.FieldRef<"RetailSale", 'PaymentMethod'>
   readonly note: Prisma.FieldRef<"RetailSale", 'String'>

@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Select from "react-select";
 import {
   Alert,
   Col,
@@ -21,6 +22,14 @@ import {
   minDateTimeInput,
   toLocalInput,
 } from "@/utils/salonFormat";
+
+const TAX_OPTIONS = [
+  { value: 0, label: "No tax" },
+  { value: 5, label: "GST 5%" },
+  { value: 12, label: "GST 12%" },
+  { value: 18, label: "GST 18%" },
+  { value: 28, label: "GST 28%" },
+];
 
 const JobCartDetails = () => {
   const { id } = useParams();
@@ -48,6 +57,14 @@ const JobCartDetails = () => {
   });
   const [redemptionSelections, setRedemptionSelections] = useState({});
   const [couponCode, setCouponCode] = useState("");
+  const [billingForm, setBillingForm] = useState({
+    invoiceType: "BILL_OF_SUPPLY",
+    status: "ISSUED",
+    discountAmount: 0,
+    processingFeeAmount: 0,
+    taxPercent: 0,
+    billingNote: "",
+  });
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
@@ -65,6 +82,14 @@ const JobCartDetails = () => {
         startTime: toLocalInput(next.startTime),
         staffId: next.staffId || "",
         bookingNote: next.bookingNote || "",
+      });
+      setBillingForm({
+        invoiceType: next.invoice?.invoiceType || "BILL_OF_SUPPLY",
+        status: next.invoice?.status === "DRAFT" ? "DRAFT" : "ISSUED",
+        discountAmount: 0,
+        processingFeeAmount: Number(next.invoice?.processingFeeAmount || 0),
+        taxPercent: Number(next.invoice?.items?.[0]?.taxPercent || 0),
+        billingNote: next.invoice?.billingNote || "",
       });
       const referenceResponse = await salonApi.jobCarts.references({
         ...(next.salonId ? { salonId: next.salonId } : {}),
@@ -165,12 +190,20 @@ const JobCartDetails = () => {
   const confirm = () => {
     if (
       !window.confirm(
-        "Confirm this job cart? This completes the appointment, deducts service consumables and issues the invoice."
+        "Confirm this job cart? This completes the appointment, deducts service consumables and finalizes the invoice."
       )
     ) {
       return;
     }
-    run(() => salonApi.jobCarts.confirm(id));
+    run(() =>
+      salonApi.jobCarts.confirm(id, {
+        ...billingForm,
+        discountAmount: Number(billingForm.discountAmount || 0),
+        processingFeeAmount: Number(billingForm.processingFeeAmount || 0),
+        taxPercent: Number(billingForm.taxPercent || 0),
+        billingNote: billingForm.billingNote || null,
+      })
+    );
   };
 
   const cancel = () => {
@@ -190,7 +223,29 @@ const JobCartDetails = () => {
   ].includes(user?.role);
   const active = cart?.status === "ACTIVE";
   const invoice = cart?.invoice;
-  const membershipDiscount = Number(invoice?.discountAmount || 0);
+  const subtotalAmount = Number(invoice?.subtotalAmount || 0);
+  const manualDiscount = active ? Number(billingForm.discountAmount || 0) : 0;
+  const membershipPercent = Number(cart?.customer?.membership?.discountPercentage || 0);
+  const membershipDiscount = active
+    ? Math.min(
+        subtotalAmount * (membershipPercent / 100),
+        Math.max(subtotalAmount - manualDiscount, 0)
+      )
+    : Number(invoice?.discountAmount || 0);
+  const discountTotal = active
+    ? Math.min(manualDiscount + membershipDiscount, subtotalAmount)
+    : Number(invoice?.discountAmount || 0);
+  const processingFee = active
+    ? Number(billingForm.processingFeeAmount || 0)
+    : Number(invoice?.processingFeeAmount || 0);
+  const taxableAmount = Math.max(subtotalAmount - discountTotal, 0);
+  const taxAmount =
+    active && billingForm.invoiceType === "GST_INVOICE"
+      ? taxableAmount * (Number(billingForm.taxPercent || 0) / 100)
+      : Number(invoice?.taxAmount || 0);
+  const payableAmount = active
+    ? taxableAmount + processingFee + taxAmount
+    : Number(invoice?.totalAmount || 0);
   const packageCoveredAmount = (cart?.packageRedemptions || [])
     .filter((usage) => usage.status !== "CANCELLED")
     .flatMap((usage) => usage.items || [])
@@ -508,11 +563,38 @@ const JobCartDetails = () => {
                   </div>
                 )}
                 {active && (
-                  <div className="d-flex gap-2 mb-4">
+                  <div className="d-flex gap-2 mb-4 h-50">
+                    <div className="flex-grow-1">
+                      <Select
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        isClearable
+                        options={availableServices.map((service) => ({
+                          value: service.id,
+                          label: `${service.name} - ${formatMoney(
+                            service.price
+                          )}`,
+                        }))}
+                        value={
+                          availableServices
+                            .filter((service) => service.id === serviceId)
+                            .map((service) => ({
+                              value: service.id,
+                              label: `${service.name} - ${formatMoney(
+                                service.price
+                              )}`,
+                            }))[0] || null
+                        }
+                        placeholder="Search service"
+                        noOptionsMessage={() => "No services"}
+                        onChange={(option) => setServiceId(option?.value || "")}
+                      />
+                    </div>
                     <Input
                       type="select"
                       value={serviceId}
                       onChange={(event) => setServiceId(event.target.value)}
+                      className="d-none"
                     >
                       <option value="">Select a service</option>
                       {availableServices.map((service) => (
@@ -620,6 +702,11 @@ const JobCartDetails = () => {
                                   {item.soldByStaff?.name
                                     ? ` • Sold by ${item.soldByStaff.name}`
                                     : ""}
+                                </div>
+                              )}
+                              {item.itemType !== "PACKAGE" && item.staff?.name && (
+                                <div className="small text-primary">
+                                  Staff: {item.staff.name}
                                 </div>
                               )}
                             </td>
@@ -914,7 +1001,15 @@ const JobCartDetails = () => {
                 </div>
                 <div className="d-flex justify-content-between py-2 border-bottom">
                   <span>Membership / discount</span>
-                  <strong>-{formatMoney(membershipDiscount)}</strong>
+                  <strong>-{formatMoney(discountTotal)}</strong>
+                </div>
+                <div className="d-flex justify-content-between py-2 border-bottom">
+                  <span>Processing fee</span>
+                  <strong>{formatMoney(processingFee)}</strong>
+                </div>
+                <div className="d-flex justify-content-between py-2 border-bottom">
+                  <span>Tax</span>
+                  <strong>{formatMoney(taxAmount)}</strong>
                 </div>
                 <div className="d-flex justify-content-between py-2 border-bottom">
                   <span>Coupon</span>
@@ -924,7 +1019,7 @@ const JobCartDetails = () => {
                 </div>
                 <div className="d-flex justify-content-between py-3 fs-5">
                   <span>Payable amount</span>
-                  <strong>{formatMoney(invoice?.totalAmount)}</strong>
+                  <strong>{formatMoney(payableAmount)}</strong>
                 </div>
                 <div className="small text-soft mb-3">
                   Membership: {cart.customer?.membership?.name || "None"}
@@ -933,6 +1028,113 @@ const JobCartDetails = () => {
                   <br />
                   Loyalty points: {cart.customer?.loyaltyPoints || 0}
                 </div>
+
+                {active && (
+                  <div className="border rounded p-3 mb-4">
+                    <Row className="g-2">
+                      <Col md="6">
+                        <Label className="form-label">Invoice type</Label>
+                        <Input
+                          type="select"
+                          value={billingForm.invoiceType}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              invoiceType: event.target.value,
+                            }))
+                          }
+                        >
+                          <option value="BILL_OF_SUPPLY">Bill of supply</option>
+                          <option value="GST_INVOICE">GST invoice</option>
+                        </Input>
+                      </Col>
+                      <Col md="6">
+                        <Label className="form-label">Initial status</Label>
+                        <Input
+                          type="select"
+                          value={billingForm.status}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              status: event.target.value,
+                            }))
+                          }
+                        >
+                          <option value="DRAFT">Draft (apply coupon before issuing)</option>
+                          <option value="ISSUED">Issue immediately</option>
+                        </Input>
+                      </Col>
+                      <Col md="4">
+                        <Label className="form-label">Discount</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={billingForm.discountAmount}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              discountAmount: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="4">
+                        <Label className="form-label">Processing fee</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={billingForm.processingFeeAmount}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              processingFeeAmount: event.target.value,
+                            }))
+                          }
+                        />
+                      </Col>
+                      <Col md="4">
+                        <Label className="form-label">Tax</Label>
+                        <Input
+                          type="select"
+                          value={billingForm.taxPercent}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              taxPercent: event.target.value,
+                            }))
+                          }
+                        >
+                          {TAX_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                      <Col xs="12">
+                        <Label className="form-label">Billing note</Label>
+                        <Input
+                          type="textarea"
+                          rows="3"
+                          value={billingForm.billingNote}
+                          onChange={(event) =>
+                            setBillingForm((current) => ({
+                              ...current,
+                              billingNote: event.target.value,
+                            }))
+                          }
+                        />
+                        {membershipDiscount > 0 && (
+                          <small className="text-soft">
+                            Membership discount included: {formatMoney(membershipDiscount)}
+                          </small>
+                        )}
+                      </Col>
+                    </Row>
+                  </div>
+                )}
 
                 {active && canApplyCoupon && (
                   <div className="mb-4">

@@ -30,64 +30,25 @@
 (Use `node --trace-deprecation ...` to show where the warning was created)
 (node:19028) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-tEngine.ts:504:22)
-        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
-      cause: [Object]
-    }
-  },
-  clientVersion: '7.8.0'
-}
-(node:16068) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(node:45976) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:22568) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(node:20996) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:35096) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(node:34880) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-(node:42880) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(node:24964) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-PrismaClientValidationError: 
-Invalid `prisma.user.findUnique()` invocation in
-C:\Users\JoJo\job work\Salon\backend\src\features\profile\profile.controller.ts:187:34
-
-  184 const userId = req.user?.userId;
-  185 if (!userId) return res.status(401).json({ success: false, message: "Unauthorized" });
-  186 
-→ 187 const user = await prisma.user.findUnique({
-        where: {
-          id: "450e9599-2299-4735-97e6-c04d4900a25d"
-        },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone_number: true,
-          role: true,
-          status: true,
-          salonId: true,
-          branchId: true,
-          createdAt: true,
-          updatedAt: true,
-          salon: {
-            select: {
-              id: true,
-              name: true,
-              salonCode: true
-            }
-          },
-          branch: {
-            select: {
-              id: true,
-              name: true,
-              branchCode: true,
-              ~~~~~~~~~~
-      ?       status?: true,
-      ?       salonId?: true,
-      ?       addressLine1?: true,
-      ?       city?: true,
-      ?       state?: true,
-      ?       postalCode?: true,
-      ?       phone?: true,
-      ?       createdAt?: true,
+(node:8284) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:45620) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:5584) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:41740) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:46012) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+eatedAt?: true,
       ?       updatedAt?: true,
       ?       salon?: true,
       ?       staff?: true,
@@ -808,4 +769,442 @@ The column `Branch.branchCode` does not exist in the current database.
 (node:4960) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
 (node:44288) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:45100) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:23756) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:42964) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:14300) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+PrismaClientValidationError: 
+Invalid `prisma).appointment.create()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\appointments\appointment.model.ts:43:39
+
+  40     durationUnit?: DurationUnit;
+  41   }[];
+  42 }, tx?: TransactionClient) => {
+→ 43   return (tx ?? prisma).appointment.create({
+         data: {
+           appointmentCode: "TSJC17065965231072026",
+           salonId: "77df463d-7913-48dd-889c-4c76d148ebf3",
+           customerId: "84187f0f-8625-45a1-93b5-b427f6bda393",
+           staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+           createdById: "c81827a1-f959-47f3-bab3-91dc58461be3",
+           startTime: new Date("2026-08-01T09:36:00.000Z"),
+           endTime: new Date("2026-08-01T12:06:00.000Z"),
+           totalDurationMinutes: 150,
+           estimatedAmount: 4498,
+           status: "SCHEDULED",
+           source: "WALK_IN",
+           walkInJobCart: true,
+           branchId: "faed2eab-9d2a-4ec2-9a4d-8ec75607a15e",
+           services: {
+             create: [
+               {
+                 service: {
+                   connect: {
+                     id: "6880535c-a652-4b42-b775-16dd5936bc78"
+                   }
+                 },
+                 serviceName: "Cleanup",
+                 price: 499,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 30,
+                 durationUnit: "MINUTES"
+               },
+               {
+                 service: {
+                   connect: {
+                     id: "8c98b9ee-f029-46e4-9951-7e1cad83e874"
+                   }
+                 },
+                 serviceName: "HD Makeup",
+                 price: 3999,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 120,
+                 durationUnit: "MINUTES"
+               }
+             ]
+           }
+         },
+         include: {
+           customer: {
+             select: {
+               id: true,
+               name: true,
+               phone: true,
+               customerCode: true
+             }
+           },
+           staff: {
+             select: {
+               id: true,
+               name: true,
+               jobRole: true
+             }
+           },
+           createdBy: {
+             select: {
+               id: true,
+               name: true,
+               email: true,
+               role: true
+             }
+           },
+           branch: {
+             select: {
+               id: true,
+               name: true
+             }
+           },
+           services: {
+             include: {
+               service: {
+                 select: {
+                   id: true,
+                   name: true
+                 }
+               }
+             }
+           }
+         }
+       })
+
+Unknown argument `staffId`. Did you mean `staff`? Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.service.ts:1171:25)
+    at async Proxy._transactionWithCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:810:18)
+    at async postJobCart (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.controller.ts:143:18) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma).appointment.create()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\appointments\appointment.model.ts:43:39
+
+  40     durationUnit?: DurationUnit;
+  41   }[];
+  42 }, tx?: TransactionClient) => {
+→ 43   return (tx ?? prisma).appointment.create({
+         data: {
+           appointmentCode: "TSJC17070946631072026",
+           salonId: "77df463d-7913-48dd-889c-4c76d148ebf3",
+           customerId: "84187f0f-8625-45a1-93b5-b427f6bda393",
+           staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+           createdById: "c81827a1-f959-47f3-bab3-91dc58461be3",
+           startTime: new Date("2026-08-01T09:36:00.000Z"),
+           endTime: new Date("2026-08-01T12:06:00.000Z"),
+           totalDurationMinutes: 150,
+           estimatedAmount: 4498,
+           status: "SCHEDULED",
+           source: "WALK_IN",
+           walkInJobCart: true,
+           branchId: "faed2eab-9d2a-4ec2-9a4d-8ec75607a15e",
+           services: {
+             create: [
+               {
+                 service: {
+                   connect: {
+                     id: "6880535c-a652-4b42-b775-16dd5936bc78"
+                   }
+                 },
+                 serviceName: "Cleanup",
+                 price: 499,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 30,
+                 durationUnit: "MINUTES"
+               },
+               {
+                 service: {
+                   connect: {
+                     id: "8c98b9ee-f029-46e4-9951-7e1cad83e874"
+                   }
+                 },
+                 serviceName: "HD Makeup",
+                 price: 3999,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 120,
+                 durationUnit: "MINUTES"
+               }
+             ]
+           }
+         },
+         include: {
+           customer: {
+             select: {
+               id: true,
+               name: true,
+               phone: true,
+               customerCode: true
+             }
+           },
+           staff: {
+             select: {
+               id: true,
+               name: true,
+               jobRole: true
+             }
+           },
+           createdBy: {
+             select: {
+               id: true,
+               name: true,
+               email: true,
+               role: true
+             }
+           },
+           branch: {
+             select: {
+               id: true,
+               name: true
+             }
+           },
+           services: {
+             include: {
+               service: {
+                 select: {
+                   id: true,
+                   name: true
+                 }
+               }
+             }
+           }
+         }
+       })
+
+Unknown argument `staffId`. Did you mean `staff`? Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.service.ts:1171:25)
+    at async Proxy._transactionWithCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:810:18)
+    at async postJobCart (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.controller.ts:143:18) {
+  clientVersion: '7.8.0'
+}
+PrismaClientValidationError: 
+Invalid `prisma).appointment.create()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\appointments\appointment.model.ts:43:39
+
+  40     durationUnit?: DurationUnit;
+  41   }[];
+  42 }, tx?: TransactionClient) => {
+→ 43   return (tx ?? prisma).appointment.create({
+         data: {
+           appointmentCode: "TSJC17072116031072026",
+           salonId: "77df463d-7913-48dd-889c-4c76d148ebf3",
+           customerId: "84187f0f-8625-45a1-93b5-b427f6bda393",
+           staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+           createdById: "c81827a1-f959-47f3-bab3-91dc58461be3",
+           startTime: new Date("2026-08-01T09:36:00.000Z"),
+           endTime: new Date("2026-08-01T12:06:00.000Z"),
+           totalDurationMinutes: 150,
+           estimatedAmount: 4498,
+           status: "SCHEDULED",
+           source: "WALK_IN",
+           walkInJobCart: true,
+           branchId: "faed2eab-9d2a-4ec2-9a4d-8ec75607a15e",
+           services: {
+             create: [
+               {
+                 service: {
+                   connect: {
+                     id: "6880535c-a652-4b42-b775-16dd5936bc78"
+                   }
+                 },
+                 serviceName: "Cleanup",
+                 price: 499,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 30,
+                 durationUnit: "MINUTES"
+               },
+               {
+                 service: {
+                   connect: {
+                     id: "8c98b9ee-f029-46e4-9951-7e1cad83e874"
+                   }
+                 },
+                 serviceName: "HD Makeup",
+                 price: 3999,
+                 staffId: "5a9e6d22-f55c-4a68-a6f5-116e959ea04b",
+                 durationValue: 120,
+                 durationUnit: "MINUTES"
+               }
+             ]
+           }
+         },
+         include: {
+           customer: {
+             select: {
+               id: true,
+               name: true,
+               phone: true,
+               customerCode: true
+             }
+           },
+           staff: {
+             select: {
+               id: true,
+               name: true,
+               jobRole: true
+             }
+           },
+           createdBy: {
+             select: {
+               id: true,
+               name: true,
+               email: true,
+               role: true
+             }
+           },
+           branch: {
+             select: {
+               id: true,
+               name: true
+             }
+           },
+           services: {
+             include: {
+               service: {
+                 select: {
+                   id: true,
+                   name: true
+                 }
+               }
+             }
+           }
+         }
+       })
+
+Unknown argument `staffId`. Did you mean `staff`? Available options are marked with ?.
+    at throwValidationException (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.service.ts:1171:25)
+    at async Proxy._transactionWithCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:810:18)
+    at async postJobCart (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.controller.ts:143:18) {
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma).appointment.create()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\appointments\appointment.model.ts:43:39
+
+  40     durationUnit?: DurationUnit;
+  41   }[];
+  42 }, tx?: TransactionClient) => {
+→ 43   return (tx ?? prisma).appointment.create(
+The column `staffId of relation AppointmentService` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.service.ts:1171:25)
+    at async Proxy._transactionWithCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:810:18)
+    at async postJobCart (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.controller.ts:143:18) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Appointment',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PgTransaction.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PgTransaction.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PgTransaction.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:116:20)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+PrismaClientKnownRequestError: 
+Invalid `prisma).appointment.create()` invocation in
+C:\Users\JoJo\job work\Salon\backend\src\features\appointments\appointment.model.ts:43:39
+
+  40     durationUnit?: DurationUnit;
+  41   }[];
+  42 }, tx?: TransactionClient) => {
+→ 43   return (tx ?? prisma).appointment.create(
+The column `staffId of relation AppointmentService` does not exist in the current database.
+    at zr.handleRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:237:13)
+    at zr.handleAndLogRequestError (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at zr.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:963:24)
+    at async <anonymous> (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.service.ts:1171:25)
+    at async Proxy._transactionWithCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:810:18)
+    at async postJobCart (C:\Users\JoJo\job work\Salon\backend\src\features\job-carts\job-cart.controller.ts:143:18) {
+  code: 'P2022',
+  meta: {
+    modelName: 'Appointment',
+    driverAdapterError: DriverAdapterError: ColumnNotFound
+        at PgTransaction.onError (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:642:11)
+        at PgTransaction.performIO (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:637:12)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async PgTransaction.queryRaw (file:///C:/Users/JoJo/job%20work/Salon/backend/node_modules/@prisma/adapter-pg/dist/index.mjs:568:30)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:186:26)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:213:41)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:116:20)
+        at async e.interpretNode (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:272:41)
+        at async e.run (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client-engine-runtime\src\interpreter\query-interpreter.ts:94:23)
+        at async e.execute (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\LocalExecutor.ts:81:12)
+        at async jt.request (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\core\engines\client\ClientEngine.ts:504:22)
+        at async Object.singleLoader (C:\Users\JoJo\job work\Salon\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:112:26) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.8.0'
+}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\JoJo\job work\Salon\backend\node_modules\body-parser\lib\types\json.js:72:19)
+    at C:\Users\JoJo\job work\Salon\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:227:14)
+    at invokeCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:509:28)
+    at endReadableNT (node:internal/streams/readable:1735:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  expose: true,
+  statusCode: 400,
+  status: 400,
+  body: '{\\',
+  type: 'entity.parse.failed'
+}
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (C:\Users\JoJo\job work\Salon\backend\node_modules\body-parser\lib\types\json.js:72:19)
+    at C:\Users\JoJo\job work\Salon\backend\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:227:14)
+    at invokeCallback (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:238:16)
+    at done (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\Users\JoJo\job work\Salon\backend\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:509:28)
+    at endReadableNT (node:internal/streams/readable:1735:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  expose: true,
+  statusCode: 400,
+  status: 400,
+  body: '{email:admin@test.com,password:testadmin}',
+  type: 'entity.parse.failed'
+}
+(node:22408) DeprecationWarning: Calling client.query() when the client is already executing a query is deprecated and will be removed in pg@9.0. Use async/await or an external async flow control mechanism instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)

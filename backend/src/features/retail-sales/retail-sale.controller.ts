@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { type Request, type Response } from "express";
 import { prisma } from "../../config/prisma.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import {
   getSalonId,
   sendInventoryError,
@@ -10,6 +11,8 @@ import {
 import { RetailSaleModel } from "./retail-sale.model.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
+import { requestAuditContext } from "../audit-logs/audit-log.service.js";
+import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
 
 const PAYMENT_METHODS = ["CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD", "BANK_TRANSFER", "CHEQUE", "OTHER"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
@@ -56,6 +59,10 @@ export const createRetailSale = async (req: Request, res: Response) => {
     }
     const discount = Number(req.body.discountAmount ?? 0);
     if (!Number.isFinite(discount) || discount < 0) return res.status(400).json({ success: false, message: "Discount must be non-negative" });
+    const taxPercent = Number(req.body.taxPercent ?? 0);
+    if (!Number.isFinite(taxPercent) || taxPercent < 0 || taxPercent > 100) {
+      return res.status(400).json({ success: false, message: "Tax percent must be between 0 and 100" });
+    }
     const saleDate = req.body.saleDate ? new Date(req.body.saleDate) : undefined;
     const staffId = typeof req.body.staffId === "string" && req.body.staffId ? req.body.staffId : undefined;
     if (saleDate && Number.isNaN(saleDate.getTime())) {
@@ -91,8 +98,40 @@ export const createRetailSale = async (req: Request, res: Response) => {
           throw transactionError("Credited staff does not belong to the selected branch");
         }
       }
-      const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0);
-      if (discount > subtotal) throw transactionError("Discount cannot exceed subtotal");
+      const subtotal = new Prisma.Decimal(
+        items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
+      ).toDecimalPlaces(2);
+      if (new Prisma.Decimal(discount).gt(subtotal)) throw transactionError("Discount cannot exceed subtotal");
+      const customerMembership =
+        req.body.customerId && req.user?.userId
+          ? await resolveCurrentCustomerMembership(tx, {
+              customerId: req.body.customerId,
+              actor: {
+                userId: req.user.userId,
+                role: req.user.role,
+                ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
+                ...(req.user.branchId ? { branchId: req.user.branchId } : {}),
+              },
+              audit: requestAuditContext(req),
+            })
+          : null;
+      const manualDiscount = new Prisma.Decimal(discount).toDecimalPlaces(2);
+      const membershipDiscount = customerMembership
+        ? Prisma.Decimal.min(
+            subtotal.mul(customerMembership.discountPercentageSnapshot).div(100),
+            subtotal.minus(manualDiscount)
+          ).toDecimalPlaces(2)
+        : new Prisma.Decimal(0);
+      const totalDiscount = Prisma.Decimal.min(
+        manualDiscount.plus(membershipDiscount),
+        subtotal
+      ).toDecimalPlaces(2);
+      const taxableAmount = subtotal.minus(totalDiscount);
+      const taxAmount = taxableAmount
+        .mul(taxPercent)
+        .div(100)
+        .toDecimalPlaces(2);
+      const totalAmount = taxableAmount.plus(taxAmount).toDecimalPlaces(2);
       const saleId = randomUUID();
       for (const item of [...items].sort((left, right) => left.productId.localeCompare(right.productId))) {
         await createStockMovement({
@@ -121,8 +160,10 @@ export const createRetailSale = async (req: Request, res: Response) => {
           ...(staffId ? { staffId } : {}),
           ...(saleDate ? { saleDate } : {}),
           subtotalAmount: subtotal,
-          discountAmount: discount,
-          totalAmount: subtotal - discount,
+          discountAmount: totalDiscount,
+          taxPercent,
+          taxAmount,
+          totalAmount,
           ...(req.body.paymentMethod ? { paymentMethod: req.body.paymentMethod as PaymentMethod } : {}),
           ...(typeof req.body.note === "string" && req.body.note.trim() ? { note: req.body.note.trim() } : {}),
           ...(req.user?.userId ? { createdById: req.user.userId } : {}),

@@ -21,14 +21,6 @@ const APPOINTMENT_STATUSES = [
     "CANCELLED",
     "NO_SHOW",
 ];
-const STATUS_TRANSITIONS = {
-    SCHEDULED: ["CONFIRMED", "CANCELLED", "NO_SHOW"],
-    CONFIRMED: ["CHECKED_IN", "CANCELLED", "NO_SHOW"],
-    CHECKED_IN: ["COMPLETED", "CANCELLED"],
-    COMPLETED: ["CANCELLED"],
-    CANCELLED: [],
-    NO_SHOW: [],
-};
 const isValidAppointmentStatus = (status) => {
     return APPOINTMENT_STATUSES.includes(status);
 };
@@ -367,12 +359,6 @@ export const updateAppointmentStatus = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Appointment already has this status",
-            });
-        }
-        if (!STATUS_TRANSITIONS[existingAppointment.status].includes(status)) {
-            return res.status(400).json({
-                success: false,
-                message: `Invalid appointment status transition from ${existingAppointment.status} to ${status}`,
             });
         }
         const appointment = await prisma.$transaction(async (tx) => {

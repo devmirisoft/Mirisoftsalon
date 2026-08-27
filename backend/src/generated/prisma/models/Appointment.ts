@@ -336,6 +336,7 @@ export type AppointmentWhereInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageListRelationFilter
   packageUsageJobCarts?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }
 
 export type AppointmentOrderByWithRelationInput = {
@@ -369,6 +370,7 @@ export type AppointmentOrderByWithRelationInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageOrderByRelationAggregateInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageOrderByRelationAggregateInput
   customerMemberships?: Prisma.CustomerMembershipOrderByRelationAggregateInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionOrderByRelationAggregateInput
 }
 
 export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
@@ -406,6 +408,7 @@ export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
   packageUsageAppointments?: Prisma.CustomerPackageUsageListRelationFilter
   packageUsageJobCarts?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
 }, "id" | "salonId_appointmentCode">
 
 export type AppointmentOrderByWithAggregationInput = {
@@ -484,6 +487,7 @@ export type AppointmentCreateInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateInput = {
@@ -512,6 +516,7 @@ export type AppointmentUncheckedCreateInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUpdateInput = {
@@ -540,6 +545,7 @@ export type AppointmentUpdateInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateInput = {
@@ -568,6 +574,7 @@ export type AppointmentUncheckedUpdateInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateManyInput = {
@@ -868,6 +875,22 @@ export type AppointmentUpdateOneWithoutCustomerMembershipsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AppointmentUpdateToOneWithWhereWithoutCustomerMembershipsInput, Prisma.AppointmentUpdateWithoutCustomerMembershipsInput>, Prisma.AppointmentUncheckedUpdateWithoutCustomerMembershipsInput>
 }
 
+export type AppointmentCreateNestedOneWithoutMembershipWalletTransactionsInput = {
+  create?: Prisma.XOR<Prisma.AppointmentCreateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.AppointmentCreateOrConnectWithoutMembershipWalletTransactionsInput
+  connect?: Prisma.AppointmentWhereUniqueInput
+}
+
+export type AppointmentUpdateOneWithoutMembershipWalletTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.AppointmentCreateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  connectOrCreate?: Prisma.AppointmentCreateOrConnectWithoutMembershipWalletTransactionsInput
+  upsert?: Prisma.AppointmentUpsertWithoutMembershipWalletTransactionsInput
+  disconnect?: Prisma.AppointmentWhereInput | boolean
+  delete?: Prisma.AppointmentWhereInput | boolean
+  connect?: Prisma.AppointmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AppointmentUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUpdateWithoutMembershipWalletTransactionsInput>, Prisma.AppointmentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
 export type AppointmentCreateNestedManyWithoutBranchInput = {
   create?: Prisma.XOR<Prisma.AppointmentCreateWithoutBranchInput, Prisma.AppointmentUncheckedCreateWithoutBranchInput> | Prisma.AppointmentCreateWithoutBranchInput[] | Prisma.AppointmentUncheckedCreateWithoutBranchInput[]
   connectOrCreate?: Prisma.AppointmentCreateOrConnectWithoutBranchInput | Prisma.AppointmentCreateOrConnectWithoutBranchInput[]
@@ -1077,6 +1100,7 @@ export type AppointmentCreateWithoutSalonInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutSalonInput = {
@@ -1104,6 +1128,7 @@ export type AppointmentUncheckedCreateWithoutSalonInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutSalonInput = {
@@ -1181,6 +1206,7 @@ export type AppointmentCreateWithoutCreatedByInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutCreatedByInput = {
@@ -1208,6 +1234,7 @@ export type AppointmentUncheckedCreateWithoutCreatedByInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutCreatedByInput = {
@@ -1261,6 +1288,7 @@ export type AppointmentCreateWithoutCustomerInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutCustomerInput = {
@@ -1288,6 +1316,7 @@ export type AppointmentUncheckedCreateWithoutCustomerInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutCustomerInput = {
@@ -1341,6 +1370,7 @@ export type AppointmentCreateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutCustomerMembershipsInput = {
@@ -1368,6 +1398,7 @@ export type AppointmentUncheckedCreateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutCustomerMembershipsInput = {
@@ -1411,6 +1442,7 @@ export type AppointmentUpdateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutCustomerMembershipsInput = {
@@ -1438,6 +1470,135 @@ export type AppointmentUncheckedUpdateWithoutCustomerMembershipsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+}
+
+export type AppointmentCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  appointmentCode: string
+  startTime: Date | string
+  endTime: Date | string
+  totalDurationMinutes?: number
+  estimatedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.AppointmentStatus
+  source?: $Enums.AppointmentSource
+  walkInJobCart?: boolean
+  bookingNote?: string | null
+  internalNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutAppointmentsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutAppointmentsInput
+  customer: Prisma.CustomerCreateNestedOneWithoutAppointmentsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutAppointmentsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedAppointmentsInput
+  services?: Prisma.AppointmentServiceCreateNestedManyWithoutAppointmentInput
+  invoice?: Prisma.InvoiceCreateNestedOneWithoutAppointmentInput
+  statusHistory?: Prisma.AppointmentStatusHistoryCreateNestedManyWithoutAppointmentInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutJobCartAppointmentInput
+  packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
+  packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
+  customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+}
+
+export type AppointmentUncheckedCreateWithoutMembershipWalletTransactionsInput = {
+  id?: string
+  appointmentCode: string
+  salonId: string
+  branchId?: string | null
+  customerId: string
+  staffId?: string | null
+  createdById?: string | null
+  startTime: Date | string
+  endTime: Date | string
+  totalDurationMinutes?: number
+  estimatedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: $Enums.AppointmentStatus
+  source?: $Enums.AppointmentSource
+  walkInJobCart?: boolean
+  bookingNote?: string | null
+  internalNote?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  services?: Prisma.AppointmentServiceUncheckedCreateNestedManyWithoutAppointmentInput
+  invoice?: Prisma.InvoiceUncheckedCreateNestedOneWithoutAppointmentInput
+  statusHistory?: Prisma.AppointmentStatusHistoryUncheckedCreateNestedManyWithoutAppointmentInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
+  packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+}
+
+export type AppointmentCreateOrConnectWithoutMembershipWalletTransactionsInput = {
+  where: Prisma.AppointmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.AppointmentCreateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+}
+
+export type AppointmentUpsertWithoutMembershipWalletTransactionsInput = {
+  update: Prisma.XOR<Prisma.AppointmentUpdateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+  create: Prisma.XOR<Prisma.AppointmentCreateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedCreateWithoutMembershipWalletTransactionsInput>
+  where?: Prisma.AppointmentWhereInput
+}
+
+export type AppointmentUpdateToOneWithWhereWithoutMembershipWalletTransactionsInput = {
+  where?: Prisma.AppointmentWhereInput
+  data: Prisma.XOR<Prisma.AppointmentUpdateWithoutMembershipWalletTransactionsInput, Prisma.AppointmentUncheckedUpdateWithoutMembershipWalletTransactionsInput>
+}
+
+export type AppointmentUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentCode?: Prisma.StringFieldUpdateOperationsInput | string
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalDurationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+  source?: Prisma.EnumAppointmentSourceFieldUpdateOperationsInput | $Enums.AppointmentSource
+  walkInJobCart?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bookingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutAppointmentsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutAppointmentsNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutAppointmentsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutAppointmentsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedAppointmentsNestedInput
+  services?: Prisma.AppointmentServiceUpdateManyWithoutAppointmentNestedInput
+  invoice?: Prisma.InvoiceUpdateOneWithoutAppointmentNestedInput
+  statusHistory?: Prisma.AppointmentStatusHistoryUpdateManyWithoutAppointmentNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutJobCartAppointmentNestedInput
+  packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
+  packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+}
+
+export type AppointmentUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentCode?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalDurationMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  estimatedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  status?: Prisma.EnumAppointmentStatusFieldUpdateOperationsInput | $Enums.AppointmentStatus
+  source?: Prisma.EnumAppointmentSourceFieldUpdateOperationsInput | $Enums.AppointmentSource
+  walkInJobCart?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bookingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  services?: Prisma.AppointmentServiceUncheckedUpdateManyWithoutAppointmentNestedInput
+  invoice?: Prisma.InvoiceUncheckedUpdateOneWithoutAppointmentNestedInput
+  statusHistory?: Prisma.AppointmentStatusHistoryUncheckedUpdateManyWithoutAppointmentNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
+  packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateWithoutBranchInput = {
@@ -1465,6 +1626,7 @@ export type AppointmentCreateWithoutBranchInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutBranchInput = {
@@ -1492,6 +1654,7 @@ export type AppointmentUncheckedCreateWithoutBranchInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutBranchInput = {
@@ -1545,6 +1708,7 @@ export type AppointmentCreateWithoutStaffInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutStaffInput = {
@@ -1572,6 +1736,7 @@ export type AppointmentUncheckedCreateWithoutStaffInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutStaffInput = {
@@ -1625,6 +1790,7 @@ export type AppointmentCreateWithoutStatusHistoryInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutStatusHistoryInput = {
@@ -1652,6 +1818,7 @@ export type AppointmentUncheckedCreateWithoutStatusHistoryInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutStatusHistoryInput = {
@@ -1695,6 +1862,7 @@ export type AppointmentUpdateWithoutStatusHistoryInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutStatusHistoryInput = {
@@ -1722,6 +1890,7 @@ export type AppointmentUncheckedUpdateWithoutStatusHistoryInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateWithoutServicesInput = {
@@ -1749,6 +1918,7 @@ export type AppointmentCreateWithoutServicesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutServicesInput = {
@@ -1776,6 +1946,7 @@ export type AppointmentUncheckedCreateWithoutServicesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutServicesInput = {
@@ -1819,6 +1990,7 @@ export type AppointmentUpdateWithoutServicesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutServicesInput = {
@@ -1846,6 +2018,7 @@ export type AppointmentUncheckedUpdateWithoutServicesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateWithoutInvoiceInput = {
@@ -1873,6 +2046,7 @@ export type AppointmentCreateWithoutInvoiceInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutInvoiceInput = {
@@ -1900,6 +2074,7 @@ export type AppointmentUncheckedCreateWithoutInvoiceInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutInvoiceInput = {
@@ -1943,6 +2118,7 @@ export type AppointmentUpdateWithoutInvoiceInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutInvoiceInput = {
@@ -1970,6 +2146,7 @@ export type AppointmentUncheckedUpdateWithoutInvoiceInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateWithoutCustomerPackagesInput = {
@@ -1997,6 +2174,7 @@ export type AppointmentCreateWithoutCustomerPackagesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutCustomerPackagesInput = {
@@ -2024,6 +2202,7 @@ export type AppointmentUncheckedCreateWithoutCustomerPackagesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutCustomerPackagesInput = {
@@ -2067,6 +2246,7 @@ export type AppointmentUpdateWithoutCustomerPackagesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutCustomerPackagesInput = {
@@ -2094,6 +2274,7 @@ export type AppointmentUncheckedUpdateWithoutCustomerPackagesInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateWithoutPackageUsageAppointmentsInput = {
@@ -2121,6 +2302,7 @@ export type AppointmentCreateWithoutPackageUsageAppointmentsInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutPackageUsageAppointmentsInput = {
@@ -2148,6 +2330,7 @@ export type AppointmentUncheckedCreateWithoutPackageUsageAppointmentsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutPackageUsageAppointmentsInput = {
@@ -2180,6 +2363,7 @@ export type AppointmentCreateWithoutPackageUsageJobCartsInput = {
   customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageCreateNestedManyWithoutAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentUncheckedCreateWithoutPackageUsageJobCartsInput = {
@@ -2207,6 +2391,7 @@ export type AppointmentUncheckedCreateWithoutPackageUsageJobCartsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutJobCartAppointmentInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutAppointmentInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutJobCartAppointmentInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutJobCartAppointmentInput
 }
 
 export type AppointmentCreateOrConnectWithoutPackageUsageJobCartsInput = {
@@ -2250,6 +2435,7 @@ export type AppointmentUpdateWithoutPackageUsageAppointmentsInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutPackageUsageAppointmentsInput = {
@@ -2277,6 +2463,7 @@ export type AppointmentUncheckedUpdateWithoutPackageUsageAppointmentsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUpsertWithoutPackageUsageJobCartsInput = {
@@ -2315,6 +2502,7 @@ export type AppointmentUpdateWithoutPackageUsageJobCartsInput = {
   customerPackages?: Prisma.CustomerPackageUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutPackageUsageJobCartsInput = {
@@ -2342,6 +2530,7 @@ export type AppointmentUncheckedUpdateWithoutPackageUsageJobCartsInput = {
   customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentCreateManySalonInput = {
@@ -2389,6 +2578,7 @@ export type AppointmentUpdateWithoutSalonInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutSalonInput = {
@@ -2416,6 +2606,7 @@ export type AppointmentUncheckedUpdateWithoutSalonInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateManyWithoutSalonInput = {
@@ -2483,6 +2674,7 @@ export type AppointmentUpdateWithoutCreatedByInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutCreatedByInput = {
@@ -2510,6 +2702,7 @@ export type AppointmentUncheckedUpdateWithoutCreatedByInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateManyWithoutCreatedByInput = {
@@ -2577,6 +2770,7 @@ export type AppointmentUpdateWithoutCustomerInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutCustomerInput = {
@@ -2604,6 +2798,7 @@ export type AppointmentUncheckedUpdateWithoutCustomerInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateManyWithoutCustomerInput = {
@@ -2671,6 +2866,7 @@ export type AppointmentUpdateWithoutBranchInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutBranchInput = {
@@ -2698,6 +2894,7 @@ export type AppointmentUncheckedUpdateWithoutBranchInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateManyWithoutBranchInput = {
@@ -2765,6 +2962,7 @@ export type AppointmentUpdateWithoutStaffInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateWithoutStaffInput = {
@@ -2792,6 +2990,7 @@ export type AppointmentUncheckedUpdateWithoutStaffInput = {
   packageUsageAppointments?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutAppointmentNestedInput
   packageUsageJobCarts?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
   customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutJobCartAppointmentNestedInput
 }
 
 export type AppointmentUncheckedUpdateManyWithoutStaffInput = {
@@ -2826,6 +3025,7 @@ export type AppointmentCountOutputType = {
   packageUsageAppointments: number
   packageUsageJobCarts: number
   customerMemberships: number
+  membershipWalletTransactions: number
 }
 
 export type AppointmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2835,6 +3035,7 @@ export type AppointmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Exten
   packageUsageAppointments?: boolean | AppointmentCountOutputTypeCountPackageUsageAppointmentsArgs
   packageUsageJobCarts?: boolean | AppointmentCountOutputTypeCountPackageUsageJobCartsArgs
   customerMemberships?: boolean | AppointmentCountOutputTypeCountCustomerMembershipsArgs
+  membershipWalletTransactions?: boolean | AppointmentCountOutputTypeCountMembershipWalletTransactionsArgs
 }
 
 /**
@@ -2889,6 +3090,13 @@ export type AppointmentCountOutputTypeCountCustomerMembershipsArgs<ExtArgs exten
   where?: Prisma.CustomerMembershipWhereInput
 }
 
+/**
+ * AppointmentCountOutputType without action
+ */
+export type AppointmentCountOutputTypeCountMembershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MembershipWalletTransactionWhereInput
+}
+
 
 export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2921,6 +3129,7 @@ export type AppointmentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   packageUsageAppointments?: boolean | Prisma.Appointment$packageUsageAppointmentsArgs<ExtArgs>
   packageUsageJobCarts?: boolean | Prisma.Appointment$packageUsageJobCartsArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Appointment$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Appointment$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.AppointmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["appointment"]>
 
@@ -3011,6 +3220,7 @@ export type AppointmentInclude<ExtArgs extends runtime.Types.Extensions.Internal
   packageUsageAppointments?: boolean | Prisma.Appointment$packageUsageAppointmentsArgs<ExtArgs>
   packageUsageJobCarts?: boolean | Prisma.Appointment$packageUsageJobCartsArgs<ExtArgs>
   customerMemberships?: boolean | Prisma.Appointment$customerMembershipsArgs<ExtArgs>
+  membershipWalletTransactions?: boolean | Prisma.Appointment$membershipWalletTransactionsArgs<ExtArgs>
   _count?: boolean | Prisma.AppointmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AppointmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3043,6 +3253,7 @@ export type $AppointmentPayload<ExtArgs extends runtime.Types.Extensions.Interna
     packageUsageAppointments: Prisma.$CustomerPackageUsagePayload<ExtArgs>[]
     packageUsageJobCarts: Prisma.$CustomerPackageUsagePayload<ExtArgs>[]
     customerMemberships: Prisma.$CustomerMembershipPayload<ExtArgs>[]
+    membershipWalletTransactions: Prisma.$MembershipWalletTransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3469,6 +3680,7 @@ export interface Prisma__AppointmentClient<T, Null = never, ExtArgs extends runt
   packageUsageAppointments<T extends Prisma.Appointment$packageUsageAppointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appointment$packageUsageAppointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageUsageJobCarts<T extends Prisma.Appointment$packageUsageJobCartsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appointment$packageUsageJobCartsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   customerMemberships<T extends Prisma.Appointment$customerMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appointment$customerMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerMembershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  membershipWalletTransactions<T extends Prisma.Appointment$membershipWalletTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Appointment$membershipWalletTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MembershipWalletTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4134,6 +4346,30 @@ export type Appointment$customerMembershipsArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+}
+
+/**
+ * Appointment.membershipWalletTransactions
+ */
+export type Appointment$membershipWalletTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MembershipWalletTransaction
+   */
+  select?: Prisma.MembershipWalletTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MembershipWalletTransaction
+   */
+  omit?: Prisma.MembershipWalletTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MembershipWalletTransactionInclude<ExtArgs> | null
+  where?: Prisma.MembershipWalletTransactionWhereInput
+  orderBy?: Prisma.MembershipWalletTransactionOrderByWithRelationInput | Prisma.MembershipWalletTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.MembershipWalletTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
 }
 
 /**

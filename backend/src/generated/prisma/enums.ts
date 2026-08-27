@@ -19,6 +19,18 @@ export const CustomerMembershipStatus = {
 export type CustomerMembershipStatus = (typeof CustomerMembershipStatus)[keyof typeof CustomerMembershipStatus]
 
 
+export const MembershipWalletTransactionType = {
+  PURCHASE_CREDIT: 'PURCHASE_CREDIT',
+  TOPUP: 'TOPUP',
+  SPEND: 'SPEND',
+  REFUND: 'REFUND',
+  FORFEIT: 'FORFEIT',
+  ADJUSTMENT: 'ADJUSTMENT'
+} as const
+
+export type MembershipWalletTransactionType = (typeof MembershipWalletTransactionType)[keyof typeof MembershipWalletTransactionType]
+
+
 export const CustomerStatus = {
   REGULAR: 'REGULAR',
   PREMIUM: 'PREMIUM',
@@ -207,6 +219,7 @@ export const PaymentMethod = {
   CARD: 'CARD',
   BANK_TRANSFER: 'BANK_TRANSFER',
   CHEQUE: 'CHEQUE',
+  MEMBERSHIP_WALLET: 'MEMBERSHIP_WALLET',
   OTHER: 'OTHER'
 } as const
 

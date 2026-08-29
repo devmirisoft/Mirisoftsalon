@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Select from "react-select";
 import {
   Alert,
   Col,
   FormGroup,
   Input,
   Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -45,7 +47,9 @@ const JobCartDetails = () => {
     staffId: "",
     bookingNote: "",
   });
-  const [serviceId, setServiceId] = useState("");
+  const [servicePickerOpen, setServicePickerOpen] = useState(false);
+  const [servicePickerCategoryId, setServicePickerCategoryId] = useState("");
+  const [servicePickerSearch, setServicePickerSearch] = useState("");
   const [packageId, setPackageId] = useState("");
   const [packageStaffId, setPackageStaffId] = useState("");
   const [customPackage, setCustomPackage] = useState({
@@ -119,6 +123,30 @@ const JobCartDetails = () => {
     );
     return refs.services.filter((service) => !existing.has(service.id));
   }, [cart?.items, refs.services]);
+  // Mirrors the "Add Services" picker on job creation: category + search
+  // filter over a checklist-style grid instead of a plain dropdown.
+  const servicePickerCategories = useMemo(() => {
+    const seen = new Map();
+    availableServices.forEach((service) => {
+      const categoryId = service.mainService?.id || service.mainServiceId || "";
+      const categoryName =
+        service.mainService?.name || service.mainServiceName || "Other";
+      if (categoryId && !seen.has(categoryId)) {
+        seen.set(categoryId, categoryName);
+      }
+    });
+    return [...seen.entries()].map(([catId, name]) => ({ id: catId, name }));
+  }, [availableServices]);
+  const servicePickerVisibleServices = useMemo(() => {
+    const term = servicePickerSearch.trim().toLowerCase();
+    return availableServices.filter((service) => {
+      const categoryId = service.mainService?.id || service.mainServiceId || "";
+      if (servicePickerCategoryId && categoryId !== servicePickerCategoryId) {
+        return false;
+      }
+      return !term || service.name.toLowerCase().includes(term);
+    });
+  }, [availableServices, servicePickerCategoryId, servicePickerSearch]);
   const availablePackages = useMemo(() => {
     const existing = new Set(
       (cart?.items || [])
@@ -169,6 +197,14 @@ const JobCartDetails = () => {
       setWorking(false);
     }
   };
+
+  const addServiceFromPicker = (pickedServiceId) =>
+    run(() =>
+      salonApi.jobCarts.addItem(id, {
+        itemType: "SERVICE",
+        serviceId: pickedServiceId,
+      })
+    );
 
   const save = () => {
     const startTime = new Date(form.startTime);
@@ -563,63 +599,121 @@ const JobCartDetails = () => {
                   </div>
                 )}
                 {active && (
-                  <div className="d-flex gap-2 mb-4 h-50">
-                    <div className="flex-grow-1">
-                      <Select
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        isClearable
-                        options={availableServices.map((service) => ({
-                          value: service.id,
-                          label: `${service.name} - ${formatMoney(
-                            service.price
-                          )}`,
-                        }))}
-                        value={
-                          availableServices
-                            .filter((service) => service.id === serviceId)
-                            .map((service) => ({
-                              value: service.id,
-                              label: `${service.name} - ${formatMoney(
-                                service.price
-                              )}`,
-                            }))[0] || null
-                        }
-                        placeholder="Search service"
-                        noOptionsMessage={() => "No services"}
-                        onChange={(option) => setServiceId(option?.value || "")}
-                      />
-                    </div>
-                    <Input
-                      type="select"
-                      value={serviceId}
-                      onChange={(event) => setServiceId(event.target.value)}
-                      className="d-none"
-                    >
-                      <option value="">Select a service</option>
-                      {availableServices.map((service) => (
-                        <option key={service.id} value={service.id}>
-                          {service.name} — {formatMoney(service.price)}
-                        </option>
-                      ))}
-                    </Input>
+                  <div className="mb-4">
                     <Button
                       color="primary"
-                      disabled={!serviceId || working}
-                      onClick={() =>
-                        run(async () => {
-                          await salonApi.jobCarts.addItem(id, {
-                            itemType: "SERVICE",
-                            serviceId,
-                          });
-                          setServiceId("");
-                        })
-                      }
+                      outline
+                      disabled={working}
+                      onClick={() => setServicePickerOpen(true)}
                     >
-                      Add
+                      <Icon name="plus" /> Add Service
                     </Button>
                   </div>
                 )}
+                <Modal
+                  isOpen={servicePickerOpen}
+                  toggle={() => setServicePickerOpen(false)}
+                  centered
+                  size="xl"
+                  contentClassName="border-0"
+                >
+                  <ModalHeader toggle={() => setServicePickerOpen(false)}>
+                    Add Services
+                  </ModalHeader>
+                  <ModalBody>
+                    <Row className="g-3 mb-3">
+                      <Col md="6">
+                        <Label className="mb-1">Category</Label>
+                        <Input
+                          type="select"
+                          value={servicePickerCategoryId}
+                          onChange={(event) =>
+                            setServicePickerCategoryId(event.target.value)
+                          }
+                        >
+                          <option value="">All services</option>
+                          {servicePickerCategories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                      <Col md="6">
+                        <Label className="mb-1">Search</Label>
+                        <Input
+                          type="search"
+                          placeholder="Search services"
+                          value={servicePickerSearch}
+                          onChange={(event) =>
+                            setServicePickerSearch(event.target.value)
+                          }
+                        />
+                      </Col>
+                    </Row>
+                    <div
+                      className="border rounded"
+                      style={{ maxHeight: 380, overflowY: "auto" }}
+                    >
+                      {servicePickerVisibleServices.length === 0 ? (
+                        <div className="text-soft text-center py-4">
+                          No services match this search
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fit, minmax(280px, 1fr))",
+                          }}
+                        >
+                          {servicePickerVisibleServices.map((service) => (
+                            <div key={service.id} style={{ minWidth: 0 }}>
+                              <button
+                                type="button"
+                                className="btn d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom mb-0 h-100 w-100 text-start bg-transparent"
+                                style={{ cursor: "pointer", minWidth: 0 }}
+                                disabled={working}
+                                onClick={() => addServiceFromPicker(service.id)}
+                              >
+                                <span
+                                  className="text-truncate"
+                                  style={{ minWidth: 0 }}
+                                >
+                                  <span className="d-block text-truncate">
+                                    {service.name}
+                                  </span>
+                                  <small className="text-soft">
+                                    {service.mainService?.name ||
+                                      service.mainServiceName ||
+                                      "Other"}{" "}
+                                    - {formatMoney(service.price)}
+                                  </small>
+                                </span>
+                                <Icon
+                                  name="plus-circle"
+                                  className="text-primary flex-shrink-0"
+                                />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <span className="text-soft">
+                        {standaloneServiceItems.length} in cart
+                      </span>
+                      <Button
+                        color="primary"
+                        type="button"
+                        onClick={() => setServicePickerOpen(false)}
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  </ModalBody>
+                </Modal>
                 {active && (
                   <div className="row g-2 mb-4">
                     <div className="col-md-6">

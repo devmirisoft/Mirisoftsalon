@@ -10,6 +10,7 @@ import { buildSalonCode } from "../../utils/business-id.js";
 import { createRefreshSession, findActiveRefreshSession, hashRefreshToken, } from "./session.service.js";
 import { createBestEffortAuditLog, createAuditLog, requestAuditContext, } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
+import { isBranchLockedRole } from "../../utils/branch-scope.js";
 const PUBLIC_REGISTER_PROTECTED_FIELDS = new Set([
     "role",
     "permissions",
@@ -261,6 +262,25 @@ export const login = async (req, res) => {
                 message: "Account is disabled",
             });
         }
+        if (isBranchLockedRole(user.role) && !user.branchId) {
+            await createBestEffortAuditLog({
+                salonId: user.salonId,
+                userId: user.id,
+                userName: user.name,
+                userRole: user.role,
+                module: "AUTH",
+                action: "LOGIN_FAILED",
+                entityId: user.id,
+                entityName: user.name,
+                description: `Blocked login for ${user.email} with no branch assigned`,
+                newData: { email: user.email, reason: "NO_BRANCH_ASSIGNED" },
+                ...requestAuditContext(req),
+            });
+            return res.status(403).json({
+                success: false,
+                message: "Your account is not assigned to a branch. Contact your salon admin.",
+            });
+        }
         const tokenPayload = {
             userId: user.id,
             role: user.role,
@@ -271,6 +291,12 @@ export const login = async (req, res) => {
         const refreshToken = generateRefreshToken(tokenPayload);
         await createRefreshSession(user.id, refreshToken);
         const { passwordHash, ...safeUser } = user;
+        const branch = user.branchId
+            ? await prisma.branch.findUnique({
+                where: { id: user.branchId },
+                select: { id: true, name: true },
+            })
+            : null;
         res.cookie("refreshToken", refreshToken, refreshCookieOptions);
         await createBestEffortAuditLog({
             salonId: user.salonId,
@@ -291,6 +317,7 @@ export const login = async (req, res) => {
             message: "Login successful",
             data: {
                 user: safeUser,
+                branch,
                 accessToken,
             },
         });
@@ -303,10 +330,17 @@ export const login = async (req, res) => {
     }
 };
 export const me = async (req, res) => {
+    const branch = req.user?.branchId
+        ? await prisma.branch.findUnique({
+            where: { id: req.user.branchId },
+            select: { id: true, name: true },
+        })
+        : null;
     return res.status(200).json({
         success: true,
         message: "Authenticated user",
         user: req.user,
+        branch,
     });
 };
 export const refresh = async (req, res) => {

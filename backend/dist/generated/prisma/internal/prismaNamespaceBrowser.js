@@ -44,6 +44,7 @@ export const ModelName = {
     Customer: 'Customer',
     Membership: 'Membership',
     CustomerMembership: 'CustomerMembership',
+    MembershipWalletTransaction: 'MembershipWalletTransaction',
     CustomerTransaction: 'CustomerTransaction',
     LoyaltyRule: 'LoyaltyRule',
     LoyaltyTransaction: 'LoyaltyTransaction',
@@ -171,6 +172,9 @@ export const MembershipScalarFieldEnum = {
     description: 'description',
     discountPercentage: 'discountPercentage',
     status: 'status',
+    durationMonths: 'durationMonths',
+    price: 'price',
+    walletCreditAmount: 'walletCreditAmount',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -182,9 +186,15 @@ export const CustomerMembershipScalarFieldEnum = {
     membershipId: 'membershipId',
     membershipNameSnapshot: 'membershipNameSnapshot',
     discountPercentageSnapshot: 'discountPercentageSnapshot',
+    durationMonthsSnapshot: 'durationMonthsSnapshot',
     startsAt: 'startsAt',
     expiresAt: 'expiresAt',
     status: 'status',
+    walletCredited: 'walletCredited',
+    walletDebited: 'walletDebited',
+    walletBalance: 'walletBalance',
+    forfeitedAmount: 'forfeitedAmount',
+    forfeitedAt: 'forfeitedAt',
     assignedById: 'assignedById',
     removedById: 'removedById',
     removedAt: 'removedAt',
@@ -193,6 +203,23 @@ export const CustomerMembershipScalarFieldEnum = {
     note: 'note',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+export const MembershipWalletTransactionScalarFieldEnum = {
+    id: 'id',
+    salonId: 'salonId',
+    branchId: 'branchId',
+    customerId: 'customerId',
+    customerMembershipId: 'customerMembershipId',
+    type: 'type',
+    credit: 'credit',
+    debit: 'debit',
+    balanceAfter: 'balanceAfter',
+    narration: 'narration',
+    invoiceId: 'invoiceId',
+    paymentId: 'paymentId',
+    jobCartAppointmentId: 'jobCartAppointmentId',
+    createdById: 'createdById',
+    createdAt: 'createdAt'
 };
 export const CustomerTransactionScalarFieldEnum = {
     id: 'id',

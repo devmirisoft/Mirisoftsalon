@@ -9,6 +9,6 @@ router.use(authenticate);
 router.get("/", requireRole("SUPER_ADMIN"), getUsers);
 router.post("/salon-admin", requireRole("SUPER_ADMIN"), createSalonAdmin);
 router.patch("/:id/status", requireRole("SUPER_ADMIN", "SALON_ADMIN"), updateUserStatus);
-router.post("/receptionist", requireRole("SUPER_ADMIN", "SALON_ADMIN"), createReceptionist);
-router.post("/staff", requireRole("SUPER_ADMIN", "SALON_ADMIN"), createStaffAccount);
+router.post("/receptionist", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), createReceptionist);
+router.post("/staff", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), createStaffAccount);
 export default router;

@@ -2,6 +2,7 @@ import {} from "express";
 import { StaffModel } from "./staff.model.js";
 import { BranchModel } from "../branches/branch.model.js";
 import { SalonModel } from "../salons/salon.model.js";
+import { isBranchAccessible, isBranchLockedRole, resolveBranchScope, resolveWritableBranchId, } from "../../utils/branch-scope.js";
 const getSalonInitials = (salonName) => {
     const words = salonName
         .trim()
@@ -94,8 +95,16 @@ export const createStaff = async (req, res) => {
                 message: "Staff code already exists",
             });
         }
-        if (branchId) {
-            const branch = await BranchModel.findByIdandSalon(branchId, finalSalonId);
+        const branchResolution = resolveWritableBranchId(req, branchId);
+        if (!branchResolution.ok) {
+            return res.status(400).json({
+                success: false,
+                message: branchResolution.message,
+            });
+        }
+        const finalBranchId = branchResolution.branchId;
+        if (finalBranchId) {
+            const branch = await BranchModel.findByIdandSalon(finalBranchId, finalSalonId);
             if (!branch) {
                 return res.status(400).json({
                     success: false,
@@ -114,7 +123,7 @@ export const createStaff = async (req, res) => {
             weekOff,
             joiningDate: finalJoiningDate,
             salonId: finalSalonId,
-            branchId,
+            ...(finalBranchId ? { branchId: finalBranchId } : {}),
             reportingManagerId,
         });
         return res.status(201).json({
@@ -159,7 +168,7 @@ export const updateStaffStatus = async (req, res) => {
             }
             existingStaff = await StaffModel.findByIdAndSalon(id, req.user.salonId);
         }
-        if (!existingStaff) {
+        if (!existingStaff || !isBranchAccessible(req, existingStaff.branchId)) {
             return res.status(404).json({
                 success: false,
                 message: "Staff not found",
@@ -201,7 +210,7 @@ export const deleteStaff = async (req, res) => {
             }
             existingStaff = await StaffModel.findByIdAndSalon(id, req.user.salonId);
         }
-        if (!existingStaff) {
+        if (!existingStaff || !isBranchAccessible(req, existingStaff.branchId)) {
             return res.status(404).json({
                 success: false,
                 message: "Staff not found",
@@ -248,6 +257,32 @@ export const updateStaff = async (req, res) => {
                 message: "Staff not found",
             });
         }
+        if (!isBranchAccessible(req, existingStaff.branchId)) {
+            return res.status(404).json({
+                success: false,
+                message: "Staff not found",
+            });
+        }
+        // Branch-locked callers may never move staff into another branch, so their
+        // own branch is reapplied and any branchId in the body is discarded.
+        const branchResolution = resolveWritableBranchId(req, req.body.branchId);
+        if (!branchResolution.ok) {
+            return res.status(400).json({
+                success: false,
+                message: branchResolution.message,
+            });
+        }
+        if (!isBranchLockedRole(req.user?.role) &&
+            branchResolution.branchId &&
+            req.user?.salonId) {
+            const branch = await BranchModel.findByIdandSalon(branchResolution.branchId, req.user.salonId);
+            if (!branch) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid branch for this salon",
+                });
+            }
+        }
         const updatedStaff = await StaffModel.update(id, {
             name: req.body.name,
             email: req.body.email,
@@ -256,7 +291,9 @@ export const updateStaff = async (req, res) => {
             workingFrom: req.body.workingFrom,
             workingTo: req.body.workingTo,
             weekOff: req.body.weekOff,
-            branchId: req.body.branchId,
+            ...(branchResolution.branchId
+                ? { branchId: branchResolution.branchId }
+                : {}),
             reportingManagerId: req.body.reportingManagerId,
         });
         return res.status(200).json({
@@ -292,7 +329,7 @@ export const getStaffById = async (req, res) => {
                     message: "Salon ID is missing",
                 });
             }
-            staff = await StaffModel.findByIdAndSalon(id, req.user.salonId, req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined);
+            staff = await StaffModel.findByIdAndSalon(id, req.user.salonId, resolveBranchScope(req) ?? undefined);
         }
         if (!staff) {
             return res.status(404).json({
@@ -329,7 +366,7 @@ export const getStaff = async (req, res) => {
                 message: "Salon ID is missing",
             });
         }
-        const staff = await StaffModel.findBySalon(req.user.salonId, req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined);
+        const staff = await StaffModel.findBySalon(req.user.salonId, resolveBranchScope(req) ?? undefined);
         return res.status(200).json({
             success: true,
             message: "Staff fetched successfully",

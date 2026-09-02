@@ -40,7 +40,7 @@ const main = async () => {
     },
   });
 
-  console.log(`SUPER_ADMIN ready: ${user.email} (${user.id})`);
+  console.log(`SUPER_ADMIN ready`);
 };
 
 main()

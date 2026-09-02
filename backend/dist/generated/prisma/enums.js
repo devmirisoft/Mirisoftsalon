@@ -13,6 +13,14 @@ export const CustomerMembershipStatus = {
     CANCELLED: 'CANCELLED',
     REMOVED: 'REMOVED'
 };
+export const MembershipWalletTransactionType = {
+    PURCHASE_CREDIT: 'PURCHASE_CREDIT',
+    TOPUP: 'TOPUP',
+    SPEND: 'SPEND',
+    REFUND: 'REFUND',
+    FORFEIT: 'FORFEIT',
+    ADJUSTMENT: 'ADJUSTMENT'
+};
 export const CustomerStatus = {
     REGULAR: 'REGULAR',
     PREMIUM: 'PREMIUM',
@@ -129,6 +137,7 @@ export const PaymentMethod = {
     CARD: 'CARD',
     BANK_TRANSFER: 'BANK_TRANSFER',
     CHEQUE: 'CHEQUE',
+    MEMBERSHIP_WALLET: 'MEMBERSHIP_WALLET',
     OTHER: 'OTHER'
 };
 export const SaleItemType = {

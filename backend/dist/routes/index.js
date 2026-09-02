@@ -39,6 +39,7 @@ import publicBookingSettingRoutes from "../features/public-booking-settings/publ
 import jobCartRoutes from "../features/job-carts/job-cart.routes.js";
 import { customerPackageCustomerRoutes, customerPackageRoutes, packageCategoryRoutes, servicePackageRoutes, } from "../features/packages/package.routes.js";
 import customerMembershipRoutes from "../features/customer-memberships/customer-membership.routes.js";
+import membershipWalletRoutes from "../features/membership-wallets/membership-wallet.routes.js";
 import { staffAvailabilityRouter, staffRosterRouter, staffTimeBlockRouter, } from "../features/staff-availability/staffAvailability.routes.js";
 import aiAssistantRoutes from "../features/ai-assistant/ai-assistant.routes.js";
 import profileRoutes from "../features/profile/profile.routes.js";
@@ -85,6 +86,7 @@ router.use("/package-categories", packageCategoryRoutes);
 router.use("/packages", servicePackageRoutes);
 router.use("/customer-packages", customerPackageRoutes);
 router.use("/customer-memberships", customerMembershipRoutes);
+router.use("/membership-wallets", membershipWalletRoutes);
 router.use("/staff-availability", staffAvailabilityRouter);
 router.use("/staff-time-blocks", staffTimeBlockRouter);
 router.use("/staff-roster", staffRosterRouter);

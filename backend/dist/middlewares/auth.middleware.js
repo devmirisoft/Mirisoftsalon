@@ -2,6 +2,7 @@ import {} from "express";
 import jwt, {} from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { prisma } from "../config/prisma.js";
+import { isBranchLockedRole } from "../utils/branch-scope.js";
 export const authenticate = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
@@ -40,6 +41,12 @@ export const authenticate = async (req, res, next) => {
             return res.status(403).json({
                 success: false,
                 message: "Account is disabled",
+            });
+        }
+        if (isBranchLockedRole(currentUser.role) && !currentUser.branchId) {
+            return res.status(403).json({
+                success: false,
+                message: "Your account is not assigned to a branch. Contact your salon admin.",
             });
         }
         const user = {

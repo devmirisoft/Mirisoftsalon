@@ -1,0 +1,593 @@
+/* Scoped MIRI sign-in redesign. Everything lives under .miri-auth so the
+   global Nio/bootstrap theme is untouched. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+.miri-auth {
+  --navy: #14245d;
+  --muted: #5f6f95;
+  --line: #d8e1f0;
+  --primary: #2648ff;
+  --danger-bg: #fff0f0;
+
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  font-family: Inter, Arial, sans-serif;
+  color: var(--navy);
+  background:
+    radial-gradient(circle at 8% 14%, rgba(219, 232, 255, .95) 0, rgba(219, 232, 255, .95) 8%, transparent 24%),
+    radial-gradient(circle at 78% 20%, rgba(243, 247, 255, .92), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+}
+
+.miri-auth *,
+.miri-auth *::before,
+.miri-auth *::after { box-sizing: border-box; }
+
+.miri-auth a { color: var(--primary); text-decoration: none; }
+.miri-auth a:hover { text-decoration: underline; }
+.miri-auth button,
+.miri-auth input { font: inherit; }
+
+.miri-auth .form-side {
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  order: 1;
+  overflow-y: auto;
+}
+
+.miri-auth .form-inner {
+  min-height: 100%;
+  width: 100%;
+  max-width: 560px;
+  padding: 42px 48px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.miri-auth .brand { display: inline-flex; width: 108px; }
+.miri-auth .brand img { display: block; width: 100%; height: auto; }
+
+.miri-auth .brand,
+.miri-auth .auth-content,
+.miri-auth .auth-foot { animation: miriFormEnter .7s cubic-bezier(.2, .8, .2, 1) both; }
+.miri-auth .auth-content { animation-delay: .12s; }
+.miri-auth .auth-foot { animation-delay: .24s; }
+
+.miri-auth .auth-content { width: 100%; max-width: 430px; margin: 34px auto 0; }
+
+.miri-auth .top-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 1px solid #ffbeb9;
+  border-radius: 12px;
+  background: var(--danger-bg);
+  color: #9f231d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.miri-auth .top-error-icon { flex: 0 0 auto; font-size: 14px; line-height: 1.6; }
+
+.miri-auth .heading h1 { margin: 0; font-size: 42px; line-height: 1.08; letter-spacing: -1.6px; }
+.miri-auth .heading p { margin: 14px 0 0; color: var(--muted); font-size: 16px; line-height: 1.55; }
+
+.miri-auth form { margin-top: 26px; }
+.miri-auth .field + .field { margin-top: 20px; }
+.miri-auth .field label,
+.miri-auth .label-row label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
+.miri-auth .label-row { display: flex; align-items: center; justify-content: space-between; }
+.miri-auth .label-row a { margin-bottom: 10px; font-size: 14px; font-weight: 500; }
+
+.miri-auth .input-wrap {
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  transition: .2s ease;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 10px 30px rgba(17, 62, 154, .05);
+}
+.miri-auth .input-wrap:focus-within { border-color: #6e86ff; box-shadow: 0 0 0 4px rgba(57, 76, 255, .09); }
+.miri-auth .input-wrap {
+  border: 1px solid var(--field-border, #d7deea);
+  border-radius: 10px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+/* Hover: quiet hint, and it steps aside once the field is focused */
+@media (hover: hover) {
+  .miri-auth .input-wrap:hover:not(.has-error):not(:focus-within) {
+    border-color: #b8c7ec;
+    box-shadow: 0 4px 14px rgba(17, 62, 154, .08);
+  }
+}
+
+/* Focus: the state that matters — a ring, not a drop shadow */
+.miri-auth .input-wrap:focus-within:not(.has-error) {
+  border-color: #5b83e0;
+  box-shadow: 0 0 0 3px rgba(17, 62, 154, .16);
+}
+
+.miri-auth .input-wrap.has-error {
+  border-color: #d4544c;
+}
+.miri-auth .input-wrap.has-error:focus-within {
+  box-shadow: 0 0 0 3px rgba(212, 84, 76, .18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .miri-auth .input-wrap { transition: none; }
+}
+.miri-auth .input-wrap.has-error { border-color: #ef6a63; box-shadow: 0 0 0 3px rgba(217, 50, 50, .10); }
+
+.miri-auth .input-wrap > svg,
+.miri-auth .eye svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: #8290ad;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: 0 0 auto;
+}
+
+.miri-auth .input-wrap input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0 12px;
+  color: var(--navy);
+  background: transparent;
+  font-size: 14px;
+}
+.miri-auth .input-wrap input::placeholder { color: #96a5c6; }
+.miri-auth .input-wrap input:disabled { cursor: not-allowed; }
+
+/* Chrome paints autofilled inputs with its own background via an internal
+   box-shadow, which beats `background: transparent`. Repaint it with the
+   field's own colours. */
+.miri-auth .input-wrap input:-webkit-autofill,
+.miri-auth .input-wrap input:-webkit-autofill:hover,
+.miri-auth .input-wrap input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--navy);
+  -webkit-box-shadow: 0 0 0 100px #fff inset;
+  caret-color: var(--navy);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+.miri-auth .eye {
+  border: 0;
+  background: transparent;
+  padding: 5px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: #8290ad;
+  transition: color .2s ease, transform .2s ease;
+}
+.miri-auth .eye:hover { color: var(--primary); transform: scale(1.05); }
+.miri-auth .eye.is-active { color: var(--primary); }
+.miri-auth .eye .eye-off-line { opacity: 1; transition: opacity .2s ease; }
+.miri-auth .eye.is-active .eye-off-line { opacity: 0; }
+
+.miri-auth .field-error { display: block; margin-top: 8px; color: #c3312b; font-size: 13px; }
+
+.miri-auth .sign-in {
+  margin-top: 22px;
+  width: 100%;
+  height: 54px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2c35f4, #334dff 50%, #2a39f2 100%);
+  background-size: 170% 100%;
+  box-shadow: 0 18px 34px rgba(44, 72, 255, .22);
+  transition: transform .22s ease, box-shadow .22s ease, background-position .35s ease;
+  font-size: 16px;
+  display: grid;
+  place-items: center;
+}
+.miri-auth .sign-in:hover:not(:disabled) {
+  transform: translateY(-3px);
+  background-position: 100% 0;
+  box-shadow: 0 18px 34px rgba(57, 76, 255, .32);
+}
+.miri-auth .sign-in:active:not(:disabled) { transform: translateY(0); }
+.miri-auth .sign-in:disabled { opacity: .7; cursor: not-allowed; }
+
+.miri-auth .signup { margin: 22px 0 0; color: #4e5871; font-size: 14px; }
+.miri-auth .signup + .signup { margin-top: 8px; }
+.miri-auth .signup a { font-weight: 500; display: inline-block; transition: color .2s ease, transform .2s ease; }
+.miri-auth .signup a:hover { transform: translateX(3px); }
+
+.miri-auth .auth-foot { width: 100%; max-width: 430px; margin: auto auto 0; padding-top: 28px; color: #66718c; font-size: 12px; }
+.miri-auth .auth-foot nav { display: flex; align-items: center; gap: 24px; white-space: nowrap; flex-wrap: wrap; }
+.miri-auth .auth-foot .language {
+  color: var(--primary);
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+}
+.miri-auth .auth-foot .language::after { content: "\2304"; margin-left: 6px; font-size: 12px; line-height: 1; }
+.miri-auth .auth-foot .copyright { margin: 16px 0 0; font-size: 12px; }
+
+.miri-auth .visual-side {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  order: 2;
+  background:
+    radial-gradient(circle at 82% 12%, rgba(106, 118, 255, .24), transparent 24%),
+    radial-gradient(circle at 12% 75%, rgba(0, 214, 255, .16), transparent 24%),
+    radial-gradient(circle at 84% 76%, rgba(124, 58, 255, .14), transparent 26%),
+    linear-gradient(160deg, #081a63 0%, #0b2f95 46%, #2032c8 100%);
+  transition: transform .35s ease, filter .35s ease;
+}
+
+.miri-auth .visual-side::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .48;
+  background:
+    radial-gradient(circle at 76% 16%, rgba(255, 255, 255, .08), transparent 34%),
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, .05), transparent 18%),
+    radial-gradient(circle at 88% 88%, rgba(184, 102, 255, .08), transparent 22%);
+  z-index: -2;
+  animation: miriDrift 18s linear infinite;
+}
+
+.miri-auth .visual-side::after {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -6%;
+  bottom: -12%;
+  height: 260px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 20% 24%, rgba(0, 234, 255, .46) 0%, rgba(67, 160, 255, .18) 26%, transparent 56%),
+    radial-gradient(circle at 84% 88%, rgba(142, 72, 255, .34) 0%, rgba(142, 72, 255, .12) 22%, transparent 52%);
+  filter: blur(16px);
+  animation: miriPulseGlow 9s ease-in-out infinite;
+  z-index: -1;
+}
+
+.miri-auth .wave {
+  position: absolute;
+  width: 132%;
+  height: 26%;
+  border: 1px solid rgba(120, 195, 255, .22);
+  border-radius: 50%;
+  filter: blur(.2px);
+  transform: rotate(-12deg);
+  z-index: -1;
+  animation: miriWaveFloat 10s ease-in-out infinite;
+}
+.miri-auth .wave-top {
+  top: -9%;
+  right: -32%;
+  box-shadow: 0 0 90px rgba(80, 100, 255, .12) inset;
+  animation-delay: -2s;
+}
+.miri-auth .wave-bottom {
+  bottom: -8%;
+  left: -22%;
+  width: 138%;
+  height: 36%;
+  box-shadow: 0 0 120px rgba(0, 238, 255, .13) inset;
+  animation-duration: 13s;
+}
+
+.miri-auth .glass-card {
+  width: min(100%, 418px);
+  min-height: 610px;
+  padding: 34px 30px 28px;
+  border: 1px solid rgba(212, 233, 255, .78);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(89, 126, 255, .11));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .34), 0 36px 90px rgba(4, 12, 55, .28);
+  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  text-align: center;
+  animation: miriCardFloat 6s ease-in-out infinite;
+  position: relative;
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease, background .35s ease;
+}
+
+.miri-auth .visual-side:hover { filter: saturate(1.08); }
+.miri-auth .visual-side:hover .glass-card {
+  animation-play-state: paused;
+  transform: translateY(-10px) scale(1.01);
+  border-color: rgba(214, 238, 255, .92);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 42px 96px rgba(0, 0, 0, .3);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(97, 132, 255, .15));
+}
+.miri-auth .visual-side:hover .shield {
+  box-shadow: 0 0 52px rgba(74, 165, 255, .34);
+  transform: scale(1.04);
+}
+.miri-auth .visual-side:hover .spark { animation-duration: 6s; }
+
+.miri-auth .glass-card img { width: 176px; height: auto; filter: brightness(1.18) saturate(.95); }
+
+.miri-auth .shield {
+  margin: 0;
+  width: 126px;
+  height: 126px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, rgba(76, 168, 255, .24), rgba(44, 82, 255, .08));
+  border: 1px solid rgba(128, 205, 255, .34);
+  box-shadow: 0 0 48px rgba(74, 165, 255, .18);
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+.miri-auth .shield svg {
+  width: 58px;
+  height: 58px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.miri-auth .glass-card p {
+  margin: 0;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.58;
+  font-size: 16px;
+  max-width: 270px;
+}
+
+.miri-auth .hero-rule { width: 92px; height: 1px; margin: 0; background: rgba(255, 255, 255, .28); }
+.miri-auth .hero-title { margin: 0; color: #fff; font-size: 25px; font-weight: 700; line-height: 1.25; }
+
+.miri-auth .hero-features {
+  width: 100%;
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+.miri-auth .hero-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, .96);
+  font-size: 11.5px;
+  line-height: 1.35;
+  text-align: center;
+}
+.miri-auth .hero-feature span {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(115, 161, 255, .16);
+  border: 1px solid rgba(166, 214, 255, .22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+.miri-auth .hero-feature svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.miri-auth .dot-grid {
+  position: absolute;
+  top: 102px;
+  left: 108px;
+  display: grid;
+  grid-template-columns: repeat(3, 8px);
+  gap: 10px;
+  opacity: .28;
+  animation: miriDrift 16s ease-in-out infinite;
+}
+.miri-auth .dot-grid span { width: 5px; height: 5px; border-radius: 50%; background: #5cbcff; }
+
+.miri-auth .spark {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 0 24px rgba(255, 255, 255, .45);
+  animation: miriSparkle 8s linear infinite;
+}
+.miri-auth .spark-one { top: 34%; left: 10%; width: 9px; height: 9px; animation-delay: -1s; }
+.miri-auth .spark-two { top: 58%; left: 12%; width: 10px; height: 10px; animation-duration: 10s; }
+.miri-auth .spark-three { top: 36%; right: 14%; width: 8px; height: 8px; animation-delay: -4s; }
+
+.miri-auth .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: miriSpin .7s linear infinite;
+}
+
+@keyframes miriSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes miriWaveFloat {
+  0%, 100% { transform: rotate(-12deg) translateY(0); }
+  50% { transform: rotate(-9deg) translateY(18px); }
+}
+
+@keyframes miriCardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes miriPulseGlow {
+  0%, 100% { transform: scale(1); opacity: .7; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+
+@keyframes miriDrift {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(14px) translateY(-10px); }
+  100% { transform: translateX(0) translateY(0); }
+}
+
+@keyframes miriSparkle {
+  0% { transform: translateY(0) scale(.8); opacity: .15; }
+  25% { opacity: .9; }
+  50% { transform: translateY(-28px) scale(1.15); opacity: .45; }
+  100% { transform: translateY(-56px) scale(.8); opacity: 0; }
+}
+
+@keyframes miriFormEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 980px) {
+  .miri-auth {
+    position: static;
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  .miri-auth .form-side { overflow: visible; }
+  .miri-auth .visual-side { height: 190px; min-height: 190px; order: -1; }
+  .miri-auth .dot-grid,
+  .miri-auth .hero-features,
+  .miri-auth .hero-rule,
+  .miri-auth .hero-title,
+  .miri-auth .glass-card p { display: none; }
+  .miri-auth .glass-card {
+    width: auto;
+    min-height: 0;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    background: transparent;
+    padding: 26px;
+  }
+  .miri-auth .glass-card img { width: 112px; }
+  .miri-auth .glass-card .shield { display: none; }
+  .miri-auth .form-inner {
+    min-height: calc(100vh - 190px);
+    max-width: 560px;
+    padding: 38px 32px 30px;
+  }
+  .miri-auth .form-inner > .brand { display: none; }
+  .miri-auth .auth-content { margin-top: 0; max-width: none; }
+  .miri-auth .auth-foot { margin-top: 55px; }
+}
+
+@media (max-width: 768px) {
+  .miri-auth { background: #f5f7fb; }
+  .miri-auth .visual-side {
+    height: 112px;
+    min-height: 112px;
+    align-items: start;
+    justify-items: center;
+    padding: 14px 0 0;
+    background:
+      radial-gradient(circle at 50% 10%, rgba(116, 142, 255, .22), transparent 38%),
+      linear-gradient(135deg, #172c76 0%, #134ba4 55%, #1f63c5 100%);
+  }
+  .miri-auth .form-side {
+    position: relative;
+    margin-top: -22px;
+    z-index: 2;
+    border-radius: 30px 30px 0 0;
+    background: #fff;
+    box-shadow: 0 -8px 30px rgba(20, 50, 110, .08);
+  }
+  .miri-auth .form-inner {
+    min-height: 0;
+    max-width: none;
+    padding: 18px 24px 26px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .miri-auth .heading h1 { font-size: 27px; line-height: 1.2; letter-spacing: -.8px; }
+  .miri-auth .heading p { font-size: 14px; line-height: 1.45; max-width: 280px; }
+  .miri-auth .desktop-only { display: none; }
+  .miri-auth .glass-card {
+    width: 100%;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    animation: none;
+    justify-content: center;
+  }
+  .miri-auth .glass-card img {
+    width: 92px;
+    margin: 0 auto;
+    display: block;
+    filter: brightness(1.12) saturate(1.08);
+  }
+  .miri-auth .top-error { margin-bottom: 18px; padding: 11px 12px; border-radius: 10px; font-size: 12px; }
+  .miri-auth form { margin-top: 22px; }
+  .miri-auth .field + .field { margin-top: 16px; }
+  .miri-auth .field label,
+  .miri-auth .label-row label { margin-bottom: 8px; font-size: 14px; }
+  .miri-auth .label-row a { margin-bottom: 8px; font-size: 13px; }
+  .miri-auth .input-wrap { height: 50px; box-shadow: none; }
+  .miri-auth .sign-in { height: 50px; margin-top: 2px; font-size: 15px; }
+  .miri-auth .signup { margin-top: 18px; text-align: center; font-size: 13px; line-height: 1.6; color: #7c849e; }
+  .miri-auth .auth-foot { margin-top: 28px; text-align: center; padding-top: 0; }
+  .miri-auth .auth-foot nav { justify-content: center; flex-wrap: wrap; gap: 18px; }
+  .miri-auth .auth-foot .language { width: 100%; margin-top: 14px; }
+  .miri-auth .auth-foot .copyright { margin-top: 14px; font-size: 11px; }
+  .miri-auth .wave,
+  .miri-auth .spark,
+  .miri-auth .dot-grid,
+  .miri-auth .shield,
+  .miri-auth .hero-rule,
+  .miri-auth .hero-title,
+  .miri-auth .hero-features,
+  .miri-auth .glass-card p { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .miri-auth *,
+  .miri-auth *::before,
+  .miri-auth *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

@@ -39,4 +39,7 @@ export const env = {
     JWT_REFRESH_SECRET: jwtRefreshSecret,
     ACCESS_TOKEN_EXPIRES_IN: process.env.ACCESS_TOKEN_EXPIRES_IN || "15m",
     REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || "7d",
+    SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME,
+    SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
+    SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
 };

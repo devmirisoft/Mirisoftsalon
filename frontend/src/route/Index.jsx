@@ -47,7 +47,6 @@ import ServicePackages from "@/pages/salon/ServicePackages";
 import PublicBooking from "@/pages/public/PublicBooking";
 
 import Login from "@/pages/auth/Login";
-import Register from "@/pages/auth/Register";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import Success from "@/pages/auth/Success";
 import PublicSupport from "@/pages/auth/PublicSupport";
@@ -103,6 +102,10 @@ const Router = () => (
                 <Route path="profile" element={<Profile />} />
                 <Route path="appointments" element={<Appointments />} />
                 <Route path="customers" element={<Customers />} />
+                <Route
+                  path="customers/:customerId"
+                  element={<JobCartCustomerHistory />}
+                />
                 <Route path="services" element={<ServiceCatalog />} />
                 <Route path="support" element={<Support />} />
               </Route>
@@ -127,10 +130,6 @@ const Router = () => (
               >
                 <Route path="job-carts" element={<JobCarts />} />
                 <Route path="job-carts/create" element={<JobCartCreate />} />
-                <Route
-                  path="job-carts/customers/:customerId"
-                  element={<JobCartCustomerHistory />}
-                />
                 <Route path="job-carts/:id" element={<JobCartDetails />} />
                 <Route
                   path="packages/categories"
@@ -224,7 +223,6 @@ const Router = () => (
             <Route element={<LayoutNoSidebar />}>
               <Route path="auth-success" element={<Success />} />
               <Route path="auth-reset" element={<ForgotPassword />} />
-              <Route path="auth-register" element={<Register />} />
               <Route path="auth-login" element={<Login />} />
             </Route>
           </Route>

@@ -264,7 +264,13 @@ const Customers = () => {
         canDelete={roleCanManage(user?.role)}
         columns={[
           { key: "customerCode", label: "Code" },
-          { key: "name", label: "Customer" },
+          {
+            key: "name",
+            label: "Customer",
+            render: (value, row) => (
+              <Link to={`/customers/${row.id}`}>{value}</Link>
+            ),
+          },
           { key: "phone", label: "Phone" },
           { key: "branch", label: "Branch", render: (value) => value?.name || "—" },
           { key: "status", label: "Status", render: (value) => <StatusBadge value={value} /> },

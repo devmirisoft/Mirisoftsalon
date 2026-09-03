@@ -9,7 +9,9 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: Number(env.VITE_DEV_PORT || 5173),
-      strictPort: true,
+      strictPort: false,
+      // ponytail: polling watcher; fs events unreliable on this Windows path. Drop to default watch if native events start working.
+      watch: { usePolling: true, interval: 300 },
     },
     css: {
       devSourcemap: true

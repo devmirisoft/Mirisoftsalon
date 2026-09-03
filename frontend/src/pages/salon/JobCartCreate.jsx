@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import {
@@ -28,31 +28,22 @@ import {
   toLocalInput,
 } from "@/utils/salonFormat";
 
-const nowParts = () => {
-  return {
-    date: todayInputDate(),
-    time: currentInputTime(),
-  };
-};
-
 const newServiceRow = () => ({
   rowId: `service-${Date.now()}-${Math.random()}`,
   mainServiceId: "",
   serviceId: "",
   staffId: "",
+  price: "",
 });
 
 const JobCartCreate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const initial = nowParts();
   const [form, setForm] = useState({
     salonId: "",
     branchId: "",
     customerName: "",
     phone: "",
-    date: initial.date,
-    time: initial.time,
     packageIds: [],
   });
   const [serviceRows, setServiceRows] = useState([newServiceRow()]);
@@ -82,6 +73,7 @@ const JobCartCreate = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [customerSummary, setCustomerSummary] = useState(null);
+  const [addingCustomer, setAddingCustomer] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
   const [packageModalOpen, setPackageModalOpen] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -113,7 +105,7 @@ const JobCartCreate = () => {
 
   useEffect(() => {
     const phoneDigits = form.phone.replace(/\D/g, "");
-    if (phoneDigits.length < 7) {
+    if (phoneDigits.length < 10) {
       setCustomerSummary(null);
       return undefined;
     }
@@ -122,6 +114,15 @@ const JobCartCreate = () => {
     }, 350);
     return () => window.clearTimeout(timer);
   }, [form.phone, loadCustomerSummary]);
+
+  // Name and phone are filled as a pair when a customer is picked. Editing
+  // one afterwards breaks that pair, so the other is cleared.
+  const clearPairedField = (field) =>
+    setForm((current) =>
+      customerSummary || (current.customerName && current.phone)
+        ? { ...current, [field]: "" }
+        : current
+    );
 
   const serviceIds = useMemo(
     () => serviceRows.map((row) => row.serviceId).filter(Boolean),
@@ -198,6 +199,51 @@ const JobCartCreate = () => {
     [refs.customers]
   );
 
+  // Match on name or on phone digits, so "987" finds "+91 98765 43210".
+  const filterCustomerOption = useCallback((option, rawInput) => {
+    const input = rawInput.trim().toLowerCase();
+    // Empty box shows nothing; suggestions only appear once you type.
+    if (!input) return false;
+    if (option.label.toLowerCase().includes(input)) return true;
+    const inputDigits = input.replace(/\D/g, "");
+    if (!inputDigits) return false;
+    return (option.data.phone || "").replace(/\D/g, "").includes(inputDigits);
+  }, []);
+
+  // Phone box suggestions: 3+ digits, matched against digits-only stored phones.
+  const [phoneFocused, setPhoneFocused] = useState(false);
+  const phoneMatches = useMemo(() => {
+    const digits = form.phone.replace(/\D/g, "");
+    if (digits.length < 3) return [];
+    // Once a full number is typed, suffix-compare so a stored "+919876543210"
+    // counts as resolved for "9876543210" and the list stops nagging.
+    const exact =
+      digits.length >= 10 &&
+      customerOptions.some((option) => {
+        const stored = option.phone.replace(/\D/g, "");
+        return (
+          stored.length >= 10 &&
+          (stored.endsWith(digits) || digits.endsWith(stored))
+        );
+      });
+    if (exact) return [];
+    return customerOptions
+      .filter((option) => option.phone.replace(/\D/g, "").includes(digits))
+      .slice(0, 8);
+  }, [customerOptions, form.phone]);
+
+  // A 10-digit phone that already belongs to a customer: no "add" allowed.
+  const existingPhoneCustomer = useMemo(() => {
+    const digits = form.phone.replace(/\D/g, "");
+    if (digits.length !== 10) return null;
+    return (
+      customerOptions.find((option) => {
+        const stored = option.phone.replace(/\D/g, "");
+        return stored.length >= 10 && stored.endsWith(digits);
+      }) || null
+    );
+  }, [customerOptions, form.phone]);
+
   const selectedCustomerOption = useMemo(() => {
     const matched = customerOptions.find(
       (option) =>
@@ -221,10 +267,15 @@ const JobCartCreate = () => {
       ),
     [refs.services, serviceIds]
   );
-  const subtotal = selectedServices.reduce(
-    (sum, service) => sum + Number(service.price || 0),
-    0
-  );
+  // Rows carry an editable price, so the estimate follows the row not the catalog.
+  const subtotal = serviceRows.reduce((sum, row) => {
+    if (!row.serviceId) return sum;
+    const service = refs.services.find((item) => item.id === row.serviceId);
+    return (
+      sum +
+      Number(row.price === "" || row.price === undefined ? service?.price || 0 : row.price)
+    );
+  }, 0);
   const selectedPackages = useMemo(
     () =>
       (refs.packages || []).filter((servicePackage) =>
@@ -278,7 +329,10 @@ const JobCartCreate = () => {
       ).map(([id, name]) => ({ id, name })),
     [refs.services]
   );
-  const selectedStartKey = `${form.date}T${form.time}`;
+  // Job carts always start now, so availability is looked up for today at the
+  // current clock rather than a chosen date/time.
+  const today = todayInputDate();
+  const selectedStartKey = `${today}T${currentInputTime()}`;
   // Slots are generated on a fixed grid (15-minute steps), so the form's
   // live "current time" default almost never lands on a boundary exactly.
   // Match each staff member's slot nearest to (at or before) the selected
@@ -308,16 +362,9 @@ const JobCartCreate = () => {
   // needs a duration). Before that, offer all branch staff so a staff member
   // can be chosen up front; the per-row dropdown still enforces real
   // availability once services are added.
-  const pickerStaffOptions = useMemo(
-    () =>
-      serviceIds.length ? availableStaffAtSelectedTime : refs.staff,
-    [serviceIds.length, availableStaffAtSelectedTime, refs.staff]
-  );
-
-  const availableStaffIds = useMemo(
-    () => new Set(availableStaffAtSelectedTime.map((member) => member.id)),
-    [availableStaffAtSelectedTime]
-  );
+  // Walk-in carts are not slot-gated, so every branch staff member is
+  // selectable; the server still rejects an appointment double-booking.
+  const pickerStaffOptions = refs.staff;
   const slotOptions = useMemo(() => {
     const seen = new Map();
     availableSlots.forEach((slot) => {
@@ -346,7 +393,7 @@ const JobCartCreate = () => {
 
   useEffect(() => {
     let active = true;
-    if (!form.branchId || !form.date || !serviceIds.length) {
+    if (!form.branchId || !today || !serviceIds.length) {
       setAvailableSlots([]);
       setLoadingSlots(false);
       return undefined;
@@ -355,7 +402,7 @@ const JobCartCreate = () => {
     salonApi.staffAvailability
       .slots({
         branchId: form.branchId,
-        date: form.date,
+        date: today,
         serviceIds: serviceIds.join(","),
       })
       .then((response) => {
@@ -370,7 +417,7 @@ const JobCartCreate = () => {
     return () => {
       active = false;
     };
-  }, [form.branchId, form.date, serviceIds]);
+  }, [form.branchId, today, serviceIds]);
 
   const togglePackage = (packageId) => {
     const packageIds = form.packageIds.includes(packageId)
@@ -491,6 +538,7 @@ const JobCartCreate = () => {
         serviceId,
         mainServiceId: service.mainService?.id || service.mainServiceId || "",
         staffId: pickerStaffId || "",
+        price: String(service.price ?? ""),
       };
       // Drop the leading blank row so the first add does not leave a gap.
       const kept = current.filter((item) => item.serviceId);
@@ -517,26 +565,13 @@ const JobCartCreate = () => {
     setSaving(true);
     setError("");
     try {
-      const startTime = new Date(`${form.date}T${form.time}:00`);
-      if (Number.isNaN(startTime.getTime())) {
-        throw new Error("Choose a valid date and start time");
-      }
-      if (startTime < new Date()) {
-        throw new Error("Choose a start date and time from now onward.");
-      }
+      // Start time is stamped at submit, not chosen.
+      const startTime = new Date();
       const selectedServiceIds = serviceRows
         .map((row) => row.serviceId)
         .filter(Boolean);
       if (new Set(selectedServiceIds).size !== selectedServiceIds.length) {
         throw new Error("Each service can be selected only once.");
-      }
-      const invalidStaff = serviceRows.find(
-        (row) => row.staffId && !availableStaffIds.has(row.staffId)
-      );
-      if (invalidStaff) {
-        throw new Error(
-          "Selected staff is not available at this start time. Choose an available slot or leave staff unassigned."
-        );
       }
       if (customPackage.serviceIds.length && !customPackage.name.trim()) {
         throw new Error("Enter a custom package name");
@@ -556,6 +591,7 @@ const JobCartCreate = () => {
         .map((row) => ({
           serviceId: row.serviceId,
           ...(row.staffId ? { staffId: row.staffId } : {}),
+          ...(row.price === "" ? {} : { price: Number(row.price) }),
         }));
       const response = await salonApi.jobCarts.create({
         ...(form.salonId ? { salonId: form.salonId } : {}),
@@ -649,70 +685,174 @@ const JobCartCreate = () => {
                   <Col md="6">
                     <FormGroup>
                       <Label>Phone Number</Label>
+                      <div className="position-relative">
                       <Input
                         required
-                        placeholder="Customer phone"
+                        autoComplete="off"
+                        placeholder="Search or enter phone"
+                        inputMode="numeric"
+                        maxLength={10}
                         value={form.phone}
-                        onChange={(event) =>
+                        onFocus={() => setPhoneFocused(true)}
+                        onBlur={() =>
+                          window.setTimeout(() => setPhoneFocused(false), 150)
+                        }
+                        onChange={(event) => {
+                          clearPairedField("customerName");
+                          setCustomerSummary(null);
                           setForm((current) => ({
                             ...current,
-                            phone: event.target.value,
-                          }))
-                        }
+                            phone: event.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 10),
+                          }));
+                        }}
                       />
+                      {phoneFocused && phoneMatches.length > 0 && (
+                        <ul
+                          className="list-group position-absolute w-100 shadow-sm"
+                          style={{ zIndex: 5, maxHeight: 240, overflowY: "auto" }}
+                        >
+                          {phoneMatches.map((option) => (
+                            <li key={option.value} className="list-group-item p-0">
+                              <button
+                                type="button"
+                                className="btn btn-link text-start text-decoration-none w-100 px-3 py-2"
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={() => {
+                                  setPhoneFocused(false);
+                                  setCustomerSummary(null);
+                                  setForm((current) => ({
+                                    ...current,
+                                    customerName: option.name,
+                                    phone: option.phone,
+                                  }));
+                                  loadCustomerSummary({ customerId: option.value });
+                                }}
+                              >
+                                {option.name}
+                                <span className="text-muted ms-2">
+                                  {option.phone}
+                                </span>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      </div>
                     </FormGroup>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Label>Customer</Label>
-                      <CreatableSelect
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        isClearable
-                        isDisabled={loadingRefs || saving}
-                        options={customerOptions}
-                        placeholder="Search or add customer"
-                        value={selectedCustomerOption}
-                        noOptionsMessage={({ inputValue }) =>
-                          inputValue
-                            ? `No customer named "${inputValue}"`
-                            : "Type a customer name"
-                        }
-                        formatCreateLabel={(inputValue) =>
-                          `Add "${inputValue}" as a new customer`
-                        }
-                        isValidNewOption={(inputValue, _selectValue, options) => {
-                          const normalized = inputValue.trim().toLowerCase();
-                          return (
-                            Boolean(normalized) &&
-                            !options.some(
-                              (option) =>
-                                option.name.trim().toLowerCase() === normalized
-                            )
-                          );
-                        }}
-                        onChange={(option) => {
-                          setCustomerSummary(null);
-                          setForm((current) => ({
-                            ...current,
-                            customerName: option?.name || "",
-                            phone: option?.phone || current.phone,
-                          }));
-                          if (option?.value && option.value !== option.name) {
-                            loadCustomerSummary({ customerId: option.value });
+                      <div className="d-flex align-items-start gap-2">
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <CreatableSelect
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                            isClearable
+                            isDisabled={loadingRefs || saving}
+                            options={customerOptions}
+                            filterOption={filterCustomerOption}
+                            placeholder="Search by name or phone"
+                            value={selectedCustomerOption}
+                            onInputChange={(inputValue, meta) => {
+                              if (meta.action === "input-change" && inputValue) {
+                                clearPairedField("phone");
+                              }
+                            }}
+                            noOptionsMessage={({ inputValue }) =>
+                              inputValue
+                                ? `No customer matching "${inputValue}"`
+                                : "Type a name or phone number"
+                            }
+                            formatCreateLabel={(inputValue) =>
+                              `Add "${inputValue}" as a new customer`
+                            }
+                            isValidNewOption={(inputValue, _selectValue, options) => {
+                              const normalized = inputValue.trim().toLowerCase();
+                              if (!normalized) return false;
+                              // A digits-only input is a phone lookup, not a new name.
+                              if (!/[a-z]/i.test(normalized)) return false;
+                              return !options.some(
+                                (option) =>
+                                  option.name.trim().toLowerCase() === normalized
+                              );
+                            }}
+                            onChange={(option) => {
+                              setCustomerSummary(null);
+                              setForm((current) => ({
+                                ...current,
+                                customerName: option?.name || "",
+                                phone: option?.phone || current.phone,
+                              }));
+                              if (option?.value && option.value !== option.name) {
+                                loadCustomerSummary({ customerId: option.value });
+                              }
+                            }}
+                            onCreateOption={(inputValue) => {
+                              setCustomerSummary(null);
+                              setForm((current) => ({
+                                ...current,
+                                customerName: inputValue.trim(),
+                                phone: "",
+                              }));
+                            }}
+                          />
+                        </div>
+                        {!existingPhoneCustomer && (
+                        <Button
+                          type="button"
+                          color="primary"
+                          className="flex-shrink-0 d-flex align-items-center justify-content-center"
+                          style={{ width: 38, height: 38, padding: 0 }}
+                          title="Add as new customer"
+                          disabled={
+                            saving ||
+                            addingCustomer ||
+                            !form.customerName.trim() ||
+                            form.phone.replace(/\D/g, "").length !== 10
                           }
-                        }}
-                        onCreateOption={(inputValue) => {
-                          setCustomerSummary(null);
-                          setForm((current) => ({
-                            ...current,
-                            customerName: inputValue.trim(),
-                          }));
-                        }}
-                      />
+                          onClick={async () => {
+                            setAddingCustomer(true);
+                            setError("");
+                            try {
+                              const response = await salonApi.customers.create({
+                                name: form.customerName.trim(),
+                                phone: form.phone.trim(),
+                              });
+                              const customer = response.data;
+                              setRefs((current) => ({
+                                ...current,
+                                customers: [...current.customers, customer],
+                              }));
+                              setForm((current) => ({
+                                ...current,
+                                customerName: customer.name,
+                                phone: customer.phone || current.phone,
+                              }));
+                            } catch (createError) {
+                              setError(createError.message);
+                            } finally {
+                              setAddingCustomer(false);
+                            }
+                          }}
+                        >
+                          {addingCustomer ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <Icon name="plus" />
+                          )}
+                        </Button>
+                        )}
+                      </div>
+                      <small className="text-soft">
+                        {existingPhoneCustomer
+                          ? `${existingPhoneCustomer.name} already uses this number.`
+                          : "Adds a new customer using the 10-digit phone and name above."}
+                      </small>
                     </FormGroup>
                   </Col>
-                  
                 </Row>
                 {lookingUp && (
                   <div className="small text-soft mb-3">
@@ -721,49 +861,6 @@ const JobCartCreate = () => {
                   </div>
                 )}
                 <Row>
-                  <Col md="4">
-                    <FormGroup>
-                      <Label>Date</Label>
-                      <Input
-                        type="date"
-                        required
-                        min={todayInputDate()}
-                        value={form.date}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            date: event.target.value,
-                            time:
-                              event.target.value === todayInputDate() &&
-                              current.time < currentInputTime()
-                                ? currentInputTime()
-                                : current.time,
-                          }))
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md="4">
-                    <FormGroup>
-                      <Label>Start Time</Label>
-                      <Input
-                        type="time"
-                        required
-                        min={
-                          form.date === todayInputDate()
-                            ? currentInputTime()
-                            : undefined
-                        }
-                        value={form.time}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            time: event.target.value,
-                          }))
-                        }
-                      />
-                    </FormGroup>
-                  </Col>
                   <Col md="4">
                     <FormGroup>
                       <Label>Branch</Label>
@@ -795,7 +892,7 @@ const JobCartCreate = () => {
                     </FormGroup>
                   </Col>
                 </Row>
-                {serviceIds.length > 0 && (
+                {/* {serviceIds.length > 0 && (
                   <div className="border rounded p-3 mb-3">
                     <Label className="form-label">Available Staff Slots</Label>
                     <Select
@@ -840,7 +937,7 @@ const JobCartCreate = () => {
                       must fit staff availability for the full cart duration.
                     </small>
                   </div>
-                )}
+                )} */}
                 <FormGroup>
                   <div className="d-flex justify-content-between align-items-center mb-2 gap-5">
                     <Label className="mb-0">Add Services</Label>
@@ -905,6 +1002,11 @@ const JobCartCreate = () => {
                                 mainServiceId === row.mainServiceId)
                             );
                           });
+                          const rowPrice = Number(
+                            row.price === "" || row.price === undefined
+                              ? selectedService?.price || 0
+                              : row.price
+                          );
                           return (
                             <tr key={row.rowId}>
                               {/* <td>
@@ -964,6 +1066,10 @@ const JobCartCreate = () => {
                                         service?.mainServiceId ||
                                         row.mainServiceId,
                                       staffId: "",
+                                      price:
+                                        service === undefined
+                                          ? ""
+                                          : String(service.price ?? ""),
                                     });
                                   }}
                                 />
@@ -975,7 +1081,6 @@ const JobCartCreate = () => {
                                   disabled={
                                     !form.branchId ||
                                     !row.serviceId ||
-                                    loadingSlots ||
                                     saving
                                   }
                                   onChange={(event) =>
@@ -985,19 +1090,7 @@ const JobCartCreate = () => {
                                   }
                                 >
                                   <option value="">Assign later</option>
-                                  {/* Keep an assigned-but-unavailable staff
-                                      visible so the cell never looks blank;
-                                      submit still blocks on this. */}
-                                  {row.staffId &&
-                                    !availableStaffIds.has(row.staffId) && (
-                                      <option value={row.staffId}>
-                                        {refs.staff.find(
-                                          (member) => member.id === row.staffId
-                                        )?.name || "Assigned staff"}{" "}
-                                        (unavailable)
-                                      </option>
-                                    )}
-                                  {availableStaffAtSelectedTime.map((member) => (
+                                  {refs.staff.map((member) => (
                                     <option key={member.id} value={member.id}>
                                       {member.name} - {member.jobRole}
                                     </option>
@@ -1009,12 +1102,16 @@ const JobCartCreate = () => {
                               </td>
                               <td>
                                 <Input
-                                  value={
-                                    selectedService
-                                      ? formatMoney(selectedService.price)
-                                      : ""
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={row.price}
+                                  disabled={!selectedService || saving}
+                                  onChange={(event) =>
+                                    updateServiceRow(row.rowId, {
+                                      price: event.target.value,
+                                    })
                                   }
-                                  disabled
                                 />
                               </td>
                               <td>
@@ -1024,7 +1121,7 @@ const JobCartCreate = () => {
                                 <Input
                                   value={
                                     selectedService
-                                      ? formatMoney(selectedService.price * (1 - 1 / (1 + serviceGstPercent)))
+                                      ? formatMoney(rowPrice * (1 + serviceGstPercent / 100))
                                       : ""
                                   }
                                   disabled
@@ -1211,7 +1308,15 @@ const JobCartCreate = () => {
                 <h5>Cart Summary</h5>
                 {customerSummary && (
                   <div className="alert alert-light border mb-3">
-                    <strong>{customerSummary.customerName}</strong>
+                    <strong>
+                      {customerSummary.customerId ? (
+                        <Link to={`/customers/${customerSummary.customerId}`}>
+                          {customerSummary.customerName}
+                        </Link>
+                      ) : (
+                        customerSummary.customerName
+                      )}
+                    </strong>
                     <div className="small mt-2">
                       Last visit: {formatDate(customerSummary.lastVisitDate)}
                       <br />

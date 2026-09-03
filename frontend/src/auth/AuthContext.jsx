@@ -3,7 +3,6 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
   login as loginRequest,
   logout as logoutRequest,
-  registerAccount,
   restoreSession,
 } from "@/services/auth";
 
@@ -41,11 +40,6 @@ export const AuthProvider = ({ children }) => {
       checkingSession,
       login: async (credentials) => {
         const nextSession = await loginRequest(credentials);
-        setSession(nextSession);
-        return nextSession;
-      },
-      register: async (details) => {
-        const nextSession = await registerAccount(details);
         setSession(nextSession);
         return nextSession;
       },

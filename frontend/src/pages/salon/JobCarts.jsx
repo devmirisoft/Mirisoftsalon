@@ -184,7 +184,7 @@ const JobCarts = () => {
               value ? (
                 <Link
                   className="fw-medium"
-                  to={`/job-carts/customers/${value.id}`}
+                  to={`/customers/${value.id}`}
                 >
                   {value.name}
                 </Link>
@@ -197,7 +197,7 @@ const JobCarts = () => {
             label: "Phone No",
             render: (_value, row) =>
               row.customer ? (
-                <Link to={`/job-carts/customers/${row.customer.id}`}>
+                <Link to={`/customers/${row.customer.id}`}>
                   {row.customer.phone || "—"}
                 </Link>
               ) : (

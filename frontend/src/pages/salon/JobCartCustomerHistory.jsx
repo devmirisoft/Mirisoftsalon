@@ -13,12 +13,14 @@ const JobCartCustomerHistory = () => {
   const { customerId } = useParams();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
+  const [summary, setSummary] = useState(null);
   const [rows, setRows] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     totalPages: 1,
     total: 0,
   });
+  const [appointmentRows, setAppointmentRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -27,15 +29,19 @@ const JobCartCustomerHistory = () => {
       setLoading(true);
       setError("");
       try {
-        const [customerResponse, jobsResponse] = await Promise.all([
-          salonApi.customers.get(customerId),
-          salonApi.jobCarts.list({
-            customerId,
-            page,
-            limit: 20,
-          }),
-        ]);
+        const [customerResponse, summaryResponse, jobsResponse, appointmentsResponse] =
+          await Promise.all([
+            salonApi.customers.get(customerId),
+            salonApi.jobCarts.customerSummary({ customerId }).catch(() => null),
+            salonApi.jobCarts.list({
+              customerId,
+              page,
+              limit: 20,
+            }),
+            salonApi.appointments.list({ customerId }),
+          ]);
         setCustomer(customerResponse.data);
+        setSummary(summaryResponse?.data || null);
         setRows(jobsResponse.data || []);
         setPagination(
           jobsResponse.pagination || {
@@ -43,6 +49,13 @@ const JobCartCustomerHistory = () => {
             totalPages: 1,
             total: 0,
           }
+        );
+        // Booked appointments only — walk-in job carts are the same table
+        // and already shown in the Job History section above.
+        setAppointmentRows(
+          (appointmentsResponse.data || []).filter(
+            (appointment) => !appointment.walkInJobCart
+          )
         );
       } catch (loadError) {
         setError(loadError.message);
@@ -59,15 +72,15 @@ const JobCartCustomerHistory = () => {
 
   return (
     <PageShell
-      title={customer ? `${customer.name}'s Job Carts` : "Customer Job Carts"}
+      title={customer ? `${customer.name}'s Profile` : "Customer Profile"}
       description={
         customer
           ? `${customer.phone || "No phone"} - ${customer.customerCode}`
-          : "All walk-in jobs linked to this customer"
+          : "Full job and appointment history for this customer"
       }
       tools={
-        <Button color="light" outline onClick={() => navigate("/job-carts")}>
-          <Icon name="arrow-left" /> Back to Search
+        <Button color="light" outline onClick={() => navigate("/customers")}>
+          <Icon name="arrow-left" /> Back to Customers
         </Button>
       }
     >
@@ -110,7 +123,58 @@ const JobCartCustomerHistory = () => {
                     {formatMoney(customer.outstandingAmount)}
                   </strong>
                 </Col>
+                <Col sm="6" lg="3">
+                  <span className="text-soft d-block">Membership</span>
+                  <strong>{customer.membership?.name || "None"}</strong>
+                </Col>
+                <Col sm="6" lg="2">
+                  <span className="text-soft d-block">Loyalty points</span>
+                  <strong>{customer.loyaltyPoints ?? 0}</strong>
+                </Col>
+                <Col sm="6" lg="3">
+                  <span className="text-soft d-block">Last visit</span>
+                  <strong>
+                    {summary?.lastVisitDate
+                      ? formatDate(summary.lastVisitDate)
+                      : "—"}
+                  </strong>
+                </Col>
+                <Col sm="6" lg="4">
+                  <span className="text-soft d-block">Preferred staff</span>
+                  <strong>
+                    {summary?.preferredStaff?.staffName || "Not known"}
+                  </strong>
+                </Col>
               </Row>
+              {summary?.activePackages?.length > 0 && (
+                <div className="mt-4">
+                  <h6 className="mb-2">Active packages</h6>
+                  {summary.activePackages.map((item) => (
+                    <div
+                      key={item.customerPackageId}
+                      className="border rounded p-2 mb-2 small"
+                    >
+                      <strong>{item.packageName}</strong> — valid to{" "}
+                      {formatDate(item.validUntil)}
+                      {item.soldByStaffName
+                        ? ` — sold by ${item.soldByStaffName}`
+                        : ""}
+                      {(item.serviceBalances || []).map((balance) => (
+                        <div
+                          key={balance.balanceId}
+                          className="d-flex justify-content-between mt-1"
+                        >
+                          <span>{balance.serviceName}</span>
+                          <span>
+                            {balance.usedQuantity}/{balance.includedQuantity}{" "}
+                            used • {balance.remainingQuantity} remaining
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -182,6 +246,45 @@ const JobCartCustomerHistory = () => {
               Next
             </Button>
           </div>
+
+          <div className="d-flex justify-content-between mb-2 mt-5">
+            <h5 className="mb-0">Appointment History</h5>
+            <span className="text-soft">
+              {appointmentRows.length} booked appointments
+            </span>
+          </div>
+          <DataGrid
+            loading={loading}
+            rows={appointmentRows}
+            emptyText="No booked appointments for this customer."
+            columns={[
+              { key: "appointmentCode", label: "Appointment ID" },
+              {
+                key: "startTime",
+                label: "Date & Time",
+                render: (value) => formatDate(value, true),
+              },
+              {
+                key: "items",
+                label: "Services",
+                render: (value) =>
+                  value?.length
+                    ? value.map((item) => item.service?.name || item.serviceName).join(", ")
+                    : "—",
+              },
+              {
+                key: "staff",
+                label: "Staff",
+                render: (value) => value?.name || "Unassigned",
+              },
+              {
+                key: "status",
+                label: "Status",
+                render: (value) => <StatusBadge value={value} />,
+              },
+            ]}
+            onView={() => navigate("/appointments")}
+          />
         </>
       ) : null}
     </PageShell>

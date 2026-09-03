@@ -56,7 +56,7 @@ const Login = () => {
               )}
 
               <header className="heading">
-                <h1>Welcome Back!</h1>
+                <h1>Welcome <em>Back!</em></h1>
                 <p>
                   Sign in to access your MIRI dashboard
                   <br className="desktop-only" /> and manage your workspace.
@@ -65,7 +65,7 @@ const Login = () => {
 
               <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
                 <div className="field">
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="email">Email or Username</label>
                   <div className={`input-wrap${errors.email ? " has-error" : ""}`}>
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M3 6.5h18v11H3zM4 7l8 6 8-6" />
@@ -75,7 +75,7 @@ const Login = () => {
                       type="email"
                       autoComplete="email"
                       disabled={loading}
-                      placeholder="Enter your email address"
+                      placeholder="Enter your email address or username"
                       aria-invalid={!!errors.email}
                       aria-describedby={errors.email ? "email-error" : undefined}
                       {...register("email", {
@@ -146,9 +146,6 @@ const Login = () => {
                 </button>
               </form>
               <p className="signup">
-                New on our platform? <Link to="/auth-register">Create an account</Link>
-              </p>
-              <p className="signup">
                 Unable to sign in? <Link to="/support/public">Contact support</Link>
               </p>
             </div>
@@ -194,7 +191,7 @@ const Login = () => {
               </svg>
             </div>
             <div className="hero-rule" aria-hidden="true" />
-            <h2 className="hero-title">Secure. Smart. Seamless.</h2>
+            <h2 className="hero-title">Secure. <em>Smart.</em> Seamless.</h2>
             <p>
               Your data. Your workspace.
               <br />

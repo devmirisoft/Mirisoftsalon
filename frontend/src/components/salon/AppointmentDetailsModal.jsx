@@ -33,12 +33,19 @@ const AppointmentDetailsModal = ({
   onReschedule,
   onNotes,
   onTracking,
+  onMakeBill,
 }) => {
   if (!appointment) return null;
 
   const services = appointment.services || [];
   const serviceTotal = services.reduce(
     (total, item) => total + Number(item.price || 0),
+    0
+  );
+  // Products sold on the visit are billed as PRODUCT lines on the invoice.
+  const products = appointment.invoice?.items || [];
+  const productTotal = products.reduce(
+    (total, item) => total + Number(item.lineTotal || 0),
     0
   );
 
@@ -125,6 +132,7 @@ const AppointmentDetailsModal = ({
                       <thead>
                         <tr>
                           <th>Service</th>
+                          <th>Staff</th>
                           <th>Duration</th>
                           <th className="text-end">Price</th>
                         </tr>
@@ -138,6 +146,11 @@ const AppointmentDetailsModal = ({
                                   item.service?.name ||
                                   "Service"}
                               </strong>
+                            </td>
+                            <td>
+                              {item.staff?.name ||
+                                appointment.staff?.name ||
+                                "—"}
                             </td>
                             <td>
                               {item.durationValue
@@ -154,7 +167,7 @@ const AppointmentDetailsModal = ({
                         {services.length === 0 && (
                           <tr>
                             <td
-                              colSpan="3"
+                              colSpan="4"
                               className="text-center text-soft py-4"
                             >
                               No services attached.
@@ -164,7 +177,7 @@ const AppointmentDetailsModal = ({
                       </tbody>
                       <tfoot>
                         <tr>
-                          <td colSpan="2" className="text-end fw-bold">
+                          <td colSpan="3" className="text-end fw-bold">
                             Total
                           </td>
                           <td className="text-end fw-bold">
@@ -177,6 +190,58 @@ const AppointmentDetailsModal = ({
                     </table>
                   </div>
                 </div>
+
+                {products.length > 0 && (
+                  <div className="appointment-detail-services mt-4">
+                    <h5 className="title mb-3">
+                      Products sold
+                      {appointment.invoice?.invoiceCode
+                        ? ` · ${appointment.invoice.invoiceCode}`
+                        : ""}
+                    </h5>
+                    <div className="table-responsive">
+                      <table className="table table-middle">
+                        <thead>
+                          <tr>
+                            <th>Product</th>
+                            <th>Sold by</th>
+                            <th className="text-end">Qty</th>
+                            <th className="text-end">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {products.map((item) => (
+                            <tr key={item.id}>
+                              <td>
+                                <strong>
+                                  {item.serviceName || item.description}
+                                </strong>
+                                <div className="text-soft small">
+                                  {formatMoney(item.unitPrice)} each
+                                </div>
+                              </td>
+                              <td>{item.soldByStaff?.name || "—"}</td>
+                              <td className="text-end">{item.quantity}</td>
+                              <td className="text-end">
+                                {formatMoney(item.lineTotal)}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr>
+                            <td colSpan="3" className="text-end fw-bold">
+                              Total
+                            </td>
+                            <td className="text-end fw-bold">
+                              {formatMoney(productTotal)}
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Col>
@@ -241,6 +306,11 @@ const AppointmentDetailsModal = ({
           <Button color="primary" onClick={() => onReschedule(appointment)}>
             <Icon name="calender-date" /> Reschedule
           </Button>
+          {appointment.status === "COMPLETED" && onMakeBill && (
+            <Button color="success" onClick={() => onMakeBill(appointment)}>
+              <Icon name="file-plus" /> Make bill
+            </Button>
+          )}
         </div>
       </ModalFooter>
     </Modal>

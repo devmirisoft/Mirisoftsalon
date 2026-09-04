@@ -62,8 +62,7 @@ const JobCartDetails = () => {
     bookingNote: "",
   });
   const [servicePickerOpen, setServicePickerOpen] = useState(false);
-  const [productPickerOpen, setProductPickerOpen] = useState(false);
-  const [productSearch, setProductSearch] = useState("");
+  const [productId, setProductId] = useState("");
   const [servicePickerCategoryId, setServicePickerCategoryId] = useState("");
   const [servicePickerSearch, setServicePickerSearch] = useState("");
   const [packageId, setPackageId] = useState("");
@@ -126,7 +125,14 @@ const JobCartDetails = () => {
         status: "ISSUED",
         discountAmount: 0,
         processingFeeAmount: Number(next.invoice?.processingFeeAmount || 0),
-        taxPercent: Number(next.invoice?.items?.[0]?.taxPercent || 0),
+        // A bill-of-supply cart carries no line rate, so fall back to the
+        // salon's own rate: switching the type to GST then shows real tax
+        // instead of a silent zero.
+        taxPercent: Number(
+          next.invoice?.items?.[0]?.taxPercent ||
+            (next.salon?.gstEnabled ? next.salon?.serviceGstRate : 0) ||
+            0
+        ),
         billingNote: next.invoice?.billingNote || "",
       });
       const referenceResponse = await salonApi.jobCarts.references({
@@ -183,16 +189,6 @@ const JobCartDetails = () => {
     });
     return [...seen.entries()].map(([catId, name]) => ({ id: catId, name }));
   }, [availableServices]);
-  const visibleProducts = useMemo(() => {
-    const term = productSearch.trim().toLowerCase();
-    return (refs.products || []).filter(
-      (product) =>
-        !term ||
-        product.name.toLowerCase().includes(term) ||
-        (product.sku || "").toLowerCase().includes(term)
-    );
-  }, [refs.products, productSearch]);
-
   const servicePickerVisibleServices = useMemo(() => {
     const term = servicePickerSearch.trim().toLowerCase();
     return availableServices.filter((service) => {
@@ -758,15 +754,6 @@ const JobCartDetails = () => {
                     >
                       <Icon name="plus" /> Add Service
                     </Button>
-                    <Button
-                      color="info"
-                      outline
-                      className="ms-2"
-                      disabled={working}
-                      onClick={() => setProductPickerOpen(true)}
-                    >
-                      <Icon name="plus" /> Add Product
-                    </Button>
                   </div>
                 )}
                 <Modal
@@ -933,6 +920,55 @@ const JobCartDetails = () => {
                     </div>
                   </div>
                 )}
+                {active && (
+                  <div className="row g-2 mb-4">
+                    <div className="col-md-10">
+                      <Input
+                        type="select"
+                        value={productId}
+                        onChange={(event) => setProductId(event.target.value)}
+                      >
+                        <option value="">Select a product</option>
+                        {(refs.products || []).map((product) => {
+                          const outOfStock = Number(product.currentStock) <= 0;
+                          return (
+                            <option
+                              key={product.id}
+                              value={product.id}
+                              disabled={outOfStock}
+                            >
+                              {product.name}
+                              {product.sku ? ` (${product.sku})` : ""} —{" "}
+                              {formatMoney(product.sellingPrice)}
+                              {outOfStock
+                                ? " — out of stock"
+                                : ` — ${Number(product.currentStock)} in stock`}
+                            </option>
+                          );
+                        })}
+                      </Input>
+                    </div>
+                    <div className="col-md-2 d-grid">
+                      <Button
+                        color="primary"
+                        outline
+                        disabled={!productId || working}
+                        onClick={() =>
+                          run(async () => {
+                            await salonApi.jobCarts.addItem(id, {
+                              itemType: "PRODUCT",
+                              productId,
+                              quantity: 1,
+                            });
+                            setProductId("");
+                          })
+                        }
+                      >
+                        + Product
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 <div className="table-responsive">
                   <table className="table table-tranx">
                     <thead>
@@ -1060,70 +1096,6 @@ const JobCartDetails = () => {
                     <span>{formatMoney(payableAmount)}</span>
                   </div>
                 </div>
-                <Modal
-                  isOpen={productPickerOpen}
-                  toggle={() => setProductPickerOpen(false)}
-                  centered
-                  size="lg"
-                  contentClassName="border-0"
-                >
-                  <ModalHeader toggle={() => setProductPickerOpen(false)}>
-                    Add Product
-                  </ModalHeader>
-                  <ModalBody>
-                    <Input
-                      placeholder="Search product or SKU"
-                      value={productSearch}
-                      onChange={(event) => setProductSearch(event.target.value)}
-                      className="mb-3"
-                    />
-                    <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
-                      {visibleProducts.length === 0 ? (
-                        <p className="text-soft text-center py-4 mb-0">
-                          No products match.
-                        </p>
-                      ) : (
-                        visibleProducts.map((product) => {
-                          const outOfStock = Number(product.currentStock) <= 0;
-                          return (
-                            <div
-                              key={product.id}
-                              className="d-flex justify-content-between align-items-center border-bottom py-2 gap-2"
-                            >
-                              <div>
-                                <strong>{product.name}</strong>
-                                <div className="small text-soft">
-                                  {product.sku ? product.sku + " | " : ""}
-                                  {Number(product.currentStock)} in stock
-                                </div>
-                              </div>
-                              <div className="d-flex align-items-center gap-2">
-                                <span>{formatMoney(product.sellingPrice)}</span>
-                                <Button
-                                  color="primary"
-                                  size="sm"
-                                  disabled={working || outOfStock}
-                                  onClick={() => {
-                                    setProductPickerOpen(false);
-                                    run(() =>
-                                      salonApi.jobCarts.addItem(id, {
-                                        itemType: "PRODUCT",
-                                        productId: product.id,
-                                        quantity: 1,
-                                      })
-                                    );
-                                  }}
-                                >
-                                  {outOfStock ? "Out of stock" : "Add"}
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })
-                      )}
-                    </div>
-                  </ModalBody>
-                </Modal>
                 {(cart.packageRedemptions || []).length > 0 && (
                   <div className="mt-4">
                     <h6>Package-covered Services</h6>

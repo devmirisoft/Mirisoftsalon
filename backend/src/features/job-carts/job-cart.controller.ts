@@ -167,7 +167,6 @@ export const postJobCart = async (req: Request, res: Response) => {
         ...(parsed.serviceItems
           ? { serviceItems: parsed.serviceItems }
           : {}),
-        startTime: new Date(parsed.startTime),
         ...(parsed.salonId ? { salonId: parsed.salonId } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
         ...(parsed.bookingNote

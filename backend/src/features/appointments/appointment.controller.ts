@@ -111,6 +111,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             customerId,
             staffId,
             serviceIds,
+            serviceItems,
             startTime,
             status,
             bookingNote,
@@ -227,6 +228,44 @@ export const createAppointment = async (req: Request, res: Response) => {
             });
         }
 
+        // The booking cart assigns a stylist per service. Anything left
+        // unassigned falls back to the appointment's primary staff.
+        const staffByServiceId = new Map<string, string>();
+        for (const item of Array.isArray(serviceItems) ? serviceItems : []) {
+            if (item?.serviceId && item?.staffId) {
+                staffByServiceId.set(String(item.serviceId), String(item.staffId));
+            }
+        }
+
+        if ([...staffByServiceId.keys()].some((id) => !serviceIds.includes(id))) {
+            return res.status(400).json({
+                success: false,
+                message: "serviceItems must reference the booked services",
+            });
+        }
+
+        const extraStaffIds = [...new Set(staffByServiceId.values())].filter(
+            (id) => id !== staffId
+        );
+
+        const extraStaff = await Promise.all(
+            extraStaffIds.map((id) =>
+                StaffModel.findByIdAndSalon(
+                    id,
+                    finalSalonId,
+                    req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+                )
+            )
+        );
+
+        if (extraStaff.some((member) => !member || !member.status)) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "One or more assigned staff are invalid or inactive for this salon",
+            });
+        }
+
         const totalDurationMinutes = services.reduce((total, service) => {
             return (
                 total +
@@ -263,20 +302,25 @@ export const createAppointment = async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, message: "Salon not found" });
         }
         const appointment = await prisma.$transaction(async (tx) => {
-          await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${staff.id} FOR UPDATE`;
-          const availability = await checkStaffAvailabilityForSlot({
-              client: tx,
-              staffId: staff.id,
-              startTime: finalStartTime,
-              endTime: finalEndTime,
-              salonId: finalSalonId,
-              ...(finalBranchId ? { branchId: finalBranchId } : {}),
-          });
-          if (!availability.available) {
-              throw new StaffAvailabilityError(
-                  availability.reason === "APPOINTMENT_CONFLICT" ? 409 : 400,
-                  availability.message
-              );
+          // Every stylist on the cart is checked, not just the primary one, or
+          // a per-service assignment could quietly double-book someone. Locked
+          // in id order so two concurrent bookings cannot deadlock.
+          for (const bookedStaffId of [staff.id, ...extraStaffIds].sort()) {
+            await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${bookedStaffId} FOR UPDATE`;
+            const availability = await checkStaffAvailabilityForSlot({
+                client: tx,
+                staffId: bookedStaffId,
+                startTime: finalStartTime,
+                endTime: finalEndTime,
+                salonId: finalSalonId,
+                ...(finalBranchId ? { branchId: finalBranchId } : {}),
+            });
+            if (!availability.available) {
+                throw new StaffAvailabilityError(
+                    availability.reason === "APPOINTMENT_CONFLICT" ? 409 : 400,
+                    availability.message
+                );
+            }
           }
           const created = await AppointmentModel.create({
             appointmentCode: generateAppointmentCode(salon.name, salon.timezone),
@@ -296,6 +340,7 @@ export const createAppointment = async (req: Request, res: Response) => {
                 serviceId: service.id,
                 serviceName: service.name,
                 price: Number(service.price),
+                staffId: staffByServiceId.get(service.id) ?? staffId,
 
                 ...(service.durationValue !== null && service.durationValue !== undefined
                     ? { durationValue: service.durationValue }

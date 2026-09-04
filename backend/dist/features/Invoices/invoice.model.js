@@ -34,6 +34,7 @@ export const InvoiceModel = {
                 discountAmount: data.discountAmount,
                 processingFeeAmount: data.processingFeeAmount,
                 taxAmount: data.taxAmount,
+                roundOffAmount: data.roundOffAmount ?? 0,
                 totalAmount: data.totalAmount,
                 paidAmount: data.paidAmount || 0,
                 balanceAmount: data.balanceAmount,

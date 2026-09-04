@@ -408,6 +408,9 @@ export const checkStaffAvailabilityForSlot = async (input: {
   branchId?: string;
   excludeAppointmentId?: string;
   client?: DbClient;
+  // Job carts are walk-ins: a service may legitimately run past the shift and
+  // is banked as overtime (see syncStaffOvertime) instead of being rejected.
+  allowOutsideAvailability?: boolean;
 }): Promise<StaffAvailabilityCheck> => {
   const client = input.client ?? prisma;
   if (
@@ -470,12 +473,13 @@ export const checkStaffAvailabilityForSlot = async (input: {
     startLocal.day === endLocal.day;
   const windows = await availabilityWindows(client, staff, date);
   if (
-    !sameDay ||
-    !windows.some(
-      (window) =>
-        startMinutes >= window.startTimeMinutes &&
-        endMinutes <= window.endTimeMinutes
-    )
+    !input.allowOutsideAvailability &&
+    (!sameDay ||
+      !windows.some(
+        (window) =>
+          startMinutes >= window.startTimeMinutes &&
+          endMinutes <= window.endTimeMinutes
+      ))
   ) {
     return {
       available: false,
@@ -542,6 +546,105 @@ export const checkStaffAvailabilityForSlot = async (input: {
     reason: "AVAILABLE",
     message: "Staff is available",
   };
+};
+
+/**
+ * Minutes worked past the end of the working day: the shift end, or the
+ * check-out if the staff member already logged out before it. With no shift
+ * rostered at all (week off) the whole stretch from clock-in counts.
+ */
+export const overtimeMinutesFor = (input: {
+  shiftEnd: Date | null;
+  checkInTime: Date | null;
+  checkOutTime: Date | null;
+  latestBookingEnd: Date | null;
+  slotStart: Date;
+  slotEnd: Date;
+}) => {
+  const shiftEnd =
+    input.shiftEnd ?? input.checkInTime ?? input.slotStart;
+  const boundary =
+    input.checkOutTime && input.checkOutTime < shiftEnd
+      ? input.checkOutTime
+      : shiftEnd;
+  const workEnd =
+    input.latestBookingEnd && input.latestBookingEnd > input.slotEnd
+      ? input.latestBookingEnd
+      : input.slotEnd;
+  return Math.max(
+    0,
+    Math.round((workEnd.getTime() - boundary.getTime()) / 60_000)
+  );
+};
+
+/**
+ * Banks the minutes a staff member works past their shift end (or past their
+ * check-out, if they already logged out) onto that day's attendance row.
+ * Recomputed from the day's latest booking each time, so it stays right when
+ * services are added or removed. No attendance row marked = nothing to record.
+ */
+export const syncStaffOvertime = async (
+  client: DbClient,
+  input: {
+    staffId: string;
+    startTime: Date;
+    endTime: Date;
+    excludeAppointmentId?: string;
+  }
+) => {
+  const staff = await client.staff.findUnique({
+    where: { id: input.staffId },
+    include: { salon: { select: { timezone: true } } },
+  });
+  if (!staff) return 0;
+  const timezone = staff.salon.timezone;
+  const date = dateStringInTimezone(input.endTime, timezone);
+  const range = parseSalonDateRange(date, date, timezone);
+  if (!range.start || !range.end) return 0;
+  const [windows, latest, attendance] = await Promise.all([
+    availabilityWindows(client, staff, date),
+    client.appointment.findFirst({
+      where: {
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        startTime: { gte: range.start, lt: range.end },
+        OR: [
+          { staffId: staff.id },
+          { services: { some: { staffId: staff.id } } },
+        ],
+        ...(input.excludeAppointmentId
+          ? { id: { not: input.excludeAppointmentId } }
+          : {}),
+      },
+      orderBy: { endTime: "desc" },
+      select: { endTime: true },
+    }),
+    client.staffAttendance.findFirst({
+      // ponytail: attendance rows are keyed on the salon-local day; a salon
+      // whose day straddles UTC midnight can miss the row and record nothing.
+      where: { staffId: staff.id, date: parseDateOnly(date) },
+      select: { id: true, checkInTime: true, checkOutTime: true },
+    }),
+  ]);
+  const overtimeMinutes = overtimeMinutesFor({
+    shiftEnd: windows.length
+      ? new Date(
+          range.start.getTime() +
+            Math.max(...windows.map((window) => window.endTimeMinutes)) * 60_000
+        )
+      : null,
+    checkInTime: attendance?.checkInTime ?? null,
+    checkOutTime: attendance?.checkOutTime ?? null,
+    latestBookingEnd: latest?.endTime ?? null,
+    slotStart: input.startTime,
+    slotEnd: input.endTime,
+  });
+  if (attendance) {
+    await client.staffAttendance.update({
+      where: { id: attendance.id },
+      data: { overtimeMinutes },
+    });
+  }
+  return overtimeMinutes;
 };
 
 export const isStaffAvailableForSlot = async (

@@ -35,9 +35,6 @@ const getMenu = (role) => {
             { text: "Shift Roster", link: "/staff/shift-roster" },
             { text: "Attendance", link: "/staff-operations/attendance" },
             ...(role !== "RECEPTIONIST" ? [{ text: "Leaves", link: "/staff-operations/leaves" }] : []),
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"])
-              ? [{ text: "Salary Config", link: "/staff-operations/salary-config" }]
-              : []),
             ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "STAFF"])
               ? [{ text: "Salary Slips", link: "/staff-operations/salary-slips" }]
               : []),

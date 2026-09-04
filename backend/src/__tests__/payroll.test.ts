@@ -24,22 +24,36 @@ describe("connected staff payroll", () => {
   const configBody = (overrides = {}) => ({ baseSalary: 26000, salaryType: "MONTHLY", workingDaysPerMonth: 26, paidLeavesAllowed: 1, lateGraceMinutes: 10, latePenaltyType: "FIXED_PER_LATE_DAY", latePenaltyAmount: 50, serviceCommissionPercentage: 10, serviceMinimumWorkThreshold: 1000, retailCommissionPercentage: 5, retailMinimumSalesThreshold: 500, effectiveFrom: "2026-01-01", ...overrides });
   const uatConfigBody = () => ({ baseSalary: 20000, salaryType: "MONTHLY", workingDaysPerMonth: 26, paidLeavesAllowed: 2, lateGraceMinutes: 10, latePenaltyType: "FIXED_PER_LATE_DAY", latePenaltyAmount: 100, serviceCommissionPercentage: 10, serviceMinimumWorkThreshold: 50000, retailCommissionPercentage: 5, retailMinimumSalesThreshold: 10000, effectiveFrom: "2026-01-01" });
 
-  it("creates salary configs and deactivates the previous active config", async () => {
+  it("creates the salary config with the staff and only revises it when it changes", async () => {
     const f = await fixture();
-    const first = await request(app).post(`/api/staff/${f.staff.id}/salary-config`).set(auth(f.adminToken)).send(uatConfigBody());
-    const second = await request(app).post(`/api/staff/${f.staff.id}/salary-config`).set(auth(f.adminToken)).send(configBody({ baseSalary: 30000, effectiveFrom: "2026-07-01" }));
-    expect(first.status).toBe(201); expect(second.status).toBe(201);
-    const old = await prisma.staffSalaryConfig.findUniqueOrThrow({ where: { id: first.body.data.id } });
+    const created = await request(app).post("/api/staff").set(auth(f.adminToken)).send({ name: "Hired Staff", email: "hired-payroll-staff@test.com", phone: "9876543210", jobRole: "Stylist", workingFrom: "10:00", workingTo: "19:00", weekOff: "MONDAY", branchId: f.branch.id, ...uatConfigBody() });
+    expect(created.status).toBe(201);
+    const staffId = created.body.data.id;
+    const first = created.body.data.salaryConfigs[0];
+    expect(Number(first.baseSalary)).toBe(20000);
+    expect(Number(first.serviceMinimumWorkThreshold)).toBe(50000);
+    expect(Number(first.retailMinimumSalesThreshold)).toBe(10000);
+
+    const raised = await request(app).put(`/api/staff/${staffId}`).set(auth(f.adminToken)).send(configBody({ baseSalary: 30000, effectiveFrom: "2026-07-01" }));
+    expect(raised.status).toBe(200);
+    const old = await prisma.staffSalaryConfig.findUniqueOrThrow({ where: { id: first.id } });
     expect(old.status).toBe(false); expect(old.effectiveTo).not.toBeNull();
-    expect(Number(first.body.data.baseSalary)).toBe(20000);
-    expect(Number(first.body.data.serviceMinimumWorkThreshold)).toBe(50000);
-    expect(Number(first.body.data.retailMinimumSalesThreshold)).toBe(10000);
-    expect(Number(second.body.data.baseSalary)).toBe(30000);
-    const updated = await request(app).put(`/api/salary-configs/${second.body.data.id}`).set(auth(f.adminToken)).send(configBody({ baseSalary: 31000, effectiveFrom: "2026-07-01" }));
-    expect(updated.status).toBe(200);
-    const disabled = await request(app).patch(`/api/salary-configs/${second.body.data.id}/status`).set(auth(f.adminToken)).send({ status: false });
-    expect(disabled.status).toBe(200);
-    expect(await prisma.auditLog.count({ where: { salonId: f.salon.id, module: "SALARY", action: "SALARY_CHANGED" } })).toBe(4);
+    const active = await prisma.staffSalaryConfig.findFirstOrThrow({ where: { staffId, status: true } });
+    expect(Number(active.baseSalary)).toBe(30000);
+
+    const unchanged = await request(app).put(`/api/staff/${staffId}`).set(auth(f.adminToken)).send(configBody({ baseSalary: 30000, effectiveFrom: "2026-07-01" }));
+    expect(unchanged.status).toBe(200);
+    expect(await prisma.staffSalaryConfig.count({ where: { staffId } })).toBe(2);
+    expect(await prisma.auditLog.count({ where: { salonId: f.salon.id, module: "SALARY", action: "SALARY_CHANGED" } })).toBe(2);
+  });
+
+  it("rejects staff creation without salary details", async () => {
+    const f = await fixture();
+    const missing = await request(app).post("/api/staff").set(auth(f.adminToken)).send({ name: "No Salary", email: "no-salary@test.com", phone: "9876543211", jobRole: "Stylist", workingFrom: "10:00", workingTo: "19:00", weekOff: "MONDAY" });
+    expect(missing.status).toBe(400);
+    const invalid = await request(app).post("/api/staff").set(auth(f.adminToken)).send({ name: "Bad Salary", email: "bad-salary@test.com", phone: "9876543212", jobRole: "Stylist", workingFrom: "10:00", workingTo: "19:00", weekOff: "MONDAY", ...configBody({ baseSalary: -1 }) });
+    expect(invalid.status).toBe(400);
+    expect(await prisma.staff.count({ where: { email: "no-salary@test.com" } })).toBe(0);
   });
 
   it("credits optional staff on retail sales, decrements stock, and rejects cross-salon attribution", async () => {
@@ -72,7 +86,7 @@ describe("connected staff payroll", () => {
     expect(generated.status).toBe(201);
     expect((await request(app).post("/api/salary-slips/generate").set(auth(f.staffToken)).send({ staffId: f.staff.id, month: 7, year: 2026 })).status).toBe(403);
     expect((await request(app).post("/api/salary-slips/generate").set(auth(f.receptionistToken)).send({ staffId: f.staff.id, month: 7, year: 2026 })).status).toBe(403);
-    expect((await request(app).post(`/api/staff/${f.staff.id}/salary-config`).set(auth(f.receptionistToken)).send(configBody())).status).toBe(403);
+    expect((await request(app).post("/api/staff").set(auth(f.receptionistToken)).send(configBody())).status).toBe(403);
     expect(Number(generated.body.data.serviceCommissionAmount)).toBe(100);
     expect(Number(generated.body.data.retailCommissionAmount)).toBe(25);
     expect(Number(generated.body.data.latePenalty)).toBe(50);

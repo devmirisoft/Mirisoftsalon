@@ -17,7 +17,12 @@ import ResourcePanel from "@/components/salon/ResourcePanel";
 import SchemaModal from "@/components/salon/SchemaModal";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
-import { formatDate, labelize, roleCanManage } from "@/utils/salonFormat";
+import {
+  formatDate,
+  labelize,
+  roleCanManage,
+  todayInputDate,
+} from "@/utils/salonFormat";
 import StatusBadge from "@/components/salon/StatusBadge";
 
 const option = (item) => ({ value: item.id, label: item.name });
@@ -25,6 +30,50 @@ const option = (item) => ({ value: item.id, label: item.name });
 // Branch-locked roles always work inside their own branch, so the server
 // forces it on create and the picker would only offer a choice it ignores.
 const BRANCH_LOCKED_ROLES = ["BRANCH_MANAGER", "RECEPTIONIST", "STAFF"];
+
+const enumOptions = (values) =>
+  values.map((value) => ({ value, label: labelize(value) }));
+
+// Salary is set with the staff record; editing it opens a new effective-dated
+// revision on the server, so the form prefills from the active config.
+const salaryField = (name, label, defaultValue, extra = {}) => ({
+  name,
+  label,
+  type: "number",
+  defaultValue,
+  ...extra,
+  fromInitial: (value, staff) => staff?.salaryConfigs?.[0]?.[name] ?? value,
+});
+
+const SALARY_FIELDS = [
+  salaryField("baseSalary", "Base salary", "", { required: true, min: 0 }),
+  {
+    ...salaryField("salaryType", "Salary type", "MONTHLY"),
+    type: "select",
+    options: enumOptions(["MONTHLY", "DAILY"]),
+  },
+  salaryField("workingDaysPerMonth", "Working days per month", 26, {
+    required: true,
+    min: 1,
+  }),
+  salaryField("paidLeavesAllowed", "Paid leaves allowed", 0, { min: 0 }),
+  salaryField("lateGraceMinutes", "Late grace (minutes)", 10, { min: 0 }),
+  {
+    ...salaryField("latePenaltyType", "Late penalty", "NONE"),
+    type: "select",
+    options: enumOptions(["NONE", "FIXED_PER_LATE_DAY", "PER_LATE_MINUTE"]),
+  },
+  salaryField("latePenaltyAmount", "Late penalty amount", 0, { min: 0 }),
+  salaryField("serviceCommissionPercentage", "Service commission %", 0, { min: 0 }),
+  salaryField("serviceMinimumWorkThreshold", "Service threshold", 0, { min: 0 }),
+  salaryField("retailCommissionPercentage", "Retail commission %", 0, { min: 0 }),
+  salaryField("retailMinimumSalesThreshold", "Retail threshold", 0, { min: 0 }),
+  {
+    ...salaryField("effectiveFrom", "Salary effective from", todayInputDate()),
+    type: "date",
+    required: true,
+  },
+];
 
 const Management = () => {
   const { user } = useAuth();
@@ -210,6 +259,7 @@ const Management = () => {
         nullable: true,
         options: refs.staff.map(option),
       },
+      ...SALARY_FIELDS,
     ],
     [isBranchLocked, isSuper, refs]
   );
@@ -329,7 +379,7 @@ const Management = () => {
         <TabPane tabId="staff">
           <ResourcePanel
             title="Staff"
-            description="Operational staff, working hours, branch, and reporting structure."
+            description="Operational staff, working hours, branch, reporting structure, and salary rules."
             api={salonApi.staff}
             canCreate={isManager}
             canEdit={isManager}

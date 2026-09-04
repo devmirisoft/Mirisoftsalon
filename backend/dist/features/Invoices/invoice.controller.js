@@ -11,6 +11,8 @@ import { CouponServiceError, applyCouponToInvoice, issueInvoice as issueDraftInv
 import { applyCouponSchema } from "../coupons/coupon.validation.js";
 import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
+import { createStockMovement } from "../stock/stockMovement.service.js";
+import { sendInventoryError } from "../products/inventory-access.js";
 import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
 const INVOICE_TYPES = ["GST_INVOICE", "BILL_OF_SUPPLY"];
@@ -83,7 +85,7 @@ const getExistingInvoiceByAccess = async (req, invoiceId) => {
 export const createInvoiceFromAppointment = async (req, res) => {
     try {
         const appointmentId = getAppointmentIdParam(req);
-        const { invoiceType, discountAmount, processingFeeAmount, taxPercent, status, billingNote, footerNote, } = req.body;
+        const { invoiceType, discountAmount, processingFeeAmount, taxPercent, serviceTaxPercent, productTaxPercent, status, billingNote, footerNote, extraItems, } = req.body;
         if (!appointmentId) {
             return res.status(400).json({
                 success: false,
@@ -135,8 +137,110 @@ export const createInvoiceFromAppointment = async (req, res) => {
         const finalInvoiceType = invoiceType && isValidInvoiceType(invoiceType)
             ? invoiceType
             : "BILL_OF_SUPPLY";
-        const subtotalAmount = appointment.services
-            .reduce((total, item) => total.plus(new Prisma.Decimal(item.price)), new Prisma.Decimal(0))
+        const requestedExtras = Array.isArray(extraItems) ? extraItems : [];
+        for (const extra of requestedExtras) {
+            if (extra.itemType !== "PRODUCT" && extra.itemType !== "PACKAGE") {
+                return res.status(400).json({
+                    success: false,
+                    message: "Extra items must be a PRODUCT or a PACKAGE",
+                });
+            }
+            const quantity = Number(extra.quantity ?? 1);
+            if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Extra item quantity must be a whole number from 1 to 1000",
+                });
+            }
+        }
+        const productExtras = requestedExtras.filter((extra) => extra.itemType === "PRODUCT");
+        const packageExtras = requestedExtras.filter((extra) => extra.itemType === "PACKAGE");
+        if (packageExtras.length && !appointment.branchId) {
+            return res.status(400).json({
+                success: false,
+                message: "Set a branch on the appointment before selling a package",
+            });
+        }
+        const [soldProducts, soldPackages] = await Promise.all([
+            productExtras.length
+                ? prisma.product.findMany({
+                    where: {
+                        id: { in: productExtras.map((extra) => String(extra.productId)) },
+                        salonId: appointment.salonId,
+                        status: true,
+                    },
+                    select: { id: true, name: true, sku: true, sellingPrice: true },
+                })
+                : Promise.resolve([]),
+            packageExtras.length
+                ? prisma.servicePackage.findMany({
+                    where: {
+                        id: { in: packageExtras.map((extra) => String(extra.packageId)) },
+                        salonId: appointment.salonId,
+                        status: "ACTIVE",
+                    },
+                    include: { items: true },
+                })
+                : Promise.resolve([]),
+        ]);
+        const serviceLines = appointment.services.map((item) => ({
+            itemType: "SERVICE",
+            quantity: 1,
+            unitPrice: new Prisma.Decimal(item.price),
+            description: item.serviceName,
+            serviceName: item.serviceName,
+            itemCode: item.serviceId.slice(0, 8),
+            serviceId: item.serviceId,
+            discountable: true,
+        }));
+        const extraLines = [];
+        for (const extra of requestedExtras) {
+            const quantity = Number(extra.quantity ?? 1);
+            if (extra.itemType === "PRODUCT") {
+                const product = soldProducts.find((item) => item.id === extra.productId);
+                if (!product) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "A selected product is unavailable in this salon",
+                    });
+                }
+                extraLines.push({
+                    itemType: "PRODUCT",
+                    quantity,
+                    unitPrice: new Prisma.Decimal(product.sellingPrice),
+                    description: product.name,
+                    serviceName: product.name,
+                    itemCode: product.sku || product.id.slice(0, 8),
+                    productId: product.id,
+                    discountable: false,
+                    ...(extra.soldByStaffId ? { soldByStaffId: extra.soldByStaffId } : {}),
+                });
+                continue;
+            }
+            const servicePackage = soldPackages.find((item) => item.id === extra.packageId);
+            if (!servicePackage) {
+                return res.status(400).json({
+                    success: false,
+                    message: "A selected package is unavailable in this salon",
+                });
+            }
+            extraLines.push({
+                itemType: "PACKAGE",
+                quantity,
+                unitPrice: new Prisma.Decimal(servicePackage.specialPrice),
+                description: servicePackage.name,
+                serviceName: servicePackage.name,
+                itemCode: servicePackage.id.slice(0, 8),
+                packageId: servicePackage.id,
+                discountable: false,
+                ...(extra.soldByStaffId ? { soldByStaffId: extra.soldByStaffId } : {}),
+            });
+        }
+        const billLines = [...serviceLines, ...extraLines];
+        // Only the service lines back the manual and membership discounts, so a
+        // product or package added at the counter is always billed in full.
+        const subtotalAmount = serviceLines
+            .reduce((total, line) => total.plus(line.unitPrice.mul(line.quantity)), new Prisma.Decimal(0))
             .toDecimalPlaces(2);
         const requestedManualDiscountAmount = decimalOrZero(discountAmount);
         if (requestedManualDiscountAmount.isNegative()) {
@@ -153,12 +257,22 @@ export const createInvoiceFromAppointment = async (req, res) => {
                 message: "Processing fee must be non-negative",
             });
         }
-        const requestedTaxPercent = taxPercent === undefined ? null : decimalOrZero(taxPercent);
-        if (requestedTaxPercent?.isNegative() || requestedTaxPercent?.gt(100)) {
-            return res.status(400).json({
-                success: false,
-                message: "Tax percent must be between 0 and 100",
-            });
+        // A single taxPercent still sets both rates; serviceTaxPercent and
+        // productTaxPercent override it per line type. Any of them left out falls
+        // back to the salon's configured GST rates.
+        const asPercent = (value) => value === undefined ? null : decimalOrZero(value);
+        const requestedServiceTaxPercent = asPercent(serviceTaxPercent ?? taxPercent);
+        const requestedProductTaxPercent = asPercent(productTaxPercent ?? taxPercent);
+        for (const percent of [
+            requestedServiceTaxPercent,
+            requestedProductTaxPercent,
+        ]) {
+            if (percent?.isNegative() || percent?.gt(100)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Tax percent must be between 0 and 100",
+                });
+            }
         }
         const auditContext = requestAuditContext(req);
         const membershipActor = {
@@ -179,12 +293,13 @@ export const createInvoiceFromAppointment = async (req, res) => {
                     .div(100), subtotalAmount.minus(manualDiscountAmount)).toDecimalPlaces(2)
                 : new Prisma.Decimal(0);
             const finalDiscountAmount = Prisma.Decimal.min(manualDiscountAmount.plus(membershipDiscountAmount), subtotalAmount).toDecimalPlaces(2);
-            const gstSettings = requestedTaxPercent && finalInvoiceType === "GST_INVOICE"
+            const gstSettings = (requestedServiceTaxPercent || requestedProductTaxPercent) &&
+                finalInvoiceType === "GST_INVOICE"
                 ? {
                     ...appointment.salon,
                     gstEnabled: true,
-                    serviceGstRate: requestedTaxPercent,
-                    productGstRate: requestedTaxPercent,
+                    serviceGstRate: requestedServiceTaxPercent ?? appointment.salon.serviceGstRate,
+                    productGstRate: requestedProductTaxPercent ?? appointment.salon.productGstRate,
                 }
                 : appointment.salon;
             const calculation = calculateInvoiceGst({
@@ -192,11 +307,7 @@ export const createInvoiceFromAppointment = async (req, res) => {
                 discountAmount: finalDiscountAmount,
                 couponDiscountAmount: new Prisma.Decimal(0),
                 processingFeeAmount: finalProcessingFeeAmount,
-                items: appointment.services.map((item) => ({
-                    itemType: "SERVICE",
-                    quantity: 1,
-                    unitPrice: new Prisma.Decimal(item.price),
-                })),
+                items: billLines,
             }, gstSettings);
             const invoiceDate = new Date();
             const created = await InvoiceModel.create({
@@ -249,6 +360,7 @@ export const createInvoiceFromAppointment = async (req, res) => {
                 discountAmount: finalDiscountAmount,
                 processingFeeAmount: finalProcessingFeeAmount,
                 taxAmount: calculation.totalGstAmount,
+                roundOffAmount: calculation.roundOffAmount,
                 totalAmount: calculation.totalAmount,
                 paidAmount: 0,
                 balanceAmount: calculation.totalAmount,
@@ -256,13 +368,19 @@ export const createInvoiceFromAppointment = async (req, res) => {
                 paymentStatus: "UNPAID",
                 ...(billingNote ? { billingNote } : {}),
                 ...(footerNote ? { footerNote } : {}),
-                items: appointment.services.map((item, index) => ({
-                    serviceId: item.serviceId,
-                    itemCode: item.serviceId.slice(0, 8),
-                    description: item.serviceName,
-                    serviceName: item.serviceName,
-                    quantity: 1,
-                    unitPrice: new Prisma.Decimal(item.price),
+                items: billLines.map((line, index) => ({
+                    itemType: line.itemType,
+                    ...(line.serviceId ? { serviceId: line.serviceId } : {}),
+                    ...(line.productId ? { productId: line.productId } : {}),
+                    ...(line.packageId ? { packageId: line.packageId } : {}),
+                    ...(line.soldByStaffId
+                        ? { soldByStaffId: line.soldByStaffId }
+                        : {}),
+                    itemCode: line.itemCode,
+                    description: line.description,
+                    serviceName: line.serviceName,
+                    quantity: line.quantity,
+                    unitPrice: line.unitPrice,
                     discountAmount: 0,
                     taxableAmount: calculation.lines[index]?.taxableAmount ?? 0,
                     gstRateSnapshot: calculation.lines[index]?.gstRateSnapshot ?? 0,
@@ -273,6 +391,79 @@ export const createInvoiceFromAppointment = async (req, res) => {
                     lineTotal: calculation.lines[index]?.lineTotal ?? 0,
                 })),
             }, tx);
+            // Stock leaves the shelf inside this transaction, so a shortfall rolls
+            // the whole bill back. Ordered by product id to keep the row-lock
+            // order stable between concurrent bills.
+            const productLines = extraLines
+                .filter((line) => line.itemType === "PRODUCT")
+                .sort((left, right) => String(left.productId).localeCompare(String(right.productId)));
+            for (const line of productLines) {
+                await createStockMovement({
+                    tx,
+                    salonId: appointment.salonId,
+                    ...(appointment.branchId ? { branchId: appointment.branchId } : {}),
+                    productId: line.productId,
+                    type: "RETAIL_SALE",
+                    quantity: line.quantity,
+                    referenceType: "INVOICE",
+                    referenceId: created.id,
+                    ...(req.user?.userId ? { createdById: req.user.userId } : {}),
+                });
+            }
+            for (const line of extraLines.filter((item) => item.itemType === "PACKAGE")) {
+                const servicePackage = soldPackages.find((item) => item.id === line.packageId);
+                const purchasedAt = new Date();
+                const validUntil = new Date(purchasedAt);
+                validUntil.setUTCDate(validUntil.getUTCDate() + servicePackage.validityDays);
+                const customerPackage = await tx.customerPackage.create({
+                    data: {
+                        salonId: appointment.salonId,
+                        branchId: appointment.branchId,
+                        customerId: appointment.customerId,
+                        packageId: servicePackage.id,
+                        packageNameSnapshot: servicePackage.name,
+                        totalPriceSnapshot: servicePackage.totalPrice,
+                        specialPriceSnapshot: line.unitPrice,
+                        validityDaysSnapshot: servicePackage.validityDays,
+                        purchasedAt,
+                        validUntil,
+                        status: "ACTIVE",
+                        ...(line.soldByStaffId
+                            ? { soldByStaffId: line.soldByStaffId }
+                            : {}),
+                        invoiceId: created.id,
+                        ...(req.user?.userId ? { createdById: req.user.userId } : {}),
+                        serviceBalances: {
+                            create: servicePackage.items.map((packageItem) => ({
+                                salonId: appointment.salonId,
+                                branchId: appointment.branchId,
+                                customerId: appointment.customerId,
+                                packageId: servicePackage.id,
+                                serviceId: packageItem.serviceId,
+                                serviceNameSnapshot: packageItem.serviceNameSnapshot,
+                                includedQuantity: packageItem.quantity,
+                                usedQuantity: 0,
+                                reservedQuantity: 0,
+                                priceSnapshot: packageItem.priceSnapshot,
+                                durationMinutesSnapshot: packageItem.durationMinutesSnapshot,
+                            })),
+                        },
+                    },
+                });
+                await createAuditLog({
+                    tx,
+                    salonId: appointment.salonId,
+                    branchId: appointment.branchId,
+                    userId: req.user?.userId,
+                    module: "PACKAGE",
+                    action: "CREATE",
+                    entityId: customerPackage.id,
+                    entityName: customerPackage.packageNameSnapshot,
+                    description: `Customer package ${customerPackage.packageNameSnapshot} sold on invoice ${created.invoiceCode}`,
+                    newData: customerPackage,
+                    ...auditContext,
+                });
+            }
             if (created.status === "ISSUED" && created.totalAmount.gt(0)) {
                 await CustomerModel.increaseOutstandingWithTransaction({
                     customerId: created.customerId,
@@ -327,10 +518,9 @@ export const createInvoiceFromAppointment = async (req, res) => {
         });
     }
     catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error",
-        });
+        // Stock shortfalls and the other catalogue errors raised above carry a
+        // status; anything else still reads as a 500.
+        return sendInventoryError(res, error);
     }
 };
 export const getInvoices = async (req, res) => {
@@ -583,6 +773,7 @@ export const updateInvoice = async (req, res) => {
                     gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
                     gstEnabledSnapshot: calculation.gstEnabledSnapshot,
                     taxAmount: calculation.totalGstAmount,
+                    roundOffAmount: calculation.roundOffAmount,
                     totalAmount: calculation.totalAmount,
                     balanceAmount,
                     paymentStatus: balanceAmount.lte(0)

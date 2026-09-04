@@ -192,6 +192,19 @@ const InvoiceDocument = ({ invoice, printable = false }) => (
                 <td colSpan="2">Balance</td>
                 <td className="text-danger">{formatMoney(invoice.balanceAmount)}</td>
               </tr>
+              <tr>
+                <td colSpan="4" />
+                <td colSpan="2">Payment method</td>
+                <td>
+                  {[
+                    ...new Set(
+                      (invoice.payments || []).map((payment) =>
+                        labelize(payment.method)
+                      )
+                    ),
+                  ].join(", ") || "—"}
+                </td>
+              </tr>
             </tfoot>
           </table>
           {invoice.billingNote && (

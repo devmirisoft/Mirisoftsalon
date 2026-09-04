@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 
 import Homepage from "@/pages/Homepage";
 import Appointments from "@/pages/salon/Appointments";
+import AppointmentBill from "@/pages/salon/AppointmentBill";
 import Billing from "@/pages/salon/Billing";
 import InvoiceDetails from "@/pages/salon/InvoiceDetails";
 import InvoicePrint from "@/pages/salon/InvoicePrint";
@@ -34,7 +35,6 @@ import SalonReport from "@/pages/salon/SalonReport";
 import ExpenseCategories from "@/pages/salon/ExpenseCategories";
 import Attendance from "@/pages/salon/Attendance";
 import Leaves from "@/pages/salon/Leaves";
-import SalaryConfig from "@/pages/salon/SalaryConfig";
 import SalarySlips from "@/pages/salon/SalarySlips";
 import StaffPerformance from "@/pages/salon/StaffPerformance";
 import ShiftRoster from "@/pages/salon/ShiftRoster";
@@ -163,6 +163,10 @@ const Router = () => (
               >
                 <Route path="billing" element={<Billing />} />
                 <Route
+                  path="appointments/:appointmentId/bill"
+                  element={<AppointmentBill />}
+                />
+                <Route
                   path="billing/invoices/:invoiceId"
                   element={<InvoiceDetails />}
                 />
@@ -195,7 +199,6 @@ const Router = () => (
                 <Route path="customer-retention/memberships" element={<Memberships />} />
                 <Route path="customer-retention/manage-memberships" element={<ManageMemberships />} />
                 <Route path="customer-retention/loyalty-rules" element={<LoyaltyRules />} />
-                <Route path="staff-operations/salary-config" element={<SalaryConfig />} />
                 <Route path="reports/staff-performance" element={<StaffPerformance />} />
                 <Route path="reports/audit-trails" element={<AuditTrails />} />
                 <Route path="customer-retention/loyalty-transactions" element={<LoyaltyTransactions />} />

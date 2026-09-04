@@ -1,7 +1,14 @@
 import { prisma } from "../../config/prisma.js";
+const activeSalaryConfig = {
+    salaryConfigs: {
+        where: { status: true },
+        orderBy: { effectiveFrom: "desc" },
+        take: 1,
+    },
+};
 export const StaffModel = {
-    create: async (data) => {
-        return prisma.staff.create({
+    create: async (data, tx) => {
+        return (tx ?? prisma).staff.create({
             data,
             include: {
                 branch: {
@@ -86,6 +93,7 @@ export const StaffModel = {
         return prisma.staff.findUnique({
             where: { id },
             include: {
+                ...activeSalaryConfig,
                 salon: {
                     select: {
                         id: true,
@@ -116,6 +124,7 @@ export const StaffModel = {
                 ...(branchId ? { branchId } : {}),
             },
             include: {
+                ...activeSalaryConfig,
                 branch: {
                     select: {
                         id: true,
@@ -132,8 +141,8 @@ export const StaffModel = {
             },
         });
     },
-    update: async (id, data) => {
-        return prisma.staff.update({
+    update: async (id, data, tx) => {
+        return (tx ?? prisma).staff.update({
             where: { id },
             data,
         });

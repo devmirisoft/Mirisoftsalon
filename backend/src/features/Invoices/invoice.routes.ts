@@ -25,7 +25,9 @@ router.use(authenticate);
 
 router.post(
   "/from-appointment/:appointmentId",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN", "STAFF"),
+  // The front desk bills the appointment it just completed, the same way it
+  // confirms a job cart.
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"),
   createInvoiceFromAppointment
 );
 
@@ -67,7 +69,9 @@ router.post(
 
 router.patch(
   "/:id/issue",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  // The front desk issues the draft it parked when the customer comes back to
+  // pay, so it can bill and issue with the same hands.
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"),
   issueInvoice
 );
 

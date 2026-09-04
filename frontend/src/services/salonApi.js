@@ -13,7 +13,7 @@ export const salonApi = {
     branch: () => request("/api/branch-profile"),
     updateBranch: (body) =>
       request("/api/branch-profile", { method: "PUT", body }),
-    gst: () => request("/api/salon-profile/gst"),
+    gst: (query) => request("/api/salon-profile/gst", { query }),
     updateGst: (body) =>
       request("/api/salon-profile/gst", { method: "PUT", body }),
   },
@@ -399,12 +399,6 @@ export const salonApi = {
     approve: (id) => request(`/api/leaves/${id}/approve`, { method: "PATCH" }),
     reject: (id, rejectionReason) => request(`/api/leaves/${id}/reject`, { method: "PATCH", body: { rejectionReason } }),
     cancel: (id) => request(`/api/leaves/${id}/cancel`, { method: "PATCH" }),
-  },
-  salaryConfigs: {
-    active: (staffId) => request(`/api/staff/${staffId}/salary-config`),
-    create: (staffId, body) => request(`/api/staff/${staffId}/salary-config`, { method: "POST", body }),
-    update: (id, body) => request(`/api/salary-configs/${id}`, { method: "PUT", body }),
-    setStatus: (id, status) => request(`/api/salary-configs/${id}/status`, { method: "PATCH", body: { status } }),
   },
   salarySlips: {
     list: (query) => request("/api/salary-slips", { query }),

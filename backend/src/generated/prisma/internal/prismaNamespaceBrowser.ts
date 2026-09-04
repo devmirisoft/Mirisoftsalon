@@ -415,6 +415,7 @@ export const StaffAttendanceScalarFieldEnum = {
   checkOutTime: 'checkOutTime',
   status: 'status',
   lateMinutes: 'lateMinutes',
+  overtimeMinutes: 'overtimeMinutes',
   note: 'note',
   markedById: 'markedById',
   createdAt: 'createdAt',

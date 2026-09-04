@@ -1,5 +1,8 @@
 import {} from "express";
 import { StaffModel } from "./staff.model.js";
+import { createSalaryConfig, hasSalaryInput, isSameSalary, salaryAuditData, salaryValues, validateSalaryInput, } from "./staff.salary.js";
+import { prisma } from "../../config/prisma.js";
+import { createAuditLog, requestAuditContext, } from "../audit-logs/audit-log.service.js";
 import { BranchModel } from "../branches/branch.model.js";
 import { SalonModel } from "../salons/salon.model.js";
 import { isBranchAccessible, isBranchLockedRole, resolveBranchScope, resolveWritableBranchId, } from "../../utils/branch-scope.js";
@@ -47,6 +50,20 @@ export const createStaff = async (req, res) => {
                 message: "Name, email, phone and work details are required",
             });
         }
+        const salaryError = validateSalaryInput(req.body);
+        if (salaryError) {
+            return res.status(400).json({
+                success: false,
+                message: salaryError,
+            });
+        }
+        if (req.body.baseSalary === undefined ||
+            req.body.workingDaysPerMonth === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "baseSalary and workingDaysPerMonth are required",
+            });
+        }
         const phoneDigits = String(phone).replace(/\D/g, "");
         if (phoneDigits.length < 3) {
             return res.status(400).json({
@@ -73,7 +90,8 @@ export const createStaff = async (req, res) => {
                 message: "Salon ID is missing",
             });
         }
-        const salon = await SalonModel.findById(finalSalonId);
+        const staffSalonId = finalSalonId;
+        const salon = await SalonModel.findById(staffSalonId);
         if (!salon) {
             return res.status(400).json({
                 success: false,
@@ -88,7 +106,7 @@ export const createStaff = async (req, res) => {
             });
         }
         const staffCode = generateStaffCode(salon.name, finalJoiningDate, String(phone));
-        const existingStaffCode = await StaffModel.findByStaffCode(staffCode, finalSalonId);
+        const existingStaffCode = await StaffModel.findByStaffCode(staffCode, staffSalonId);
         if (existingStaffCode) {
             return res.status(409).json({
                 success: false,
@@ -104,7 +122,7 @@ export const createStaff = async (req, res) => {
         }
         const finalBranchId = branchResolution.branchId;
         if (finalBranchId) {
-            const branch = await BranchModel.findByIdandSalon(finalBranchId, finalSalonId);
+            const branch = await BranchModel.findByIdandSalon(finalBranchId, staffSalonId);
             if (!branch) {
                 return res.status(400).json({
                     success: false,
@@ -112,19 +130,45 @@ export const createStaff = async (req, res) => {
                 });
             }
         }
-        const staff = await StaffModel.create({
-            staffCode,
-            name,
-            email,
-            phone: String(phone),
-            jobRole,
-            workingFrom,
-            workingTo,
-            weekOff,
-            joiningDate: finalJoiningDate,
-            salonId: finalSalonId,
-            ...(finalBranchId ? { branchId: finalBranchId } : {}),
-            reportingManagerId,
+        const salary = salaryValues(req.body);
+        const staff = await prisma.$transaction(async (tx) => {
+            const created = await StaffModel.create({
+                staffCode,
+                name,
+                email,
+                phone: String(phone),
+                jobRole,
+                workingFrom,
+                workingTo,
+                weekOff,
+                joiningDate: finalJoiningDate,
+                salonId: staffSalonId,
+                ...(finalBranchId ? { branchId: finalBranchId } : {}),
+                reportingManagerId,
+            }, tx);
+            const config = await createSalaryConfig(tx, {
+                ...salary,
+                baseSalary: salary.baseSalary,
+                workingDaysPerMonth: salary.workingDaysPerMonth,
+                effectiveFrom: salary.effectiveFrom ?? finalJoiningDate,
+                salonId: staffSalonId,
+                staffId: created.id,
+                ...(finalBranchId ? { branchId: finalBranchId } : {}),
+            });
+            await createAuditLog({
+                tx,
+                salonId: staffSalonId,
+                branchId: finalBranchId,
+                userId: req.user?.userId,
+                module: "SALARY",
+                action: "SALARY_CHANGED",
+                entityId: config.id,
+                entityName: created.name,
+                description: `Salary configuration created for ${created.name}`,
+                newData: salaryAuditData(config),
+                ...requestAuditContext(req),
+            });
+            return { ...created, salaryConfigs: [config] };
         });
         return res.status(201).json({
             success: true,
@@ -283,18 +327,84 @@ export const updateStaff = async (req, res) => {
                 });
             }
         }
-        const updatedStaff = await StaffModel.update(id, {
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            jobRole: req.body.jobRole,
-            workingFrom: req.body.workingFrom,
-            workingTo: req.body.workingTo,
-            weekOff: req.body.weekOff,
-            ...(branchResolution.branchId
-                ? { branchId: branchResolution.branchId }
-                : {}),
-            reportingManagerId: req.body.reportingManagerId,
+        // The edit form resubmits the salary block, so only a real change opens a
+        // new effective-dated revision.
+        let nextSalary = null;
+        if (hasSalaryInput(req.body)) {
+            const salaryError = validateSalaryInput(req.body);
+            if (salaryError) {
+                return res.status(400).json({
+                    success: false,
+                    message: salaryError,
+                });
+            }
+            const active = await prisma.staffSalaryConfig.findFirst({
+                where: { staffId: id, status: true },
+                orderBy: { effectiveFrom: "desc" },
+            });
+            const values = salaryValues(req.body);
+            if (!active || !isSameSalary(active, values)) {
+                const merged = {
+                    ...(active
+                        ? salaryAuditData(active)
+                        : {}),
+                    ...values,
+                };
+                if (merged.baseSalary === undefined ||
+                    merged.workingDaysPerMonth === undefined) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "baseSalary and workingDaysPerMonth are required",
+                    });
+                }
+                nextSalary = { merged, previous: active };
+            }
+        }
+        const staffBranchId = branchResolution.branchId ?? existingStaff.branchId;
+        const updatedStaff = await prisma.$transaction(async (tx) => {
+            const updated = await StaffModel.update(id, {
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                jobRole: req.body.jobRole,
+                workingFrom: req.body.workingFrom,
+                workingTo: req.body.workingTo,
+                weekOff: req.body.weekOff,
+                ...(branchResolution.branchId
+                    ? { branchId: branchResolution.branchId }
+                    : {}),
+                reportingManagerId: req.body.reportingManagerId,
+            }, tx);
+            if (!nextSalary)
+                return updated;
+            const config = await createSalaryConfig(tx, {
+                ...nextSalary.merged,
+                baseSalary: nextSalary.merged.baseSalary,
+                workingDaysPerMonth: nextSalary.merged.workingDaysPerMonth,
+                effectiveFrom: nextSalary.merged.effectiveFrom ?? new Date(),
+                salonId: existingStaff.salonId,
+                staffId: id,
+                ...(staffBranchId ? { branchId: staffBranchId } : {}),
+            });
+            await createAuditLog({
+                tx,
+                salonId: existingStaff.salonId,
+                branchId: staffBranchId,
+                userId: req.user?.userId,
+                module: "SALARY",
+                action: "SALARY_CHANGED",
+                entityId: config.id,
+                entityName: updated.name,
+                description: `Salary configuration updated for ${updated.name}`,
+                ...(nextSalary.previous
+                    ? {
+                        oldData: salaryAuditData(nextSalary.previous),
+                    }
+                    : {}),
+                newData: salaryAuditData(config),
+                ...requestAuditContext(req),
+            });
+            return updated;
         });
         return res.status(200).json({
             success: true,

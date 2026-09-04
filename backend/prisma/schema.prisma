@@ -675,9 +675,10 @@ model StaffAttendance {
   date         DateTime         @db.Date
   checkInTime  DateTime?
   checkOutTime DateTime?
-  status       AttendanceStatus
-  lateMinutes  Int              @default(0)
-  note         String?
+  status          AttendanceStatus
+  lateMinutes     Int              @default(0)
+  overtimeMinutes Int              @default(0)
+  note            String?
 
   markedById String?
   markedBy   User?   @relation("AttendanceMarkedBy", fields: [markedById], references: [id])

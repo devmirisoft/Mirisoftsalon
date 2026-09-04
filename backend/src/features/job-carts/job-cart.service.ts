@@ -19,7 +19,10 @@ import {
   getCustomerMembershipHistory,
   resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
-import { checkStaffAvailabilityForSlot } from "../staff-availability/staffAvailability.service.js";
+import {
+  checkStaffAvailabilityForSlot,
+  syncStaffOvertime,
+} from "../staff-availability/staffAvailability.service.js";
 import {
   SettleInvoiceError,
   settleInvoiceInTransaction,
@@ -448,6 +451,7 @@ const assertNoConflict = async (
     staffId: input.staffId,
     startTime: input.startTime,
     endTime: input.endTime,
+    allowOutsideAvailability: true,
     ...(input.excludeAppointmentId
       ? { excludeAppointmentId: input.excludeAppointmentId }
       : {}),
@@ -458,6 +462,14 @@ const assertNoConflict = async (
       availability.message
     );
   }
+  await syncStaffOvertime(tx, {
+    staffId: input.staffId,
+    startTime: input.startTime,
+    endTime: input.endTime,
+    ...(input.excludeAppointmentId
+      ? { excludeAppointmentId: input.excludeAppointmentId }
+      : {}),
+  });
 };
 
 const assertNoStaffConflicts = async (
@@ -716,23 +728,54 @@ const recalculateCart = async (
       totalAmount: total,
       balanceAmount: total,
       items: {
-        create: paidServices.map((item) => ({
-          itemType: "SERVICE",
-          serviceId: item.serviceId,
-          soldByStaffId: item.staffId,
-          itemCode: item.serviceId.slice(0, 8),
-          description: item.serviceName,
-          serviceName: item.serviceName,
-          quantity: 1,
-          unitPrice: item.price,
-          discountAmount: 0,
-          taxPercent: 0,
-          taxAmount: 0,
-          lineTotal: item.price,
-        })),
+        // Line tax comes from the same calculation as the invoice total, so the
+        // running summary can read a real rate instead of a hardcoded zero.
+        create: paidServices.map((item, index) => {
+          const line = draftCalculation.lines[index];
+          return {
+            itemType: "SERVICE",
+            serviceId: item.serviceId,
+            soldByStaffId: item.staffId,
+            itemCode: item.serviceId.slice(0, 8),
+            description: item.serviceName,
+            serviceName: item.serviceName,
+            quantity: 1,
+            unitPrice: item.price,
+            discountAmount: 0,
+            ...(line
+              ? {
+                  taxableAmount: line.taxableAmount,
+                  gstRateSnapshot: line.gstRateSnapshot,
+                  gstAmount: line.gstAmount,
+                  totalWithTax: line.totalWithTax,
+                  taxPercent: line.taxPercent,
+                  taxAmount: line.taxAmount,
+                  lineTotal: line.lineTotal,
+                }
+              : { taxPercent: 0, taxAmount: 0, lineTotal: item.price }),
+          };
+        }),
       },
     },
   });
+  // Kept lines (packages, products) survive the rebuild, so their snapshot has
+  // to be refreshed in place or they keep a stale zero rate.
+  for (const [index, item] of keptItems.entries()) {
+    const line = draftCalculation.lines[paidServices.length + index];
+    if (!line) continue;
+    await tx.invoiceItem.update({
+      where: { id: item.id },
+      data: {
+        taxableAmount: line.taxableAmount,
+        gstRateSnapshot: line.gstRateSnapshot,
+        gstAmount: line.gstAmount,
+        totalWithTax: line.totalWithTax,
+        taxPercent: line.taxPercent,
+        taxAmount: line.taxAmount,
+        lineTotal: line.lineTotal,
+      },
+    });
+  }
   await tx.appointment.update({
     where: { id: cart.id },
     data: {
@@ -1319,7 +1362,6 @@ export const createJobCart = async (
     branchId: string;
     customerName: string;
     phone: string;
-    startTime: Date;
     staffId?: string;
     serviceIds: string[];
     serviceItems?: Array<{ serviceId: string; staffId?: string | undefined }>;
@@ -1366,11 +1408,9 @@ export const createJobCart = async (
       (sum, service) => sum + durationMinutes(service),
       0
     );
-    if (input.startTime < new Date()) {
-      throw new JobCartError(400, "Job cart start time cannot be in the past");
-    }
+    const startTime = new Date();
     const endTime = new Date(
-      input.startTime.getTime() + Math.max(duration, 30) * 60_000
+      startTime.getTime() + Math.max(duration, 30) * 60_000
     );
     await assertNoStaffConflicts(tx, {
       salonId,
@@ -1379,7 +1419,7 @@ export const createJobCart = async (
         appointmentStaffId,
         ...services.map((service) => staffByServiceId.get(service.id)),
       ],
-      startTime: input.startTime,
+      startTime,
       endTime,
     });
     const customer = await resolveCustomer(tx, {
@@ -1413,7 +1453,7 @@ export const createJobCart = async (
         customerId: customer.id,
         ...(appointmentStaffId ? { staffId: appointmentStaffId } : {}),
         createdById: actor.userId,
-        startTime: input.startTime,
+        startTime,
         endTime,
         totalDurationMinutes: duration,
         estimatedAmount: services.reduce(
@@ -1459,7 +1499,25 @@ export const createJobCart = async (
           subtotal
         )
       : new Prisma.Decimal(0);
-    const total = subtotal.minus(discount).toDecimalPlaces(2);
+    // A GST-registered salon bills GST by default; without this every job cart
+    // opened as a bill of supply and the running total showed no tax at all.
+    const invoiceType = salon.gstEnabled ? "GST_INVOICE" : "BILL_OF_SUPPLY";
+    const calculation = calculateInvoiceGst(
+      {
+        invoiceType,
+        discountAmount: discount,
+        couponDiscountAmount: new Prisma.Decimal(0),
+        processingFeeAmount: new Prisma.Decimal(0),
+        items: services.map((service) => ({
+          itemType: "SERVICE",
+          quantity: 1,
+          unitPrice: new Prisma.Decimal(service.price),
+          discountable: isMembershipDiscountable("SERVICE", salon),
+        })),
+      },
+      salon
+    );
+    const total = calculation.totalAmount;
     const invoice = await InvoiceModel.create(
       {
         invoiceCode: buildBusinessCode({
@@ -1473,7 +1531,7 @@ export const createJobCart = async (
         branchId,
         customerId: customer.id,
         appointmentId: appointment.id,
-        invoiceType: "BILL_OF_SUPPLY",
+        invoiceType,
         salonName: salon.name,
         ...(salon.phone ? { salonPhone: salon.phone } : {}),
         ...(salon.email ? { salonEmail: salon.email } : {}),
@@ -1495,17 +1553,28 @@ export const createJobCart = async (
         subtotalAmount: Number(subtotal),
         discountAmount: Number(discount),
         processingFeeAmount: 0,
-        taxAmount: 0,
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
+        taxAmount: calculation.totalGstAmount,
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount: Number(total),
         paidAmount: 0,
         balanceAmount: Number(total),
         status: "DRAFT",
         paymentStatus: "UNPAID",
         billingNote: `Walk-in job cart ${appointment.appointmentCode}`,
-        items: services.map((service) => {
+        items: services.map((service, index) => {
           const serviceStaffId = staffByServiceId.get(service.id);
+          const line = calculation.lines[index]!;
           return {
-            itemType: "SERVICE",
+            itemType: "SERVICE" as const,
             serviceId: service.id,
             ...(serviceStaffId ? { soldByStaffId: serviceStaffId } : {}),
             itemCode: service.id.slice(0, 8),
@@ -1514,9 +1583,13 @@ export const createJobCart = async (
             quantity: 1,
             unitPrice: Number(service.price),
             discountAmount: 0,
-            taxPercent: 0,
-            taxAmount: 0,
-            lineTotal: Number(service.price),
+            taxableAmount: line.taxableAmount,
+            gstRateSnapshot: line.gstRateSnapshot,
+            gstAmount: line.gstAmount,
+            totalWithTax: line.totalWithTax,
+            taxPercent: line.taxPercent,
+            taxAmount: line.taxAmount,
+            lineTotal: line.lineTotal,
           };
         }),
       },

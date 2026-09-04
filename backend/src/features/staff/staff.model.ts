@@ -1,4 +1,13 @@
 import { prisma } from "../../config/prisma.js";
+import type { Prisma } from "../../generated/prisma/client.js";
+
+const activeSalaryConfig = {
+  salaryConfigs: {
+    where: { status: true },
+    orderBy: { effectiveFrom: "desc" },
+    take: 1,
+  },
+} as const;
 
 export const StaffModel = {
   create: async (data: {
@@ -14,8 +23,8 @@ export const StaffModel = {
     salonId: string;
     branchId?: string;
     reportingManagerId?: string;
-  }) => {
-    return prisma.staff.create({
+  }, tx?: Prisma.TransactionClient) => {
+    return (tx ?? prisma).staff.create({
       data,
       include: {
         branch: {
@@ -103,6 +112,7 @@ export const StaffModel = {
   return prisma.staff.findUnique({
     where: { id },
     include: {
+      ...activeSalaryConfig,
       salon: {
         select: {
           id: true,
@@ -134,6 +144,7 @@ findByIdAndSalon: async (id: string, salonId: string, branchId?: string) => {
       ...(branchId ? { branchId } : {}),
     },
     include: {
+      ...activeSalaryConfig,
       branch: {
         select: {
           id: true,
@@ -163,9 +174,10 @@ update: async (
     weekOff?: string;
     branchId?: string | null;
     reportingManagerId?: string | null;
-  }
+  },
+  tx?: Prisma.TransactionClient
 ) => {
-  return prisma.staff.update({
+  return (tx ?? prisma).staff.update({
     where: { id },
     data,
   });

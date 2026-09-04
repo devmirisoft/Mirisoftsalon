@@ -9,6 +9,7 @@ import {
   salonTodayRange,
 } from "./tools/dailyBrief.tools.js";
 import * as aiProviderModule from "./providers/ai.provider.js";
+import type { AiChatTurn } from "./providers/ai.provider.js";
 import { prisma } from "../../config/prisma.js";
 import type {
   AiToolContext,
@@ -31,17 +32,6 @@ const isHelpOrGreeting = (message: string) =>
   );
 
 const unique = (values: string[]) => [...new Set(values)];
-
-const isLikelySalonQuestion = (
-  message: string,
-  uiContext?: SalonAiUiContext | undefined
-) => {
-  const text = message.toLowerCase();
-  if (uiContext && uiContext.module !== "OTHER") return true;
-  return /\b(salon|appointment|customer|client|invoice|bill|payment|balance|product|stock|staff|employee|service|services|menu|treatment|membership|package|coupon|loyalty|expense|report|booking|revenue|sales|holiday|leave|available|branch)\b/.test(
-    text
-  );
-};
 
 type UsedTool = {
   name: string;
@@ -89,6 +79,7 @@ async function generateAnswerSafely(params: {
   userMessage: string;
   toolResults: AiToolResult[];
   uiContext?: SalonAiUiContext | undefined;
+  history?: AiChatTurn[] | undefined;
 }): Promise<{ answer: string; usedFallback: boolean }> {
   const fallback =
     params.toolResults.map((result) => result.summary).join("\n") ||
@@ -100,6 +91,7 @@ async function generateAnswerSafely(params: {
       userMessage: params.userMessage,
       toolResults: params.toolResults,
       uiContext: params.uiContext,
+      history: params.history,
     });
     return { answer, usedFallback: false };
   } catch {
@@ -110,9 +102,8 @@ async function generateAnswerSafely(params: {
 async function selectToolsWithAiSafely(params: {
   userMessage: string;
   uiContext?: SalonAiUiContext | undefined;
+  history?: AiChatTurn[] | undefined;
 }): Promise<string[]> {
-  if (!isLikelySalonQuestion(params.userMessage, params.uiContext)) return [];
-
   try {
     const provider = aiProviderModule.getAiProvider();
     if (!provider.selectToolNames) return [];
@@ -120,6 +111,7 @@ async function selectToolsWithAiSafely(params: {
       userMessage: params.userMessage,
       uiContext: params.uiContext,
       tools: getAiTools(),
+      history: params.history,
     });
   } catch {
     return [];
@@ -137,6 +129,28 @@ const providerMetadata = (usedFallback?: boolean) => {
     promptVersion: "salon-assistant-v1",
     usedFallback: usedFallback ?? false,
   };
+};
+
+const loadHistory = async (
+  conversationId: string | undefined
+): Promise<AiChatTurn[]> => {
+  if (!conversationId) return [];
+  try {
+    const rows = await prisma.salonAssistantMessage.findMany({
+      where: { conversationId, status: "COMPLETED", content: { not: "" } },
+      orderBy: { createdAt: "desc" },
+      take: 8,
+      select: { senderType: true, content: true },
+    });
+    return rows
+      .reverse()
+      .map((row) => ({
+        role: row.senderType === "USER" ? ("user" as const) : ("assistant" as const),
+        content: row.content.slice(0, 1500),
+      }));
+  } catch {
+    return [];
+  }
 };
 
 const ensureConversation = async (
@@ -282,6 +296,10 @@ export async function chatWithAiAssistant(params: {
     context: params.context,
     conversationId: params.conversationId,
   });
+
+  // Drops the user row just written for this turn; the empty streaming
+  // assistant row is already excluded by loadHistory's filters.
+  const history = (await loadHistory(persistedTurn?.conversationId)).slice(0, -1);
 
   const finish = async (result: {
     answer: string;
@@ -445,18 +463,23 @@ export async function chatWithAiAssistant(params: {
   const aiToolNames = await selectToolsWithAiSafely({
     userMessage: message,
     uiContext: params.uiContext,
+    history,
   });
-  const plannedToolNames = unique([...aiToolNames, ...plan.toolNames]).slice(
-    0,
-    4
-  );
+  const plannedToolNames = unique([...aiToolNames, ...plan.toolNames]).slice(0, 6);
 
   if (!plannedToolNames.length) {
+    const conversational = await generateAnswerSafely({
+      userMessage: message,
+      toolResults: [],
+      uiContext: params.uiContext,
+      history,
+    });
     return finish({
-      answer: UNKNOWN_INTENT_FALLBACK,
+      answer: conversational.answer,
       responseMode: "QUICK_ANSWER",
       usedTools: [],
       suggestedPrompts: defaultSuggestedPrompts(params.uiContext),
+      usedFallback: conversational.usedFallback,
     });
   }
 
@@ -506,6 +529,7 @@ export async function chatWithAiAssistant(params: {
     userMessage: message,
     toolResults,
     uiContext: params.uiContext,
+    history,
   });
   const mode = chooseResponseMode(message, params.uiContext, toolResults);
   const structured = shapeStructuredResponse(toolResults, params.uiContext);

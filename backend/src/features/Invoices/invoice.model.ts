@@ -63,6 +63,7 @@ export const InvoiceModel = {
     discountAmount: Prisma.Decimal | number;
     processingFeeAmount: Prisma.Decimal | number;
     taxAmount: Prisma.Decimal | number;
+    roundOffAmount?: Prisma.Decimal | number;
     totalAmount: Prisma.Decimal | number;
 
     paidAmount?: Prisma.Decimal | number;
@@ -114,6 +115,7 @@ export const InvoiceModel = {
         discountAmount: data.discountAmount,
         processingFeeAmount: data.processingFeeAmount,
         taxAmount: data.taxAmount,
+        roundOffAmount: data.roundOffAmount ?? 0,
         totalAmount: data.totalAmount,
 
         paidAmount: data.paidAmount || 0,

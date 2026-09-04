@@ -254,6 +254,36 @@ describe("Walk-in job carts", () => {
     expect(Number(removed.body.data.invoice.totalAmount)).toBe(500);
   });
 
+  it("lists carts confirmed with a draft invoice under the completed filter", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+    });
+    const id = created.body.data.id as string;
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body.data).toMatchObject({
+      status: "COMPLETED",
+      invoice: { status: "DRAFT" },
+    });
+    const listed = await request(app)
+      .get("/api/job-carts?status=COMPLETED")
+      .set(auth(f.adminToken));
+    expect(listed.status).toBe(200);
+    expect(
+      listed.body.data.map((cart: { id: string }) => cart.id)
+    ).toContain(id);
+    const active = await request(app)
+      .get("/api/job-carts?status=ACTIVE")
+      .set(auth(f.adminToken));
+    expect(
+      active.body.data.map((cart: { id: string }) => cart.id)
+    ).not.toContain(id);
+  });
+
   it("confirms transactionally through appointment completion and invoice issue", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {
@@ -296,6 +326,182 @@ describe("Walk-in job carts", () => {
         where: { entityId: id, module: "JOB_CART", action: "COMPLETE" },
       })
     ).toBe(1);
+  });
+
+  it("issues the invoice and marks it paid when payment is collected on confirm", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+    });
+    const id = created.body.data.id as string;
+
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "GPAY", referenceNo: "TXN-1" } });
+
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body.data).toMatchObject({
+      status: "COMPLETED",
+      appointmentStatus: "COMPLETED",
+      invoice: { status: "ISSUED", paymentStatus: "PAID" },
+    });
+    expect(Number(confirmed.body.data.invoice.paidAmount)).toBe(500);
+    expect(Number(confirmed.body.data.invoice.balanceAmount)).toBe(0);
+
+    const payments = await prisma.payment.findMany({
+      where: { invoiceId: confirmed.body.data.invoice.id },
+    });
+    expect(payments).toHaveLength(1);
+    expect(payments[0]).toMatchObject({
+      method: "GPAY",
+      referenceNo: "TXN-1",
+    });
+    expect(Number(payments[0]!.amount)).toBe(500);
+
+    // The bill was raised and settled, so the customer owes nothing.
+    expect(
+      Number(
+        (
+          await prisma.customer.findUniqueOrThrow({
+            where: { id: confirmed.body.data.customerId },
+          })
+        ).outstandingAmount
+      )
+    ).toBe(0);
+    expect(
+      await prisma.customerTransaction.count({
+        where: {
+          invoiceId: confirmed.body.data.invoice.id,
+          type: "PAYMENT",
+        },
+      })
+    ).toBe(1);
+  });
+
+  it("leaves a part payment outstanding and rejects an overpayment on confirm", async () => {
+    const f = await fixture();
+    const partial = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+    });
+    const partiallyPaid = await request(app)
+      .post(`/api/job-carts/${partial.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH", amount: 200 } });
+
+    expect(partiallyPaid.status).toBe(200);
+    expect(partiallyPaid.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PARTIALLY_PAID",
+    });
+    expect(Number(partiallyPaid.body.data.invoice.balanceAmount)).toBe(300);
+    expect(
+      Number(
+        (
+          await prisma.customer.findUniqueOrThrow({
+            where: { id: partiallyPaid.body.data.customerId },
+          })
+        ).outstandingAmount
+      )
+    ).toBe(300);
+
+    const overpaid = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+      startTime: "2038-01-02T10:00:00.000Z",
+    });
+    const rejected = await request(app)
+      .post(`/api/job-carts/${overpaid.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH", amount: 900 } });
+
+    expect(rejected.status).toBe(400);
+    // The whole confirm rolls back, so the cart is still billable.
+    expect(
+      await prisma.appointment.findUniqueOrThrow({
+        where: { id: overpaid.body.data.id },
+        select: { status: true },
+      })
+    ).toEqual({ status: "SCHEDULED" });
+    expect(
+      await prisma.payment.count({
+        where: { invoiceId: overpaid.body.data.invoice.id },
+      })
+    ).toBe(0);
+  });
+
+  it("rejects a payment on confirm when the invoice is left as a draft", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+    });
+    const rejected = await request(app)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT", payment: { method: "CASH" } });
+
+    expect(rejected.status).toBe(400);
+    expect(
+      await prisma.payment.count({
+        where: { invoiceId: created.body.data.invoice.id },
+      })
+    ).toBe(0);
+  });
+
+  it("settles a confirm from the membership wallet and refuses one it cannot cover", async () => {
+    const f = await fixture();
+    const membership = await prisma.membership.create({
+      data: {
+        name: `Wallet Plan ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 0,
+        durationMonths: 12,
+      },
+    });
+    const cart = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    await prisma.customerMembership.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: cart.body.data.customerId,
+        membershipId: membership.id,
+        membershipNameSnapshot: membership.name,
+        discountPercentageSnapshot: 0,
+        durationMonthsSnapshot: 12,
+        startsAt: new Date("2020-01-01T00:00:00.000Z"),
+        expiresAt: new Date("2040-01-01T00:00:00.000Z"),
+        status: "ACTIVE",
+        walletCredited: 400,
+        walletBalance: 400,
+      },
+    });
+
+    const short = await request(app)
+      .post(`/api/job-carts/${cart.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "MEMBERSHIP_WALLET" } });
+    expect(short.status).toBe(400);
+
+    const paid = await request(app)
+      .post(`/api/job-carts/${cart.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "MEMBERSHIP_WALLET", amount: 400 } });
+
+    expect(paid.status).toBe(200);
+    expect(paid.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PARTIALLY_PAID",
+    });
+    expect(Number(paid.body.data.invoice.paidAmount)).toBe(400);
+    expect(
+      Number(
+        (
+          await prisma.customerMembership.findFirstOrThrow({
+            where: { customerId: cart.body.data.customerId },
+          })
+        ).walletBalance
+      )
+    ).toBe(0);
   });
 
   it("cancels an active cart and blocks edits to cancelled or completed carts", async () => {

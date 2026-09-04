@@ -57,9 +57,11 @@ export const updateJobCartSchema = z
 
 export const addJobCartItemSchema = z
   .object({
-    itemType: z.enum(["SERVICE", "PACKAGE"]).default("SERVICE"),
+    itemType: z.enum(["SERVICE", "PACKAGE", "PRODUCT"]).default("SERVICE"),
     serviceId: uuid.optional(),
     packageId: uuid.optional(),
+    productId: uuid.optional(),
+    quantity: z.coerce.number().int().positive().max(999).optional(),
     staffId: uuid.optional(),
   })
   .superRefine((value, context) => {
@@ -75,6 +77,13 @@ export const addJobCartItemSchema = z
         code: "custom",
         path: ["packageId"],
         message: "packageId is required for a package item",
+      });
+    }
+    if (value.itemType === "PRODUCT" && !value.productId) {
+      context.addIssue({
+        code: "custom",
+        path: ["productId"],
+        message: "productId is required for a product item",
       });
     }
   });

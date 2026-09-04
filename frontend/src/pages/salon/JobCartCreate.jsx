@@ -36,6 +36,20 @@ const newServiceRow = () => ({
   price: "",
 });
 
+// Arrow to the picked customer's profile. Renders nothing until a saved
+// customer is matched, so a brand-new name never links to a dead page.
+const CustomerProfileLink = ({ customerId }) =>
+  customerId ? (
+    <Link
+      to={`/customers/${customerId}`}
+      className="btn btn-outline-primary flex-shrink-0 d-flex align-items-center justify-content-center"
+      style={{ width: 38, height: 38, padding: 0 }}
+      title="Open customer profile"
+    >
+      <Icon name="arrow-right" />
+    </Link>
+  ) : null;
+
 const JobCartCreate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -199,15 +213,16 @@ const JobCartCreate = () => {
     [refs.customers]
   );
 
-  // Match on name or on phone digits, so "987" finds "+91 98765 43210".
+  // Raw text in the customer box. The "+" uses this so a name never has to be
+  // committed through the dropdown before it can be saved.
+  const [customerInput, setCustomerInput] = useState("");
+
+  // Name-only search; phone lookup lives in the phone box next door.
   const filterCustomerOption = useCallback((option, rawInput) => {
     const input = rawInput.trim().toLowerCase();
     // Empty box shows nothing; suggestions only appear once you type.
     if (!input) return false;
-    if (option.label.toLowerCase().includes(input)) return true;
-    const inputDigits = input.replace(/\D/g, "");
-    if (!inputDigits) return false;
-    return (option.data.phone || "").replace(/\D/g, "").includes(inputDigits);
+    return (option.data.name || "").toLowerCase().includes(input);
   }, []);
 
   // Phone box suggestions: 3+ digits, matched against digits-only stored phones.
@@ -243,6 +258,9 @@ const JobCartCreate = () => {
       }) || null
     );
   }, [customerOptions, form.phone]);
+
+  // What the "+" will save: the committed name, else the raw typed text.
+  const pendingCustomerName = (form.customerName || customerInput).trim();
 
   const selectedCustomerOption = useMemo(() => {
     const matched = customerOptions.find(
@@ -685,7 +703,7 @@ const JobCartCreate = () => {
                   <Col md="6">
                     <FormGroup>
                       <Label>Phone Number</Label>
-                      <div className="position-relative">
+                      <div className="position-relative d-flex align-items-start gap-2">
                       <Input
                         required
                         autoComplete="off"
@@ -739,6 +757,7 @@ const JobCartCreate = () => {
                           ))}
                         </ul>
                       )}
+                      <CustomerProfileLink customerId={customerSummary?.customerId} />
                       </div>
                     </FormGroup>
                   </Col>
@@ -754,30 +773,33 @@ const JobCartCreate = () => {
                             isDisabled={loadingRefs || saving}
                             options={customerOptions}
                             filterOption={filterCustomerOption}
-                            placeholder="Search by name or phone"
+                            placeholder="Search by name"
                             value={selectedCustomerOption}
                             onInputChange={(inputValue, meta) => {
-                              if (meta.action === "input-change" && inputValue) {
+                              if (meta.action !== "input-change") return;
+                              setCustomerInput(inputValue);
+                              // Typing over a *saved* customer breaks the pair.
+                              // A phone typed by hand is kept: the "+" needs it.
+                              if (inputValue && customerSummary) {
                                 clearPairedField("phone");
                               }
                             }}
                             noOptionsMessage={({ inputValue }) =>
                               inputValue
                                 ? `No customer matching "${inputValue}"`
-                                : "Type a name or phone number"
+                                : "Type a customer name"
                             }
                             formatCreateLabel={(inputValue) =>
                               `Add "${inputValue}" as a new customer`
                             }
-                            isValidNewOption={(inputValue, _selectValue, options) => {
+                            isValidNewOption={(inputValue) => {
                               const normalized = inputValue.trim().toLowerCase();
                               if (!normalized) return false;
                               // A digits-only input is a phone lookup, not a new name.
                               if (!/[a-z]/i.test(normalized)) return false;
-                              return !options.some(
-                                (option) =>
-                                  option.name.trim().toLowerCase() === normalized
-                              );
+                              // A duplicate name is fine on a free number; the
+                              // phone is what has to be unique.
+                              return !existingPhoneCustomer;
                             }}
                             onChange={(option) => {
                               setCustomerSummary(null);
@@ -792,10 +814,11 @@ const JobCartCreate = () => {
                             }}
                             onCreateOption={(inputValue) => {
                               setCustomerSummary(null);
+                              // Keep the typed phone: the "+" needs name and
+                              // phone together to create the customer.
                               setForm((current) => ({
                                 ...current,
                                 customerName: inputValue.trim(),
-                                phone: "",
                               }));
                             }}
                           />
@@ -810,7 +833,7 @@ const JobCartCreate = () => {
                           disabled={
                             saving ||
                             addingCustomer ||
-                            !form.customerName.trim() ||
+                            !pendingCustomerName ||
                             form.phone.replace(/\D/g, "").length !== 10
                           }
                           onClick={async () => {
@@ -818,8 +841,10 @@ const JobCartCreate = () => {
                             setError("");
                             try {
                               const response = await salonApi.customers.create({
-                                name: form.customerName.trim(),
+                                name: pendingCustomerName,
                                 phone: form.phone.trim(),
+                                // Super admins aren't scoped to a salon server-side.
+                                ...(form.salonId ? { salonId: form.salonId } : {}),
                               });
                               const customer = response.data;
                               setRefs((current) => ({
@@ -831,6 +856,7 @@ const JobCartCreate = () => {
                                 customerName: customer.name,
                                 phone: customer.phone || current.phone,
                               }));
+                              setCustomerInput("");
                             } catch (createError) {
                               setError(createError.message);
                             } finally {
@@ -845,6 +871,7 @@ const JobCartCreate = () => {
                           )}
                         </Button>
                         )}
+                        <CustomerProfileLink customerId={customerSummary?.customerId} />
                       </div>
                       <small className="text-soft">
                         {existingPhoneCustomer

@@ -782,6 +782,7 @@ export const issueInvoice = async (input: {
           id: invoice.appointmentId,
           walkInJobCart: true,
           source: "WALK_IN",
+          status: { not: "COMPLETED" },
         },
         select: { id: true },
       });
@@ -835,6 +836,7 @@ export const issueInvoice = async (input: {
         gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
         gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount: calculation.totalGstAmount,
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount: calculation.totalAmount,
         balanceAmount: calculation.totalAmount.minus(invoice.paidAmount).toDecimalPlaces(2),
       },

@@ -2,6 +2,7 @@ import { prisma } from "../../config/prisma.js";
 import {
   Prisma,
   type CustomerMembershipStatus,
+  type PaymentMethod,
 } from "../../generated/prisma/client.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 import {
@@ -56,6 +57,7 @@ const historyInclude = {
   },
   assignedBy: { select: { id: true, name: true, role: true } },
   removedBy: { select: { id: true, name: true, role: true } },
+  soldByStaff: { select: { id: true, name: true, staffCode: true } },
 } as const;
 
 const historyScope = (
@@ -316,6 +318,9 @@ export const assignCustomerMembershipHistory = async (
     startsAt?: Date;
     expiresAt?: Date | null;
     walletCreditAmount?: number;
+    paymentMethod?: PaymentMethod;
+    amountPaid?: number;
+    soldByStaffId?: string;
     note?: string;
     invoiceId?: string;
     jobCartAppointmentId?: string;
@@ -358,6 +363,19 @@ export const assignCustomerMembershipHistory = async (
         400,
         "Only active memberships can be assigned"
       );
+    }
+
+    if (input.soldByStaffId) {
+      const seller = await tx.staff.findFirst({
+        where: { id: input.soldByStaffId, salonId: customer.salonId },
+        select: { id: true },
+      });
+      if (!seller) {
+        throw new CustomerMembershipError(
+          400,
+          "Selling staff must belong to the same salon as the customer"
+        );
+      }
     }
 
     const startsAt = input.startsAt ?? new Date();
@@ -424,6 +442,15 @@ export const assignCustomerMembershipHistory = async (
         startsAt,
         expiresAt,
         assignedById: actor.userId,
+        ...(input.paymentMethod
+          ? { paymentMethod: input.paymentMethod }
+          : {}),
+        ...(input.amountPaid !== undefined
+          ? { amountPaid: new Prisma.Decimal(input.amountPaid) }
+          : {}),
+        ...(input.soldByStaffId
+          ? { soldByStaffId: input.soldByStaffId }
+          : {}),
         ...(input.note ? { note: input.note } : {}),
         ...(input.invoiceId ? { invoiceId: input.invoiceId } : {}),
         ...(input.jobCartAppointmentId
@@ -479,6 +506,9 @@ export const assignCustomerMembershipHistory = async (
         expiresAt,
         status: created.status,
         durationMonths: membership.durationMonths,
+        paymentMethod: created.paymentMethod,
+        amountPaid: created.amountPaid,
+        soldByStaffId: created.soldByStaffId,
         walletCredited: walletMovement?.balanceAfter ?? created.walletBalance,
       },
       ...audit,

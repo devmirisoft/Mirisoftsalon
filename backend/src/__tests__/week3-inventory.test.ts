@@ -226,10 +226,10 @@ describe("Week 3 inventory, vendor, expense, and reports flow", () => {
       });
     expect(expenseResponse.statusCode).toBe(201);
 
-    const [inventoryReport, expenseReport, profitReport] = await Promise.all([
+    const [inventoryReport, expenseReport, salonReport] = await Promise.all([
       request(app).get("/api/reports/inventory").set(auth(adminAToken)),
       request(app).get("/api/reports/expenses").set(auth(adminAToken)),
-      request(app).get("/api/reports/profit-summary").set(auth(adminAToken)),
+      request(app).get("/api/reports/salon-report").set(auth(adminAToken)),
     ]);
     expect(inventoryReport.statusCode).toBe(200);
     expect(inventoryReport.body.data).toMatchObject({
@@ -244,15 +244,21 @@ describe("Week 3 inventory, vendor, expense, and reports flow", () => {
     expect(expenseReport.body.data.expensesByCategory).toEqual(
       expect.arrayContaining([{ category: "Rent", total: 10000 }])
     );
-    expect(profitReport.statusCode).toBe(200);
-    expect(profitReport.body.data).toMatchObject({
-      serviceRevenue: 0,
+    expect(salonReport.statusCode).toBe(200);
+    expect(salonReport.body.data.totals).toMatchObject({
+      servicePayments: 0,
       saleRevenue: 0,
       retailSalesTotal: 798,
       productPurchaseCost: 2500,
       expensesTotal: 10000,
-      estimatedProfit: -11702,
+      netEarnings: -11702,
     });
+    expect(salonReport.body.data.paymentMethods).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ method: "CASH", amount: 798 }),
+      ])
+    );
+    expect(salonReport.body.data.customers.newCustomers).toBeGreaterThanOrEqual(0);
 
     const crossTenant = await request(app)
       .get(`/api/products/${productId}`)

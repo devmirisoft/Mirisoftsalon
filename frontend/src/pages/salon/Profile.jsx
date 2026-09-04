@@ -256,6 +256,35 @@ const Profile = () => {
                   <Col md="4"><Field label="Timezone" value={salon.timezone} readOnly={!canEditSalon} options={timezoneOptions} onChange={(timezone) => setSalon({ ...salon, timezone })} /></Col>
                   <Col md="6"><Field label="Status" value={salon.status ? "Active" : "Inactive"} readOnly /></Col>
                   <Col md="6"><Field label="Created date" value={salon.createdAt ? new Date(salon.createdAt).toLocaleDateString() : ""} readOnly /></Col>
+                  <Col md="12">
+                    <div className="form-check mt-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="membership-discount-on-packages"
+                        checked={Boolean(salon.membershipDiscountOnPackages)}
+                        disabled={!canEditSalon}
+                        onChange={(event) =>
+                          setSalon({
+                            ...salon,
+                            membershipDiscountOnPackages: event.target.checked,
+                          })
+                        }
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="membership-discount-on-packages"
+                      >
+                        Apply membership discount to packages
+                      </label>
+                      <div className="form-note">
+                        Off by default. Packages are usually already sold at a
+                        discounted price, so a membership percentage on top is
+                        a second discount. Products are never discounted by a
+                        membership either way.
+                      </div>
+                    </div>
+                  </Col>
                 </Row>
                 {canEditSalon && <div className="mt-3"><SaveButton disabled={submitting === "salon"} /></div>}
               </Form>

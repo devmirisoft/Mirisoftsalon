@@ -12,7 +12,23 @@ import {
 } from "./customer-membership.service.js";
 
 const uuid = z.string().uuid();
-const assignmentSchema = z
+
+// Selling a membership takes money in. MEMBERSHIP_WALLET is deliberately
+// absent: you cannot buy a membership by redeeming another membership's
+// wallet.
+const SALE_PAYMENT_METHODS = [
+  "CASH",
+  "UPI",
+  "GPAY",
+  "PAYTM",
+  "PHONEPE",
+  "CARD",
+  "BANK_TRANSFER",
+  "CHEQUE",
+  "OTHER",
+] as const;
+
+export const assignmentSchema = z
   .object({
     membershipId: uuid,
     startsAt: z.coerce.date().optional(),
@@ -24,6 +40,17 @@ const assignmentSchema = z
         z.number().min(0).max(10_000_000)
       )
       .optional(),
+    paymentMethod: z.enum(SALE_PAYMENT_METHODS).optional(),
+    soldByStaffId: uuid.optional(),
+    // An empty field means "not recorded", not zero, so it is normalised to
+    // undefined inside the preprocess where .optional() can still see it.
+    amountPaid: z.preprocess(
+      (value) =>
+        value === undefined || value === null || value === ""
+          ? undefined
+          : Number(value),
+      z.number().min(0).max(10_000_000).optional()
+    ),
     note: z.string().trim().max(2000).optional(),
   })
   .superRefine((value, context) => {
@@ -144,6 +171,15 @@ export const postCustomerMembership = async (
           : {}),
         ...(input.walletCreditAmount !== undefined
           ? { walletCreditAmount: input.walletCreditAmount }
+          : {}),
+        ...(input.paymentMethod
+          ? { paymentMethod: input.paymentMethod }
+          : {}),
+        ...(input.amountPaid !== undefined
+          ? { amountPaid: input.amountPaid }
+          : {}),
+        ...(input.soldByStaffId
+          ? { soldByStaffId: input.soldByStaffId }
           : {}),
         ...(input.note ? { note: input.note } : {}),
       },

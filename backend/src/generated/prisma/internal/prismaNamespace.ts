@@ -4806,6 +4806,7 @@ export const SalonScalarFieldEnum = {
   serviceGstRate: 'serviceGstRate',
   productGstRate: 'productGstRate',
   gstVerifiedAt: 'gstVerifiedAt',
+  membershipDiscountOnPackages: 'membershipDiscountOnPackages',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',
@@ -4887,6 +4888,9 @@ export const CustomerMembershipScalarFieldEnum = {
   membershipId: 'membershipId',
   membershipNameSnapshot: 'membershipNameSnapshot',
   discountPercentageSnapshot: 'discountPercentageSnapshot',
+  priceSnapshot: 'priceSnapshot',
+  walletCreditSnapshot: 'walletCreditSnapshot',
+  paymentReference: 'paymentReference',
   durationMonthsSnapshot: 'durationMonthsSnapshot',
   startsAt: 'startsAt',
   expiresAt: 'expiresAt',
@@ -4901,6 +4905,9 @@ export const CustomerMembershipScalarFieldEnum = {
   removedAt: 'removedAt',
   invoiceId: 'invoiceId',
   jobCartAppointmentId: 'jobCartAppointmentId',
+  paymentMethod: 'paymentMethod',
+  amountPaid: 'amountPaid',
+  soldByStaffId: 'soldByStaffId',
   note: 'note',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -5282,6 +5289,7 @@ export const ServicePackageScalarFieldEnum = {
   totalPrice: 'totalPrice',
   specialPrice: 'specialPrice',
   validityDays: 'validityDays',
+  maxRedemptions: 'maxRedemptions',
   status: 'status',
   createdById: 'createdById',
   createdAt: 'createdAt',
@@ -5490,11 +5498,14 @@ export const InvoiceScalarFieldEnum = {
   customerGst: 'customerGst',
   subtotalAmount: 'subtotalAmount',
   discountAmount: 'discountAmount',
+  membershipDiscountAmount: 'membershipDiscountAmount',
   processingFeeAmount: 'processingFeeAmount',
   taxAmount: 'taxAmount',
+  roundOffAmount: 'roundOffAmount',
   totalAmount: 'totalAmount',
   paidAmount: 'paidAmount',
   balanceAmount: 'balanceAmount',
+  idempotencyKey: 'idempotencyKey',
   status: 'status',
   paymentStatus: 'paymentStatus',
   billingNote: 'billingNote',
@@ -5544,6 +5555,9 @@ export const CustomerPackageScalarFieldEnum = {
   totalPriceSnapshot: 'totalPriceSnapshot',
   specialPriceSnapshot: 'specialPriceSnapshot',
   validityDaysSnapshot: 'validityDaysSnapshot',
+  maxRedemptionsSnapshot: 'maxRedemptionsSnapshot',
+  usedRedemptions: 'usedRedemptions',
+  reservedRedemptions: 'reservedRedemptions',
   purchasedAt: 'purchasedAt',
   validUntil: 'validUntil',
   status: 'status',
@@ -6153,6 +6167,20 @@ export type ListEnumCustomerMembershipStatusFieldRefInput<$PrismaModel> = FieldR
 
 
 /**
+ * Reference to a field of type 'PaymentMethod'
+ */
+export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentMethod[]'
+ */
+export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
+    
+
+
+/**
  * Reference to a field of type 'MembershipWalletTransactionType'
  */
 export type EnumMembershipWalletTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MembershipWalletTransactionType'>
@@ -6415,20 +6443,6 @@ export type EnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'PaymentStatus[]'
  */
 export type ListEnumPaymentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentStatus[]'>
-    
-
-
-/**
- * Reference to a field of type 'PaymentMethod'
- */
-export type EnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod'>
-    
-
-
-/**
- * Reference to a field of type 'PaymentMethod[]'
- */
-export type ListEnumPaymentMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentMethod[]'>
     
 
 

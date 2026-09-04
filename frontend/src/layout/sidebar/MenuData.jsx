@@ -170,6 +170,7 @@ const getMenu = (role) => {
           text: "Customer Retention",
           subMenu: [
             { text: "Memberships", link: "/customer-retention/memberships" },
+            { text: "Manage Memberships", link: "/customer-retention/manage-memberships" },
             { text: "Loyalty Rules", link: "/customer-retention/loyalty-rules" },
             { text: "Loyalty Transactions", link: "/customer-retention/loyalty-transactions" },
             { text: "Coupons", link: "/customer-retention/coupons" },
@@ -200,7 +201,7 @@ const getMenu = (role) => {
               ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]
               : []),
             ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN"])
-              ? [{ text: "Profit Summary", link: "/reports/profit-summary" }]
+              ? [{ text: "Salon Report", link: "/reports/salon-report" }]
               : []),
           ],
         },

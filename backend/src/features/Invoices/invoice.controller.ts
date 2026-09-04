@@ -356,6 +356,7 @@ export const createInvoiceFromAppointment = async (
             discountAmount: finalDiscountAmount,
             processingFeeAmount: finalProcessingFeeAmount,
             taxAmount: calculation.totalGstAmount,
+            roundOffAmount: calculation.roundOffAmount,
             totalAmount: calculation.totalAmount,
             paidAmount: 0,
             balanceAmount: calculation.totalAmount,
@@ -717,6 +718,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
           gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
           gstEnabledSnapshot: calculation.gstEnabledSnapshot,
           taxAmount: calculation.totalGstAmount,
+          roundOffAmount: calculation.roundOffAmount,
           totalAmount: calculation.totalAmount,
           balanceAmount,
           paymentStatus: balanceAmount.lte(0)

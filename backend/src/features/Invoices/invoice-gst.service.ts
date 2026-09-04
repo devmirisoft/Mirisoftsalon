@@ -18,6 +18,8 @@ export type GstInvoiceLineInput = {
   itemType?: string;
   quantity: number | Prisma.Decimal;
   unitPrice: Prisma.Decimal;
+  /** False for lines a percentage discount must never touch, e.g. products. */
+  discountable?: boolean;
 };
 
 export type GstInvoiceInput = {
@@ -46,6 +48,7 @@ export type GstInvoiceCalculation = {
   productGstAmount: Prisma.Decimal;
   totalGstAmount: Prisma.Decimal;
   taxableAmount: Prisma.Decimal;
+  roundOffAmount: Prisma.Decimal;
   totalAmount: Prisma.Decimal;
   gstNumberSnapshot: string | null;
   gstLegalNameSnapshot: string | null;
@@ -72,9 +75,24 @@ export const calculateInvoiceGst = (
   const subtotalAmount = money(
     grossLines.reduce((sum, value) => sum.plus(value), ZERO)
   );
+  // A discount is only ever spread across the lines that allow one. Products
+  // are billed at full price even for a member, so they are excluded from the
+  // base and never receive a share below.
+  const isDiscountable = (index: number) =>
+    invoice.items[index]?.discountable !== false;
+  const discountableSubtotal = money(
+    grossLines.reduce(
+      (sum, value, index) => (isDiscountable(index) ? sum.plus(value) : sum),
+      ZERO
+    )
+  );
   const totalDiscount = Prisma.Decimal.min(
     money(invoice.discountAmount.plus(invoice.couponDiscountAmount)),
-    subtotalAmount
+    discountableSubtotal
+  );
+  const lastDiscountableIndex = invoice.items.reduce(
+    (last, _item, index) => (isDiscountable(index) ? index : last),
+    -1
   );
   const gstEnabled =
     settings.gstEnabled && invoice.invoiceType === "GST_INVOICE";
@@ -82,12 +100,13 @@ export const calculateInvoiceGst = (
   let allocatedDiscount = ZERO;
   const lines = invoice.items.map((item, index) => {
     const gross = grossLines[index] ?? ZERO;
-    const discountShare =
-      index === invoice.items.length - 1
+    const discountShare = !isDiscountable(index)
+      ? ZERO
+      : index === lastDiscountableIndex
         ? money(totalDiscount.minus(allocatedDiscount))
-        : subtotalAmount.isZero()
+        : discountableSubtotal.isZero()
           ? ZERO
-          : money(gross.mul(totalDiscount).div(subtotalAmount));
+          : money(gross.mul(totalDiscount).div(discountableSubtotal));
     allocatedDiscount = allocatedDiscount.plus(discountShare);
     const taxableAmount = Prisma.Decimal.max(
       gross.minus(discountShare),
@@ -151,9 +170,14 @@ export const calculateInvoiceGst = (
   );
   const totalGstAmount = money(serviceGstAmount.plus(productGstAmount));
   const taxableAmount = money(serviceTaxableAmount.plus(productTaxableAmount));
-  const totalAmount = money(
+  const exactTotal = money(
     taxableAmount.plus(totalGstAmount).plus(invoice.processingFeeAmount)
   );
+  // Bills are collected in whole rupees: 89.98 -> 90, 89.02 -> 89. The delta is
+  // kept so subtotal + tax + roundOff == totalAmount stays provable, and so a
+  // full payment can equal totalAmount exactly.
+  const totalAmount = exactTotal.toDecimalPlaces(0, Prisma.Decimal.ROUND_HALF_UP);
+  const roundOffAmount = money(totalAmount.minus(exactTotal));
 
   if (taxableAmount.isNegative() || totalGstAmount.isNegative() || totalAmount.isNegative()) {
     throw Object.assign(new Error("Invoice totals cannot be negative"), {
@@ -169,6 +193,7 @@ export const calculateInvoiceGst = (
     productGstAmount,
     totalGstAmount,
     taxableAmount,
+    roundOffAmount,
     totalAmount,
     gstNumberSnapshot: gstEnabled ? settings.gstNumber : null,
     gstLegalNameSnapshot: gstEnabled ? settings.gstLegalName : null,

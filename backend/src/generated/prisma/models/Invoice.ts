@@ -35,8 +35,10 @@ export type InvoiceAvgAggregateOutputType = {
   totalGstAmount: runtime.Decimal | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  membershipDiscountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
+  roundOffAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paidAmount: runtime.Decimal | null
   balanceAmount: runtime.Decimal | null
@@ -51,8 +53,10 @@ export type InvoiceSumAggregateOutputType = {
   totalGstAmount: runtime.Decimal | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  membershipDiscountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
+  roundOffAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paidAmount: runtime.Decimal | null
   balanceAmount: runtime.Decimal | null
@@ -91,11 +95,14 @@ export type InvoiceMinAggregateOutputType = {
   customerGst: string | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  membershipDiscountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
+  roundOffAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paidAmount: runtime.Decimal | null
   balanceAmount: runtime.Decimal | null
+  idempotencyKey: string | null
   status: $Enums.InvoiceStatus | null
   paymentStatus: $Enums.PaymentStatus | null
   billingNote: string | null
@@ -137,11 +144,14 @@ export type InvoiceMaxAggregateOutputType = {
   customerGst: string | null
   subtotalAmount: runtime.Decimal | null
   discountAmount: runtime.Decimal | null
+  membershipDiscountAmount: runtime.Decimal | null
   processingFeeAmount: runtime.Decimal | null
   taxAmount: runtime.Decimal | null
+  roundOffAmount: runtime.Decimal | null
   totalAmount: runtime.Decimal | null
   paidAmount: runtime.Decimal | null
   balanceAmount: runtime.Decimal | null
+  idempotencyKey: string | null
   status: $Enums.InvoiceStatus | null
   paymentStatus: $Enums.PaymentStatus | null
   billingNote: string | null
@@ -183,11 +193,14 @@ export type InvoiceCountAggregateOutputType = {
   customerGst: number
   subtotalAmount: number
   discountAmount: number
+  membershipDiscountAmount: number
   processingFeeAmount: number
   taxAmount: number
+  roundOffAmount: number
   totalAmount: number
   paidAmount: number
   balanceAmount: number
+  idempotencyKey: number
   status: number
   paymentStatus: number
   billingNote: number
@@ -207,8 +220,10 @@ export type InvoiceAvgAggregateInputType = {
   totalGstAmount?: true
   subtotalAmount?: true
   discountAmount?: true
+  membershipDiscountAmount?: true
   processingFeeAmount?: true
   taxAmount?: true
+  roundOffAmount?: true
   totalAmount?: true
   paidAmount?: true
   balanceAmount?: true
@@ -223,8 +238,10 @@ export type InvoiceSumAggregateInputType = {
   totalGstAmount?: true
   subtotalAmount?: true
   discountAmount?: true
+  membershipDiscountAmount?: true
   processingFeeAmount?: true
   taxAmount?: true
+  roundOffAmount?: true
   totalAmount?: true
   paidAmount?: true
   balanceAmount?: true
@@ -263,11 +280,14 @@ export type InvoiceMinAggregateInputType = {
   customerGst?: true
   subtotalAmount?: true
   discountAmount?: true
+  membershipDiscountAmount?: true
   processingFeeAmount?: true
   taxAmount?: true
+  roundOffAmount?: true
   totalAmount?: true
   paidAmount?: true
   balanceAmount?: true
+  idempotencyKey?: true
   status?: true
   paymentStatus?: true
   billingNote?: true
@@ -309,11 +329,14 @@ export type InvoiceMaxAggregateInputType = {
   customerGst?: true
   subtotalAmount?: true
   discountAmount?: true
+  membershipDiscountAmount?: true
   processingFeeAmount?: true
   taxAmount?: true
+  roundOffAmount?: true
   totalAmount?: true
   paidAmount?: true
   balanceAmount?: true
+  idempotencyKey?: true
   status?: true
   paymentStatus?: true
   billingNote?: true
@@ -355,11 +378,14 @@ export type InvoiceCountAggregateInputType = {
   customerGst?: true
   subtotalAmount?: true
   discountAmount?: true
+  membershipDiscountAmount?: true
   processingFeeAmount?: true
   taxAmount?: true
+  roundOffAmount?: true
   totalAmount?: true
   paidAmount?: true
   balanceAmount?: true
+  idempotencyKey?: true
   status?: true
   paymentStatus?: true
   billingNote?: true
@@ -488,11 +514,14 @@ export type InvoiceGroupByOutputType = {
   customerGst: string | null
   subtotalAmount: runtime.Decimal
   discountAmount: runtime.Decimal
+  membershipDiscountAmount: runtime.Decimal
   processingFeeAmount: runtime.Decimal
   taxAmount: runtime.Decimal
+  roundOffAmount: runtime.Decimal
   totalAmount: runtime.Decimal
   paidAmount: runtime.Decimal
   balanceAmount: runtime.Decimal
+  idempotencyKey: string | null
   status: $Enums.InvoiceStatus
   paymentStatus: $Enums.PaymentStatus
   billingNote: string | null
@@ -557,11 +586,14 @@ export type InvoiceWhereInput = {
   customerGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
   subtotalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.StringNullableFilter<"Invoice"> | string | null
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Invoice"> | $Enums.PaymentStatus
   billingNote?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -615,11 +647,14 @@ export type InvoiceOrderByWithRelationInput = {
   customerGst?: Prisma.SortOrderInput | Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   billingNote?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -643,6 +678,7 @@ export type InvoiceOrderByWithRelationInput = {
 export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   appointmentId?: string
+  idempotencyKey?: string
   salonId_invoiceCode?: Prisma.InvoiceSalonIdInvoiceCodeCompoundUniqueInput
   AND?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   OR?: Prisma.InvoiceWhereInput[]
@@ -677,8 +713,10 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   customerGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
   subtotalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -700,7 +738,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   packageUsages?: Prisma.CustomerPackageUsageListRelationFilter
   customerMemberships?: Prisma.CustomerMembershipListRelationFilter
   membershipWalletTransactions?: Prisma.MembershipWalletTransactionListRelationFilter
-}, "id" | "appointmentId" | "salonId_invoiceCode">
+}, "id" | "appointmentId" | "idempotencyKey" | "salonId_invoiceCode">
 
 export type InvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -735,11 +773,14 @@ export type InvoiceOrderByWithAggregationInput = {
   customerGst?: Prisma.SortOrderInput | Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   billingNote?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -789,11 +830,14 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   customerGst?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   subtotalAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalWithAggregatesFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   status?: Prisma.EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusWithAggregatesFilter<"Invoice"> | $Enums.PaymentStatus
   billingNote?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
@@ -830,11 +874,14 @@ export type InvoiceCreateInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -888,11 +935,14 @@ export type InvoiceUncheckedCreateInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -936,11 +986,14 @@ export type InvoiceUpdateInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -994,11 +1047,14 @@ export type InvoiceUncheckedUpdateInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1047,11 +1103,14 @@ export type InvoiceCreateManyInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -1088,11 +1147,14 @@ export type InvoiceUpdateManyMutationInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1134,11 +1196,14 @@ export type InvoiceUncheckedUpdateManyInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1200,11 +1265,14 @@ export type InvoiceCountOrderByAggregateInput = {
   customerGst?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   billingNote?: Prisma.SortOrder
@@ -1222,8 +1290,10 @@ export type InvoiceAvgOrderByAggregateInput = {
   totalGstAmount?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
@@ -1262,11 +1332,14 @@ export type InvoiceMaxOrderByAggregateInput = {
   customerGst?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   billingNote?: Prisma.SortOrder
@@ -1308,11 +1381,14 @@ export type InvoiceMinOrderByAggregateInput = {
   customerGst?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
+  idempotencyKey?: Prisma.SortOrder
   status?: Prisma.SortOrder
   paymentStatus?: Prisma.SortOrder
   billingNote?: Prisma.SortOrder
@@ -1330,8 +1406,10 @@ export type InvoiceSumOrderByAggregateInput = {
   totalGstAmount?: Prisma.SortOrder
   subtotalAmount?: Prisma.SortOrder
   discountAmount?: Prisma.SortOrder
+  membershipDiscountAmount?: Prisma.SortOrder
   processingFeeAmount?: Prisma.SortOrder
   taxAmount?: Prisma.SortOrder
+  roundOffAmount?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
   paidAmount?: Prisma.SortOrder
   balanceAmount?: Prisma.SortOrder
@@ -1686,11 +1764,14 @@ export type InvoiceCreateWithoutSalonInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -1742,11 +1823,14 @@ export type InvoiceUncheckedCreateWithoutSalonInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -1824,11 +1908,14 @@ export type InvoiceScalarWhereInput = {
   customerGst?: Prisma.StringNullableFilter<"Invoice"> | string | null
   subtotalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFilter<"Invoice"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.StringNullableFilter<"Invoice"> | string | null
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFilter<"Invoice"> | $Enums.PaymentStatus
   billingNote?: Prisma.StringNullableFilter<"Invoice"> | string | null
@@ -1865,11 +1952,14 @@ export type InvoiceCreateWithoutCustomerInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -1921,11 +2011,14 @@ export type InvoiceUncheckedCreateWithoutCustomerInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -1995,11 +2088,14 @@ export type InvoiceCreateWithoutCustomerMembershipsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2052,11 +2148,14 @@ export type InvoiceUncheckedCreateWithoutCustomerMembershipsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2115,11 +2214,14 @@ export type InvoiceUpdateWithoutCustomerMembershipsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2172,11 +2274,14 @@ export type InvoiceUncheckedUpdateWithoutCustomerMembershipsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2219,11 +2324,14 @@ export type InvoiceCreateWithoutMembershipWalletTransactionsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2276,11 +2384,14 @@ export type InvoiceUncheckedCreateWithoutMembershipWalletTransactionsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2339,11 +2450,14 @@ export type InvoiceUpdateWithoutMembershipWalletTransactionsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2396,11 +2510,14 @@ export type InvoiceUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2443,11 +2560,14 @@ export type InvoiceCreateWithoutCustomerTransactionsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2500,11 +2620,14 @@ export type InvoiceUncheckedCreateWithoutCustomerTransactionsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2563,11 +2686,14 @@ export type InvoiceUpdateWithoutCustomerTransactionsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2620,11 +2746,14 @@ export type InvoiceUncheckedUpdateWithoutCustomerTransactionsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2667,11 +2796,14 @@ export type InvoiceCreateWithoutCouponInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2723,11 +2855,14 @@ export type InvoiceUncheckedCreateWithoutCouponInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2797,11 +2932,14 @@ export type InvoiceCreateWithoutBranchInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2853,11 +2991,14 @@ export type InvoiceUncheckedCreateWithoutBranchInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2927,11 +3068,14 @@ export type InvoiceCreateWithoutAppointmentInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -2983,11 +3127,14 @@ export type InvoiceUncheckedCreateWithoutAppointmentInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3047,11 +3194,14 @@ export type InvoiceUpdateWithoutAppointmentInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3103,11 +3253,14 @@ export type InvoiceUncheckedUpdateWithoutAppointmentInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3151,11 +3304,14 @@ export type InvoiceCreateWithoutItemsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3208,11 +3364,14 @@ export type InvoiceUncheckedCreateWithoutItemsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3271,11 +3430,14 @@ export type InvoiceUpdateWithoutItemsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3328,11 +3490,14 @@ export type InvoiceUncheckedUpdateWithoutItemsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3375,11 +3540,14 @@ export type InvoiceCreateWithoutCustomerPackagesInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3432,11 +3600,14 @@ export type InvoiceUncheckedCreateWithoutCustomerPackagesInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3495,11 +3666,14 @@ export type InvoiceUpdateWithoutCustomerPackagesInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3552,11 +3726,14 @@ export type InvoiceUncheckedUpdateWithoutCustomerPackagesInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3599,11 +3776,14 @@ export type InvoiceCreateWithoutPackageUsagesInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3656,11 +3836,14 @@ export type InvoiceUncheckedCreateWithoutPackageUsagesInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3719,11 +3902,14 @@ export type InvoiceUpdateWithoutPackageUsagesInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3776,11 +3962,14 @@ export type InvoiceUncheckedUpdateWithoutPackageUsagesInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3823,11 +4012,14 @@ export type InvoiceCreateWithoutPaymentsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3880,11 +4072,14 @@ export type InvoiceUncheckedCreateWithoutPaymentsInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -3943,11 +4138,14 @@ export type InvoiceUpdateWithoutPaymentsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4000,11 +4198,14 @@ export type InvoiceUncheckedUpdateWithoutPaymentsInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4051,11 +4252,14 @@ export type InvoiceCreateManySalonInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -4092,11 +4296,14 @@ export type InvoiceUpdateWithoutSalonInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4148,11 +4355,14 @@ export type InvoiceUncheckedUpdateWithoutSalonInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4200,11 +4410,14 @@ export type InvoiceUncheckedUpdateManyWithoutSalonInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4245,11 +4458,14 @@ export type InvoiceCreateManyCustomerInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -4286,11 +4502,14 @@ export type InvoiceUpdateWithoutCustomerInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4342,11 +4561,14 @@ export type InvoiceUncheckedUpdateWithoutCustomerInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4394,11 +4616,14 @@ export type InvoiceUncheckedUpdateManyWithoutCustomerInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4439,11 +4664,14 @@ export type InvoiceCreateManyCouponInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -4480,11 +4708,14 @@ export type InvoiceUpdateWithoutCouponInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4536,11 +4767,14 @@ export type InvoiceUncheckedUpdateWithoutCouponInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4588,11 +4822,14 @@ export type InvoiceUncheckedUpdateManyWithoutCouponInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4633,11 +4870,14 @@ export type InvoiceCreateManyBranchInput = {
   customerGst?: string | null
   subtotalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: string | null
   status?: $Enums.InvoiceStatus
   paymentStatus?: $Enums.PaymentStatus
   billingNote?: string | null
@@ -4674,11 +4914,14 @@ export type InvoiceUpdateWithoutBranchInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4730,11 +4973,14 @@ export type InvoiceUncheckedUpdateWithoutBranchInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4782,11 +5028,14 @@ export type InvoiceUncheckedUpdateManyWithoutBranchInput = {
   customerGst?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   subtotalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   discountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  membershipDiscountAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   processingFeeAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   taxAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  roundOffAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   paidAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   balanceAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  idempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   paymentStatus?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
   billingNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4913,11 +5162,14 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   customerGst?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  membershipDiscountAmount?: boolean
   processingFeeAmount?: boolean
   taxAmount?: boolean
+  roundOffAmount?: boolean
   totalAmount?: boolean
   paidAmount?: boolean
   balanceAmount?: boolean
+  idempotencyKey?: boolean
   status?: boolean
   paymentStatus?: boolean
   billingNote?: boolean
@@ -4972,11 +5224,14 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   customerGst?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  membershipDiscountAmount?: boolean
   processingFeeAmount?: boolean
   taxAmount?: boolean
+  roundOffAmount?: boolean
   totalAmount?: boolean
   paidAmount?: boolean
   balanceAmount?: boolean
+  idempotencyKey?: boolean
   status?: boolean
   paymentStatus?: boolean
   billingNote?: boolean
@@ -5023,11 +5278,14 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   customerGst?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  membershipDiscountAmount?: boolean
   processingFeeAmount?: boolean
   taxAmount?: boolean
+  roundOffAmount?: boolean
   totalAmount?: boolean
   paidAmount?: boolean
   balanceAmount?: boolean
+  idempotencyKey?: boolean
   status?: boolean
   paymentStatus?: boolean
   billingNote?: boolean
@@ -5074,11 +5332,14 @@ export type InvoiceSelectScalar = {
   customerGst?: boolean
   subtotalAmount?: boolean
   discountAmount?: boolean
+  membershipDiscountAmount?: boolean
   processingFeeAmount?: boolean
   taxAmount?: boolean
+  roundOffAmount?: boolean
   totalAmount?: boolean
   paidAmount?: boolean
   balanceAmount?: boolean
+  idempotencyKey?: boolean
   status?: boolean
   paymentStatus?: boolean
   billingNote?: boolean
@@ -5087,7 +5348,7 @@ export type InvoiceSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceCode" | "salonId" | "branchId" | "customerId" | "appointmentId" | "couponId" | "couponCodeSnapshot" | "couponDiscountAmount" | "invoiceType" | "invoiceDate" | "salonName" | "salonPhone" | "salonEmail" | "salonAddress" | "salonGst" | "serviceTaxableAmount" | "productTaxableAmount" | "serviceGstAmount" | "productGstAmount" | "totalGstAmount" | "gstNumberSnapshot" | "gstLegalNameSnapshot" | "gstStateCodeSnapshot" | "gstEnabledSnapshot" | "customerName" | "customerPhone" | "customerEmail" | "customerAddress" | "customerGst" | "subtotalAmount" | "discountAmount" | "processingFeeAmount" | "taxAmount" | "totalAmount" | "paidAmount" | "balanceAmount" | "status" | "paymentStatus" | "billingNote" | "footerNote" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "invoiceCode" | "salonId" | "branchId" | "customerId" | "appointmentId" | "couponId" | "couponCodeSnapshot" | "couponDiscountAmount" | "invoiceType" | "invoiceDate" | "salonName" | "salonPhone" | "salonEmail" | "salonAddress" | "salonGst" | "serviceTaxableAmount" | "productTaxableAmount" | "serviceGstAmount" | "productGstAmount" | "totalGstAmount" | "gstNumberSnapshot" | "gstLegalNameSnapshot" | "gstStateCodeSnapshot" | "gstEnabledSnapshot" | "customerName" | "customerPhone" | "customerEmail" | "customerAddress" | "customerGst" | "subtotalAmount" | "discountAmount" | "membershipDiscountAmount" | "processingFeeAmount" | "taxAmount" | "roundOffAmount" | "totalAmount" | "paidAmount" | "balanceAmount" | "idempotencyKey" | "status" | "paymentStatus" | "billingNote" | "footerNote" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.Invoice$branchArgs<ExtArgs>
@@ -5167,11 +5428,24 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     customerGst: string | null
     subtotalAmount: runtime.Decimal
     discountAmount: runtime.Decimal
+    /**
+     * The membership share of discountAmount, kept apart so reporting can tell
+     * a membership give-away from a manually entered discount.
+     */
+    membershipDiscountAmount: runtime.Decimal
     processingFeeAmount: runtime.Decimal
     taxAmount: runtime.Decimal
+    /**
+     * Delta applied to reach a whole-rupee totalAmount (e.g. 89.98 -> 90 stores 0.02).
+     */
+    roundOffAmount: runtime.Decimal
     totalAmount: runtime.Decimal
     paidAmount: runtime.Decimal
     balanceAmount: runtime.Decimal
+    /**
+     * Client-supplied key that makes a queued offline confirm safe to replay.
+     */
+    idempotencyKey: string | null
     status: $Enums.InvoiceStatus
     paymentStatus: $Enums.PaymentStatus
     billingNote: string | null
@@ -5645,11 +5919,14 @@ export interface InvoiceFieldRefs {
   readonly customerGst: Prisma.FieldRef<"Invoice", 'String'>
   readonly subtotalAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly discountAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly membershipDiscountAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly processingFeeAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly taxAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly roundOffAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly totalAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly paidAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
   readonly balanceAmount: Prisma.FieldRef<"Invoice", 'Decimal'>
+  readonly idempotencyKey: Prisma.FieldRef<"Invoice", 'String'>
   readonly status: Prisma.FieldRef<"Invoice", 'InvoiceStatus'>
   readonly paymentStatus: Prisma.FieldRef<"Invoice", 'PaymentStatus'>
   readonly billingNote: Prisma.FieldRef<"Invoice", 'String'>

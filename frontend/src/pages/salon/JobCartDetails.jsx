@@ -18,6 +18,7 @@ import PageShell from "@/components/salon/PageShell";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
+import { enqueueConfirm, startConfirmQueue } from "@/services/offlineQueue";
 import {
   formatDate,
   formatMoney,
@@ -31,6 +32,19 @@ const TAX_OPTIONS = [
   { value: 12, label: "GST 12%" },
   { value: 18, label: "GST 18%" },
   { value: 28, label: "GST 28%" },
+];
+
+const PAYMENT_METHODS = [
+  { value: "CASH", label: "Cash" },
+  { value: "UPI", label: "UPI" },
+  { value: "GPAY", label: "GPay" },
+  { value: "PAYTM", label: "Paytm" },
+  { value: "PHONEPE", label: "PhonePe" },
+  { value: "CARD", label: "Card" },
+  { value: "BANK_TRANSFER", label: "Bank transfer" },
+  { value: "CHEQUE", label: "Cheque" },
+  { value: "MEMBERSHIP_WALLET", label: "Membership wallet" },
+  { value: "OTHER", label: "Other" },
 ];
 
 const JobCartDetails = () => {
@@ -48,6 +62,8 @@ const JobCartDetails = () => {
     bookingNote: "",
   });
   const [servicePickerOpen, setServicePickerOpen] = useState(false);
+  const [productPickerOpen, setProductPickerOpen] = useState(false);
+  const [productSearch, setProductSearch] = useState("");
   const [servicePickerCategoryId, setServicePickerCategoryId] = useState("");
   const [servicePickerSearch, setServicePickerSearch] = useState("");
   const [packageId, setPackageId] = useState("");
@@ -69,6 +85,21 @@ const JobCartDetails = () => {
     taxPercent: 0,
     billingNote: "",
   });
+  // Blank amount means "settle the whole bill", which is the walk-in norm.
+  const [paymentForm, setPaymentForm] = useState({
+    collect: true,
+    method: "CASH",
+    amount: "",
+    referenceNo: "",
+  });
+  // Split tender: each row is one method and amount. The first row keeps the
+  // "blank means the whole bill" behaviour so the common single-payment case
+  // needs no typing.
+  const [tenders, setTenders] = useState([
+    { method: "CASH", amount: "", referenceNo: "" },
+  ]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [queuedNotice, setQueuedNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
@@ -89,7 +120,10 @@ const JobCartDetails = () => {
       });
       setBillingForm({
         invoiceType: next.invoice?.invoiceType || "BILL_OF_SUPPLY",
-        status: next.invoice?.status === "DRAFT" ? "DRAFT" : "ISSUED",
+        // On-spot billing issues the bill as the job ends, so default to
+        // issuing. An unconfirmed cart always carries a DRAFT invoice, so
+        // mirroring it here would hide the payment section every time.
+        status: "ISSUED",
         discountAmount: 0,
         processingFeeAmount: Number(next.invoice?.processingFeeAmount || 0),
         taxPercent: Number(next.invoice?.items?.[0]?.taxPercent || 0),
@@ -115,6 +149,18 @@ const JobCartDetails = () => {
     load();
   }, [load]);
 
+  // Push any bill confirmed while offline as soon as the connection is back.
+  useEffect(
+    () =>
+      startConfirmQueue(({ pushed }) => {
+        setQueuedNotice(
+          `${pushed} queued bill${pushed === 1 ? "" : "s"} sent.`
+        );
+        load();
+      }),
+    [load]
+  );
+
   const availableServices = useMemo(() => {
     const existing = new Set(
       (cart?.items || [])
@@ -137,6 +183,16 @@ const JobCartDetails = () => {
     });
     return [...seen.entries()].map(([catId, name]) => ({ id: catId, name }));
   }, [availableServices]);
+  const visibleProducts = useMemo(() => {
+    const term = productSearch.trim().toLowerCase();
+    return (refs.products || []).filter(
+      (product) =>
+        !term ||
+        product.name.toLowerCase().includes(term) ||
+        (product.sku || "").toLowerCase().includes(term)
+    );
+  }, [refs.products, productSearch]);
+
   const servicePickerVisibleServices = useMemo(() => {
     const term = servicePickerSearch.trim().toLowerCase();
     return availableServices.filter((service) => {
@@ -223,25 +279,6 @@ const JobCartDetails = () => {
     );
   };
 
-  const confirm = () => {
-    if (
-      !window.confirm(
-        "Confirm this job cart? This completes the appointment, deducts service consumables and finalizes the invoice."
-      )
-    ) {
-      return;
-    }
-    run(() =>
-      salonApi.jobCarts.confirm(id, {
-        ...billingForm,
-        discountAmount: Number(billingForm.discountAmount || 0),
-        processingFeeAmount: Number(billingForm.processingFeeAmount || 0),
-        taxPercent: Number(billingForm.taxPercent || 0),
-        billingNote: billingForm.billingNote || null,
-      })
-    );
-  };
-
   const cancel = () => {
     if (!window.confirm("Cancel this active job cart?")) return;
     run(() => salonApi.jobCarts.cancel(id));
@@ -262,10 +299,26 @@ const JobCartDetails = () => {
   const subtotalAmount = Number(invoice?.subtotalAmount || 0);
   const manualDiscount = active ? Number(billingForm.discountAmount || 0) : 0;
   const membershipPercent = Number(cart?.customer?.membership?.discountPercentage || 0);
+  // Mirrors isMembershipDiscountable on the server: a membership never reduces
+  // a product, and only reduces a package when the salon has opted in. Keeping
+  // the rule in step here stops the page promising a discount the bill refuses.
+  const membershipDiscountBase = (invoice?.items || [])
+    .filter((item) =>
+      item.itemType === "PRODUCT"
+        ? false
+        : item.itemType === "PACKAGE"
+          ? Boolean(cart?.salon?.membershipDiscountOnPackages)
+          : true
+    )
+    .reduce(
+      (total, item) =>
+        total + Number(item.quantity || 0) * Number(item.unitPrice || 0),
+      0
+    );
   const membershipDiscount = active
     ? Math.min(
-        subtotalAmount * (membershipPercent / 100),
-        Math.max(subtotalAmount - manualDiscount, 0)
+        membershipDiscountBase * (membershipPercent / 100),
+        Math.max(membershipDiscountBase - manualDiscount, 0)
       )
     : Number(invoice?.discountAmount || 0);
   const discountTotal = active
@@ -279,9 +332,17 @@ const JobCartDetails = () => {
     active && billingForm.invoiceType === "GST_INVOICE"
       ? taxableAmount * (Number(billingForm.taxPercent || 0) / 100)
       : Number(invoice?.taxAmount || 0);
+  const exactPayable = taxableAmount + processingFee + taxAmount;
+  // Bills settle in whole rupees, same as the server.
   const payableAmount = active
-    ? taxableAmount + processingFee + taxAmount
+    ? Math.round(exactPayable)
     : Number(invoice?.totalAmount || 0);
+  const roundOffAmount = active
+    ? payableAmount - exactPayable
+    : Number(invoice?.roundOffAmount || 0);
+  const membershipWalletBalance = Number(
+    customerSummary?.membershipWalletBalance || 0
+  );
   const packageCoveredAmount = (cart?.packageRedemptions || [])
     .filter((usage) => usage.status !== "CANCELLED")
     .flatMap((usage) => usage.items || [])
@@ -290,6 +351,87 @@ const JobCartDetails = () => {
         total + Number(item.priceSnapshot || 0) * Number(item.quantity || 0),
       0
     );
+
+  const collecting = billingForm.status !== "DRAFT" && paymentForm.collect;
+  const activeTenders = collecting
+    ? tenders.filter((tender) => tender.method)
+    : [];
+  // A blank amount on a lone tender means "the whole bill", which the server
+  // settles against its own rounded total so a stale estimate cannot underpay.
+  const tenderTotal = activeTenders.reduce(
+    (sum, tender) => sum + Number(tender.amount || 0),
+    0
+  );
+  const singleFullTender =
+    activeTenders.length === 1 && !activeTenders[0].amount;
+  const collectedAmount = singleFullTender ? payableAmount : tenderTotal;
+  const outstandingAfter = Math.max(payableAmount - collectedAmount, 0);
+  const overpaying = collectedAmount - payableAmount > 0.004;
+  const walletTender = activeTenders.find(
+    (tender) => tender.method === "MEMBERSHIP_WALLET"
+  );
+  const walletShort =
+    walletTender &&
+    (singleFullTender ? payableAmount : Number(walletTender.amount || 0)) >
+      membershipWalletBalance + 0.004;
+
+  const buildConfirmBody = () => ({
+    ...billingForm,
+    discountAmount: Number(billingForm.discountAmount || 0),
+    processingFeeAmount: Number(billingForm.processingFeeAmount || 0),
+    taxPercent: Number(billingForm.taxPercent || 0),
+    billingNote: billingForm.billingNote || null,
+    // Stamped here, not on the server, so a confirm pushed later from the
+    // offline queue keeps the time the operator actually ended the job.
+    confirmedAt: new Date().toISOString(),
+    idempotencyKey: globalThis.crypto.randomUUID(),
+    ...(collecting && activeTenders.length
+      ? {
+          payments: activeTenders.map((tender) => ({
+            method: tender.method,
+            amount: singleFullTender
+              ? Number(payableAmount.toFixed(2))
+              : Number(tender.amount),
+            ...(tender.referenceNo?.trim()
+              ? { referenceNo: tender.referenceNo.trim() }
+              : {}),
+            ...(tender.method === "MEMBERSHIP_WALLET" &&
+            customerSummary?.currentCustomerMembershipId
+              ? {
+                  customerMembershipId:
+                    customerSummary.currentCustomerMembershipId,
+                }
+              : {}),
+          })),
+        }
+      : {}),
+  });
+
+  const confirm = async () => {
+    const body = buildConfirmBody();
+    setConfirmOpen(false);
+    setWorking(true);
+    setError("");
+    try {
+      await salonApi.jobCarts.confirm(id, body);
+      await load();
+    } catch (actionError) {
+      // A transport failure may still have been applied server-side, so the
+      // confirm is queued rather than retried blindly: the idempotency key
+      // makes the replay safe either way.
+      if (!navigator.onLine || actionError.status === 0) {
+        enqueueConfirm(id, body);
+        setQueuedNotice(
+          "No connection. This bill is saved and will be sent automatically when you are back online."
+        );
+      } else {
+        setError(actionError.message);
+      }
+    } finally {
+      setWorking(false);
+    }
+  };
+
 
   const setRedemptionValue = (balanceId, key, value) =>
     setRedemptionSelections((current) => ({
@@ -384,6 +526,14 @@ const JobCartDetails = () => {
       }
     >
       {error && <Alert color="danger">{error}</Alert>}
+      {queuedNotice && (
+        <Alert color="info" className="d-flex justify-content-between align-items-center">
+          <span>{queuedNotice}</span>
+          <Button size="sm" color="light" onClick={() => setQueuedNotice("")}>
+            Dismiss
+          </Button>
+        </Alert>
+      )}
       {loading && !cart ? (
         <div className="text-center py-5">
           <Spinner color="primary" />
@@ -608,6 +758,15 @@ const JobCartDetails = () => {
                     >
                       <Icon name="plus" /> Add Service
                     </Button>
+                    <Button
+                      color="info"
+                      outline
+                      className="ms-2"
+                      disabled={working}
+                      onClick={() => setProductPickerOpen(true)}
+                    >
+                      <Icon name="plus" /> Add Product
+                    </Button>
                   </div>
                 )}
                 <Modal
@@ -798,21 +957,47 @@ const JobCartDetails = () => {
                                     : ""}
                                 </div>
                               )}
-                              {item.itemType !== "PACKAGE" && item.staff?.name && (
-                                <div className="small text-primary">
-                                  Staff: {item.staff.name}
+                              {item.itemType === "PRODUCT" && (
+                                <div className="small text-info">
+                                  Product x{item.quantity}
+                                  {item.soldByStaff?.name
+                                    ? ` • Sold by ${item.soldByStaff.name}`
+                                    : ""}
+                                  <span className="text-soft">
+                                    {" "}
+                                    • not covered by membership
+                                  </span>
                                 </div>
                               )}
+                              {item.itemType !== "PACKAGE" &&
+                                item.itemType !== "PRODUCT" &&
+                                item.staff?.name && (
+                                  <div className="small text-primary">
+                                    Staff: {item.staff.name}
+                                  </div>
+                                )}
                             </td>
                             <td>
                               {item.itemType === "PACKAGE"
                                 ? `${item.package?.validityDays || 0} days validity`
-                                : `${item.durationValue || 0} ${(
-                                    item.durationUnit || "MINUTES"
-                                  ).toLowerCase()}`}
+                                : item.itemType === "PRODUCT"
+                                  ? "-"
+                                  : `${item.durationValue || 0} ${(
+                                      item.durationUnit || "MINUTES"
+                                    ).toLowerCase()}`}
                             </td>
                             <td className="text-end">
-                              {formatMoney(item.price)}
+                              {formatMoney(
+                                item.itemType === "PRODUCT"
+                                  ? item.lineTotal
+                                  : item.price
+                              )}
+                              {item.itemType === "PRODUCT" &&
+                              item.quantity > 1 ? (
+                                <div className="small text-soft">
+                                  {item.quantity} x {formatMoney(item.price)}
+                                </div>
+                              ) : null}
                             </td>
                             {active && (
                               <td className="text-end">
@@ -846,6 +1031,99 @@ const JobCartDetails = () => {
                     </tbody>
                   </table>
                 </div>
+                <div className="border-top mt-3 pt-3">
+                  <div className="d-flex justify-content-between py-1">
+                    <span className="text-soft">Subtotal</span>
+                    <span>{formatMoney(subtotalAmount)}</span>
+                  </div>
+                  {discountTotal > 0 && (
+                    <div className="d-flex justify-content-between py-1">
+                      <span className="text-soft">Discount</span>
+                      <span>-{formatMoney(discountTotal)}</span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between py-1">
+                    <span className="text-soft">Tax</span>
+                    <span>{formatMoney(taxAmount)}</span>
+                  </div>
+                  {Math.abs(roundOffAmount) >= 0.005 && (
+                    <div className="d-flex justify-content-between py-1">
+                      <span className="text-soft">Round off</span>
+                      <span>
+                        {roundOffAmount > 0 ? "+" : "-"}
+                        {formatMoney(Math.abs(roundOffAmount))}
+                      </span>
+                    </div>
+                  )}
+                  <div className="d-flex justify-content-between py-2 border-top mt-1 fw-bold">
+                    <span>Payable</span>
+                    <span>{formatMoney(payableAmount)}</span>
+                  </div>
+                </div>
+                <Modal
+                  isOpen={productPickerOpen}
+                  toggle={() => setProductPickerOpen(false)}
+                  centered
+                  size="lg"
+                  contentClassName="border-0"
+                >
+                  <ModalHeader toggle={() => setProductPickerOpen(false)}>
+                    Add Product
+                  </ModalHeader>
+                  <ModalBody>
+                    <Input
+                      placeholder="Search product or SKU"
+                      value={productSearch}
+                      onChange={(event) => setProductSearch(event.target.value)}
+                      className="mb-3"
+                    />
+                    <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
+                      {visibleProducts.length === 0 ? (
+                        <p className="text-soft text-center py-4 mb-0">
+                          No products match.
+                        </p>
+                      ) : (
+                        visibleProducts.map((product) => {
+                          const outOfStock = Number(product.currentStock) <= 0;
+                          return (
+                            <div
+                              key={product.id}
+                              className="d-flex justify-content-between align-items-center border-bottom py-2 gap-2"
+                            >
+                              <div>
+                                <strong>{product.name}</strong>
+                                <div className="small text-soft">
+                                  {product.sku ? product.sku + " | " : ""}
+                                  {Number(product.currentStock)} in stock
+                                </div>
+                              </div>
+                              <div className="d-flex align-items-center gap-2">
+                                <span>{formatMoney(product.sellingPrice)}</span>
+                                <Button
+                                  color="primary"
+                                  size="sm"
+                                  disabled={working || outOfStock}
+                                  onClick={() => {
+                                    setProductPickerOpen(false);
+                                    run(() =>
+                                      salonApi.jobCarts.addItem(id, {
+                                        itemType: "PRODUCT",
+                                        productId: product.id,
+                                        quantity: 1,
+                                      })
+                                    );
+                                  }}
+                                >
+                                  {outOfStock ? "Out of stock" : "Add"}
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </ModalBody>
+                </Modal>
                 {(cart.packageRedemptions || []).length > 0 && (
                   <div className="mt-4">
                     <h6>Package-covered Services</h6>
@@ -861,6 +1139,25 @@ const JobCartDetails = () => {
                             </strong>
                             <div className="small text-soft">
                               {usage.status}
+                              {usage.customerPackage
+                                ?.maxRedemptionsSnapshot != null
+                                ? " | " +
+                                  (usage.customerPackage.usedRedemptions || 0) +
+                                  " of " +
+                                  usage.customerPackage
+                                    .maxRedemptionsSnapshot +
+                                  " visits used, " +
+                                  Math.max(
+                                    usage.customerPackage
+                                      .maxRedemptionsSnapshot -
+                                      (usage.customerPackage
+                                        .usedRedemptions || 0) -
+                                      (usage.customerPackage
+                                        .reservedRedemptions || 0),
+                                    0
+                                  ) +
+                                  " left"
+                                : ""}
                             </div>
                           </div>
                           {active && usage.status === "RESERVED" && (
@@ -893,7 +1190,26 @@ const JobCartDetails = () => {
                                 ? ` • ${item.staff.name}`
                                 : ""}
                             </span>
-                            <strong>Package covered</strong>
+                            <strong className="text-end">
+                              Package covered
+                              {item.customerPackageServiceBalance ? (
+                                <span className="d-block fw-normal text-soft">
+                                  {Math.max(
+                                    (item.customerPackageServiceBalance
+                                      .includedQuantity || 0) -
+                                      (item.customerPackageServiceBalance
+                                        .usedQuantity || 0) -
+                                      (item.customerPackageServiceBalance
+                                        .reservedQuantity || 0),
+                                    0
+                                  )}{" "}
+                                  of{" "}
+                                  {item.customerPackageServiceBalance
+                                    .includedQuantity || 0}{" "}
+                                  left
+                                </span>
+                              ) : null}
+                            </strong>
                           </div>
                         ))}
                       </div>
@@ -1102,7 +1418,16 @@ const JobCartDetails = () => {
                   <strong>{formatMoney(processingFee)}</strong>
                 </div>
                 <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Tax</span>
+                  <span>
+                    Tax
+                    {Number(invoice?.serviceGstAmount || 0) > 0 ||
+                    Number(invoice?.productGstAmount || 0) > 0 ? (
+                      <span className="text-soft small d-block">
+                        Service {formatMoney(invoice?.serviceGstAmount)} |
+                        Product {formatMoney(invoice?.productGstAmount)}
+                      </span>
+                    ) : null}
+                  </span>
                   <strong>{formatMoney(taxAmount)}</strong>
                 </div>
                 <div className="d-flex justify-content-between py-2 border-bottom">
@@ -1111,6 +1436,15 @@ const JobCartDetails = () => {
                     -{formatMoney(invoice?.couponDiscountAmount)}
                   </strong>
                 </div>
+                {Math.abs(roundOffAmount) >= 0.005 && (
+                  <div className="d-flex justify-content-between py-2 border-bottom">
+                    <span>Round off</span>
+                    <strong>
+                      {roundOffAmount > 0 ? "+" : "-"}
+                      {formatMoney(Math.abs(roundOffAmount))}
+                    </strong>
+                  </div>
+                )}
                 <div className="d-flex justify-content-between py-3 fs-5">
                   <span>Payable amount</span>
                   <strong>{formatMoney(payableAmount)}</strong>
@@ -1230,6 +1564,177 @@ const JobCartDetails = () => {
                   </div>
                 )}
 
+                {active && billingForm.status !== "DRAFT" && (
+                  <div className="mb-4">
+                    <h6 className="title mb-2">Payment</h6>
+                    <FormGroup check className="mb-2">
+                      <Input
+                        type="checkbox"
+                        id="collect-payment"
+                        checked={paymentForm.collect}
+                        onChange={(event) =>
+                          setPaymentForm((current) => ({
+                            ...current,
+                            collect: event.target.checked,
+                          }))
+                        }
+                      />
+                      <Label check for="collect-payment">
+                        Collect payment now
+                      </Label>
+                    </FormGroup>
+                    {paymentForm.collect && (
+                      <>
+                        {tenders.map((tender, index) => (
+                          <Row className="g-2 mb-2" key={index}>
+                            <Col md="5">
+                              {index === 0 && (
+                                <Label className="form-label">Method</Label>
+                              )}
+                              <Input
+                                type="select"
+                                value={tender.method}
+                                onChange={(event) =>
+                                  setTenders((current) =>
+                                    current.map((row, rowIndex) =>
+                                      rowIndex === index
+                                        ? { ...row, method: event.target.value }
+                                        : row
+                                    )
+                                  )
+                                }
+                              >
+                                {PAYMENT_METHODS.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                    disabled={
+                                      option.value === "MEMBERSHIP_WALLET" &&
+                                      membershipWalletBalance <= 0
+                                    }
+                                  >
+                                    {option.label}
+                                    {option.value === "MEMBERSHIP_WALLET"
+                                      ? " (" +
+                                        formatMoney(membershipWalletBalance) +
+                                        " available)"
+                                      : ""}
+                                  </option>
+                                ))}
+                              </Input>
+                            </Col>
+                            <Col md="4">
+                              {index === 0 && (
+                                <Label className="form-label">Amount</Label>
+                              )}
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder={
+                                  index === 0 && tenders.length === 1
+                                    ? formatMoney(payableAmount)
+                                    : "0.00"
+                                }
+                                value={tender.amount}
+                                onChange={(event) =>
+                                  setTenders((current) =>
+                                    current.map((row, rowIndex) =>
+                                      rowIndex === index
+                                        ? { ...row, amount: event.target.value }
+                                        : row
+                                    )
+                                  )
+                                }
+                              />
+                            </Col>
+                            <Col md="3">
+                              {index === 0 && (
+                                <Label className="form-label">Reference</Label>
+                              )}
+                              <div className="d-flex gap-1">
+                                <Input
+                                  value={tender.referenceNo}
+                                  onChange={(event) =>
+                                    setTenders((current) =>
+                                      current.map((row, rowIndex) =>
+                                        rowIndex === index
+                                          ? {
+                                              ...row,
+                                              referenceNo: event.target.value,
+                                            }
+                                          : row
+                                      )
+                                    )
+                                  }
+                                />
+                                {tenders.length > 1 && (
+                                  <Button
+                                    color="danger"
+                                    outline
+                                    size="sm"
+                                    onClick={() =>
+                                      setTenders((current) =>
+                                        current.filter(
+                                          (_row, rowIndex) => rowIndex !== index
+                                        )
+                                      )
+                                    }
+                                  >
+                                    <Icon name="cross" />
+                                  </Button>
+                                )}
+                              </div>
+                            </Col>
+                          </Row>
+                        ))}
+                        {tenders.length < 5 && (
+                          <Button
+                            color="primary"
+                            outline
+                            size="sm"
+                            className="mb-2"
+                            onClick={() =>
+                              setTenders((current) => [
+                                ...current,
+                                {
+                                  method: "CASH",
+                                  amount: outstandingAfter
+                                    ? outstandingAfter.toFixed(2)
+                                    : "",
+                                  referenceNo: "",
+                                },
+                              ])
+                            }
+                          >
+                            <Icon name="plus" /> Split payment
+                          </Button>
+                        )}
+                        {walletShort ? (
+                          <Alert color="warning" className="py-2 mb-0">
+                            Wallet has {formatMoney(membershipWalletBalance)}.
+                            Reduce this tender and add another method for the
+                            rest.
+                          </Alert>
+                        ) : overpaying ? (
+                          <Alert color="danger" className="py-2 mb-0">
+                            Collecting {formatMoney(collectedAmount)} exceeds
+                            the {formatMoney(payableAmount)} payable.
+                          </Alert>
+                        ) : (
+                          <small className="text-soft">
+                            {outstandingAfter > 0.004
+                              ? "Part payment. " +
+                                formatMoney(outstandingAfter) +
+                                " stays outstanding and the bill is marked partially paid."
+                              : "Invoice will be issued and marked paid."}
+                          </small>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
                 {active && canApplyCoupon && (
                   <div className="mb-4">
                     <Label>Coupon</Label>
@@ -1280,7 +1785,7 @@ const JobCartDetails = () => {
                     <Button
                       color="success"
                       disabled={working || !cart.items.length}
-                      onClick={confirm}
+                      onClick={() => setConfirmOpen(true)}
                     >
                       {working && <Spinner size="sm" className="me-1" />}
                       Confirm Job Cart
@@ -1294,25 +1799,166 @@ const JobCartDetails = () => {
                       Cancel Job Cart
                     </Button>
                   </div>
-                ) : invoice && canOpenInvoice ? (
-                  <Link to={`/billing/invoices/${invoice.id}`}>
-                    <Button color="primary" block>
-                      {cart.status === "CANCELLED"
-                        ? "Open Invoice"
-                        : "Open Invoice / Payment"}
-                    </Button>
-                  </Link>
                 ) : invoice ? (
-                  <p className="text-soft small mb-0">
-                    Invoice issued. Payment access follows the existing billing
-                    role policy.
-                  </p>
+                  <>
+                    {cart.status !== "CANCELLED" && (
+                      <div className="mb-3">
+                        <div className="d-flex justify-content-between">
+                          <span className="text-soft">Paid</span>
+                          <span>{formatMoney(invoice.paidAmount)}</span>
+                        </div>
+                        <div className="d-flex justify-content-between">
+                          <span className="text-soft">Balance</span>
+                          <span>{formatMoney(invoice.balanceAmount)}</span>
+                        </div>
+                        <div className="mt-2">
+                          <StatusBadge value={invoice.paymentStatus} />
+                        </div>
+                        {(invoice.payments || []).map((payment) => (
+                          <small
+                            key={payment.id}
+                            className="d-block text-soft mt-1"
+                          >
+                            {formatMoney(payment.amount)} via{" "}
+                            {PAYMENT_METHODS.find(
+                              (option) => option.value === payment.method
+                            )?.label || payment.method}
+                            {payment.method === "MEMBERSHIP_WALLET" &&
+                            (cart.customer?.membership?.name ||
+                              customerSummary?.membershipName)
+                              ? " (" +
+                                (cart.customer?.membership?.name ||
+                                  customerSummary?.membershipName) +
+                                ")"
+                              : ""}{" "}
+                            on {formatDate(payment.paidAt)}
+                            {payment.referenceNo
+                              ? ` (${payment.referenceNo})`
+                              : ""}
+                          </small>
+                        ))}
+                      </div>
+                    )}
+                    {canOpenInvoice ? (
+                      <Link to={`/billing/invoices/${invoice.id}`}>
+                        <Button color="primary" block>
+                          {cart.status === "CANCELLED"
+                            ? "Open Invoice"
+                            : invoice.paymentStatus === "PAID"
+                              ? "Open Invoice"
+                              : "Open Invoice / Payment"}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <p className="text-soft small mb-0">
+                        Invoice issued. Payment access follows the existing
+                        billing role policy.
+                      </p>
+                    )}
+                  </>
                 ) : null}
               </div>
             </div>
           </Col>
         </Row>
       ) : null}
+      <Modal
+        isOpen={confirmOpen}
+        toggle={() => setConfirmOpen(false)}
+        size="md"
+      >
+        <ModalHeader toggle={() => setConfirmOpen(false)}>
+          End job and bill?
+        </ModalHeader>
+        <ModalBody>
+          <p className="text-soft">
+            This completes the appointment, deducts service consumables and
+            issues the invoice. It cannot be undone from this page.
+          </p>
+          <div className="border rounded p-3 mb-3">
+            <div className="d-flex justify-content-between py-1">
+              <span className="text-soft">Subtotal</span>
+              <span>{formatMoney(subtotalAmount)}</span>
+            </div>
+            {discountTotal > 0 && (
+              <div className="d-flex justify-content-between py-1">
+                <span className="text-soft">Discount</span>
+                <span>-{formatMoney(discountTotal)}</span>
+              </div>
+            )}
+            <div className="d-flex justify-content-between py-1">
+              <span className="text-soft">Tax</span>
+              <span>{formatMoney(taxAmount)}</span>
+            </div>
+            {Math.abs(roundOffAmount) >= 0.005 && (
+              <div className="d-flex justify-content-between py-1">
+                <span className="text-soft">Round off</span>
+                <span>
+                  {roundOffAmount > 0 ? "+" : "-"}
+                  {formatMoney(Math.abs(roundOffAmount))}
+                </span>
+              </div>
+            )}
+            <div className="d-flex justify-content-between py-2 border-top mt-1 fw-bold">
+              <span>Payable</span>
+              <span>{formatMoney(payableAmount)}</span>
+            </div>
+          </div>
+          {collecting && activeTenders.length ? (
+            <div className="mb-3">
+              <h6 className="mb-2">Collecting</h6>
+              {activeTenders.map((tender, index) => (
+                <div
+                  key={index}
+                  className="d-flex justify-content-between py-1"
+                >
+                  <span className="text-soft">
+                    {PAYMENT_METHODS.find(
+                      (option) => option.value === tender.method
+                    )?.label || tender.method}
+                    {tender.method === "MEMBERSHIP_WALLET" &&
+                    customerSummary?.membershipName
+                      ? " - " + customerSummary.membershipName
+                      : ""}
+                  </span>
+                  <span>
+                    {formatMoney(
+                      singleFullTender ? payableAmount : Number(tender.amount || 0)
+                    )}
+                  </span>
+                </div>
+              ))}
+              {outstandingAfter > 0.004 && (
+                <div className="d-flex justify-content-between py-1 text-warning">
+                  <span>Outstanding after payment</span>
+                  <span>{formatMoney(outstandingAfter)}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Alert color="light" className="py-2">
+              No payment is being collected now. The bill will be left unpaid.
+            </Alert>
+          )}
+          <div className="d-flex gap-2 justify-content-end">
+            <Button
+              color="light"
+              onClick={() => setConfirmOpen(false)}
+              disabled={working}
+            >
+              Keep job open
+            </Button>
+            <Button
+              color="success"
+              onClick={confirm}
+              disabled={working || overpaying || walletShort}
+            >
+              {working && <Spinner size="sm" className="me-1" />}
+              End job and bill
+            </Button>
+          </div>
+        </ModalBody>
+      </Modal>
     </PageShell>
   );
 };

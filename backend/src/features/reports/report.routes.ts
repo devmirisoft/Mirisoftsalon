@@ -4,9 +4,9 @@ import { requireRole } from "../../middlewares/rbac.middleware.js";
 import {
   getExpenseReport,
   getInventoryReport,
-  getProfitSummary,
   getStaffPerformance,
 } from "./report.controller.js";
+import { getSalonReport } from "./salon-report.controller.js";
 import { exportReport } from "./report-export.controller.js";
 
 const router = Router();
@@ -33,9 +33,9 @@ router.get(
   getExpenseReport
 );
 router.get(
-  "/profit-summary",
+  "/salon-report",
   requireRole("SUPER_ADMIN", "SALON_ADMIN"),
-  getProfitSummary
+  getSalonReport
 );
 router.get(
   "/:reportType/export",

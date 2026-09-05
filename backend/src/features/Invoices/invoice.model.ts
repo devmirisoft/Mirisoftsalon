@@ -8,8 +8,14 @@ type PaymentStatus = "UNPAID" | "PARTIALLY_PAID" | "PAID";
 type CreateInvoiceItemInput = {
   serviceId?: string;
   productId?: string;
-  itemType?: "SERVICE" | "PRODUCT" | "PACKAGE" | "PACKAGE_REDEMPTION";
+  itemType?:
+    | "SERVICE"
+    | "PRODUCT"
+    | "PACKAGE"
+    | "PACKAGE_REDEMPTION"
+    | "MEMBERSHIP";
   packageId?: string;
+  membershipId?: string;
   soldByStaffId?: string;
   itemCode?: string;
   description: string;
@@ -133,6 +139,7 @@ export const InvoiceModel = {
             ...(item.productId ? { productId: item.productId } : {}),
             ...(item.itemType ? { itemType: item.itemType } : {}),
             ...(item.packageId ? { packageId: item.packageId } : {}),
+            ...(item.membershipId ? { membershipId: item.membershipId } : {}),
             ...(item.soldByStaffId
               ? { soldByStaffId: item.soldByStaffId }
               : {}),

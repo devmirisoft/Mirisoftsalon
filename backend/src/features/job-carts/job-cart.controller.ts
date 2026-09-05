@@ -244,6 +244,7 @@ export const postJobCartItem = async (req: Request, res: Response) => {
         ...(parsed.serviceId ? { serviceId: parsed.serviceId } : {}),
         ...(parsed.packageId ? { packageId: parsed.packageId } : {}),
         ...(parsed.productId ? { productId: parsed.productId } : {}),
+        ...(parsed.membershipId ? { membershipId: parsed.membershipId } : {}),
         ...(parsed.quantity ? { quantity: parsed.quantity } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
       },
@@ -252,11 +253,7 @@ export const postJobCartItem = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: `${
-        parsed.itemType === "PACKAGE"
-          ? "Package"
-          : parsed.itemType === "PRODUCT"
-            ? "Product"
-            : "Service"
+        parsed.itemType.charAt(0) + parsed.itemType.slice(1).toLowerCase()
       } added to job cart`,
       data,
     });

@@ -48,6 +48,7 @@ export const InvoiceModel = {
                         ...(item.productId ? { productId: item.productId } : {}),
                         ...(item.itemType ? { itemType: item.itemType } : {}),
                         ...(item.packageId ? { packageId: item.packageId } : {}),
+                        ...(item.membershipId ? { membershipId: item.membershipId } : {}),
                         ...(item.soldByStaffId
                             ? { soldByStaffId: item.soldByStaffId }
                             : {}),

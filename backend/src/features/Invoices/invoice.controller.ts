@@ -28,7 +28,10 @@ import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import { sendInventoryError } from "../products/inventory-access.js";
-import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import {
+  assignCustomerMembershipInTransaction,
+  resolveCurrentCustomerMembership,
+} from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
 
 
@@ -111,12 +114,13 @@ type ExtraItemInput = {
   itemType?: string;
   productId?: string;
   packageId?: string;
+  membershipId?: string;
   quantity?: number;
   soldByStaffId?: string;
 };
 
 type BillLine = {
-  itemType: "SERVICE" | "PRODUCT" | "PACKAGE";
+  itemType: "SERVICE" | "PRODUCT" | "PACKAGE" | "MEMBERSHIP";
   quantity: number;
   unitPrice: Prisma.Decimal;
   description: string;
@@ -125,6 +129,7 @@ type BillLine = {
   serviceId?: string;
   productId?: string;
   packageId?: string;
+  membershipId?: string;
   soldByStaffId?: string;
   // Products and packages are billed at full price; only services take a
   // share of the manual and membership discount.
@@ -256,10 +261,14 @@ export const createInvoiceFromAppointment = async (
 
     const requestedExtras = Array.isArray(extraItems) ? extraItems : [];
     for (const extra of requestedExtras) {
-      if (extra.itemType !== "PRODUCT" && extra.itemType !== "PACKAGE") {
+      if (
+        extra.itemType !== "PRODUCT" &&
+        extra.itemType !== "PACKAGE" &&
+        extra.itemType !== "MEMBERSHIP"
+      ) {
         return res.status(400).json({
           success: false,
-          message: "Extra items must be a PRODUCT or a PACKAGE",
+          message: "Extra items must be a PRODUCT, PACKAGE or MEMBERSHIP",
         });
       }
       const quantity = Number(extra.quantity ?? 1);
@@ -276,13 +285,24 @@ export const createInvoiceFromAppointment = async (
     const packageExtras = requestedExtras.filter(
       (extra) => extra.itemType === "PACKAGE"
     );
+    const membershipExtras = requestedExtras.filter(
+      (extra) => extra.itemType === "MEMBERSHIP"
+    );
+    // One plan per bill: a second one would immediately supersede the first
+    // and forfeit the wallet it was just sold with.
+    if (membershipExtras.length > 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Only one membership can be sold on a bill",
+      });
+    }
     if (packageExtras.length && !appointment.branchId) {
       return res.status(400).json({
         success: false,
         message: "Set a branch on the appointment before selling a package",
       });
     }
-    const [soldProducts, soldPackages] = await Promise.all([
+    const [soldProducts, soldPackages, soldMemberships] = await Promise.all([
       productExtras.length
         ? prisma.product.findMany({
             where: {
@@ -301,6 +321,18 @@ export const createInvoiceFromAppointment = async (
               status: "ACTIVE",
             },
             include: { items: true },
+          })
+        : Promise.resolve([]),
+      membershipExtras.length
+        ? prisma.membership.findMany({
+            where: {
+              id: {
+                in: membershipExtras.map((extra) => String(extra.membershipId)),
+              },
+              salonId: appointment.salonId,
+              status: true,
+            },
+            select: { id: true, name: true, price: true },
           })
         : Promise.resolve([]),
     ]);
@@ -336,6 +368,32 @@ export const createInvoiceFromAppointment = async (
           productId: product.id,
           discountable: false,
           ...(extra.soldByStaffId ? { soldByStaffId: extra.soldByStaffId } : {}),
+        });
+        continue;
+      }
+      if (extra.itemType === "MEMBERSHIP") {
+        const membership = soldMemberships.find(
+          (item) => item.id === extra.membershipId
+        );
+        if (!membership) {
+          return res.status(400).json({
+            success: false,
+            message: "The selected membership plan is unavailable",
+          });
+        }
+        extraLines.push({
+          itemType: "MEMBERSHIP",
+          quantity: 1,
+          unitPrice: new Prisma.Decimal(membership.price),
+          description: membership.name,
+          serviceName: membership.name,
+          itemCode: membership.id.slice(0, 8),
+          membershipId: membership.id,
+          // Buying a plan is never cheaper because you already hold one.
+          discountable: false,
+          ...(extra.soldByStaffId
+            ? { soldByStaffId: extra.soldByStaffId }
+            : {}),
         });
         continue;
       }
@@ -529,6 +587,9 @@ export const createInvoiceFromAppointment = async (
               ...(line.serviceId ? { serviceId: line.serviceId } : {}),
               ...(line.productId ? { productId: line.productId } : {}),
               ...(line.packageId ? { packageId: line.packageId } : {}),
+              ...(line.membershipId
+                ? { membershipId: line.membershipId }
+                : {}),
               ...(line.soldByStaffId
                 ? { soldByStaffId: line.soldByStaffId }
                 : {}),
@@ -632,6 +693,32 @@ export const createInvoiceFromAppointment = async (
             newData: customerPackage,
             ...auditContext,
           });
+        }
+
+        // Enrollment comes after the discount above is resolved, so the plan
+        // being bought never discounts the bill that sells it.
+        for (const line of extraLines) {
+          if (line.itemType !== "MEMBERSHIP" || !line.membershipId) continue;
+          const calculated =
+            calculation.lines[serviceLines.length + extraLines.indexOf(line)];
+          // CustomerMembershipError carries a status, which is what
+          // sendInventoryError below turns into the response code.
+          await assignCustomerMembershipInTransaction(
+            tx,
+            membershipActor,
+            appointment.customerId,
+            {
+              membershipId: line.membershipId,
+              // What the customer was charged for the plan, tax included.
+              amountPaid: Number(calculated?.lineTotal ?? line.unitPrice),
+              invoiceId: created.id,
+              ...(line.soldByStaffId
+                ? { soldByStaffId: line.soldByStaffId }
+                : {}),
+              note: `Sold on invoice ${created.invoiceCode}`,
+            },
+            auditContext
+          );
         }
 
         if (created.status === "ISSUED" && created.totalAmount.gt(0)) {

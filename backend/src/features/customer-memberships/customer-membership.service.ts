@@ -310,26 +310,33 @@ export const resolveCurrentCustomerMembership = async (
   };
 };
 
-export const assignCustomerMembershipHistory = async (
+export type AssignCustomerMembershipInput = {
+  membershipId: string;
+  startsAt?: Date;
+  expiresAt?: Date | null;
+  walletCreditAmount?: number;
+  paymentMethod?: PaymentMethod;
+  amountPaid?: number;
+  soldByStaffId?: string;
+  note?: string;
+  invoiceId?: string;
+  jobCartAppointmentId?: string;
+  auditEntityId?: string;
+  auditAction?: "CREATE" | "UPDATE";
+};
+
+/**
+ * The whole sale, inside a transaction the caller owns. Billing a membership
+ * on an appointment or job cart calls this so the enrollment, its wallet and
+ * the invoice it was sold on commit or roll back together.
+ */
+export const assignCustomerMembershipInTransaction = async (
+  tx: TransactionClient,
   actor: CustomerMembershipActor,
   customerId: string,
-  input: {
-    membershipId: string;
-    startsAt?: Date;
-    expiresAt?: Date | null;
-    walletCreditAmount?: number;
-    paymentMethod?: PaymentMethod;
-    amountPaid?: number;
-    soldByStaffId?: string;
-    note?: string;
-    invoiceId?: string;
-    jobCartAppointmentId?: string;
-    auditEntityId?: string;
-    auditAction?: "CREATE" | "UPDATE";
-  },
+  input: AssignCustomerMembershipInput,
   audit: AuditContext
-) =>
-  prisma.$transaction(async (tx) => {
+) => {
     await tx.$queryRaw`SELECT "id" FROM "Customer" WHERE "id" = ${customerId} FOR UPDATE`;
     const customer = await tx.customer.findFirst({
       where: { id: customerId, ...customerScope(actor) },
@@ -430,6 +437,12 @@ export const assignCustomerMembershipHistory = async (
       });
     }
 
+    // Selling the plan funds its wallet. walletCreditAmount can differ from
+    // price when a plan is sold at a discount (pay 5000, get 6000 to spend).
+    const walletCredit =
+      input.walletCreditAmount !== undefined
+        ? new Prisma.Decimal(input.walletCreditAmount)
+        : membership.walletCreditAmount;
     const created = await tx.customerMembership.create({
       data: {
         salonId: customer.salonId,
@@ -438,6 +451,8 @@ export const assignCustomerMembershipHistory = async (
         membershipId: membership.id,
         membershipNameSnapshot: membership.name,
         discountPercentageSnapshot: membership.discountPercentage,
+        priceSnapshot: membership.price,
+        walletCreditSnapshot: walletCredit,
         durationMonthsSnapshot: membership.durationMonths,
         startsAt,
         expiresAt,
@@ -464,12 +479,6 @@ export const assignCustomerMembershipHistory = async (
       data: { membershipId: membership.id },
     });
 
-    // Selling the plan funds its wallet. walletCreditAmount can differ from
-    // price when a plan is sold at a discount (pay 5000, get 6000 to spend).
-    const walletCredit =
-      input.walletCreditAmount !== undefined
-        ? new Prisma.Decimal(input.walletCreditAmount)
-        : membership.walletCreditAmount;
     const walletMovement = await creditPurchaseWallet(tx, {
       membership: created,
       amount: walletCredit,
@@ -516,7 +525,17 @@ export const assignCustomerMembershipHistory = async (
     return walletMovement
       ? { ...created, ...walletMovement.membership }
       : created;
-  });
+};
+
+export const assignCustomerMembershipHistory = async (
+  actor: CustomerMembershipActor,
+  customerId: string,
+  input: AssignCustomerMembershipInput,
+  audit: AuditContext
+) =>
+  prisma.$transaction((tx) =>
+    assignCustomerMembershipInTransaction(tx, actor, customerId, input, audit)
+  );
 
 export const endCustomerMembership = async (
   actor: CustomerMembershipActor,

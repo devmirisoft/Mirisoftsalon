@@ -72,7 +72,7 @@ const AppointmentBill = () => {
     footerNote: "",
   });
   // Counter add-ons: product quantities by id, chosen package ids, and at most
-  // one membership plan (memberships are sold on their own money trail).
+  // one membership plan. All three are billed as taxed lines on this invoice.
   const [extras, setExtras] = useState({
     productQuantities: {},
     packageIds: [],
@@ -235,21 +235,26 @@ const AppointmentBill = () => {
       (total, item) => total + num(item.sellingPrice) * item.quantity,
       0
     );
+    // A membership is billed at its plan price and never discounted, but it
+    // is taxed at the service rate like a package.
+    const membershipSubtotal = num(selectedMembership?.price);
     const discount = Math.min(num(bill.discountAmount), serviceSubtotal);
     const gst = bill.invoiceType === "GST_INVOICE";
     const serviceTax = gst
-      ? ((serviceSubtotal - discount + packageSubtotal) *
+      ? ((serviceSubtotal - discount + packageSubtotal + membershipSubtotal) *
           num(bill.serviceTaxPercent)) /
         100
       : 0;
     const productTax = gst
       ? (productSubtotal * num(bill.productTaxPercent)) / 100
       : 0;
-    const subtotal = serviceSubtotal + packageSubtotal + productSubtotal;
+    const subtotal =
+      serviceSubtotal + packageSubtotal + productSubtotal + membershipSubtotal;
     return {
       serviceSubtotal,
       packageSubtotal,
       productSubtotal,
+      membershipSubtotal,
       subtotal,
       discount,
       serviceTax,
@@ -261,11 +266,10 @@ const AppointmentBill = () => {
         productTax +
         num(bill.processingFeeAmount),
     };
-  }, [bill, selectedPackages, selectedProducts, services]);
+  }, [bill, selectedMembership, selectedPackages, selectedProducts, services]);
 
   const walletBalance = num(wallet?.spendableBalance);
   const balance = num(invoice?.balanceAmount);
-  const membershipPrice = num(selectedMembership?.price);
   const dueNow = invoice ? balance : preview.total;
 
   const setBillField = (name) => (event) =>
@@ -310,6 +314,18 @@ const AppointmentBill = () => {
       quantity: 1,
       ...(extras.soldByStaffId ? { soldByStaffId: extras.soldByStaffId } : {}),
     })),
+    ...(selectedMembership
+      ? [
+          {
+            itemType: "MEMBERSHIP",
+            membershipId: selectedMembership.id,
+            quantity: 1,
+            ...(extras.soldByStaffId
+              ? { soldByStaffId: extras.soldByStaffId }
+              : {}),
+          },
+        ]
+      : []),
   ];
 
   const createInvoice = async (status) => {
@@ -394,28 +410,6 @@ const AppointmentBill = () => {
               : {}),
           });
         }
-      }
-
-      // The membership is a sale of its own, not an invoice line, so it is
-      // recorded once the bill itself is settled.
-      if (selectedMembership && appointment?.customer?.id) {
-        await salonApi.customers.assignMembership(appointment.customer.id, {
-          membershipId: selectedMembership.id,
-          amountPaid: membershipPrice,
-          // The wallet cannot buy a membership, so that tender is left off.
-          ...(payment.method === "MEMBERSHIP_WALLET"
-            ? {}
-            : { paymentMethod: payment.method }),
-          ...(extras.soldByStaffId
-            ? { soldByStaffId: extras.soldByStaffId }
-            : {}),
-        });
-        setNotice(
-          `Membership ${selectedMembership.name} sold for ${formatMoney(
-            membershipPrice
-          )}.`
-        );
-        setExtras((currentExtras) => ({ ...currentExtras, membershipId: "" }));
       }
 
       const refreshed = await salonApi.invoices.get(current.id);
@@ -519,8 +513,9 @@ const AppointmentBill = () => {
                   <div className="card-inner">
                     <h5 className="mb-1">Add to this bill</h5>
                     <p className="text-soft">
-                      Products and packages are billed here. A membership is
-                      sold on its own receipt when the payment goes through.
+                      Products, packages and memberships are billed here, with
+                      tax applied. The membership starts once the bill is
+                      issued.
                     </p>
 
                     <FormGroup>
@@ -682,7 +677,11 @@ const AppointmentBill = () => {
                           }))
                         }
                       >
-                        <option value="">Not buying a membership</option>
+                        <option value="">
+                          {memberships.length
+                            ? "Not buying a membership"
+                            : "No membership plans yet - add one under Customer Retention > Manage Memberships"}
+                        </option>
                         {memberships.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.name} · {formatMoney(item.price)} ·{" "}
@@ -1032,6 +1031,12 @@ const AppointmentBill = () => {
                           value={formatMoney(preview.productSubtotal)}
                         />
                       )}
+                      {preview.membershipSubtotal > 0 && (
+                        <SummaryRow
+                          label={`Membership: ${selectedMembership.name}`}
+                          value={formatMoney(preview.membershipSubtotal)}
+                        />
+                      )}
                       <SummaryRow
                         label="Discount"
                         value={`- ${formatMoney(preview.discount)}`}
@@ -1052,13 +1057,6 @@ const AppointmentBill = () => {
                         <span>Bill total</span>
                         <strong>{formatMoney(preview.total)}</strong>
                       </div>
-                      {selectedMembership && (
-                        <SummaryRow
-                          muted
-                          label={`Membership: ${selectedMembership.name} (billed separately)`}
-                          value={formatMoney(membershipPrice)}
-                        />
-                      )}
                       <p className="text-soft small mt-2">
                         Membership discount and the final GST rounding are
                         applied by the server when the bill is issued.
@@ -1105,7 +1103,7 @@ const AppointmentBill = () => {
                           : isDraft
                             ? "Issue and record payment"
                             : "Record payment"}{" "}
-                        · {formatMoney(dueNow + membershipPrice)}
+                        · {formatMoney(dueNow)}
                       </Button>
                       {!billed && (
                         <Button

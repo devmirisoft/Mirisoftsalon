@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import Select from "react-select";
 import {
   Alert,
   Col,
@@ -65,8 +66,13 @@ const JobCartDetails = () => {
   const [productId, setProductId] = useState("");
   const [servicePickerCategoryId, setServicePickerCategoryId] = useState("");
   const [servicePickerSearch, setServicePickerSearch] = useState("");
-  const [packageId, setPackageId] = useState("");
   const [packageStaffId, setPackageStaffId] = useState("");
+  const [membershipStaffId, setMembershipStaffId] = useState("");
+  const [packagePickerOpen, setPackagePickerOpen] = useState(false);
+  const [packagePickerCategoryId, setPackagePickerCategoryId] = useState("");
+  const [packagePickerSearch, setPackagePickerSearch] = useState("");
+  const [membershipPickerOpen, setMembershipPickerOpen] = useState(false);
+  const [membershipPickerSearch, setMembershipPickerSearch] = useState("");
   const [customPackage, setCustomPackage] = useState({
     serviceIds: [],
     name: "",
@@ -218,6 +224,68 @@ const JobCartDetails = () => {
         )
     );
   }, [cart?.items, refs.packages]);
+  // One plan per bill: a second would supersede the first and forfeit the
+  // wallet it was just sold with, so the picker closes once one is on.
+  const membershipOnCart = (cart?.items || []).some(
+    (item) => item.itemType === "MEMBERSHIP"
+  );
+  const availableMemberships = useMemo(
+    () => (membershipOnCart ? [] : refs.memberships || []),
+    [membershipOnCart, refs.memberships]
+  );
+  // Package and membership pickers mirror the service one: category + search
+  // over a clickable grid, so all three add the same way.
+  const packagePickerCategories = useMemo(() => {
+    const seen = new Map();
+    availablePackages.forEach((servicePackage) => {
+      const category = servicePackage.category;
+      if (category?.id && !seen.has(category.id)) {
+        seen.set(category.id, category.name);
+      }
+    });
+    return [...seen.entries()].map(([catId, name]) => ({ id: catId, name }));
+  }, [availablePackages]);
+  const packagePickerVisiblePackages = useMemo(() => {
+    const term = packagePickerSearch.trim().toLowerCase();
+    return availablePackages.filter((servicePackage) => {
+      if (
+        packagePickerCategoryId &&
+        servicePackage.category?.id !== packagePickerCategoryId
+      ) {
+        return false;
+      }
+      return !term || servicePackage.name.toLowerCase().includes(term);
+    });
+  }, [availablePackages, packagePickerCategoryId, packagePickerSearch]);
+  const membershipPickerVisiblePlans = useMemo(() => {
+    const term = membershipPickerSearch.trim().toLowerCase();
+    return availableMemberships.filter(
+      (plan) => !term || plan.name.toLowerCase().includes(term)
+    );
+  }, [availableMemberships, membershipPickerSearch]);
+  const packagesInCart = (cart?.items || []).filter(
+    (item) => item.itemType === "PACKAGE"
+  ).length;
+  // Product picker: searchable by name or SKU, out-of-stock rows unselectable.
+  const productOptions = useMemo(
+    () =>
+      (refs.products || []).map((product) => {
+        const stock = Number(product.currentStock) || 0;
+        return {
+          value: product.id,
+          label: [
+            product.name,
+            product.sku,
+            formatMoney(product.sellingPrice),
+            stock > 0 ? `${stock} ${product.unit || "in stock"}` : "out of stock",
+          ]
+            .filter(Boolean)
+            .join(" · "),
+          isDisabled: stock <= 0,
+        };
+      }),
+    [refs.products]
+  );
   const standaloneServiceItems = useMemo(
     () =>
       (cart?.items || []).filter(
@@ -257,6 +325,26 @@ const JobCartDetails = () => {
         serviceId: pickedServiceId,
       })
     );
+
+  const addPackageFromPicker = (pickedPackageId) =>
+    run(() =>
+      salonApi.jobCarts.addItem(id, {
+        itemType: "PACKAGE",
+        packageId: pickedPackageId,
+        ...(packageStaffId ? { staffId: packageStaffId } : {}),
+      })
+    );
+
+  // Only one plan per bill, so the picker closes on the first pick.
+  const addMembershipFromPicker = (pickedMembershipId) =>
+    run(async () => {
+      await salonApi.jobCarts.addItem(id, {
+        itemType: "MEMBERSHIP",
+        membershipId: pickedMembershipId,
+        ...(membershipStaffId ? { staffId: membershipStaffId } : {}),
+      });
+      setMembershipPickerOpen(false);
+    });
 
   const save = () => {
     const startTime = new Date(form.startTime);
@@ -300,7 +388,7 @@ const JobCartDetails = () => {
   // the rule in step here stops the page promising a discount the bill refuses.
   const membershipDiscountBase = (invoice?.items || [])
     .filter((item) =>
-      item.itemType === "PRODUCT"
+      item.itemType === "PRODUCT" || item.itemType === "MEMBERSHIP"
         ? false
         : item.itemType === "PACKAGE"
           ? Boolean(cart?.salon?.membershipDiscountOnPackages)
@@ -745,7 +833,7 @@ const JobCartDetails = () => {
                   </div>
                 )}
                 {active && (
-                  <div className="mb-4">
+                  <div className="mb-4 d-flex flex-wrap gap-2">
                     <Button
                       color="primary"
                       outline
@@ -753,6 +841,22 @@ const JobCartDetails = () => {
                       onClick={() => setServicePickerOpen(true)}
                     >
                       <Icon name="plus" /> Add Service
+                    </Button>
+                    <Button
+                      color="primary"
+                      outline
+                      disabled={working}
+                      onClick={() => setPackagePickerOpen(true)}
+                    >
+                      <Icon name="plus" /> Add Package
+                    </Button>
+                    <Button
+                      color="primary"
+                      outline
+                      disabled={working || membershipOnCart}
+                      onClick={() => setMembershipPickerOpen(true)}
+                    >
+                      <Icon name="plus" /> Add Membership
                     </Button>
                   </div>
                 )}
@@ -860,93 +964,257 @@ const JobCartDetails = () => {
                     </div>
                   </ModalBody>
                 </Modal>
-                {active && (
-                  <div className="row g-2 mb-4">
-                    <div className="col-md-6">
-                      <Input
-                        type="select"
-                        value={packageId}
-                        onChange={(event) => setPackageId(event.target.value)}
-                      >
-                        <option value="">Select a package</option>
-                        {availablePackages.map((servicePackage) => (
-                          <option
-                            key={servicePackage.id}
-                            value={servicePackage.id}
-                          >
-                            {servicePackage.name} —{" "}
-                            {formatMoney(servicePackage.specialPrice)}
-                          </option>
-                        ))}
-                      </Input>
+                <Modal
+                  isOpen={packagePickerOpen}
+                  toggle={() => setPackagePickerOpen(false)}
+                  centered
+                  size="xl"
+                  contentClassName="border-0"
+                >
+                  <ModalHeader toggle={() => setPackagePickerOpen(false)}>
+                    Add Packages
+                  </ModalHeader>
+                  <ModalBody>
+                    <Row className="g-3 mb-3">
+                      <Col md="4">
+                        <Label className="mb-1">Category</Label>
+                        <Input
+                          type="select"
+                          value={packagePickerCategoryId}
+                          onChange={(event) =>
+                            setPackagePickerCategoryId(event.target.value)
+                          }
+                        >
+                          <option value="">All packages</option>
+                          {packagePickerCategories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                      <Col md="4">
+                        <Label className="mb-1">Search</Label>
+                        <Input
+                          type="search"
+                          placeholder="Search packages"
+                          value={packagePickerSearch}
+                          onChange={(event) =>
+                            setPackagePickerSearch(event.target.value)
+                          }
+                        />
+                      </Col>
+                      <Col md="4">
+                        <Label className="mb-1">Sold by</Label>
+                        <Input
+                          type="select"
+                          value={packageStaffId}
+                          onChange={(event) =>
+                            setPackageStaffId(event.target.value)
+                          }
+                        >
+                          <option value="">Not recorded</option>
+                          {refs.staff.map((member) => (
+                            <option key={member.id} value={member.id}>
+                              {member.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                    </Row>
+                    <div
+                      className="border rounded"
+                      style={{ maxHeight: 380, overflowY: "auto" }}
+                    >
+                      {packagePickerVisiblePackages.length === 0 ? (
+                        <div className="text-soft text-center py-4">
+                          {refs.packages?.length
+                            ? "No packages match this search"
+                            : "No packages yet - create one from the Packages page"}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fit, minmax(280px, 1fr))",
+                          }}
+                        >
+                          {packagePickerVisiblePackages.map(
+                            (servicePackage) => (
+                              <div
+                                key={servicePackage.id}
+                                style={{ minWidth: 0 }}
+                              >
+                                <button
+                                  type="button"
+                                  className="btn d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom mb-0 h-100 w-100 text-start bg-transparent"
+                                  style={{ cursor: "pointer", minWidth: 0 }}
+                                  disabled={working}
+                                  onClick={() =>
+                                    addPackageFromPicker(servicePackage.id)
+                                  }
+                                >
+                                  <span
+                                    className="text-truncate"
+                                    style={{ minWidth: 0 }}
+                                  >
+                                    <span className="d-block text-truncate">
+                                      {servicePackage.name}
+                                    </span>
+                                    <small className="text-soft">
+                                      {formatMoney(
+                                        servicePackage.specialPrice
+                                      )}{" "}
+                                      - {servicePackage.validityDays || 0} days
+                                      validity
+                                    </small>
+                                  </span>
+                                  <Icon
+                                    name="plus-circle"
+                                    className="text-primary flex-shrink-0"
+                                  />
+                                </button>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <div className="col-md-4">
-                      <Input
-                        type="select"
-                        value={packageStaffId}
-                        onChange={(event) =>
-                          setPackageStaffId(event.target.value)
-                        }
-                      >
-                        <option value="">Sold by (optional)</option>
-                        {refs.staff.map((member) => (
-                          <option key={member.id} value={member.id}>
-                            {member.name}
-                          </option>
-                        ))}
-                      </Input>
-                    </div>
-                    <div className="col-md-2 d-grid">
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <span className="text-soft">{packagesInCart} in cart</span>
                       <Button
                         color="primary"
-                        outline
-                        disabled={!packageId || working}
-                        onClick={() =>
-                          run(async () => {
-                            await salonApi.jobCarts.addItem(id, {
-                              itemType: "PACKAGE",
-                              packageId,
-                              ...(packageStaffId
-                                ? { staffId: packageStaffId }
-                                : {}),
-                            });
-                            setPackageId("");
-                            setPackageStaffId("");
-                          })
-                        }
+                        type="button"
+                        onClick={() => setPackagePickerOpen(false)}
                       >
-                        + Package
+                        Done
                       </Button>
                     </div>
-                  </div>
-                )}
+                  </ModalBody>
+                </Modal>
+                <Modal
+                  isOpen={membershipPickerOpen}
+                  toggle={() => setMembershipPickerOpen(false)}
+                  centered
+                  size="lg"
+                  contentClassName="border-0"
+                >
+                  <ModalHeader toggle={() => setMembershipPickerOpen(false)}>
+                    Sell a Membership
+                  </ModalHeader>
+                  <ModalBody>
+                    <Row className="g-3 mb-3">
+                      <Col md="6">
+                        <Label className="mb-1">Search</Label>
+                        <Input
+                          type="search"
+                          placeholder="Search membership plans"
+                          value={membershipPickerSearch}
+                          onChange={(event) =>
+                            setMembershipPickerSearch(event.target.value)
+                          }
+                        />
+                      </Col>
+                      <Col md="6">
+                        <Label className="mb-1">Sold by</Label>
+                        <Input
+                          type="select"
+                          value={membershipStaffId}
+                          onChange={(event) =>
+                            setMembershipStaffId(event.target.value)
+                          }
+                        >
+                          <option value="">Not recorded</option>
+                          {refs.staff.map((member) => (
+                            <option key={member.id} value={member.id}>
+                              {member.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </Col>
+                    </Row>
+                    <div
+                      className="border rounded"
+                      style={{ maxHeight: 380, overflowY: "auto" }}
+                    >
+                      {membershipPickerVisiblePlans.length === 0 ? (
+                        <div className="text-soft text-center py-4">
+                          {refs.memberships?.length
+                            ? "No plans match this search"
+                            : "No membership plans yet - add one under Customer Retention > Manage Memberships"}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fit, minmax(280px, 1fr))",
+                          }}
+                        >
+                          {membershipPickerVisiblePlans.map((plan) => (
+                            <div key={plan.id} style={{ minWidth: 0 }}>
+                              <button
+                                type="button"
+                                className="btn d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom mb-0 h-100 w-100 text-start bg-transparent"
+                                style={{ cursor: "pointer", minWidth: 0 }}
+                                disabled={working}
+                                onClick={() => addMembershipFromPicker(plan.id)}
+                              >
+                                <span
+                                  className="text-truncate"
+                                  style={{ minWidth: 0 }}
+                                >
+                                  <span className="d-block text-truncate">
+                                    {plan.name}
+                                  </span>
+                                  <small className="text-soft">
+                                    {formatMoney(plan.price)} -{" "}
+                                    {Number(plan.discountPercentage || 0)}% off
+                                    {plan.durationMonths
+                                      ? ` - ${plan.durationMonths} months`
+                                      : " - no expiry"}
+                                    {Number(plan.walletCreditAmount) > 0
+                                      ? ` - ${formatMoney(
+                                          plan.walletCreditAmount
+                                        )} wallet`
+                                      : ""}
+                                  </small>
+                                </span>
+                                <Icon
+                                  name="plus-circle"
+                                  className="text-primary flex-shrink-0"
+                                />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-soft small mt-3 mb-0">
+                      One plan per bill. It is billed with tax and starts when
+                      the cart is confirmed.
+                    </p>
+                  </ModalBody>
+                </Modal>
                 {active && (
                   <div className="row g-2 mb-4">
                     <div className="col-md-10">
-                      <Input
-                        type="select"
-                        value={productId}
-                        onChange={(event) => setProductId(event.target.value)}
-                      >
-                        <option value="">Select a product</option>
-                        {(refs.products || []).map((product) => {
-                          const outOfStock = Number(product.currentStock) <= 0;
-                          return (
-                            <option
-                              key={product.id}
-                              value={product.id}
-                              disabled={outOfStock}
-                            >
-                              {product.name}
-                              {product.sku ? ` (${product.sku})` : ""} —{" "}
-                              {formatMoney(product.sellingPrice)}
-                              {outOfStock
-                                ? " — out of stock"
-                                : ` — ${Number(product.currentStock)} in stock`}
-                            </option>
-                          );
-                        })}
-                      </Input>
+                      <Select
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        options={productOptions}
+                        value={
+                          productOptions.find(
+                            (option) => option.value === productId
+                          ) || null
+                        }
+                        isClearable
+                        isDisabled={working}
+                        placeholder="Search a product by name or SKU"
+                        noOptionsMessage={() => "No products match"}
+                        onChange={(option) => setProductId(option?.value || "")}
+                      />
                     </div>
                     <div className="col-md-2 d-grid">
                       <Button
@@ -1005,8 +1273,24 @@ const JobCartDetails = () => {
                                   </span>
                                 </div>
                               )}
+                              {item.itemType === "MEMBERSHIP" && (
+                                <div className="small text-success">
+                                  Membership
+                                  {item.membership?.durationMonths
+                                    ? ` • ${item.membership.durationMonths} months`
+                                    : ""}
+                                  {item.soldByStaff?.name
+                                    ? ` • Sold by ${item.soldByStaff.name}`
+                                    : ""}
+                                  <span className="text-soft">
+                                    {" "}
+                                    • starts when the bill is confirmed
+                                  </span>
+                                </div>
+                              )}
                               {item.itemType !== "PACKAGE" &&
                                 item.itemType !== "PRODUCT" &&
+                                item.itemType !== "MEMBERSHIP" &&
                                 item.staff?.name && (
                                   <div className="small text-primary">
                                     Staff: {item.staff.name}
@@ -1016,7 +1300,8 @@ const JobCartDetails = () => {
                             <td>
                               {item.itemType === "PACKAGE"
                                 ? `${item.package?.validityDays || 0} days validity`
-                                : item.itemType === "PRODUCT"
+                                : item.itemType === "PRODUCT" ||
+                                    item.itemType === "MEMBERSHIP"
                                   ? "-"
                                   : `${item.durationValue || 0} ${(
                                       item.durationUnit || "MINUTES"

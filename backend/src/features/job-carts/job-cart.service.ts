@@ -15,6 +15,8 @@ import { reverseAppointmentConsumables } from "../stock/appointmentConsumableRev
 import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import {
+  assignCustomerMembershipInTransaction,
+  CustomerMembershipError,
   getCurrentMembershipForCustomer,
   getCustomerMembershipHistory,
   resolveCurrentCustomerMembership,
@@ -164,6 +166,16 @@ const jobCartInclude = {
               validityDays: true,
             },
           },
+          membership: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              discountPercentage: true,
+              durationMonths: true,
+              walletCreditAmount: true,
+            },
+          },
           soldByStaff: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "asc" as const },
@@ -275,6 +287,21 @@ const present = (cart: JobCartRecord) => ({
         soldByStaffId: item.soldByStaffId,
         soldByStaff: item.soldByStaff,
         package: item.package,
+        createdAt: item.createdAt,
+      })),
+    ...(cart.invoice?.items ?? [])
+      .filter((item) => item.itemType === "MEMBERSHIP")
+      .map((item) => ({
+        id: item.id,
+        itemType: "MEMBERSHIP" as const,
+        membershipId: item.membershipId,
+        serviceName: item.serviceName,
+        price: item.unitPrice,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal,
+        soldByStaffId: item.soldByStaffId,
+        soldByStaff: item.soldByStaff,
+        membership: item.membership,
         createdAt: item.createdAt,
       })),
   ],
@@ -555,12 +582,15 @@ const decimalOrZero = (value: unknown) => {
  * Services: always. Products: never - a product is sold at its own price even
  * to a member. Packages: only when the salon opts in, because a package is
  * already sold at a discounted price and stacking is usually double-dipping.
+ * Memberships: never - a plan costs what it costs.
  */
 const isMembershipDiscountable = (
   itemType: string,
   salon: { membershipDiscountOnPackages: boolean }
 ) => {
   if (itemType === "PRODUCT") return false;
+  // Buying a plan is never cheaper because you already hold one.
+  if (itemType === "MEMBERSHIP") return false;
   if (itemType === "PACKAGE") return salon.membershipDiscountOnPackages;
   return true;
 };
@@ -625,7 +655,10 @@ const recalculateCart = async (
   // the invoice, services are rebuilt below from the cart. Services covered by
   // a package redemption are excluded - the customer already paid for those.
   const keptItems = cart.invoice.items.filter(
-    (item) => item.itemType === "PACKAGE" || item.itemType === "PRODUCT"
+    (item) =>
+      item.itemType === "PACKAGE" ||
+      item.itemType === "PRODUCT" ||
+      item.itemType === "MEMBERSHIP"
   );
   const paidServices = cart.services.filter(
     (item) => !item.customerPackageUsageItemId
@@ -960,7 +993,7 @@ export const getJobCartReferences = async (
         })
       : [];
   if (!salonId) {
-    return { salons, branches: [], staff: [], services: [] };
+    return { salons, branches: [], staff: [], services: [], memberships: [] };
   }
   const salon = await prisma.salon.findFirst({
     where: { id: salonId, status: true },
@@ -1046,7 +1079,28 @@ export const getJobCartReferences = async (
     },
     orderBy: { name: "asc" },
   });
-  return { salons, salon, branches, staff, services, packages, products };
+  const memberships = await prisma.membership.findMany({
+    where: { salonId, status: true },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      discountPercentage: true,
+      durationMonths: true,
+      walletCreditAmount: true,
+    },
+    orderBy: { name: "asc" },
+  });
+  return {
+    salons,
+    salon,
+    branches,
+    staff,
+    services,
+    packages,
+    products,
+    memberships,
+  };
 };
 
 export const getJobCartCustomerSummary = async (
@@ -1731,10 +1785,11 @@ export const addJobCartItem = async (
   actor: JobCartActor,
   id: string,
   input: {
-    itemType: "SERVICE" | "PACKAGE" | "PRODUCT";
+    itemType: "SERVICE" | "PACKAGE" | "PRODUCT" | "MEMBERSHIP";
     serviceId?: string;
     packageId?: string;
     productId?: string;
+    membershipId?: string;
     quantity?: number;
     staffId?: string;
   },
@@ -1937,6 +1992,75 @@ export const addJobCartItem = async (
         },
         ...audit,
       });
+    } else if (input.itemType === "MEMBERSHIP") {
+      const membership = await tx.membership.findFirst({
+        where: {
+          id: input.membershipId ?? "__missing__",
+          salonId: existing.salonId,
+          status: true,
+        },
+        select: { id: true, name: true, price: true },
+      });
+      if (!membership) {
+        throw new JobCartError(400, "Membership plan is unavailable");
+      }
+      // One plan per bill: a second one would immediately supersede the first
+      // and forfeit the wallet it was just sold with.
+      if (
+        existing.invoice!.items.some((item) => item.itemType === "MEMBERSHIP")
+      ) {
+        throw new JobCartError(
+          409,
+          "A membership is already on this job cart"
+        );
+      }
+      if (input.staffId) {
+        await validateStaff(
+          tx,
+          existing.salonId,
+          existing.branchId!,
+          input.staffId
+        );
+      }
+      const item = await tx.invoiceItem.create({
+        data: {
+          invoiceId: existing.invoice!.id,
+          itemType: "MEMBERSHIP",
+          membershipId: membership.id,
+          soldByStaffId: input.staffId ?? null,
+          itemCode: membership.id.slice(0, 8),
+          description: membership.name,
+          serviceName: membership.name,
+          quantity: 1,
+          unitPrice: membership.price,
+          discountAmount: 0,
+          taxPercent: 0,
+          taxAmount: 0,
+          lineTotal: membership.price,
+        },
+      });
+      await recalculateCart(tx, id, actor, audit);
+      await createAuditLog({
+        tx,
+        salonId: existing.salonId,
+        branchId: existing.branchId,
+        userId: actor.userId,
+        module: "JOB_CART",
+        action: "UPDATE",
+        entityId: id,
+        entityCode: existing.appointmentCode,
+        entityName: existing.customer.name,
+        description: `Membership ${membership.name} added to job cart ${existing.appointmentCode}`,
+        newData: {
+          itemId: item.id,
+          itemType: "MEMBERSHIP",
+          membershipId: membership.id,
+          membershipName: membership.name,
+          price: membership.price,
+          soldByStaffId: input.staffId,
+        },
+        ...audit,
+      });
     } else {
       const [service] = await validateServices(
         tx,
@@ -2024,7 +2148,9 @@ export const removeJobCartItem = async (
     const packageItem = existing.invoice!.items.find(
       (item) =>
         item.id === itemId &&
-        (item.itemType === "PACKAGE" || item.itemType === "PRODUCT")
+        (item.itemType === "PACKAGE" ||
+          item.itemType === "PRODUCT" ||
+          item.itemType === "MEMBERSHIP")
     );
     if (!serviceItem && !packageItem) {
       throw new JobCartError(404, "Job cart item not found");
@@ -2045,14 +2171,17 @@ export const removeJobCartItem = async (
       entityId: id,
       entityCode: existing.appointmentCode,
       entityName: existing.customer.name,
-      description: `${serviceItem ? "Service" : "Package"} ${
+      description: `${
+        serviceItem ? "Service" : packageItem!.itemType
+      } ${
         serviceItem?.serviceName ?? packageItem!.serviceName
       } removed from job cart ${existing.appointmentCode}`,
       oldData: {
         itemId,
-        itemType: serviceItem ? "SERVICE" : "PACKAGE",
+        itemType: serviceItem ? "SERVICE" : packageItem!.itemType,
         serviceId: serviceItem?.serviceId,
         packageId: packageItem?.packageId,
+        membershipId: packageItem?.membershipId,
         itemName: serviceItem?.serviceName ?? packageItem?.serviceName,
         price: serviceItem?.price ?? packageItem?.unitPrice,
       },
@@ -2441,6 +2570,11 @@ export const confirmJobCart = async (
       excludeAppointmentId: existing.id,
     });
     await useReservedPackageRedemptions(tx, existing, actor, audit);
+    // Recorded on the enrollment below. A wallet redemption is never how a
+    // membership was bought, so that tender is left off.
+    const tenderMethod = (
+      billing.payments?.length ? billing.payments : billing.payment ? [billing.payment] : []
+    ).map((tender) => tender.method).find((method) => method !== "MEMBERSHIP_WALLET");
     const invoiceType = billing.invoiceType ?? existing.invoice.invoiceType;
     const manualDiscount = Prisma.Decimal.min(
       decimalOrZero(billing.discountAmount),
@@ -2700,6 +2834,40 @@ export const confirmJobCart = async (
         ...audit,
       });
     }
+    // Enrollment happens last, after the bill is settled, so the wallet it
+    // credits cannot be spent on the very bill that bought it, and so the
+    // membership discount above is the one the customer walked in with.
+    for (const [index, item] of existing.invoice.items.entries()) {
+      if (item.itemType !== "MEMBERSHIP" || !item.membershipId) continue;
+      try {
+        await assignCustomerMembershipInTransaction(
+          tx,
+          actor,
+          existing.customerId,
+          {
+            membershipId: item.membershipId,
+            // What the customer was actually charged for the plan, tax
+            // included, taken from the same calculation as the invoice total.
+            amountPaid: Number(
+              calculation.lines[index]?.lineTotal ?? item.lineTotal
+            ),
+            invoiceId: existing.invoice.id,
+            jobCartAppointmentId: existing.id,
+            ...(item.soldByStaffId
+              ? { soldByStaffId: item.soldByStaffId }
+              : {}),
+            ...(tenderMethod ? { paymentMethod: tenderMethod } : {}),
+            note: `Sold on job cart ${existing.appointmentCode}`,
+          },
+          audit
+        );
+      } catch (error) {
+        if (error instanceof CustomerMembershipError) {
+          throw new JobCartError(error.status, error.message);
+        }
+        throw error;
+      }
+    }
     await createAuditLog({
       tx,
       salonId: existing.salonId,
@@ -2825,7 +2993,7 @@ export const cancelJobCart = async (
       return present(await requireCart(tx, id, actor));
     }
     const packageItems = existing.invoice!.items.filter(
-      (item) => item.itemType === "PACKAGE"
+      (item) => item.itemType === "PACKAGE" || item.itemType === "MEMBERSHIP"
     );
     if (packageItems.length) {
       await tx.invoiceItem.deleteMany({
@@ -2844,10 +3012,11 @@ export const cancelJobCart = async (
           entityId: existing.id,
           entityCode: existing.appointmentCode,
           entityName: existing.customer.name,
-          description: `Package ${item.serviceName} removed while cancelling job cart ${existing.appointmentCode}`,
+          description: `${item.itemType} ${item.serviceName} removed while cancelling job cart ${existing.appointmentCode}`,
           oldData: {
             itemId: item.id,
             packageId: item.packageId,
+            membershipId: item.membershipId,
             price: item.unitPrice,
           },
           ...audit,

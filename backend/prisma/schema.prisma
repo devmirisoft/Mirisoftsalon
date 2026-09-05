@@ -225,6 +225,7 @@ model Membership {
 
   customers           Customer[]
   customerMemberships CustomerMembership[]
+  invoiceItems        InvoiceItem[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 
@@ -1554,6 +1555,8 @@ model InvoiceItem {
   itemType      InvoiceItemType @default(SERVICE)
   packageId     String?
   package       ServicePackage? @relation(fields: [packageId], references: [id])
+  membershipId  String?
+  membership    Membership?     @relation(fields: [membershipId], references: [id])
   soldByStaffId String?
   soldByStaff   Staff?          @relation("InvoiceItemSoldBy", fields: [soldByStaffId], references: [id])
 
@@ -1585,6 +1588,7 @@ model InvoiceItem {
   @@index([serviceId])
   @@index([productId])
   @@index([packageId])
+  @@index([membershipId])
   @@index([soldByStaffId])
   @@index([itemType])
 }
@@ -1810,6 +1814,7 @@ enum InvoiceItemType {
   PRODUCT
   PACKAGE
   PACKAGE_REDEMPTION
+  MEMBERSHIP
 }
 
 enum CustomerTransactionType {

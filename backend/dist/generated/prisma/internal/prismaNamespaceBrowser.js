@@ -708,6 +708,7 @@ export const InvoiceItemScalarFieldEnum = {
     productId: 'productId',
     itemType: 'itemType',
     packageId: 'packageId',
+    membershipId: 'membershipId',
     soldByStaffId: 'soldByStaffId',
     customerPackageUsageItemId: 'customerPackageUsageItemId',
     itemCode: 'itemCode',

@@ -300,8 +300,12 @@ export const getSalonReport = async (req: Request, res: Response) => {
       invoiceItems
         .filter((row) => row.itemType === "PRODUCT")
         .reduce((sum, row) => sum + num(row.lineTotal), 0) + retailSalesTotal;
+    // Membership lines are reported under memberships below, so leaving them
+    // out here keeps the two figures from double counting the same money.
     const serviceSalesTotal = invoiceItems
-      .filter((row) => row.itemType !== "PRODUCT")
+      .filter(
+        (row) => row.itemType !== "PRODUCT" && row.itemType !== "MEMBERSHIP"
+      )
       .reduce((sum, row) => sum + num(row.lineTotal), 0);
     const netEarnings =
       servicePayments +

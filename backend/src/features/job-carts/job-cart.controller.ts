@@ -16,6 +16,7 @@ import {
   removeJobCartItem,
   removeJobCartPackageRedemption,
   updateJobCart,
+  updateJobCartItem,
   type JobCartActor,
 } from "./job-cart.service.js";
 import {
@@ -24,6 +25,7 @@ import {
   customerSummarySchema,
   createJobCartSchema,
   listJobCartsSchema,
+  updateJobCartItemSchema,
   updateJobCartSchema,
 } from "./job-cart.validation.js";
 
@@ -255,6 +257,29 @@ export const postJobCartItem = async (req: Request, res: Response) => {
       message: `${
         parsed.itemType.charAt(0) + parsed.itemType.slice(1).toLowerCase()
       } added to job cart`,
+      data,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+export const patchJobCartItem = async (req: Request, res: Response) => {
+  try {
+    const parsed = updateJobCartItemSchema.parse(req.body);
+    const data = await updateJobCartItem(
+      actorFrom(req),
+      param(req, "id"),
+      param(req, "itemId"),
+      {
+        ...(parsed.price === undefined ? {} : { price: parsed.price }),
+        ...(parsed.staffId === undefined ? {} : { staffId: parsed.staffId }),
+      },
+      requestAuditContext(req)
+    );
+    return res.status(200).json({
+      success: true,
+      message: "Job cart service updated",
       data,
     });
   } catch (error) {

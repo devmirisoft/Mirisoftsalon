@@ -7,7 +7,10 @@ import {
   updateBranch,
 } from "./branch.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { requireRole } from "../../middlewares/rbac.middleware.js";
+import {
+  requireExactRole,
+  requireRole,
+} from "../../middlewares/rbac.middleware.js";
 
 import { validateUuidParam } from "../../middlewares/uuid.middleware.js";
 
@@ -18,7 +21,7 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireExactRole("SUPER_ADMIN", "SALON_ADMIN"),
   createBranch
 );
 
@@ -36,13 +39,13 @@ router.get(
 
 router.put(
   "/:id",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireExactRole("SUPER_ADMIN", "SALON_ADMIN"),
   updateBranch
 );
 
 router.delete(
   "/:id",
-  requireRole("SUPER_ADMIN", "SALON_ADMIN"),
+  requireExactRole("SUPER_ADMIN", "SALON_ADMIN"),
   deleteBranch
 );
 

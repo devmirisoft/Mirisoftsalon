@@ -33,33 +33,6 @@ export const UserModel = {
     });
   },
 
-  createReceptionist: async (data: {
-    name: string;
-    email: string;
-    phone_number: string;
-    passwordHash: string;
-    salonId: string;
-    branchId?: string;
-  }) => {
-    return prisma.user.create({
-      data: {
-        ...data,
-        role: "RECEPTIONIST",
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone_number: true,
-        role: true,
-        status: true,
-        salonId: true,
-        branchId: true,
-        createdAt: true,
-      },
-    });
-  },
-
   createStaffAccount: async (data: {
     staffId: string;
     name: string;

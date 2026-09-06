@@ -97,6 +97,8 @@ const staffPayload = (stamp: string, overrides: Record<string, unknown> = {}) =>
   workingFrom: "10:00",
   workingTo: "19:00",
   weekOff: "MONDAY",
+  baseSalary: 20000,
+  workingDaysPerMonth: 26,
   ...overrides,
 });
 
@@ -283,5 +285,96 @@ describe("Branch manager scope", () => {
       (staff) => staff.id
     );
     expect(ids).toEqual(expect.arrayContaining([homeStaff.id, otherStaff.id]));
+  });
+
+  it("gives the manager salon-admin powers inside their own branch only", async () => {
+    const f = await buildFixture();
+
+    // Admin-level writes a manager may now make.
+    const customer = await request(app)
+      .post("/api/customers")
+      .set(auth(f.managerToken))
+      .send({
+        name: `Scope Customer ${f.stamp}`,
+        phone: `96${f.stamp.slice(-8)}`,
+      });
+    expectSuccess(customer, 201);
+    expect(customer.body.data.branchId).toBe(f.homeBranch.id);
+
+    // ...but not for another branch.
+    expectFailure(
+      await request(app)
+        .post("/api/customers")
+        .set(auth(f.managerToken))
+        .send({
+          name: `Outside Customer ${f.stamp}`,
+          phone: `93${f.stamp.slice(-8)}`,
+          branchId: f.otherBranch.id,
+        }),
+      403
+    );
+
+    const expense = await request(app)
+      .post("/api/expenses")
+      .set(auth(f.managerToken))
+      .send({
+        title: `Scope Expense ${f.stamp}`,
+        amount: 100,
+        category: "Misc",
+        branchId: f.otherBranch.id,
+      });
+    expectSuccess(expense, 201);
+    expect(expense.body.data.branchId).toBe(f.homeBranch.id);
+
+    // Another branch's customer stays invisible.
+    const outsider = await request(app)
+      .post("/api/customers")
+      .set(auth(f.adminToken))
+      .send({
+        name: "Outsider Customer",
+        phone: `92${f.stamp.slice(-8)}`,
+        branchId: f.otherBranch.id,
+      });
+    expectSuccess(outsider, 201);
+
+    const customers = await request(app)
+      .get("/api/customers")
+      .set(auth(f.managerToken));
+    expectSuccess(customers, 200);
+    expect(
+      (customers.body.data as Array<{ id: string }>).some(
+        (row) => row.id === outsider.body.data.id
+      )
+    ).toBe(false);
+
+    // Salon-wide actions stay with the salon admin.
+    expectFailure(
+      await request(app)
+        .post("/api/branches")
+        .set(auth(f.managerToken))
+        .send({ name: `Sneaky Branch ${f.stamp}` }),
+      403
+    );
+
+    expectFailure(
+      await request(app)
+        .post("/api/users/branch-manager")
+        .set(auth(f.managerToken))
+        .send({
+          name: "Peer Manager",
+          email: `peer-manager-${f.stamp}@example.com`,
+          phone_number: `94${f.stamp.slice(-8)}`,
+          password: "Password@123",
+          branchId: f.homeBranch.id,
+        }),
+      403
+    );
+
+    expectFailure(
+      await request(app)
+        .get("/api/salons/gst/settings")
+        .set(auth(f.managerToken)),
+      403
+    );
   });
 });

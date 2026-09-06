@@ -33,6 +33,9 @@ import {
   resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
+import {
+  isBranchLockedRole,
+} from "../../utils/branch-scope.js";
 
 
 const INVOICE_TYPES = ["GST_INVOICE", "BILL_OF_SUPPLY"] as const;
@@ -150,9 +153,9 @@ const getExistingInvoiceByAccess = async (req: Request, invoiceId: string) => {
   const invoice = await InvoiceModel.findByIdAndSalon(invoiceId, salonId);
   if (
     invoice &&
-    req.user?.role === "RECEPTIONIST" &&
-    req.user.branchId &&
-    invoice.branchId !== req.user.branchId
+    isBranchLockedRole(req.user?.role) &&
+    req.user?.branchId &&
+    invoice.branchId !== req.user?.branchId
   ) {
     return null;
   }
@@ -824,7 +827,7 @@ export const getInvoices = async (req: Request, res: Response) => {
     }
 
     const invoices = await InvoiceModel.findBySalon(req.user.salonId, {
-      ...(req.user.role === "RECEPTIONIST" && req.user.branchId
+      ...(isBranchLockedRole(req.user.role) && req.user.branchId
         ? { branchId: req.user.branchId }
         : branchId
           ? { branchId: String(branchId) }
@@ -1227,10 +1230,8 @@ const invoiceCouponAccess = (req: Request) => ({
   ...(req.user?.role === "SUPER_ADMIN"
     ? {}
     : { salonId: req.user?.salonId ?? "__missing__" }),
-  ...((req.user?.role === "RECEPTIONIST" ||
-    req.user?.role === "BRANCH_MANAGER") &&
-  req.user.branchId
-    ? { actorBranchId: req.user.branchId }
+  ...(isBranchLockedRole(req.user?.role) && req.user?.branchId
+    ? { actorBranchId: req.user?.branchId }
     : {}),
 });
 

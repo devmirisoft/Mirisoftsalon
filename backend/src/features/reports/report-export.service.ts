@@ -22,14 +22,14 @@ export type ExportReportType = (typeof EXPORT_REPORT_TYPES)[number];
 
 const allowedRoles: Record<ExportReportType, string[]> = {
   revenue: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"],
-  expenses: ["SUPER_ADMIN", "SALON_ADMIN"],
-  "salon-report": ["SUPER_ADMIN", "SALON_ADMIN"],
+  expenses: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"],
+  "salon-report": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"],
   inventory: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   "low-stock": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   "staff-performance": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"],
   payroll: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "STAFF"],
-  "customer-outstanding": ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
-  appointments: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
+  "customer-outstanding": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
+  appointments: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
 };
 
 const clean = (value: unknown) =>

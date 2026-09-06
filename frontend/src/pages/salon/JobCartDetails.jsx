@@ -13,6 +13,8 @@ import {
   ModalHeader,
   Row,
   Spinner,
+  UncontrolledPopover,
+  PopoverBody,
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
@@ -66,6 +68,9 @@ const JobCartDetails = () => {
   const [productId, setProductId] = useState("");
   const [servicePickerCategoryId, setServicePickerCategoryId] = useState("");
   const [servicePickerSearch, setServicePickerSearch] = useState("");
+  const [servicePickerStaffId, setServicePickerStaffId] = useState("");
+  // Price edits live here until blur so each keystroke does not hit the API.
+  const [priceDrafts, setPriceDrafts] = useState({});
   const [packageStaffId, setPackageStaffId] = useState("");
   const [membershipStaffId, setMembershipStaffId] = useState("");
   const [packagePickerOpen, setPackagePickerOpen] = useState(false);
@@ -323,8 +328,27 @@ const JobCartDetails = () => {
       salonApi.jobCarts.addItem(id, {
         itemType: "SERVICE",
         serviceId: pickedServiceId,
+        ...(servicePickerStaffId ? { staffId: servicePickerStaffId } : {}),
       })
     );
+
+  const updateServiceItem = (itemId, body) =>
+    run(() => salonApi.jobCarts.updateItem(id, itemId, body));
+
+  const savePriceDraft = (item) => {
+    const draft = priceDrafts[item.id];
+    setPriceDrafts((current) => {
+      const next = { ...current };
+      delete next[item.id];
+      return next;
+    });
+    const price = Number(draft);
+    if (draft === undefined || draft === "" || Number.isNaN(price) || price < 0) {
+      return;
+    }
+    if (price === Number(item.price)) return;
+    updateServiceItem(item.id, { price });
+  };
 
   const addPackageFromPicker = (pickedPackageId) =>
     run(() =>
@@ -592,6 +616,7 @@ const JobCartDetails = () => {
   return (
     <PageShell
       title={cart ? `Job Cart ${cart.jobCartId}` : "Job Cart"}
+      inlineDescription
       description={
         cart
           ? `${cart.customer?.name || "Walk-in"} • ${formatDate(
@@ -627,47 +652,27 @@ const JobCartDetails = () => {
           <Col lg="8">
             <div className="card card-bordered mb-4">
               <div className="card-inner">
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                {/* <div className="d-flex justify-content-between align-items-center mb-4">
                   <h5 className="mb-0">Customer & Schedule</h5>
                   <span className="text-soft">
                     {cart.branch?.name || "No branch"}
                   </span>
-                </div>
-                <Row>
-                  <Col md="6">
-                    <FormGroup>
+                </div> */}
+                <Row className="g-2 align-items-end">
+                  <Col md="3">
+                    <FormGroup noMargin>
                       <Label>Customer Name</Label>
-                      <Input
-                        disabled={!active}
-                        value={form.customerName}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            customerName: event.target.value,
-                          }))
-                        }
-                      />
+                      <Input readOnly value={form.customerName} />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
-                    <FormGroup>
+                  <Col md="2">
+                    <FormGroup noMargin>
                       <Label>Phone Number</Label>
-                      <Input
-                        disabled={!active}
-                        value={form.phone}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            phone: event.target.value,
-                          }))
-                        }
-                      />
+                      <Input readOnly value={form.phone} />
                     </FormGroup>
                   </Col>
-                </Row>
-                <Row>
-                  <Col md="6">
-                    <FormGroup>
+                  <Col md="3">
+                    <FormGroup noMargin>
                       <Label>Date & Start Time</Label>
                       <Input
                         type="datetime-local"
@@ -683,57 +688,72 @@ const JobCartDetails = () => {
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Label>Staff (optional)</Label>
-                      <Input
-                        type="select"
-                        disabled={!active}
-                        value={form.staffId}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            staffId: event.target.value,
-                          }))
-                        }
+                  <Col xs="auto" className="d-flex align-items-end gap-2">
+                    <Button
+                      id="bookingNoteToggle"
+                      type="button"
+                      color={form.bookingNote ? "primary" : "light"}
+                      outline
+                      className="btn-icon"
+                      title={form.bookingNote || "Add note"}
+                    >
+                      <Icon name="edit-alt" />
+                    </Button>
+                    <UncontrolledPopover
+                      trigger="legacy"
+                      placement="bottom"
+                      target="bookingNoteToggle"
+                    >
+                      <PopoverBody style={{ width: "18rem" }}>
+                        <Label className="form-label">Note</Label>
+                        <Input
+                          type="textarea"
+                          rows="3"
+                          placeholder="Anything the stylist should know"
+                          disabled={!active}
+                          value={form.bookingNote}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              bookingNote: event.target.value,
+                            }))
+                          }
+                        />
+                      </PopoverBody>
+                    </UncontrolledPopover>
+                    {active && (
+                      <Button
+                        className="text-nowrap"
+                        color="primary"
+                        outline
+                        disabled={working}
+                        onClick={save}
                       >
-                        <option value="">Unassigned</option>
-                        {refs.staff.map((member) => (
-                          <option key={member.id} value={member.id}>
-                            {member.name} — {member.jobRole}
-                          </option>
-                        ))}
-                      </Input>
-                    </FormGroup>
+                        Save Details
+                      </Button>
+                    )}
                   </Col>
                 </Row>
-                <FormGroup>
-                  <Label>Note</Label>
-                  <Input
-                    type="textarea"
-                    rows="2"
-                    disabled={!active}
-                    value={form.bookingNote}
-                    onChange={(event) =>
-                      setForm((current) => ({
-                        ...current,
-                        bookingNote: event.target.value,
-                      }))
-                    }
-                  />
-                </FormGroup>
-                {active && (
-                  <Button color="primary" outline disabled={working} onClick={save}>
-                    Save Details
-                  </Button>
-                )}
               </div>
             </div>
 
             <div className="card card-bordered">
               <div className="card-inner">
-                <h5>Services & Packages</h5>
-                {active && standaloneServiceItems.length > 0 && (
+                <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
+                  <h5 className="mb-4">Services & Package</h5>
+                  {active && (
+                    <Button
+                      color="primary"
+                      className="mb-4"
+                      outline
+                      disabled={working}
+                      onClick={() => setServicePickerOpen(true)}
+                    >
+                      <Icon name="plus" /> Add Service
+                    </Button>
+                  )}
+                </div>
+                {/* {active && standaloneServiceItems.length > 0 && (
                   <div className="border rounded p-3 mb-4">
                     <h6>Create Customer Custom Package</h6>
                     <Row className="g-2">
@@ -831,35 +851,7 @@ const JobCartDetails = () => {
                       ))}
                     </div>
                   </div>
-                )}
-                {active && (
-                  <div className="mb-4 d-flex flex-wrap gap-2">
-                    <Button
-                      color="primary"
-                      outline
-                      disabled={working}
-                      onClick={() => setServicePickerOpen(true)}
-                    >
-                      <Icon name="plus" /> Add Service
-                    </Button>
-                    <Button
-                      color="primary"
-                      outline
-                      disabled={working}
-                      onClick={() => setPackagePickerOpen(true)}
-                    >
-                      <Icon name="plus" /> Add Package
-                    </Button>
-                    <Button
-                      color="primary"
-                      outline
-                      disabled={working || membershipOnCart}
-                      onClick={() => setMembershipPickerOpen(true)}
-                    >
-                      <Icon name="plus" /> Add Membership
-                    </Button>
-                  </div>
-                )}
+                )} */}
                 <Modal
                   isOpen={servicePickerOpen}
                   toggle={() => setServicePickerOpen(false)}
@@ -872,7 +864,18 @@ const JobCartDetails = () => {
                   </ModalHeader>
                   <ModalBody>
                     <Row className="g-3 mb-3">
-                      <Col md="6">
+                       <Col md="4">
+                        <Label className="mb-1">Search</Label>
+                        <Input
+                          type="search"
+                          placeholder="Search services"
+                          value={servicePickerSearch}
+                          onChange={(event) =>
+                            setServicePickerSearch(event.target.value)
+                          }
+                        />
+                      </Col>
+                      <Col md="4">
                         <Label className="mb-1">Category</Label>
                         <Input
                           type="select"
@@ -889,16 +892,23 @@ const JobCartDetails = () => {
                           ))}
                         </Input>
                       </Col>
-                      <Col md="6">
-                        <Label className="mb-1">Search</Label>
+                     
+                      <Col md="4">
+                        <Label className="mb-1">Staff</Label>
                         <Input
-                          type="search"
-                          placeholder="Search services"
-                          value={servicePickerSearch}
+                          type="select"
+                          value={servicePickerStaffId}
                           onChange={(event) =>
-                            setServicePickerSearch(event.target.value)
+                            setServicePickerStaffId(event.target.value)
                           }
-                        />
+                        >
+                          <option value="">Assign later</option>
+                          {refs.staff.map((member) => (
+                            <option key={member.id} value={member.id}>
+                              {member.name} - {member.jobRole}
+                            </option>
+                          ))}
+                        </Input>
                       </Col>
                     </Row>
                     <div
@@ -1197,7 +1207,7 @@ const JobCartDetails = () => {
                     </p>
                   </ModalBody>
                 </Modal>
-                {active && (
+                {/* {active && (
                   <div className="row g-2 mb-4">
                     <div className="col-md-10">
                       <Select
@@ -1236,7 +1246,7 @@ const JobCartDetails = () => {
                       </Button>
                     </div>
                   </div>
-                )}
+                )} */}
                 <div className="table-responsive">
                   <table className="table table-tranx">
                     <thead>
@@ -1253,6 +1263,13 @@ const JobCartDetails = () => {
                           <tr key={item.id}>
                             <td>
                               {item.serviceName}
+                              {item.itemType === "SERVICE" &&
+                                item.staff?.name && (
+                                  <span className="small text-primary">
+                                    {" "}
+                                    - {item.staff.name}
+                                  </span>
+                                )}
                               {item.itemType === "PACKAGE" && (
                                 <div className="small text-primary">
                                   Package
@@ -1288,14 +1305,6 @@ const JobCartDetails = () => {
                                   </span>
                                 </div>
                               )}
-                              {item.itemType !== "PACKAGE" &&
-                                item.itemType !== "PRODUCT" &&
-                                item.itemType !== "MEMBERSHIP" &&
-                                item.staff?.name && (
-                                  <div className="small text-primary">
-                                    Staff: {item.staff.name}
-                                  </div>
-                                )}
                             </td>
                             <td>
                               {item.itemType === "PACKAGE"
@@ -1308,17 +1317,47 @@ const JobCartDetails = () => {
                                     ).toLowerCase()}`}
                             </td>
                             <td className="text-end">
-                              {formatMoney(
-                                item.itemType === "PRODUCT"
-                                  ? item.lineTotal
-                                  : item.price
+                              {active && item.itemType === "SERVICE" ? (
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  bsSize="sm"
+                                  className="text-end ms-auto"
+                                  style={{ maxWidth: 120 }}
+                                  disabled={working}
+                                  value={
+                                    priceDrafts[item.id] ??
+                                    String(item.price ?? "")
+                                  }
+                                  onChange={(event) =>
+                                    setPriceDrafts((current) => ({
+                                      ...current,
+                                      [item.id]: event.target.value,
+                                    }))
+                                  }
+                                  onBlur={() => savePriceDraft(item)}
+                                  onKeyDown={(event) => {
+                                    if (event.key === "Enter") {
+                                      event.target.blur();
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <>
+                                  {formatMoney(
+                                    item.itemType === "PRODUCT"
+                                      ? item.lineTotal
+                                      : item.price
+                                  )}
+                                  {item.itemType === "PRODUCT" &&
+                                  item.quantity > 1 ? (
+                                    <div className="small text-soft">
+                                      {item.quantity} x {formatMoney(item.price)}
+                                    </div>
+                                  ) : null}
+                                </>
                               )}
-                              {item.itemType === "PRODUCT" &&
-                              item.quantity > 1 ? (
-                                <div className="small text-soft">
-                                  {item.quantity} x {formatMoney(item.price)}
-                                </div>
-                              ) : null}
                             </td>
                             {active && (
                               <td className="text-end">

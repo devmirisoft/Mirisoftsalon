@@ -3,12 +3,14 @@ import { ProductModel } from "./product.model.js";
 import { prisma } from "../../config/prisma.js";
 import {
   branchScope,
+  writableBranch,
   cleanText,
   getSalonId,
   numberValue,
   sendInventoryError,
   validateBranch,
 } from "./inventory-access.js";
+import { isBranchLockedRole } from "../../utils/branch-scope.js";
 
 const UNITS = ["PCS", "ML", "LITER", "GRAM", "KG", "PACK", "BOX", "BOTTLE", "TUBE"] as const;
 type ProductUnit = (typeof UNITS)[number];
@@ -68,10 +70,11 @@ export const createProduct = async (req: Request, res: Response) => {
     if (req.body.unit && !isUnit(req.body.unit)) {
       return res.status(400).json({ success: false, message: "Invalid product unit" });
     }
+    const branchId = writableBranch(req, req.body.branchId);
     const referenceError = await checkReferences(
       salonId,
       req.body.brandId,
-      req.body.branchId,
+      branchId,
       req.body.vendorId
     );
     if (referenceError) return res.status(400).json({ success: false, message: referenceError });
@@ -93,7 +96,7 @@ export const createProduct = async (req: Request, res: Response) => {
       ...(typeof req.body.isServiceConsumable === "boolean" ? { isServiceConsumable: req.body.isServiceConsumable } : {}),
       ...(req.body.brandId ? { brand: { connect: { id: req.body.brandId } } } : {}),
       ...(req.body.vendorId ? { vendor: { connect: { id: req.body.vendorId } } } : {}),
-      ...(req.body.branchId ? { branch: { connect: { id: req.body.branchId } } } : {}),
+      ...(branchId ? { branch: { connect: { id: branchId } } } : {}),
     });
     return res.status(201).json({ success: true, data });
   } catch (error) {
@@ -170,10 +173,11 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (req.body.unit !== undefined && !isUnit(req.body.unit)) {
       return res.status(400).json({ success: false, message: "Invalid product unit" });
     }
+    const canMoveBranch = !isBranchLockedRole(req.user?.role);
     const referenceError = await checkReferences(
       existing.salonId,
       req.body.brandId,
-      req.body.branchId,
+      canMoveBranch ? req.body.branchId : undefined,
       req.body.vendorId
     );
     if (referenceError) return res.status(400).json({ success: false, message: referenceError });
@@ -195,7 +199,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       ...("brandId" in req.body
         ? req.body.brandId ? { brand: { connect: { id: req.body.brandId } } } : { brand: { disconnect: true } }
         : {}),
-      ...("branchId" in req.body
+      ...(canMoveBranch && "branchId" in req.body
         ? req.body.branchId ? { branch: { connect: { id: req.body.branchId } } } : { branch: { disconnect: true } }
         : {}),
       ...("vendorId" in req.body

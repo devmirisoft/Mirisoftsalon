@@ -124,11 +124,13 @@ const Management = () => {
 
   const isManager = roleCanManage(user?.role);
   const isSuper = user?.role === "SUPER_ADMIN";
+  // Branches and GST are salon-wide; a branch manager edits neither.
+  const isSalonWide = isSuper || user?.role === "SALON_ADMIN";
   const tabs = [
     ...(isSuper ? [{ id: "salons", label: "Salons" }] : []),
     { id: "branches", label: "Branches" },
     { id: "staff", label: "Staff" },
-    ...(isManager ? [{ id: "gst", label: "GST" }] : []),
+    ...(isSalonWide ? [{ id: "gst", label: "GST" }] : []),
     ...(isManager ? [{ id: "accounts", label: "User accounts" }] : []),
   ];
 
@@ -281,7 +283,7 @@ const Management = () => {
             },
           ]
         : []),
-      ...(accountModal === "receptionist" && !isBranchLocked
+      ...(accountModal !== "salon-admin" && !isBranchLocked
         ? [
             {
               name: "branchId",
@@ -300,6 +302,8 @@ const Management = () => {
     setAccountError("");
     if (accountModal === "salon-admin") {
       await salonApi.users.createSalonAdmin(values);
+    } else if (accountModal === "branch-manager") {
+      await salonApi.users.createBranchManager(values);
     } else {
       await salonApi.users.createReceptionist(values);
     }
@@ -360,9 +364,9 @@ const Management = () => {
             title="Branches"
             description="Physical locations attached to each salon."
             api={salonApi.branches}
-            canCreate={isManager}
-            canEdit={isManager}
-            canDelete={isManager}
+            canCreate={isSalonWide}
+            canEdit={isSalonWide}
+            canDelete={isSalonWide}
             columns={[
               { key: "name", label: "Branch" },
               ...(isSuper
@@ -557,12 +561,17 @@ const Management = () => {
             <div className="card-inner">
               <h5 className="title">Create role accounts</h5>
               <p className="text-soft">
-                These actions use the backend’s salon-admin and receptionist account APIs.
+                These actions use the backend’s salon-admin, branch-manager and receptionist account APIs.
               </p>
               <div className="d-flex flex-wrap gap-2">
                 {isSuper && (
                   <Button color="primary" onClick={() => setAccountModal("salon-admin")}>
                     <Icon name="shield-star" /> Create salon admin
+                  </Button>
+                )}
+                {!isBranchLocked && (
+                  <Button color="primary" onClick={() => setAccountModal("branch-manager")}>
+                    <Icon name="user-check" /> Create branch manager
                   </Button>
                 )}
                 <Button color="info" onClick={() => setAccountModal("receptionist")}>
@@ -589,7 +598,9 @@ const Management = () => {
         title={
           accountModal === "salon-admin"
             ? "Create salon administrator"
-            : "Create receptionist"
+            : accountModal === "branch-manager"
+              ? "Create branch manager"
+              : "Create receptionist"
         }
         fields={accountFields}
         onSubmit={createAccount}

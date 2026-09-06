@@ -254,6 +254,42 @@ describe("Walk-in job carts", () => {
     expect(Number(removed.body.data.invoice.totalAmount)).toBe(500);
   });
 
+  it("reprices a service line and assigns its staff, keeping the draft invoice in step", async () => {
+    const f = await fixture();
+    const created = await createCart(f);
+    const id = created.body.data.id as string;
+    const line = created.body.data.items[0];
+
+    const priced = await request(app)
+      .patch(`/api/job-carts/${id}/items/${line.id}`)
+      .set(auth(f.adminToken))
+      .send({ price: 650, staffId: f.stylist.id });
+    expect(priced.status).toBe(200);
+    const updated = priced.body.data.items.find(
+      (item: { id: string }) => item.id === line.id
+    );
+    expect(Number(updated.price)).toBe(650);
+    expect(updated.staffId).toBe(f.stylist.id);
+    expect(Number(priced.body.data.invoice.subtotalAmount)).toBe(650);
+    expect(Number(priced.body.data.invoice.totalAmount)).toBe(650);
+
+    const cleared = await request(app)
+      .patch(`/api/job-carts/${id}/items/${line.id}`)
+      .set(auth(f.adminToken))
+      .send({ staffId: null });
+    expect(cleared.status).toBe(200);
+    expect(
+      cleared.body.data.items.find((item: { id: string }) => item.id === line.id)
+        .staffId
+    ).toBeNull();
+
+    const empty = await request(app)
+      .patch(`/api/job-carts/${id}/items/${line.id}`)
+      .set(auth(f.adminToken))
+      .send({});
+    expect(empty.status).toBe(400);
+  });
+
   it("lists carts confirmed with a draft invoice under the completed filter", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {

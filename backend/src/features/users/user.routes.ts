@@ -3,13 +3,17 @@ import { Router } from "express";
 import {
   getUsers,
   createSalonAdmin,
+  createBranchManager,
   createReceptionist,
   createStaffAccount,
   updateUserStatus,
 } from "./user.controller.js";
 
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { requireRole } from "../../middlewares/rbac.middleware.js";
+import {
+  requireExactRole,
+  requireRole,
+} from "../../middlewares/rbac.middleware.js";
 
 import { validateUuidParam } from "../../middlewares/uuid.middleware.js";
 
@@ -30,6 +34,12 @@ router.patch(
   "/:id/status",
   requireRole("SUPER_ADMIN", "SALON_ADMIN"),
   updateUserStatus
+);
+
+router.post(
+  "/branch-manager",
+  requireExactRole("SUPER_ADMIN", "SALON_ADMIN"),
+  createBranchManager
 );
 
 router.post(

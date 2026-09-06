@@ -14,6 +14,7 @@ import {
   postConfirmJobCart,
   postJobCart,
   postJobCartItem,
+  patchJobCartItem,
   postJobCartPackageRedemption,
   putJobCart,
 } from "./job-cart.controller.js";
@@ -39,6 +40,7 @@ router.get("/customer-summary", getJobCartCustomerSummaryController);
 router.get("/:id", getJobCartById);
 router.put("/:id", putJobCart);
 router.post("/:id/items", postJobCartItem);
+router.patch("/:id/items/:itemId", patchJobCartItem);
 router.delete("/:id/items/:itemId", deleteJobCartItem);
 router.get("/:id/package-redemptions", getJobCartPackageRedemptionList);
 router.post("/:id/package-redemptions", postJobCartPackageRedemption);

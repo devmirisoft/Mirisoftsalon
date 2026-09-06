@@ -1,4 +1,6 @@
-const hasRole = (role, roles) => roles.includes(role);
+import { allowsRole } from "@/utils/salonFormat";
+
+const hasRole = (role, roles) => allowsRole(roles, role);
 
 
 const getMenu = (role) => {

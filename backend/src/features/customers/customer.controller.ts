@@ -12,6 +12,10 @@ import {
   synchronizeCustomerMembershipExpiry,
   type CustomerMembershipActor,
 } from "../customer-memberships/customer-membership.service.js";
+import {
+  branchFilterFor,
+  isBranchLockedRole,
+} from "../../utils/branch-scope.js";
 
 const CUSTOMER_STATUSES = ["REGULAR", "PREMIUM", "IRREGULAR"] as const;
 
@@ -72,7 +76,7 @@ const getExistingCustomerByAccess = async (req: Request, customerId: string) => 
   return CustomerModel.findByIdAndSalon(
     customerId,
     salonId,
-    req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+    branchFilterFor(req)
   );
 };
 
@@ -203,15 +207,15 @@ export const createCustomer = async (req: Request, res: Response) => {
 
     let finalBranchId: string | undefined = branchId;
 
-    if (req.user?.role === "RECEPTIONIST" && req.user.branchId) {
-      if (branchId && branchId !== req.user.branchId) {
+    if (isBranchLockedRole(req.user?.role) && req.user?.branchId) {
+      if (branchId && branchId !== req.user?.branchId) {
         return res.status(403).json({
           success: false,
           message: "You do not have access to this branch",
         });
       }
 
-      finalBranchId = req.user.branchId;
+      finalBranchId = req.user?.branchId;
     }
 
     if (finalBranchId) {
@@ -289,7 +293,7 @@ export const getCustomers = async (req: Request, res: Response) => {
 
     const customers = await CustomerModel.findBySalon(
       req.user.salonId,
-      req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined
+      branchFilterFor(req)
     );
 
     return res.status(200).json({
@@ -400,10 +404,10 @@ export const updateCustomer = async (req: Request, res: Response) => {
     }
 
     if (
-      req.user?.role === "RECEPTIONIST" &&
-      req.user.branchId &&
+      isBranchLockedRole(req.user?.role) &&
+      req.user?.branchId &&
       "branchId" in req.body &&
-      branchId !== req.user.branchId
+      branchId !== req.user?.branchId
     ) {
       return res.status(403).json({
         success: false,
@@ -564,9 +568,7 @@ export const assignCustomerMembership = async (
         : await CustomerModel.findByIdAndSalon(
             id,
             existingCustomer.salonId,
-            req.user.role === "RECEPTIONIST"
-              ? req.user.branchId
-              : undefined
+            branchFilterFor(req)
           );
 
     return res.status(200).json({

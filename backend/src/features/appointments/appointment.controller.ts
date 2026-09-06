@@ -20,6 +20,10 @@ import {
   checkStaffAvailabilityForSlot,
   StaffAvailabilityError,
 } from "../staff-availability/staffAvailability.service.js";
+import {
+  branchFilterFor,
+  isBranchLockedRole,
+} from "../../utils/branch-scope.js";
 
 const APPOINTMENT_STATUSES = [
     "SCHEDULED",
@@ -99,7 +103,7 @@ const getExistingAppointmentByAccess = async (
     return AppointmentModel.findByIdAndSalon(
         appointmentId,
         salonId,
-        req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+        branchFilterFor(req)
     );
 };
 
@@ -143,21 +147,21 @@ export const createAppointment = async (req: Request, res: Response) => {
 
         let finalBranchId: string | undefined = branchId;
 
-        if (req.user?.role === "RECEPTIONIST" && req.user.branchId) {
-            if (branchId && branchId !== req.user.branchId) {
+        if (isBranchLockedRole(req.user?.role) && req.user?.branchId) {
+            if (branchId && branchId !== req.user?.branchId) {
                 return res.status(403).json({
                     success: false,
                     message: "You do not have access to this branch",
                 });
             }
 
-            finalBranchId = req.user.branchId;
+            finalBranchId = req.user?.branchId;
         }
 
         const customer = await CustomerModel.findByIdAndSalon(
             customerId,
             finalSalonId,
-            req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+            branchFilterFor(req)
         );
 
         if (!customer) {
@@ -170,7 +174,7 @@ export const createAppointment = async (req: Request, res: Response) => {
         const staff = await StaffModel.findByIdAndSalon(
             staffId,
             finalSalonId,
-            req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+            branchFilterFor(req)
         );
 
         if (!staff) {
@@ -207,8 +211,8 @@ export const createAppointment = async (req: Request, res: Response) => {
         }
 
         if (
-            req.user?.role === "RECEPTIONIST" &&
-            req.user.branchId &&
+            isBranchLockedRole(req.user?.role) &&
+            req.user?.branchId &&
             services.some(
                 (service) =>
                     service.branchId !== null &&
@@ -253,7 +257,7 @@ export const createAppointment = async (req: Request, res: Response) => {
                 StaffModel.findByIdAndSalon(
                     id,
                     finalSalonId,
-                    req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined
+                    branchFilterFor(req)
                 )
             )
         );
@@ -424,7 +428,7 @@ export const getAppointments = async (req: Request, res: Response) => {
         }
 
         if (
-            req.user.role === "RECEPTIONIST" &&
+            isBranchLockedRole(req.user.role) &&
             req.user.branchId &&
             branchId &&
             String(branchId) !== req.user.branchId
@@ -437,7 +441,7 @@ export const getAppointments = async (req: Request, res: Response) => {
 
         const salon = await SalonModel.findById(req.user.salonId);
         const appointments = await AppointmentModel.findBySalon(req.user.salonId, {
-            ...(req.user.role === "RECEPTIONIST" && req.user.branchId
+            ...(isBranchLockedRole(req.user.role) && req.user.branchId
                 ? { branchId: req.user.branchId }
                 : branchId
                   ? { branchId: String(branchId) }

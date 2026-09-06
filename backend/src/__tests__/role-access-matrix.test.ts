@@ -108,10 +108,20 @@ describe("CRM logged-out and role access matrix", () => {
       (await call("SALON_ADMIN", "/api/support-tickets/my")).status
     ).toBe(200);
 
-    expect((await call("BRANCH_MANAGER", "/api/customers")).status).toBe(403);
-    expect((await call("BRANCH_MANAGER", "/api/branches")).status).toBe(403);
+    // A branch manager is a salon admin scoped to one branch: it inherits the
+    // salon admin's routes, minus the salon-wide ones.
+    expect((await call("BRANCH_MANAGER", "/api/customers")).status).toBe(200);
+    expect((await call("BRANCH_MANAGER", "/api/branches")).status).toBe(200);
+    expect((await call("BRANCH_MANAGER", "/api/staff")).status).toBe(200);
+    expect((await call("BRANCH_MANAGER", "/api/products")).status).toBe(200);
+    expect((await call("BRANCH_MANAGER", "/api/expenses")).status).toBe(200);
     expect(
       (await call("BRANCH_MANAGER", "/api/support-tickets/my")).status
+    ).toBe(200);
+    expect((await call("BRANCH_MANAGER", "/api/salons")).status).toBe(403);
+    expect((await post("BRANCH_MANAGER", "/api/branches")).status).toBe(403);
+    expect(
+      (await post("BRANCH_MANAGER", "/api/users/branch-manager")).status
     ).toBe(403);
 
     expect((await call("RECEPTIONIST", "/api/customers")).status).toBe(200);

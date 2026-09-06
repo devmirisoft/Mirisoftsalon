@@ -4,6 +4,11 @@ import { BranchModel } from "../branches/branch.model.js";
 import { MainServiceModel } from "../main-services/mainService.model.js";
 import { prisma } from "../../config/prisma.js";
 import { defaultSalonServices } from "./defaultServices.js";
+import {
+  branchFilterFor,
+  isBranchLockedRole,
+  resolveWritableBranchId,
+} from "../../utils/branch-scope.js";
 
 const DURATION_UNITS = ["MINUTES", "HOURS"] as const;
 
@@ -100,6 +105,18 @@ export const createService = async (req: Request, res: Response) => {
       });
     }
 
+    // A branch-locked caller creates services in their own branch only.
+    const branchResolution = resolveWritableBranchId(req, branchId);
+
+    if (!branchResolution.ok) {
+      return res.status(400).json({
+        success: false,
+        message: branchResolution.message,
+      });
+    }
+
+    const finalBranchId = branchResolution.branchId;
+
     const mainService = await MainServiceModel.findByIdAndSalon(
       mainServiceId,
       finalSalonId
@@ -112,8 +129,11 @@ export const createService = async (req: Request, res: Response) => {
       });
     }
 
-    if (branchId) {
-      const branch = await BranchModel.findByIdAndSalon(branchId, finalSalonId);
+    if (finalBranchId) {
+      const branch = await BranchModel.findByIdAndSalon(
+        finalBranchId,
+        finalSalonId
+      );
 
       if (!branch) {
         return res.status(400).json({
@@ -146,7 +166,7 @@ export const createService = async (req: Request, res: Response) => {
         ? { durationValue: normalizedDuration }
         : {}),
       ...(durationUnit ? { durationUnit } : {}),
-      ...(branchId ? { branchId } : {}),
+      ...(finalBranchId ? { branchId: finalBranchId } : {}),
     });
 
     return res.status(201).json({
@@ -183,7 +203,7 @@ export const getServices = async (req: Request, res: Response) => {
 
     const services = await ServiceModel.findBySalon(
       req.user.salonId,
-      req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined
+      branchFilterFor(req)
     );
 
     return res.status(200).json({
@@ -211,11 +231,11 @@ export const getServiceById = async (req: Request, res: Response) => {
     }
 
     const service =
-      req.user?.role === "RECEPTIONIST" && req.user.salonId
+      isBranchLockedRole(req.user?.role) && req.user?.salonId
         ? await ServiceModel.findByIdAndSalon(
             id,
-            req.user.salonId,
-            req.user.branchId
+            req.user?.salonId,
+            req.user?.branchId
           )
         : await getExistingServiceByAccess(req, id);
 
@@ -415,6 +435,14 @@ export const updateService = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "Invalid duration unit",
+      });
+    }
+
+    if (isBranchLockedRole(req.user?.role) && "branchId" in req.body &&
+      branchId !== req.user?.branchId) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have access to this branch",
       });
     }
 

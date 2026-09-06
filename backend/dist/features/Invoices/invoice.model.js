@@ -34,6 +34,7 @@ export const InvoiceModel = {
                 discountAmount: data.discountAmount,
                 processingFeeAmount: data.processingFeeAmount,
                 taxAmount: data.taxAmount,
+                roundOffAmount: data.roundOffAmount ?? 0,
                 totalAmount: data.totalAmount,
                 paidAmount: data.paidAmount || 0,
                 balanceAmount: data.balanceAmount,
@@ -47,6 +48,7 @@ export const InvoiceModel = {
                         ...(item.productId ? { productId: item.productId } : {}),
                         ...(item.itemType ? { itemType: item.itemType } : {}),
                         ...(item.packageId ? { packageId: item.packageId } : {}),
+                        ...(item.membershipId ? { membershipId: item.membershipId } : {}),
                         ...(item.soldByStaffId
                             ? { soldByStaffId: item.soldByStaffId }
                             : {}),

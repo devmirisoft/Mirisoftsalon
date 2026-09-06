@@ -31,6 +31,15 @@ export default function FloatingAiAssistant() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, loading]);
 
+  // Backend suggests prompts per screen and per answer; fall back to the
+  // static set only for the opening message.
+  const lastAssistant = [...chat].reverse().find((item) => item.role === "assistant");
+  const activePrompts = lastAssistant?.suggestedPrompts?.length
+    ? lastAssistant.suggestedPrompts
+    : chat.length === 1
+      ? QUICK_PROMPTS
+      : [];
+
   const send = async (preset) => {
     const text = (preset || message).trim();
     if (!text || loading) return;
@@ -60,6 +69,7 @@ export default function FloatingAiAssistant() {
           table: data?.table,
           suggestedActions: data?.suggestedActions || [],
           warnings: data?.warnings || [],
+          suggestedPrompts: data?.suggestedPrompts || [],
           clarification: data?.clarification,
         },
       ]);
@@ -242,9 +252,9 @@ export default function FloatingAiAssistant() {
             <div ref={bottomRef} />
           </div>
 
-          {chat.length === 1 && (
+          {activePrompts.length > 0 && (
             <div style={styles.quickWrap}>
-              {QUICK_PROMPTS.map((prompt) => (
+              {activePrompts.map((prompt) => (
                 <button
                   type="button"
                   key={prompt}

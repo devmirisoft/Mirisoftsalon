@@ -2,6 +2,28 @@ import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { transactionError } from "../products/inventory-access.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
+// Products sold during the visit live on the appointment's invoice, not on the
+// appointment itself, so the detail views pull those lines in alongside services.
+const soldProductsInclude = {
+    invoice: {
+        select: {
+            id: true,
+            invoiceCode: true,
+            items: {
+                where: { itemType: "PRODUCT" },
+                select: {
+                    id: true,
+                    serviceName: true,
+                    description: true,
+                    quantity: true,
+                    unitPrice: true,
+                    lineTotal: true,
+                    soldByStaff: { select: { id: true, name: true } },
+                },
+            },
+        },
+    },
+};
 export const AppointmentModel = {
     create: async (data, tx) => {
         return (tx ?? prisma).appointment.create({
@@ -78,6 +100,13 @@ export const AppointmentModel = {
                                 name: true,
                             },
                         },
+                        staff: {
+                            select: {
+                                id: true,
+                                name: true,
+                                jobRole: true,
+                            },
+                        },
                     },
                 },
             },
@@ -146,6 +175,7 @@ export const AppointmentModel = {
                     : {}),
             },
             include: {
+                ...soldProductsInclude,
                 branch: {
                     select: {
                         id: true,
@@ -188,6 +218,7 @@ export const AppointmentModel = {
                 id,
             },
             include: {
+                ...soldProductsInclude,
                 salon: {
                     select: {
                         id: true,
@@ -233,6 +264,13 @@ export const AppointmentModel = {
                                 name: true,
                             },
                         },
+                        staff: {
+                            select: {
+                                id: true,
+                                name: true,
+                                jobRole: true,
+                            },
+                        },
                     },
                 },
             },
@@ -246,6 +284,7 @@ export const AppointmentModel = {
                 ...(branchId ? { branchId } : {}),
             },
             include: {
+                ...soldProductsInclude,
                 branch: {
                     select: {
                         id: true,
@@ -275,6 +314,13 @@ export const AppointmentModel = {
                             select: {
                                 id: true,
                                 name: true,
+                            },
+                        },
+                        staff: {
+                            select: {
+                                id: true,
+                                name: true,
+                                jobRole: true,
                             },
                         },
                     },

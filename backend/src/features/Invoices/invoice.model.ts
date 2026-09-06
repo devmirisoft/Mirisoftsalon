@@ -8,8 +8,14 @@ type PaymentStatus = "UNPAID" | "PARTIALLY_PAID" | "PAID";
 type CreateInvoiceItemInput = {
   serviceId?: string;
   productId?: string;
-  itemType?: "SERVICE" | "PRODUCT" | "PACKAGE" | "PACKAGE_REDEMPTION";
+  itemType?:
+    | "SERVICE"
+    | "PRODUCT"
+    | "PACKAGE"
+    | "PACKAGE_REDEMPTION"
+    | "MEMBERSHIP";
   packageId?: string;
+  membershipId?: string;
   soldByStaffId?: string;
   itemCode?: string;
   description: string;
@@ -63,6 +69,7 @@ export const InvoiceModel = {
     discountAmount: Prisma.Decimal | number;
     processingFeeAmount: Prisma.Decimal | number;
     taxAmount: Prisma.Decimal | number;
+    roundOffAmount?: Prisma.Decimal | number;
     totalAmount: Prisma.Decimal | number;
 
     paidAmount?: Prisma.Decimal | number;
@@ -114,6 +121,7 @@ export const InvoiceModel = {
         discountAmount: data.discountAmount,
         processingFeeAmount: data.processingFeeAmount,
         taxAmount: data.taxAmount,
+        roundOffAmount: data.roundOffAmount ?? 0,
         totalAmount: data.totalAmount,
 
         paidAmount: data.paidAmount || 0,
@@ -131,6 +139,7 @@ export const InvoiceModel = {
             ...(item.productId ? { productId: item.productId } : {}),
             ...(item.itemType ? { itemType: item.itemType } : {}),
             ...(item.packageId ? { packageId: item.packageId } : {}),
+            ...(item.membershipId ? { membershipId: item.membershipId } : {}),
             ...(item.soldByStaffId
               ? { soldByStaffId: item.soldByStaffId }
               : {}),

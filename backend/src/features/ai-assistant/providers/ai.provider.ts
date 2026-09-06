@@ -1,17 +1,21 @@
 import type { AiTool, AiToolResult, SalonAiUiContext } from "../ai-tool.types.js";
 import { GeminiProvider } from "./gemini.provider.js";
 
+export type AiChatTurn = { role: "user" | "assistant"; content: string };
+
 export interface AiProvider {
   selectToolNames?(params: {
     userMessage: string;
     uiContext?: SalonAiUiContext | undefined;
     tools: readonly AiTool[];
+    history?: AiChatTurn[] | undefined;
   }): Promise<string[]>;
 
   generateAnswer(params: {
     userMessage: string;
     toolResults: AiToolResult[];
     uiContext?: SalonAiUiContext | undefined;
+    history?: AiChatTurn[] | undefined;
   }): Promise<string>;
 }
 
@@ -22,6 +26,7 @@ export class DevAiProvider implements AiProvider {
     userMessage: string;
     toolResults: AiToolResult[];
     uiContext?: SalonAiUiContext | undefined;
+    history?: AiChatTurn[] | undefined;
   }): Promise<string> {
     if (!params.toolResults.length) {
       return "I can answer read-only salon operations questions. Try asking about appointments, holidays, staff availability, revenue, low stock, outstanding customers, packages, or memberships.";

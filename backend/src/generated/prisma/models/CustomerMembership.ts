@@ -28,20 +28,26 @@ export type AggregateCustomerMembership = {
 
 export type CustomerMembershipAvgAggregateOutputType = {
   discountPercentageSnapshot: runtime.Decimal | null
+  priceSnapshot: runtime.Decimal | null
+  walletCreditSnapshot: runtime.Decimal | null
   durationMonthsSnapshot: number | null
   walletCredited: runtime.Decimal | null
   walletDebited: runtime.Decimal | null
   walletBalance: runtime.Decimal | null
   forfeitedAmount: runtime.Decimal | null
+  amountPaid: runtime.Decimal | null
 }
 
 export type CustomerMembershipSumAggregateOutputType = {
   discountPercentageSnapshot: runtime.Decimal | null
+  priceSnapshot: runtime.Decimal | null
+  walletCreditSnapshot: runtime.Decimal | null
   durationMonthsSnapshot: number | null
   walletCredited: runtime.Decimal | null
   walletDebited: runtime.Decimal | null
   walletBalance: runtime.Decimal | null
   forfeitedAmount: runtime.Decimal | null
+  amountPaid: runtime.Decimal | null
 }
 
 export type CustomerMembershipMinAggregateOutputType = {
@@ -52,6 +58,9 @@ export type CustomerMembershipMinAggregateOutputType = {
   membershipId: string | null
   membershipNameSnapshot: string | null
   discountPercentageSnapshot: runtime.Decimal | null
+  priceSnapshot: runtime.Decimal | null
+  walletCreditSnapshot: runtime.Decimal | null
+  paymentReference: string | null
   durationMonthsSnapshot: number | null
   startsAt: Date | null
   expiresAt: Date | null
@@ -66,6 +75,9 @@ export type CustomerMembershipMinAggregateOutputType = {
   removedAt: Date | null
   invoiceId: string | null
   jobCartAppointmentId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
+  amountPaid: runtime.Decimal | null
+  soldByStaffId: string | null
   note: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -79,6 +91,9 @@ export type CustomerMembershipMaxAggregateOutputType = {
   membershipId: string | null
   membershipNameSnapshot: string | null
   discountPercentageSnapshot: runtime.Decimal | null
+  priceSnapshot: runtime.Decimal | null
+  walletCreditSnapshot: runtime.Decimal | null
+  paymentReference: string | null
   durationMonthsSnapshot: number | null
   startsAt: Date | null
   expiresAt: Date | null
@@ -93,6 +108,9 @@ export type CustomerMembershipMaxAggregateOutputType = {
   removedAt: Date | null
   invoiceId: string | null
   jobCartAppointmentId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
+  amountPaid: runtime.Decimal | null
+  soldByStaffId: string | null
   note: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -106,6 +124,9 @@ export type CustomerMembershipCountAggregateOutputType = {
   membershipId: number
   membershipNameSnapshot: number
   discountPercentageSnapshot: number
+  priceSnapshot: number
+  walletCreditSnapshot: number
+  paymentReference: number
   durationMonthsSnapshot: number
   startsAt: number
   expiresAt: number
@@ -120,6 +141,9 @@ export type CustomerMembershipCountAggregateOutputType = {
   removedAt: number
   invoiceId: number
   jobCartAppointmentId: number
+  paymentMethod: number
+  amountPaid: number
+  soldByStaffId: number
   note: number
   createdAt: number
   updatedAt: number
@@ -129,20 +153,26 @@ export type CustomerMembershipCountAggregateOutputType = {
 
 export type CustomerMembershipAvgAggregateInputType = {
   discountPercentageSnapshot?: true
+  priceSnapshot?: true
+  walletCreditSnapshot?: true
   durationMonthsSnapshot?: true
   walletCredited?: true
   walletDebited?: true
   walletBalance?: true
   forfeitedAmount?: true
+  amountPaid?: true
 }
 
 export type CustomerMembershipSumAggregateInputType = {
   discountPercentageSnapshot?: true
+  priceSnapshot?: true
+  walletCreditSnapshot?: true
   durationMonthsSnapshot?: true
   walletCredited?: true
   walletDebited?: true
   walletBalance?: true
   forfeitedAmount?: true
+  amountPaid?: true
 }
 
 export type CustomerMembershipMinAggregateInputType = {
@@ -153,6 +183,9 @@ export type CustomerMembershipMinAggregateInputType = {
   membershipId?: true
   membershipNameSnapshot?: true
   discountPercentageSnapshot?: true
+  priceSnapshot?: true
+  walletCreditSnapshot?: true
+  paymentReference?: true
   durationMonthsSnapshot?: true
   startsAt?: true
   expiresAt?: true
@@ -167,6 +200,9 @@ export type CustomerMembershipMinAggregateInputType = {
   removedAt?: true
   invoiceId?: true
   jobCartAppointmentId?: true
+  paymentMethod?: true
+  amountPaid?: true
+  soldByStaffId?: true
   note?: true
   createdAt?: true
   updatedAt?: true
@@ -180,6 +216,9 @@ export type CustomerMembershipMaxAggregateInputType = {
   membershipId?: true
   membershipNameSnapshot?: true
   discountPercentageSnapshot?: true
+  priceSnapshot?: true
+  walletCreditSnapshot?: true
+  paymentReference?: true
   durationMonthsSnapshot?: true
   startsAt?: true
   expiresAt?: true
@@ -194,6 +233,9 @@ export type CustomerMembershipMaxAggregateInputType = {
   removedAt?: true
   invoiceId?: true
   jobCartAppointmentId?: true
+  paymentMethod?: true
+  amountPaid?: true
+  soldByStaffId?: true
   note?: true
   createdAt?: true
   updatedAt?: true
@@ -207,6 +249,9 @@ export type CustomerMembershipCountAggregateInputType = {
   membershipId?: true
   membershipNameSnapshot?: true
   discountPercentageSnapshot?: true
+  priceSnapshot?: true
+  walletCreditSnapshot?: true
+  paymentReference?: true
   durationMonthsSnapshot?: true
   startsAt?: true
   expiresAt?: true
@@ -221,6 +266,9 @@ export type CustomerMembershipCountAggregateInputType = {
   removedAt?: true
   invoiceId?: true
   jobCartAppointmentId?: true
+  paymentMethod?: true
+  amountPaid?: true
+  soldByStaffId?: true
   note?: true
   createdAt?: true
   updatedAt?: true
@@ -321,6 +369,9 @@ export type CustomerMembershipGroupByOutputType = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal
+  priceSnapshot: runtime.Decimal
+  walletCreditSnapshot: runtime.Decimal
+  paymentReference: string | null
   durationMonthsSnapshot: number | null
   startsAt: Date
   expiresAt: Date | null
@@ -335,6 +386,9 @@ export type CustomerMembershipGroupByOutputType = {
   removedAt: Date | null
   invoiceId: string | null
   jobCartAppointmentId: string | null
+  paymentMethod: $Enums.PaymentMethod | null
+  amountPaid: runtime.Decimal | null
+  soldByStaffId: string | null
   note: string | null
   createdAt: Date
   updatedAt: Date
@@ -371,6 +425,9 @@ export type CustomerMembershipWhereInput = {
   membershipId?: Prisma.StringFilter<"CustomerMembership"> | string
   membershipNameSnapshot?: Prisma.StringFilter<"CustomerMembership"> | string
   discountPercentageSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   durationMonthsSnapshot?: Prisma.IntNullableFilter<"CustomerMembership"> | number | null
   startsAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
@@ -385,6 +442,9 @@ export type CustomerMembershipWhereInput = {
   removedAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
   invoiceId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   jobCartAppointmentId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"CustomerMembership"> | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.DecimalNullableFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   note?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
@@ -397,6 +457,7 @@ export type CustomerMembershipWhereInput = {
   removedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   invoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
   jobCartAppointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  soldByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
 }
 
 export type CustomerMembershipOrderByWithRelationInput = {
@@ -407,6 +468,9 @@ export type CustomerMembershipOrderByWithRelationInput = {
   membershipId?: Prisma.SortOrder
   membershipNameSnapshot?: Prisma.SortOrder
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
+  paymentReference?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -421,6 +485,9 @@ export type CustomerMembershipOrderByWithRelationInput = {
   removedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   jobCartAppointmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  amountPaid?: Prisma.SortOrderInput | Prisma.SortOrder
+  soldByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -433,6 +500,7 @@ export type CustomerMembershipOrderByWithRelationInput = {
   removedBy?: Prisma.UserOrderByWithRelationInput
   invoice?: Prisma.InvoiceOrderByWithRelationInput
   jobCartAppointment?: Prisma.AppointmentOrderByWithRelationInput
+  soldByStaff?: Prisma.StaffOrderByWithRelationInput
 }
 
 export type CustomerMembershipWhereUniqueInput = Prisma.AtLeast<{
@@ -446,6 +514,9 @@ export type CustomerMembershipWhereUniqueInput = Prisma.AtLeast<{
   membershipId?: Prisma.StringFilter<"CustomerMembership"> | string
   membershipNameSnapshot?: Prisma.StringFilter<"CustomerMembership"> | string
   discountPercentageSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   durationMonthsSnapshot?: Prisma.IntNullableFilter<"CustomerMembership"> | number | null
   startsAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
@@ -460,6 +531,9 @@ export type CustomerMembershipWhereUniqueInput = Prisma.AtLeast<{
   removedAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
   invoiceId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   jobCartAppointmentId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"CustomerMembership"> | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.DecimalNullableFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   note?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
@@ -472,6 +546,7 @@ export type CustomerMembershipWhereUniqueInput = Prisma.AtLeast<{
   removedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   invoice?: Prisma.XOR<Prisma.InvoiceNullableScalarRelationFilter, Prisma.InvoiceWhereInput> | null
   jobCartAppointment?: Prisma.XOR<Prisma.AppointmentNullableScalarRelationFilter, Prisma.AppointmentWhereInput> | null
+  soldByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
 }, "id">
 
 export type CustomerMembershipOrderByWithAggregationInput = {
@@ -482,6 +557,9 @@ export type CustomerMembershipOrderByWithAggregationInput = {
   membershipId?: Prisma.SortOrder
   membershipNameSnapshot?: Prisma.SortOrder
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
+  paymentReference?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrderInput | Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -496,6 +574,9 @@ export type CustomerMembershipOrderByWithAggregationInput = {
   removedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   invoiceId?: Prisma.SortOrderInput | Prisma.SortOrder
   jobCartAppointmentId?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrderInput | Prisma.SortOrder
+  amountPaid?: Prisma.SortOrderInput | Prisma.SortOrder
+  soldByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
   note?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -517,6 +598,9 @@ export type CustomerMembershipScalarWhereWithAggregatesInput = {
   membershipId?: Prisma.StringWithAggregatesFilter<"CustomerMembership"> | string
   membershipNameSnapshot?: Prisma.StringWithAggregatesFilter<"CustomerMembership"> | string
   discountPercentageSnapshot?: Prisma.DecimalWithAggregatesFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalWithAggregatesFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalWithAggregatesFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.StringNullableWithAggregatesFilter<"CustomerMembership"> | string | null
   durationMonthsSnapshot?: Prisma.IntNullableWithAggregatesFilter<"CustomerMembership"> | number | null
   startsAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerMembership"> | Date | string
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerMembership"> | Date | string | null
@@ -531,6 +615,9 @@ export type CustomerMembershipScalarWhereWithAggregatesInput = {
   removedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CustomerMembership"> | Date | string | null
   invoiceId?: Prisma.StringNullableWithAggregatesFilter<"CustomerMembership"> | string | null
   jobCartAppointmentId?: Prisma.StringNullableWithAggregatesFilter<"CustomerMembership"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableWithAggregatesFilter<"CustomerMembership"> | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.DecimalNullableWithAggregatesFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.StringNullableWithAggregatesFilter<"CustomerMembership"> | string | null
   note?: Prisma.StringNullableWithAggregatesFilter<"CustomerMembership"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerMembership"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CustomerMembership"> | Date | string
@@ -540,6 +627,9 @@ export type CustomerMembershipCreateInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -550,6 +640,8 @@ export type CustomerMembershipCreateInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -562,6 +654,7 @@ export type CustomerMembershipCreateInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateInput = {
@@ -572,6 +665,9 @@ export type CustomerMembershipUncheckedCreateInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -586,6 +682,9 @@ export type CustomerMembershipUncheckedCreateInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -596,6 +695,9 @@ export type CustomerMembershipUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -606,6 +708,8 @@ export type CustomerMembershipUpdateInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -618,6 +722,7 @@ export type CustomerMembershipUpdateInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateInput = {
@@ -628,6 +733,9 @@ export type CustomerMembershipUncheckedUpdateInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -642,6 +750,9 @@ export type CustomerMembershipUncheckedUpdateInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -656,6 +767,9 @@ export type CustomerMembershipCreateManyInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -670,6 +784,9 @@ export type CustomerMembershipCreateManyInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -679,6 +796,9 @@ export type CustomerMembershipUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -689,6 +809,8 @@ export type CustomerMembershipUpdateManyMutationInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -702,6 +824,9 @@ export type CustomerMembershipUncheckedUpdateManyInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -716,6 +841,9 @@ export type CustomerMembershipUncheckedUpdateManyInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -739,6 +867,9 @@ export type CustomerMembershipCountOrderByAggregateInput = {
   membershipId?: Prisma.SortOrder
   membershipNameSnapshot?: Prisma.SortOrder
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
+  paymentReference?: Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -753,6 +884,9 @@ export type CustomerMembershipCountOrderByAggregateInput = {
   removedAt?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   jobCartAppointmentId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  amountPaid?: Prisma.SortOrder
+  soldByStaffId?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -760,11 +894,14 @@ export type CustomerMembershipCountOrderByAggregateInput = {
 
 export type CustomerMembershipAvgOrderByAggregateInput = {
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrder
   walletCredited?: Prisma.SortOrder
   walletDebited?: Prisma.SortOrder
   walletBalance?: Prisma.SortOrder
   forfeitedAmount?: Prisma.SortOrder
+  amountPaid?: Prisma.SortOrder
 }
 
 export type CustomerMembershipMaxOrderByAggregateInput = {
@@ -775,6 +912,9 @@ export type CustomerMembershipMaxOrderByAggregateInput = {
   membershipId?: Prisma.SortOrder
   membershipNameSnapshot?: Prisma.SortOrder
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
+  paymentReference?: Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -789,6 +929,9 @@ export type CustomerMembershipMaxOrderByAggregateInput = {
   removedAt?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   jobCartAppointmentId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  amountPaid?: Prisma.SortOrder
+  soldByStaffId?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -802,6 +945,9 @@ export type CustomerMembershipMinOrderByAggregateInput = {
   membershipId?: Prisma.SortOrder
   membershipNameSnapshot?: Prisma.SortOrder
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
+  paymentReference?: Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrder
   startsAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -816,6 +962,9 @@ export type CustomerMembershipMinOrderByAggregateInput = {
   removedAt?: Prisma.SortOrder
   invoiceId?: Prisma.SortOrder
   jobCartAppointmentId?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  amountPaid?: Prisma.SortOrder
+  soldByStaffId?: Prisma.SortOrder
   note?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -823,11 +972,14 @@ export type CustomerMembershipMinOrderByAggregateInput = {
 
 export type CustomerMembershipSumOrderByAggregateInput = {
   discountPercentageSnapshot?: Prisma.SortOrder
+  priceSnapshot?: Prisma.SortOrder
+  walletCreditSnapshot?: Prisma.SortOrder
   durationMonthsSnapshot?: Prisma.SortOrder
   walletCredited?: Prisma.SortOrder
   walletDebited?: Prisma.SortOrder
   walletBalance?: Prisma.SortOrder
   forfeitedAmount?: Prisma.SortOrder
+  amountPaid?: Prisma.SortOrder
 }
 
 export type CustomerMembershipScalarRelationFilter = {
@@ -1049,6 +1201,18 @@ export type EnumCustomerMembershipStatusFieldUpdateOperationsInput = {
   set?: $Enums.CustomerMembershipStatus
 }
 
+export type NullableEnumPaymentMethodFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentMethod | null
+}
+
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type CustomerMembershipCreateNestedOneWithoutWalletTransactionsInput = {
   create?: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutWalletTransactionsInput, Prisma.CustomerMembershipUncheckedCreateWithoutWalletTransactionsInput>
   connectOrCreate?: Prisma.CustomerMembershipCreateOrConnectWithoutWalletTransactionsInput
@@ -1102,6 +1266,48 @@ export type CustomerMembershipUncheckedUpdateManyWithoutBranchNestedInput = {
   connect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
   update?: Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutBranchInput | Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutBranchInput[]
   updateMany?: Prisma.CustomerMembershipUpdateManyWithWhereWithoutBranchInput | Prisma.CustomerMembershipUpdateManyWithWhereWithoutBranchInput[]
+  deleteMany?: Prisma.CustomerMembershipScalarWhereInput | Prisma.CustomerMembershipScalarWhereInput[]
+}
+
+export type CustomerMembershipCreateNestedManyWithoutSoldByStaffInput = {
+  create?: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput> | Prisma.CustomerMembershipCreateWithoutSoldByStaffInput[] | Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput[]
+  connectOrCreate?: Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput | Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput[]
+  createMany?: Prisma.CustomerMembershipCreateManySoldByStaffInputEnvelope
+  connect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+}
+
+export type CustomerMembershipUncheckedCreateNestedManyWithoutSoldByStaffInput = {
+  create?: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput> | Prisma.CustomerMembershipCreateWithoutSoldByStaffInput[] | Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput[]
+  connectOrCreate?: Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput | Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput[]
+  createMany?: Prisma.CustomerMembershipCreateManySoldByStaffInputEnvelope
+  connect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+}
+
+export type CustomerMembershipUpdateManyWithoutSoldByStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput> | Prisma.CustomerMembershipCreateWithoutSoldByStaffInput[] | Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput[]
+  connectOrCreate?: Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput | Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput[]
+  upsert?: Prisma.CustomerMembershipUpsertWithWhereUniqueWithoutSoldByStaffInput | Prisma.CustomerMembershipUpsertWithWhereUniqueWithoutSoldByStaffInput[]
+  createMany?: Prisma.CustomerMembershipCreateManySoldByStaffInputEnvelope
+  set?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  disconnect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  delete?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  connect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  update?: Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutSoldByStaffInput | Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutSoldByStaffInput[]
+  updateMany?: Prisma.CustomerMembershipUpdateManyWithWhereWithoutSoldByStaffInput | Prisma.CustomerMembershipUpdateManyWithWhereWithoutSoldByStaffInput[]
+  deleteMany?: Prisma.CustomerMembershipScalarWhereInput | Prisma.CustomerMembershipScalarWhereInput[]
+}
+
+export type CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput> | Prisma.CustomerMembershipCreateWithoutSoldByStaffInput[] | Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput[]
+  connectOrCreate?: Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput | Prisma.CustomerMembershipCreateOrConnectWithoutSoldByStaffInput[]
+  upsert?: Prisma.CustomerMembershipUpsertWithWhereUniqueWithoutSoldByStaffInput | Prisma.CustomerMembershipUpsertWithWhereUniqueWithoutSoldByStaffInput[]
+  createMany?: Prisma.CustomerMembershipCreateManySoldByStaffInputEnvelope
+  set?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  disconnect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  delete?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  connect?: Prisma.CustomerMembershipWhereUniqueInput | Prisma.CustomerMembershipWhereUniqueInput[]
+  update?: Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutSoldByStaffInput | Prisma.CustomerMembershipUpdateWithWhereUniqueWithoutSoldByStaffInput[]
+  updateMany?: Prisma.CustomerMembershipUpdateManyWithWhereWithoutSoldByStaffInput | Prisma.CustomerMembershipUpdateManyWithWhereWithoutSoldByStaffInput[]
   deleteMany?: Prisma.CustomerMembershipScalarWhereInput | Prisma.CustomerMembershipScalarWhereInput[]
 }
 
@@ -1193,6 +1399,9 @@ export type CustomerMembershipCreateWithoutSalonInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1203,6 +1412,8 @@ export type CustomerMembershipCreateWithoutSalonInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1214,6 +1425,7 @@ export type CustomerMembershipCreateWithoutSalonInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutSalonInput = {
@@ -1223,6 +1435,9 @@ export type CustomerMembershipUncheckedCreateWithoutSalonInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1237,6 +1452,9 @@ export type CustomerMembershipUncheckedCreateWithoutSalonInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1280,6 +1498,9 @@ export type CustomerMembershipScalarWhereInput = {
   membershipId?: Prisma.StringFilter<"CustomerMembership"> | string
   membershipNameSnapshot?: Prisma.StringFilter<"CustomerMembership"> | string
   discountPercentageSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   durationMonthsSnapshot?: Prisma.IntNullableFilter<"CustomerMembership"> | number | null
   startsAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
@@ -1294,6 +1515,9 @@ export type CustomerMembershipScalarWhereInput = {
   removedAt?: Prisma.DateTimeNullableFilter<"CustomerMembership"> | Date | string | null
   invoiceId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   jobCartAppointmentId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
+  paymentMethod?: Prisma.EnumPaymentMethodNullableFilter<"CustomerMembership"> | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.DecimalNullableFilter<"CustomerMembership"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   note?: Prisma.StringNullableFilter<"CustomerMembership"> | string | null
   createdAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CustomerMembership"> | Date | string
@@ -1303,6 +1527,9 @@ export type CustomerMembershipCreateWithoutAssignedByInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1313,6 +1540,8 @@ export type CustomerMembershipCreateWithoutAssignedByInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1324,6 +1553,7 @@ export type CustomerMembershipCreateWithoutAssignedByInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutAssignedByInput = {
@@ -1334,6 +1564,9 @@ export type CustomerMembershipUncheckedCreateWithoutAssignedByInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1347,6 +1580,9 @@ export type CustomerMembershipUncheckedCreateWithoutAssignedByInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1367,6 +1603,9 @@ export type CustomerMembershipCreateWithoutRemovedByInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1377,6 +1616,8 @@ export type CustomerMembershipCreateWithoutRemovedByInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1388,6 +1629,7 @@ export type CustomerMembershipCreateWithoutRemovedByInput = {
   assignedBy?: Prisma.UserCreateNestedOneWithoutAssignedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutRemovedByInput = {
@@ -1398,6 +1640,9 @@ export type CustomerMembershipUncheckedCreateWithoutRemovedByInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1411,6 +1656,9 @@ export type CustomerMembershipUncheckedCreateWithoutRemovedByInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1463,6 +1711,9 @@ export type CustomerMembershipCreateWithoutCustomerInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1473,6 +1724,8 @@ export type CustomerMembershipCreateWithoutCustomerInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1484,6 +1737,7 @@ export type CustomerMembershipCreateWithoutCustomerInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutCustomerInput = {
@@ -1493,6 +1747,9 @@ export type CustomerMembershipUncheckedCreateWithoutCustomerInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1507,6 +1764,9 @@ export type CustomerMembershipUncheckedCreateWithoutCustomerInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1543,6 +1803,9 @@ export type CustomerMembershipCreateWithoutMembershipInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1553,6 +1816,8 @@ export type CustomerMembershipCreateWithoutMembershipInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1564,6 +1829,7 @@ export type CustomerMembershipCreateWithoutMembershipInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutMembershipInput = {
@@ -1573,6 +1839,9 @@ export type CustomerMembershipUncheckedCreateWithoutMembershipInput = {
   customerId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1587,6 +1856,9 @@ export type CustomerMembershipUncheckedCreateWithoutMembershipInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1623,6 +1895,9 @@ export type CustomerMembershipCreateWithoutWalletTransactionsInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1633,6 +1908,8 @@ export type CustomerMembershipCreateWithoutWalletTransactionsInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1644,6 +1921,7 @@ export type CustomerMembershipCreateWithoutWalletTransactionsInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutWalletTransactionsInput = {
@@ -1654,6 +1932,9 @@ export type CustomerMembershipUncheckedCreateWithoutWalletTransactionsInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1668,6 +1949,9 @@ export type CustomerMembershipUncheckedCreateWithoutWalletTransactionsInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1693,6 +1977,9 @@ export type CustomerMembershipUpdateWithoutWalletTransactionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1703,6 +1990,8 @@ export type CustomerMembershipUpdateWithoutWalletTransactionsInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1714,6 +2003,7 @@ export type CustomerMembershipUpdateWithoutWalletTransactionsInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutWalletTransactionsInput = {
@@ -1724,6 +2014,9 @@ export type CustomerMembershipUncheckedUpdateWithoutWalletTransactionsInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1738,6 +2031,9 @@ export type CustomerMembershipUncheckedUpdateWithoutWalletTransactionsInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1747,6 +2043,9 @@ export type CustomerMembershipCreateWithoutBranchInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1757,6 +2056,8 @@ export type CustomerMembershipCreateWithoutBranchInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1768,6 +2069,7 @@ export type CustomerMembershipCreateWithoutBranchInput = {
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutBranchInput = {
@@ -1777,6 +2079,9 @@ export type CustomerMembershipUncheckedCreateWithoutBranchInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1791,6 +2096,9 @@ export type CustomerMembershipUncheckedCreateWithoutBranchInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1823,10 +2131,13 @@ export type CustomerMembershipUpdateManyWithWhereWithoutBranchInput = {
   data: Prisma.XOR<Prisma.CustomerMembershipUpdateManyMutationInput, Prisma.CustomerMembershipUncheckedUpdateManyWithoutBranchInput>
 }
 
-export type CustomerMembershipCreateWithoutJobCartAppointmentInput = {
+export type CustomerMembershipCreateWithoutSoldByStaffInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1837,6 +2148,8 @@ export type CustomerMembershipCreateWithoutJobCartAppointmentInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1848,9 +2161,10 @@ export type CustomerMembershipCreateWithoutJobCartAppointmentInput = {
   assignedBy?: Prisma.UserCreateNestedOneWithoutAssignedCustomerMembershipsInput
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
+  jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
 }
 
-export type CustomerMembershipUncheckedCreateWithoutJobCartAppointmentInput = {
+export type CustomerMembershipUncheckedCreateWithoutSoldByStaffInput = {
   id?: string
   salonId: string
   branchId?: string | null
@@ -1858,6 +2172,9 @@ export type CustomerMembershipUncheckedCreateWithoutJobCartAppointmentInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1871,6 +2188,101 @@ export type CustomerMembershipUncheckedCreateWithoutJobCartAppointmentInput = {
   removedById?: string | null
   removedAt?: Date | string | null
   invoiceId?: string | null
+  jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  note?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  walletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutCustomerMembershipInput
+}
+
+export type CustomerMembershipCreateOrConnectWithoutSoldByStaffInput = {
+  where: Prisma.CustomerMembershipWhereUniqueInput
+  create: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput>
+}
+
+export type CustomerMembershipCreateManySoldByStaffInputEnvelope = {
+  data: Prisma.CustomerMembershipCreateManySoldByStaffInput | Prisma.CustomerMembershipCreateManySoldByStaffInput[]
+  skipDuplicates?: boolean
+}
+
+export type CustomerMembershipUpsertWithWhereUniqueWithoutSoldByStaffInput = {
+  where: Prisma.CustomerMembershipWhereUniqueInput
+  update: Prisma.XOR<Prisma.CustomerMembershipUpdateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedUpdateWithoutSoldByStaffInput>
+  create: Prisma.XOR<Prisma.CustomerMembershipCreateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedCreateWithoutSoldByStaffInput>
+}
+
+export type CustomerMembershipUpdateWithWhereUniqueWithoutSoldByStaffInput = {
+  where: Prisma.CustomerMembershipWhereUniqueInput
+  data: Prisma.XOR<Prisma.CustomerMembershipUpdateWithoutSoldByStaffInput, Prisma.CustomerMembershipUncheckedUpdateWithoutSoldByStaffInput>
+}
+
+export type CustomerMembershipUpdateManyWithWhereWithoutSoldByStaffInput = {
+  where: Prisma.CustomerMembershipScalarWhereInput
+  data: Prisma.XOR<Prisma.CustomerMembershipUpdateManyMutationInput, Prisma.CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffInput>
+}
+
+export type CustomerMembershipCreateWithoutJobCartAppointmentInput = {
+  id?: string
+  membershipNameSnapshot: string
+  discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
+  durationMonthsSnapshot?: number | null
+  startsAt?: Date | string
+  expiresAt?: Date | string | null
+  status?: $Enums.CustomerMembershipStatus
+  walletCredited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Date | string | null
+  removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  note?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  salon: Prisma.SalonCreateNestedOneWithoutCustomerMembershipsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutCustomerMembershipsInput
+  customer: Prisma.CustomerCreateNestedOneWithoutMembershipHistoryInput
+  membership: Prisma.MembershipCreateNestedOneWithoutCustomerMembershipsInput
+  walletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutCustomerMembershipInput
+  assignedBy?: Prisma.UserCreateNestedOneWithoutAssignedCustomerMembershipsInput
+  removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
+  invoice?: Prisma.InvoiceCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
+}
+
+export type CustomerMembershipUncheckedCreateWithoutJobCartAppointmentInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  customerId: string
+  membershipId: string
+  membershipNameSnapshot: string
+  discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
+  durationMonthsSnapshot?: number | null
+  startsAt?: Date | string
+  expiresAt?: Date | string | null
+  status?: $Enums.CustomerMembershipStatus
+  walletCredited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Date | string | null
+  assignedById?: string | null
+  removedById?: string | null
+  removedAt?: Date | string | null
+  invoiceId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1907,6 +2319,9 @@ export type CustomerMembershipCreateWithoutInvoiceInput = {
   id?: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1917,6 +2332,8 @@ export type CustomerMembershipCreateWithoutInvoiceInput = {
   forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Date | string | null
   removedAt?: Date | string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1928,6 +2345,7 @@ export type CustomerMembershipCreateWithoutInvoiceInput = {
   assignedBy?: Prisma.UserCreateNestedOneWithoutAssignedCustomerMembershipsInput
   removedBy?: Prisma.UserCreateNestedOneWithoutRemovedCustomerMembershipsInput
   jobCartAppointment?: Prisma.AppointmentCreateNestedOneWithoutCustomerMembershipsInput
+  soldByStaff?: Prisma.StaffCreateNestedOneWithoutMembershipSalesInput
 }
 
 export type CustomerMembershipUncheckedCreateWithoutInvoiceInput = {
@@ -1938,6 +2356,9 @@ export type CustomerMembershipUncheckedCreateWithoutInvoiceInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -1951,6 +2372,9 @@ export type CustomerMembershipUncheckedCreateWithoutInvoiceInput = {
   removedById?: string | null
   removedAt?: Date | string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1990,6 +2414,9 @@ export type CustomerMembershipCreateManySalonInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2004,6 +2431,9 @@ export type CustomerMembershipCreateManySalonInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2013,6 +2443,9 @@ export type CustomerMembershipUpdateWithoutSalonInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2023,6 +2456,8 @@ export type CustomerMembershipUpdateWithoutSalonInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2034,6 +2469,7 @@ export type CustomerMembershipUpdateWithoutSalonInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutSalonInput = {
@@ -2043,6 +2479,9 @@ export type CustomerMembershipUncheckedUpdateWithoutSalonInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2057,6 +2496,9 @@ export type CustomerMembershipUncheckedUpdateWithoutSalonInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2070,6 +2512,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutSalonInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2084,6 +2529,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutSalonInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2097,6 +2545,9 @@ export type CustomerMembershipCreateManyAssignedByInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2110,6 +2561,9 @@ export type CustomerMembershipCreateManyAssignedByInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2123,6 +2577,9 @@ export type CustomerMembershipCreateManyRemovedByInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2136,6 +2593,9 @@ export type CustomerMembershipCreateManyRemovedByInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2145,6 +2605,9 @@ export type CustomerMembershipUpdateWithoutAssignedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2155,6 +2618,8 @@ export type CustomerMembershipUpdateWithoutAssignedByInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2166,6 +2631,7 @@ export type CustomerMembershipUpdateWithoutAssignedByInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutAssignedByInput = {
@@ -2176,6 +2642,9 @@ export type CustomerMembershipUncheckedUpdateWithoutAssignedByInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2189,6 +2658,9 @@ export type CustomerMembershipUncheckedUpdateWithoutAssignedByInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2203,6 +2675,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutAssignedByInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2216,6 +2691,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutAssignedByInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2225,6 +2703,9 @@ export type CustomerMembershipUpdateWithoutRemovedByInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2235,6 +2716,8 @@ export type CustomerMembershipUpdateWithoutRemovedByInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2246,6 +2729,7 @@ export type CustomerMembershipUpdateWithoutRemovedByInput = {
   assignedBy?: Prisma.UserUpdateOneWithoutAssignedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutRemovedByInput = {
@@ -2256,6 +2740,9 @@ export type CustomerMembershipUncheckedUpdateWithoutRemovedByInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2269,6 +2756,9 @@ export type CustomerMembershipUncheckedUpdateWithoutRemovedByInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2283,6 +2773,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutRemovedByInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2296,6 +2789,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutRemovedByInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2308,6 +2804,9 @@ export type CustomerMembershipCreateManyCustomerInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2322,6 +2821,9 @@ export type CustomerMembershipCreateManyCustomerInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2331,6 +2833,9 @@ export type CustomerMembershipUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2341,6 +2846,8 @@ export type CustomerMembershipUpdateWithoutCustomerInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2352,6 +2859,7 @@ export type CustomerMembershipUpdateWithoutCustomerInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutCustomerInput = {
@@ -2361,6 +2869,9 @@ export type CustomerMembershipUncheckedUpdateWithoutCustomerInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2375,6 +2886,9 @@ export type CustomerMembershipUncheckedUpdateWithoutCustomerInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2388,6 +2902,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutCustomerInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2402,6 +2919,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutCustomerInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2414,6 +2934,9 @@ export type CustomerMembershipCreateManyMembershipInput = {
   customerId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2428,6 +2951,9 @@ export type CustomerMembershipCreateManyMembershipInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2437,6 +2963,9 @@ export type CustomerMembershipUpdateWithoutMembershipInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2447,6 +2976,8 @@ export type CustomerMembershipUpdateWithoutMembershipInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2458,6 +2989,7 @@ export type CustomerMembershipUpdateWithoutMembershipInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutMembershipInput = {
@@ -2467,6 +2999,9 @@ export type CustomerMembershipUncheckedUpdateWithoutMembershipInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2481,6 +3016,9 @@ export type CustomerMembershipUncheckedUpdateWithoutMembershipInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2494,6 +3032,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutMembershipInput = {
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2508,6 +3049,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutMembershipInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2520,6 +3064,9 @@ export type CustomerMembershipCreateManyBranchInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2534,6 +3081,9 @@ export type CustomerMembershipCreateManyBranchInput = {
   removedAt?: Date | string | null
   invoiceId?: string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2543,6 +3093,9 @@ export type CustomerMembershipUpdateWithoutBranchInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2553,6 +3106,8 @@ export type CustomerMembershipUpdateWithoutBranchInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2564,6 +3119,7 @@ export type CustomerMembershipUpdateWithoutBranchInput = {
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutBranchInput = {
@@ -2573,6 +3129,9 @@ export type CustomerMembershipUncheckedUpdateWithoutBranchInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2587,6 +3146,9 @@ export type CustomerMembershipUncheckedUpdateWithoutBranchInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2600,6 +3162,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutBranchInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2614,12 +3179,15 @@ export type CustomerMembershipUncheckedUpdateManyWithoutBranchInput = {
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
-export type CustomerMembershipCreateManyJobCartAppointmentInput = {
+export type CustomerMembershipCreateManySoldByStaffInput = {
   id?: string
   salonId: string
   branchId?: string | null
@@ -2627,6 +3195,9 @@ export type CustomerMembershipCreateManyJobCartAppointmentInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2640,15 +3211,21 @@ export type CustomerMembershipCreateManyJobCartAppointmentInput = {
   removedById?: string | null
   removedAt?: Date | string | null
   invoiceId?: string | null
+  jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
-export type CustomerMembershipUpdateWithoutJobCartAppointmentInput = {
+export type CustomerMembershipUpdateWithoutSoldByStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2659,6 +3236,8 @@ export type CustomerMembershipUpdateWithoutJobCartAppointmentInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2670,9 +3249,10 @@ export type CustomerMembershipUpdateWithoutJobCartAppointmentInput = {
   assignedBy?: Prisma.UserUpdateOneWithoutAssignedCustomerMembershipsNestedInput
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
+  jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
 }
 
-export type CustomerMembershipUncheckedUpdateWithoutJobCartAppointmentInput = {
+export type CustomerMembershipUncheckedUpdateWithoutSoldByStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   salonId?: Prisma.StringFieldUpdateOperationsInput | string
   branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2680,6 +3260,9 @@ export type CustomerMembershipUncheckedUpdateWithoutJobCartAppointmentInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2693,6 +3276,139 @@ export type CustomerMembershipUncheckedUpdateWithoutJobCartAppointmentInput = {
   removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  walletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutCustomerMembershipNestedInput
+}
+
+export type CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  membershipId?: Prisma.StringFieldUpdateOperationsInput | string
+  membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumCustomerMembershipStatusFieldUpdateOperationsInput | $Enums.CustomerMembershipStatus
+  walletCredited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CustomerMembershipCreateManyJobCartAppointmentInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  customerId: string
+  membershipId: string
+  membershipNameSnapshot: string
+  discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
+  durationMonthsSnapshot?: number | null
+  startsAt?: Date | string
+  expiresAt?: Date | string | null
+  status?: $Enums.CustomerMembershipStatus
+  walletCredited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Date | string | null
+  assignedById?: string | null
+  removedById?: string | null
+  removedAt?: Date | string | null
+  invoiceId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
+  note?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CustomerMembershipUpdateWithoutJobCartAppointmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumCustomerMembershipStatusFieldUpdateOperationsInput | $Enums.CustomerMembershipStatus
+  walletCredited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  salon?: Prisma.SalonUpdateOneRequiredWithoutCustomerMembershipsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutCustomerMembershipsNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutMembershipHistoryNestedInput
+  membership?: Prisma.MembershipUpdateOneRequiredWithoutCustomerMembershipsNestedInput
+  walletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutCustomerMembershipNestedInput
+  assignedBy?: Prisma.UserUpdateOneWithoutAssignedCustomerMembershipsNestedInput
+  removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
+  invoice?: Prisma.InvoiceUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
+}
+
+export type CustomerMembershipUncheckedUpdateWithoutJobCartAppointmentInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  customerId?: Prisma.StringFieldUpdateOperationsInput | string
+  membershipId?: Prisma.StringFieldUpdateOperationsInput | string
+  membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
+  discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.EnumCustomerMembershipStatusFieldUpdateOperationsInput | $Enums.CustomerMembershipStatus
+  walletCredited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletDebited?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletBalance?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2707,6 +3423,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentInput 
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2720,6 +3439,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutJobCartAppointmentInput 
   removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   invoiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2733,6 +3455,9 @@ export type CustomerMembershipCreateManyInvoiceInput = {
   membershipId: string
   membershipNameSnapshot: string
   discountPercentageSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: string | null
   durationMonthsSnapshot?: number | null
   startsAt?: Date | string
   expiresAt?: Date | string | null
@@ -2746,6 +3471,9 @@ export type CustomerMembershipCreateManyInvoiceInput = {
   removedById?: string | null
   removedAt?: Date | string | null
   jobCartAppointmentId?: string | null
+  paymentMethod?: $Enums.PaymentMethod | null
+  amountPaid?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: string | null
   note?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2755,6 +3483,9 @@ export type CustomerMembershipUpdateWithoutInvoiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2765,6 +3496,8 @@ export type CustomerMembershipUpdateWithoutInvoiceInput = {
   forfeitedAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   forfeitedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2776,6 +3509,7 @@ export type CustomerMembershipUpdateWithoutInvoiceInput = {
   assignedBy?: Prisma.UserUpdateOneWithoutAssignedCustomerMembershipsNestedInput
   removedBy?: Prisma.UserUpdateOneWithoutRemovedCustomerMembershipsNestedInput
   jobCartAppointment?: Prisma.AppointmentUpdateOneWithoutCustomerMembershipsNestedInput
+  soldByStaff?: Prisma.StaffUpdateOneWithoutMembershipSalesNestedInput
 }
 
 export type CustomerMembershipUncheckedUpdateWithoutInvoiceInput = {
@@ -2786,6 +3520,9 @@ export type CustomerMembershipUncheckedUpdateWithoutInvoiceInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2799,6 +3536,9 @@ export type CustomerMembershipUncheckedUpdateWithoutInvoiceInput = {
   removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2813,6 +3553,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutInvoiceInput = {
   membershipId?: Prisma.StringFieldUpdateOperationsInput | string
   membershipNameSnapshot?: Prisma.StringFieldUpdateOperationsInput | string
   discountPercentageSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  walletCreditSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentReference?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationMonthsSnapshot?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   startsAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2826,6 +3569,9 @@ export type CustomerMembershipUncheckedUpdateManyWithoutInvoiceInput = {
   removedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   removedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   jobCartAppointmentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  paymentMethod?: Prisma.NullableEnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod | null
+  amountPaid?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  soldByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2870,6 +3616,9 @@ export type CustomerMembershipSelect<ExtArgs extends runtime.Types.Extensions.In
   membershipId?: boolean
   membershipNameSnapshot?: boolean
   discountPercentageSnapshot?: boolean
+  priceSnapshot?: boolean
+  walletCreditSnapshot?: boolean
+  paymentReference?: boolean
   durationMonthsSnapshot?: boolean
   startsAt?: boolean
   expiresAt?: boolean
@@ -2884,6 +3633,9 @@ export type CustomerMembershipSelect<ExtArgs extends runtime.Types.Extensions.In
   removedAt?: boolean
   invoiceId?: boolean
   jobCartAppointmentId?: boolean
+  paymentMethod?: boolean
+  amountPaid?: boolean
+  soldByStaffId?: boolean
   note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2896,6 +3648,7 @@ export type CustomerMembershipSelect<ExtArgs extends runtime.Types.Extensions.In
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerMembershipCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["customerMembership"]>
 
@@ -2907,6 +3660,9 @@ export type CustomerMembershipSelectCreateManyAndReturn<ExtArgs extends runtime.
   membershipId?: boolean
   membershipNameSnapshot?: boolean
   discountPercentageSnapshot?: boolean
+  priceSnapshot?: boolean
+  walletCreditSnapshot?: boolean
+  paymentReference?: boolean
   durationMonthsSnapshot?: boolean
   startsAt?: boolean
   expiresAt?: boolean
@@ -2921,6 +3677,9 @@ export type CustomerMembershipSelectCreateManyAndReturn<ExtArgs extends runtime.
   removedAt?: boolean
   invoiceId?: boolean
   jobCartAppointmentId?: boolean
+  paymentMethod?: boolean
+  amountPaid?: boolean
+  soldByStaffId?: boolean
   note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2932,6 +3691,7 @@ export type CustomerMembershipSelectCreateManyAndReturn<ExtArgs extends runtime.
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
 }, ExtArgs["result"]["customerMembership"]>
 
 export type CustomerMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2942,6 +3702,9 @@ export type CustomerMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.
   membershipId?: boolean
   membershipNameSnapshot?: boolean
   discountPercentageSnapshot?: boolean
+  priceSnapshot?: boolean
+  walletCreditSnapshot?: boolean
+  paymentReference?: boolean
   durationMonthsSnapshot?: boolean
   startsAt?: boolean
   expiresAt?: boolean
@@ -2956,6 +3719,9 @@ export type CustomerMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.
   removedAt?: boolean
   invoiceId?: boolean
   jobCartAppointmentId?: boolean
+  paymentMethod?: boolean
+  amountPaid?: boolean
+  soldByStaffId?: boolean
   note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -2967,6 +3733,7 @@ export type CustomerMembershipSelectUpdateManyAndReturn<ExtArgs extends runtime.
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
 }, ExtArgs["result"]["customerMembership"]>
 
 export type CustomerMembershipSelectScalar = {
@@ -2977,6 +3744,9 @@ export type CustomerMembershipSelectScalar = {
   membershipId?: boolean
   membershipNameSnapshot?: boolean
   discountPercentageSnapshot?: boolean
+  priceSnapshot?: boolean
+  walletCreditSnapshot?: boolean
+  paymentReference?: boolean
   durationMonthsSnapshot?: boolean
   startsAt?: boolean
   expiresAt?: boolean
@@ -2991,12 +3761,15 @@ export type CustomerMembershipSelectScalar = {
   removedAt?: boolean
   invoiceId?: boolean
   jobCartAppointmentId?: boolean
+  paymentMethod?: boolean
+  amountPaid?: boolean
+  soldByStaffId?: boolean
   note?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CustomerMembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "customerId" | "membershipId" | "membershipNameSnapshot" | "discountPercentageSnapshot" | "durationMonthsSnapshot" | "startsAt" | "expiresAt" | "status" | "walletCredited" | "walletDebited" | "walletBalance" | "forfeitedAmount" | "forfeitedAt" | "assignedById" | "removedById" | "removedAt" | "invoiceId" | "jobCartAppointmentId" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["customerMembership"]>
+export type CustomerMembershipOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "customerId" | "membershipId" | "membershipNameSnapshot" | "discountPercentageSnapshot" | "priceSnapshot" | "walletCreditSnapshot" | "paymentReference" | "durationMonthsSnapshot" | "startsAt" | "expiresAt" | "status" | "walletCredited" | "walletDebited" | "walletBalance" | "forfeitedAmount" | "forfeitedAt" | "assignedById" | "removedById" | "removedAt" | "invoiceId" | "jobCartAppointmentId" | "paymentMethod" | "amountPaid" | "soldByStaffId" | "note" | "createdAt" | "updatedAt", ExtArgs["result"]["customerMembership"]>
 export type CustomerMembershipInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.CustomerMembership$branchArgs<ExtArgs>
@@ -3007,6 +3780,7 @@ export type CustomerMembershipInclude<ExtArgs extends runtime.Types.Extensions.I
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
   _count?: boolean | Prisma.CustomerMembershipCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CustomerMembershipIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3018,6 +3792,7 @@ export type CustomerMembershipIncludeCreateManyAndReturn<ExtArgs extends runtime
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
 }
 export type CustomerMembershipIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
@@ -3028,6 +3803,7 @@ export type CustomerMembershipIncludeUpdateManyAndReturn<ExtArgs extends runtime
   removedBy?: boolean | Prisma.CustomerMembership$removedByArgs<ExtArgs>
   invoice?: boolean | Prisma.CustomerMembership$invoiceArgs<ExtArgs>
   jobCartAppointment?: boolean | Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>
+  soldByStaff?: boolean | Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>
 }
 
 export type $CustomerMembershipPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3042,6 +3818,7 @@ export type $CustomerMembershipPayload<ExtArgs extends runtime.Types.Extensions.
     removedBy: Prisma.$UserPayload<ExtArgs> | null
     invoice: Prisma.$InvoicePayload<ExtArgs> | null
     jobCartAppointment: Prisma.$AppointmentPayload<ExtArgs> | null
+    soldByStaff: Prisma.$StaffPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3051,6 +3828,12 @@ export type $CustomerMembershipPayload<ExtArgs extends runtime.Types.Extensions.
     membershipId: string
     membershipNameSnapshot: string
     discountPercentageSnapshot: runtime.Decimal
+    /**
+     * What the membership was sold for and the wallet credit it carried.
+     */
+    priceSnapshot: runtime.Decimal
+    walletCreditSnapshot: runtime.Decimal
+    paymentReference: string | null
     durationMonthsSnapshot: number | null
     startsAt: Date
     expiresAt: Date | null
@@ -3065,6 +3848,9 @@ export type $CustomerMembershipPayload<ExtArgs extends runtime.Types.Extensions.
     removedAt: Date | null
     invoiceId: string | null
     jobCartAppointmentId: string | null
+    paymentMethod: $Enums.PaymentMethod | null
+    amountPaid: runtime.Decimal | null
+    soldByStaffId: string | null
     note: string | null
     createdAt: Date
     updatedAt: Date
@@ -3471,6 +4257,7 @@ export interface Prisma__CustomerMembershipClient<T, Null = never, ExtArgs exten
   removedBy<T extends Prisma.CustomerMembership$removedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerMembership$removedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   invoice<T extends Prisma.CustomerMembership$invoiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerMembership$invoiceArgs<ExtArgs>>): Prisma.Prisma__InvoiceClient<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   jobCartAppointment<T extends Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerMembership$jobCartAppointmentArgs<ExtArgs>>): Prisma.Prisma__AppointmentClient<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  soldByStaff<T extends Prisma.CustomerMembership$soldByStaffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerMembership$soldByStaffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3507,6 +4294,9 @@ export interface CustomerMembershipFieldRefs {
   readonly membershipId: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly membershipNameSnapshot: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly discountPercentageSnapshot: Prisma.FieldRef<"CustomerMembership", 'Decimal'>
+  readonly priceSnapshot: Prisma.FieldRef<"CustomerMembership", 'Decimal'>
+  readonly walletCreditSnapshot: Prisma.FieldRef<"CustomerMembership", 'Decimal'>
+  readonly paymentReference: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly durationMonthsSnapshot: Prisma.FieldRef<"CustomerMembership", 'Int'>
   readonly startsAt: Prisma.FieldRef<"CustomerMembership", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"CustomerMembership", 'DateTime'>
@@ -3521,6 +4311,9 @@ export interface CustomerMembershipFieldRefs {
   readonly removedAt: Prisma.FieldRef<"CustomerMembership", 'DateTime'>
   readonly invoiceId: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly jobCartAppointmentId: Prisma.FieldRef<"CustomerMembership", 'String'>
+  readonly paymentMethod: Prisma.FieldRef<"CustomerMembership", 'PaymentMethod'>
+  readonly amountPaid: Prisma.FieldRef<"CustomerMembership", 'Decimal'>
+  readonly soldByStaffId: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly note: Prisma.FieldRef<"CustomerMembership", 'String'>
   readonly createdAt: Prisma.FieldRef<"CustomerMembership", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CustomerMembership", 'DateTime'>
@@ -4041,6 +4834,25 @@ export type CustomerMembership$jobCartAppointmentArgs<ExtArgs extends runtime.Ty
    */
   include?: Prisma.AppointmentInclude<ExtArgs> | null
   where?: Prisma.AppointmentWhereInput
+}
+
+/**
+ * CustomerMembership.soldByStaff
+ */
+export type CustomerMembership$soldByStaffArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Staff
+   */
+  select?: Prisma.StaffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Staff
+   */
+  omit?: Prisma.StaffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffInclude<ExtArgs> | null
+  where?: Prisma.StaffWhereInput
 }
 
 /**

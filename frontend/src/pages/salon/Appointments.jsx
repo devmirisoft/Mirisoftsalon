@@ -14,6 +14,7 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
+import AppointmentBookingModal from "@/components/salon/AppointmentBookingModal";
 import AppointmentCalendar from "@/components/salon/AppointmentCalendar";
 import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal";
 import DataGrid from "@/components/salon/DataGrid";
@@ -79,6 +80,7 @@ const Appointments = () => {
   const [action, setAction] = useState(null);
   const [appointmentDefaults, setAppointmentDefaults] = useState({});
   const [newCustomerContext, setNewCustomerContext] = useState(null);
+  const [newCustomerId, setNewCustomerId] = useState("");
   const [selected, setSelected] = useState(null);
   const [details, setDetails] = useState(null);
   const [tracking, setTracking] = useState(null);
@@ -187,51 +189,6 @@ const Appointments = () => {
     return Array.from(byId.values());
   }, [appointments, refs.staff]);
 
-  const serviceOptions = useMemo(() => {
-    const groups = new Map();
-
-    refs.services
-      .filter((service) => service.status)
-      .forEach((service) => {
-        const mainServiceName =
-          service.mainService?.name || "Other services";
-        const groupKey =
-          service.mainService?.id || `other-${mainServiceName}`;
-        const duration = service.durationValue
-          ? `${service.durationValue} ${service.durationUnit.toLowerCase()}`
-          : "Duration not set";
-        const branch = service.branch?.name || "All branches";
-
-        if (!groups.has(groupKey)) {
-          groups.set(groupKey, {
-            label: mainServiceName,
-            options: [],
-          });
-        }
-
-        groups.get(groupKey).options.push({
-          value: service.id,
-          label: `${service.name} · ${mainServiceName} · ${formatMoney(
-            service.price
-          )}`,
-          serviceName: service.name,
-          mainServiceName,
-          price: formatMoney(service.price),
-          duration,
-          branch,
-        });
-      });
-
-    return Array.from(groups.values())
-      .map((group) => ({
-        ...group,
-        options: group.options.sort((left, right) =>
-          left.serviceName.localeCompare(right.serviceName)
-        ),
-      }))
-      .sort((left, right) => left.label.localeCompare(right.label));
-  }, [refs.services]);
-
   const formConfig = useMemo(() => {
     if (action === "status") {
       return {
@@ -289,130 +246,8 @@ const Appointments = () => {
         submit: (values) => salonApi.appointments.update(selected.id, values),
       };
     }
-    return {
-      title: "Book appointment",
-      submitLabel: "Book appointment",
-      fields: [
-        ...(isSuper
-          ? [
-              {
-                name: "salonId",
-                label: "Salon",
-                type: "select",
-                required: true,
-                options: refs.salons.map((item) => ({ value: item.id, label: item.name })),
-              },
-            ]
-          : []),
-        {
-          name: "branchId",
-          label: "Branch",
-          type: "select",
-          options: refs.branches.map((item) => ({ value: item.id, label: item.name })),
-          nullable: true,
-        },
-        {
-          name: "customerId",
-          label: "Customer",
-          type: "creatable-select",
-          required: true,
-          nullable: false,
-          placeholder: "Type a customer name",
-          options: refs.customers.map((item) => ({
-            value: item.id,
-            label: item.name,
-          })),
-          onCreateOption: (customerName, values) =>
-            setNewCustomerContext({
-              appointmentValues: values,
-              customerDefaults: {
-                name: customerName,
-                salonId: values.salonId || "",
-                branchId: values.branchId || "",
-                status: "REGULAR",
-              },
-            }),
-        },
-        {
-          name: "staffId",
-          label: "Staff",
-          type: "select",
-          required: true,
-          options: availableStaff.map((item) => ({
-            value: item.id,
-            label: `${item.name} · ${item.jobRole}`,
-          })),
-        },
-        {
-          name: "serviceIds",
-          label: "Services",
-          type: "multiselect",
-          required: true,
-          fullWidth: true,
-          options: serviceOptions,
-          placeholder: "Search services or main services",
-          help: "Services are grouped by Main Service. Select one or more active services.",
-          formatGroupLabel: (group) => (
-            <div className="appointment-service-group">
-              <span>{group.label}</span>
-              <span>{group.options.length}</span>
-            </div>
-          ),
-          formatOptionLabel: (option, { context }) =>
-            context === "menu" ? (
-              <div className="appointment-service-option">
-                <strong>{option.serviceName}</strong>
-                <small>
-                  {option.mainServiceName} · {option.price} · {option.duration} ·{" "}
-                  {option.branch}
-                </small>
-              </div>
-            ) : (
-              option.serviceName
-            ),
-        },
-        {
-          name: "startTime",
-          label: "Start time",
-          type: "datetime-local",
-          required: true,
-          min: minDateTimeInput(),
-          help: "Appointments can only be booked for today or a future date.",
-        },
-        {
-          name: "status",
-          label: "Initial status",
-          type: "select",
-          defaultValue: "SCHEDULED",
-          options: STATUSES.map((value) => ({ value, label: value })),
-        },
-        { name: "bookingNote", label: "Booking note", type: "textarea", fullWidth: true },
-        { name: "internalNote", label: "Internal note", type: "textarea", fullWidth: true },
-      ],
-      initialValues: appointmentDefaults,
-      submit: (values) => {
-        const startTime = new Date(values.startTime);
-        if (Number.isNaN(startTime.getTime()) || startTime < new Date()) {
-          throw new Error(
-            "Choose a start time from now onward. Past appointments are not allowed."
-          );
-        }
-
-        return salonApi.appointments.create({
-          ...values,
-          startTime: startTime.toISOString(),
-        });
-      },
-    };
-  }, [
-    action,
-    appointmentDefaults,
-    availableStaff,
-    isSuper,
-    refs,
-    selected,
-    serviceOptions,
-  ]);
+    return null;
+  }, [action, selected]);
 
   const newCustomerFields = useMemo(
     () => [
@@ -586,6 +421,16 @@ const Appointments = () => {
           onDelete={roleCanManage(user?.role) ? remove : undefined}
           renderActions={(row) => (
             <>
+              {row.status === "COMPLETED" && (
+                <Button
+                  size="sm"
+                  color="success"
+                  className="me-1"
+                  onClick={() => navigate(`/appointments/${row.id}/bill`)}
+                >
+                  <Icon name="file-plus" /> Make bill
+                </Button>
+              )}
               <Button size="sm" color="info" outline onClick={() => openAction("status", row)}>
                 Status
               </Button>
@@ -603,29 +448,51 @@ const Appointments = () => {
         />
       )}
 
-      <SchemaModal
-        isOpen={Boolean(action)}
+      <AppointmentBookingModal
+        isOpen={action === "create"}
         toggle={() => setAction(null)}
-        title={formConfig.title}
-        fields={formConfig.fields}
-        initialValues={formConfig.initialValues}
-        submitLabel={formConfig.submitLabel}
-        onSubmit={async (values) => {
-          const response = await formConfig.submit(values);
+        isSuper={isSuper}
+        statuses={STATUSES}
+        refs={{ ...refs, staff: availableStaff }}
+        defaults={appointmentDefaults}
+        newCustomerId={newCustomerId}
+        onCreateCustomer={(customerName, values) =>
+          setNewCustomerContext({
+            name: customerName,
+            salonId: values.salonId || "",
+            branchId: values.branchId || "",
+            status: "REGULAR",
+          })
+        }
+        onSubmit={async (payload) => {
+          await salonApi.appointments.create(payload);
           await load();
-          if (values.status === "COMPLETED") {
-            navigate(
-              `/billing?appointmentId=${response?.data?.id || selected?.id || ""}`
-            );
-          }
         }}
       />
+      {formConfig && (
+        <SchemaModal
+          isOpen
+          toggle={() => setAction(null)}
+          title={formConfig.title}
+          fields={formConfig.fields}
+          initialValues={formConfig.initialValues}
+          submitLabel={formConfig.submitLabel}
+          onSubmit={async (values) => {
+            await formConfig.submit(values);
+            if (action === "status" && values.status === "COMPLETED") {
+              navigate(`/appointments/${selected.id}/bill`);
+              return;
+            }
+            await load();
+          }}
+        />
+      )}
       <SchemaModal
         isOpen={Boolean(newCustomerContext)}
         toggle={() => setNewCustomerContext(null)}
         title="Add new customer"
         fields={newCustomerFields}
-        initialValues={newCustomerContext?.customerDefaults}
+        initialValues={newCustomerContext}
         submitLabel="Add customer"
         onSubmit={async (values) => {
           const response = await salonApi.customers.create(values);
@@ -634,10 +501,8 @@ const Appointments = () => {
             ...current,
             customers: [...current.customers, customer],
           }));
-          setAppointmentDefaults({
-            ...newCustomerContext.appointmentValues,
-            customerId: customer.id,
-          });
+          // The booking modal stays open and picks this up, keeping the cart.
+          setNewCustomerId(customer.id);
         }}
       />
       <AppointmentDetailsModal
@@ -659,6 +524,10 @@ const Appointments = () => {
         onTracking={(appointment) => {
           setDetails(null);
           viewTracking(appointment);
+        }}
+        onMakeBill={(appointment) => {
+          setDetails(null);
+          navigate(`/appointments/${appointment.id}/bill`);
         }}
       />
       <Modal isOpen={Boolean(tracking)} toggle={() => setTracking(null)} centered>

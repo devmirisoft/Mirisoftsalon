@@ -23,6 +23,10 @@ model Salon {
   productGstRate Decimal   @default(18.00) @db.Decimal(5, 2)
   gstVerifiedAt  DateTime?
 
+  /// When true, a membership discount also applies to packages sold on a bill.
+  /// Off by default: packages are already sold at a discounted price.
+  membershipDiscountOnPackages Boolean @default(false)
+
   branches              Branch[]
   publicBookingSettings PublicBookingSetting[]
 
@@ -221,6 +225,7 @@ model Membership {
 
   customers           Customer[]
   customerMemberships CustomerMembership[]
+  invoiceItems        InvoiceItem[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
 
@@ -246,6 +251,10 @@ model CustomerMembership {
 
   membershipNameSnapshot     String
   discountPercentageSnapshot Decimal                  @db.Decimal(5, 2)
+  /// What the membership was sold for and the wallet credit it carried.
+  priceSnapshot              Decimal                  @default(0) @db.Decimal(10, 2)
+  walletCreditSnapshot       Decimal                  @default(0) @db.Decimal(10, 2)
+  paymentReference           String?
   durationMonthsSnapshot     Int?
   startsAt                   DateTime                 @default(now())
   expiresAt                  DateTime?
@@ -276,6 +285,17 @@ model CustomerMembership {
   jobCartAppointmentId String?
   jobCartAppointment   Appointment? @relation(fields: [jobCartAppointmentId], references: [id], onDelete: SetNull)
 
+  // How the customer paid for this membership, and what they actually paid.
+  // MEMBERSHIP_WALLET is rejected here: a membership is a sale, not a
+  // redemption.
+  paymentMethod PaymentMethod?
+  amountPaid    Decimal?       @db.Decimal(10, 2)
+
+  // Who made the sale. Distinct from assignedById, which is the logged-in
+  // user recorded for audit: the seller is often a stylist without a login.
+  soldByStaffId String?
+  soldByStaff   Staff?  @relation("CustomerMembershipSoldBy", fields: [soldByStaffId], references: [id], onDelete: SetNull)
+
   note String?
 
   createdAt DateTime @default(now())
@@ -290,6 +310,7 @@ model CustomerMembership {
   @@index([expiresAt])
   @@index([invoiceId])
   @@index([jobCartAppointmentId])
+  @@index([soldByStaffId])
 }
 
 enum CustomerMembershipStatus {
@@ -585,6 +606,8 @@ model Staff {
 
   sales Sale[]
 
+  membershipSales CustomerMembership[] @relation("CustomerMembershipSoldBy")
+
   branchId String?
   branch   Branch? @relation(fields: [branchId], references: [id])
 
@@ -653,9 +676,10 @@ model StaffAttendance {
   date         DateTime         @db.Date
   checkInTime  DateTime?
   checkOutTime DateTime?
-  status       AttendanceStatus
-  lateMinutes  Int              @default(0)
-  note         String?
+  status          AttendanceStatus
+  lateMinutes     Int              @default(0)
+  overtimeMinutes Int              @default(0)
+  note            String?
 
   markedById String?
   markedBy   User?   @relation("AttendanceMarkedBy", fields: [markedById], references: [id])
@@ -1053,6 +1077,8 @@ model ServicePackage {
   totalPrice       Decimal                         @db.Decimal(10, 2)
   specialPrice     Decimal                         @db.Decimal(10, 2)
   validityDays     Int
+  /// Cap on how many times the package may be redeemed in total.
+  maxRedemptions          Int?
   status           PackageStatus                   @default(ACTIVE)
   createdById      String?
   createdBy        User?                           @relation("ServicePackageCreatedBy", fields: [createdById], references: [id])
@@ -1470,12 +1496,20 @@ model Invoice {
 
   subtotalAmount      Decimal @default(0) @db.Decimal(10, 2)
   discountAmount      Decimal @default(0) @db.Decimal(10, 2)
+  /// The membership share of discountAmount, kept apart so reporting can tell
+  /// a membership give-away from a manually entered discount.
+  membershipDiscountAmount Decimal @default(0) @db.Decimal(10, 2)
   processingFeeAmount Decimal @default(0) @db.Decimal(10, 2)
   taxAmount           Decimal @default(0) @db.Decimal(10, 2)
+  /// Delta applied to reach a whole-rupee totalAmount (e.g. 89.98 -> 90 stores 0.02).
+  roundOffAmount      Decimal @default(0) @db.Decimal(10, 2)
   totalAmount         Decimal @default(0) @db.Decimal(10, 2)
 
   paidAmount    Decimal @default(0) @db.Decimal(10, 2)
   balanceAmount Decimal @default(0) @db.Decimal(10, 2)
+
+  /// Client-supplied key that makes a queued offline confirm safe to replay.
+  idempotencyKey String? @unique
 
   status        InvoiceStatus @default(ISSUED)
   paymentStatus PaymentStatus @default(UNPAID)
@@ -1521,6 +1555,8 @@ model InvoiceItem {
   itemType      InvoiceItemType @default(SERVICE)
   packageId     String?
   package       ServicePackage? @relation(fields: [packageId], references: [id])
+  membershipId  String?
+  membership    Membership?     @relation(fields: [membershipId], references: [id])
   soldByStaffId String?
   soldByStaff   Staff?          @relation("InvoiceItemSoldBy", fields: [soldByStaffId], references: [id])
 
@@ -1552,6 +1588,7 @@ model InvoiceItem {
   @@index([serviceId])
   @@index([productId])
   @@index([packageId])
+  @@index([membershipId])
   @@index([soldByStaffId])
   @@index([itemType])
 }
@@ -1570,6 +1607,11 @@ model CustomerPackage {
   totalPriceSnapshot   Decimal                         @db.Decimal(10, 2)
   specialPriceSnapshot Decimal                         @db.Decimal(10, 2)
   validityDaysSnapshot Int
+  /// Redemption cap copied from the package at purchase, and the running
+  /// counts behind "3 of 10 used, 7 left".
+  maxRedemptionsSnapshot Int?
+  usedRedemptions        Int  @default(0)
+  reservedRedemptions    Int  @default(0)
   purchasedAt          DateTime
   validUntil           DateTime
   status               CustomerPackageStatus           @default(ACTIVE)
@@ -1772,6 +1814,7 @@ enum InvoiceItemType {
   PRODUCT
   PACKAGE
   PACKAGE_REDEMPTION
+  MEMBERSHIP
 }
 
 enum CustomerTransactionType {

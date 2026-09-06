@@ -13,7 +13,7 @@ export const salonApi = {
     branch: () => request("/api/branch-profile"),
     updateBranch: (body) =>
       request("/api/branch-profile", { method: "PUT", body }),
-    gst: () => request("/api/salon-profile/gst"),
+    gst: (query) => request("/api/salon-profile/gst", { query }),
     updateGst: (body) =>
       request("/api/salon-profile/gst", { method: "PUT", body }),
   },
@@ -400,12 +400,6 @@ export const salonApi = {
     reject: (id, rejectionReason) => request(`/api/leaves/${id}/reject`, { method: "PATCH", body: { rejectionReason } }),
     cancel: (id) => request(`/api/leaves/${id}/cancel`, { method: "PATCH" }),
   },
-  salaryConfigs: {
-    active: (staffId) => request(`/api/staff/${staffId}/salary-config`),
-    create: (staffId, body) => request(`/api/staff/${staffId}/salary-config`, { method: "POST", body }),
-    update: (id, body) => request(`/api/salary-configs/${id}`, { method: "PUT", body }),
-    setStatus: (id, status) => request(`/api/salary-configs/${id}/status`, { method: "PATCH", body: { status } }),
-  },
   salarySlips: {
     list: (query) => request("/api/salary-slips", { query }),
     get: (id) => request(`/api/salary-slips/${id}`),
@@ -472,7 +466,7 @@ export const salonApi = {
   reports: {
     inventory: (query) => request("/api/reports/inventory", { query }),
     expenses: (query) => request("/api/reports/expenses", { query }),
-    profitSummary: (query) => request("/api/reports/profit-summary", { query }),
+    salonReport: (query) => request("/api/reports/salon-report", { query }),
     staffPerformance: (query) => request("/api/reports/staff-performance", { query }),
     exportFile: (reportType, format, query = {}) =>
       downloadFile(`/api/reports/${reportType}/export`, {

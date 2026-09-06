@@ -131,6 +131,7 @@ const gstSelect = {
   id: true,
   name: true,
   gstEnabled: true,
+  membershipDiscountOnPackages: true,
   gstNumber: true,
   gstLegalName: true,
   gstStateCode: true,
@@ -157,6 +158,7 @@ const profileData = (user: Prisma.UserGetPayload<{ select: typeof safeUserSelect
 
 const gstData = (salon: Prisma.SalonGetPayload<{ select: typeof gstSelect }>) => ({
   gstEnabled: salon.gstEnabled,
+  membershipDiscountOnPackages: salon.membershipDiscountOnPackages,
   gstNumber: salon.gstNumber,
   gstLegalName: salon.gstLegalName,
   gstStateCode: salon.gstStateCode,
@@ -272,6 +274,13 @@ export const updateSalonProfile = async (req: Request, res: Response) => {
     ...("state" in req.body ? { state: optionalString(req.body.state) } : {}),
     ...("postalCode" in req.body ? { postalCode: optionalString(req.body.postalCode) } : {}),
     ...("timezone" in req.body ? { timezone: String(trimString(req.body.timezone) || "") } : {}),
+    ...("membershipDiscountOnPackages" in req.body
+      ? {
+          membershipDiscountOnPackages: Boolean(
+            req.body.membershipDiscountOnPackages
+          ),
+        }
+      : {}),
   };
 
   const emailError = validateEmail(data.email ?? null);

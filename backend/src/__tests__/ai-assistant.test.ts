@@ -978,7 +978,7 @@ describe("AI assistant integration", () => {
     ]);
   });
 
-  it("does not ask Gemini to answer unknown, blocked, or permission-failed requests", async () => {
+  it("lets Gemini answer unknown requests conversationally but not blocked or permission-failed ones", async () => {
     let providerFactoryCalls = 0;
     const generateAnswer = jest.fn().mockResolvedValue("unused");
     const selectToolNames = jest.fn().mockResolvedValue([]);
@@ -1003,6 +1003,11 @@ describe("AI assistant integration", () => {
       })
     ).resolves.toMatchObject({ usedTools: [] });
 
+    // No tools matched, so the model answers conversationally instead of
+    // returning the canned capability list.
+    expect(generateAnswer).toHaveBeenCalledTimes(1);
+    generateAnswer.mockClear();
+
     await chatWithAiAssistant({
       message: "show me the sql",
       context: adminContext,
@@ -1023,6 +1028,7 @@ describe("AI assistant integration", () => {
       },
     });
 
+    // Blocked prompts and permission failures still never reach the model.
     expect(providerFactoryCalls).toBeGreaterThanOrEqual(0);
     expect(generateAnswer).toHaveBeenCalledTimes(0);
   });

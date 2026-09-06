@@ -18,8 +18,24 @@ import { salonApi } from "@/services/salonApi";
 import {
   addMonthsInputDate,
   formatDate,
+  formatMoney,
+  labelize,
   todayInputDate,
 } from "@/utils/salonFormat";
+
+// A membership sale takes money in, so MEMBERSHIP_WALLET is not offered here:
+// you cannot buy a membership by redeeming another membership's wallet.
+const PAYMENT_METHODS = [
+  "CASH",
+  "UPI",
+  "GPAY",
+  "PAYTM",
+  "PHONEPE",
+  "CARD",
+  "BANK_TRANSFER",
+  "CHEQUE",
+  "OTHER",
+];
 
 const initialCustomerId =
   new URLSearchParams(window.location.search).get("customerId") || "";
@@ -30,6 +46,9 @@ const defaultMembershipForm = () => {
     membershipId: "",
     startsAt,
     expiresAt: addMonthsInputDate(startsAt, 1),
+    paymentMethod: "CASH",
+    amountPaid: "",
+    soldByStaffId: "",
     note: "",
   };
 };
@@ -37,6 +56,7 @@ const defaultMembershipForm = () => {
 const ManageMemberships = () => {
   const [customers, setCustomers] = useState([]);
   const [memberships, setMemberships] = useState([]);
+  const [staff, setStaff] = useState([]);
   const [customerId, setCustomerId] = useState(initialCustomerId);
   const [customer, setCustomer] = useState(null);
   const [history, setHistory] = useState([]);
@@ -46,10 +66,17 @@ const ManageMemberships = () => {
   const [form, setForm] = useState(defaultMembershipForm);
 
   useEffect(() => {
-    Promise.all([salonApi.customers.list(), salonApi.memberships.list()])
-      .then(([customersRes, membershipsRes]) => {
+    Promise.all([
+      salonApi.customers.list(),
+      salonApi.memberships.list(),
+      // Staff list is restricted for some roles; a rejection here should not
+      // blank the page, it just leaves the seller dropdown empty.
+      salonApi.staff.list().catch(() => ({ data: [] })),
+    ])
+      .then(([customersRes, membershipsRes, staffRes]) => {
         setCustomers(customersRes.data || []);
         setMemberships(membershipsRes.data || []);
+        setStaff(staffRes.data || []);
       })
       .catch((loadError) => setError(loadError.message));
   }, []);
@@ -84,6 +111,8 @@ const ManageMemberships = () => {
     await loadCustomer(customerId);
   };
 
+  const selectedPlan = memberships.find((item) => item.id === form.membershipId);
+
   const submitMembership = async (event) => {
     event.preventDefault();
     if (!customerId || !form.membershipId) return;
@@ -107,6 +136,9 @@ const ManageMemberships = () => {
         ...(form.expiresAt
           ? { expiresAt: new Date(`${form.expiresAt}T23:59:59`).toISOString() }
           : {}),
+        ...(form.paymentMethod ? { paymentMethod: form.paymentMethod } : {}),
+        ...(form.amountPaid !== "" ? { amountPaid: Number(form.amountPaid) } : {}),
+        ...(form.soldByStaffId ? { soldByStaffId: form.soldByStaffId } : {}),
         ...(form.note ? { note: form.note } : {}),
       });
       setForm(defaultMembershipForm());
@@ -209,9 +241,19 @@ const ManageMemberships = () => {
                         type="select"
                         required
                         value={form.membershipId}
-                        onChange={(event) =>
-                          setForm((value) => ({ ...value, membershipId: event.target.value }))
-                        }
+                        onChange={(event) => {
+                          const plan = memberships.find(
+                            (item) => item.id === event.target.value
+                          );
+                          setForm((value) => ({
+                            ...value,
+                            membershipId: event.target.value,
+                            // Prefill what to collect from the plan price; the
+                            // seller can still override it below.
+                            amountPaid:
+                              plan?.price != null ? String(plan.price) : "",
+                          }));
+                        }}
                       >
                         <option value="">Select membership</option>
                         {memberships
@@ -257,6 +299,93 @@ const ManageMemberships = () => {
                       />
                     </FormGroup>
                   </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label>Payment method</Label>
+                      <Input
+                        type="select"
+                        required
+                        value={form.paymentMethod}
+                        onChange={(event) =>
+                          setForm((value) => ({
+                            ...value,
+                            paymentMethod: event.target.value,
+                          }))
+                        }
+                      >
+                        {PAYMENT_METHODS.map((method) => (
+                          <option key={method} value={method}>
+                            {labelize(method)}
+                          </option>
+                        ))}
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label>Amount collected</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={form.amountPaid}
+                        onChange={(event) =>
+                          setForm((value) => ({
+                            ...value,
+                            amountPaid: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="4">
+                    <FormGroup>
+                      <Label>Sold by</Label>
+                      <Input
+                        type="select"
+                        value={form.soldByStaffId}
+                        onChange={(event) =>
+                          setForm((value) => ({
+                            ...value,
+                            soldByStaffId: event.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Select staff</option>
+                        {staff
+                          .filter((item) => item.status)
+                          .map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                              {item.jobRole ? ` · ${item.jobRole}` : ""}
+                            </option>
+                          ))}
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                  {selectedPlan && (
+                    <Col md="12">
+                      <div className="alert alert-light py-2 mb-0">
+                        <span className="me-3">
+                          <strong>Price</strong> {formatMoney(selectedPlan.price)}
+                        </span>
+                        <span className="me-3">
+                          <strong>Wallet credit</strong>{" "}
+                          {formatMoney(selectedPlan.walletCreditAmount)}
+                        </span>
+                        <span className="me-3">
+                          <strong>Discount</strong>{" "}
+                          {Number(selectedPlan.discountPercentage)}%
+                        </span>
+                        <span>
+                          <strong>Validity</strong>{" "}
+                          {selectedPlan.durationMonths
+                            ? `${selectedPlan.durationMonths} month${selectedPlan.durationMonths > 1 ? "s" : ""}`
+                            : "No expiry"}
+                        </span>
+                      </div>
+                    </Col>
+                  )}
                   <Col md="9">
                     <FormGroup>
                       <Label>Note</Label>
@@ -284,10 +413,13 @@ const ManageMemberships = () => {
                 <tr>
                   <th>Membership</th>
                   <th>Discount</th>
+                  <th>Wallet value</th>
+                  <th>Paid</th>
+                  <th>Payment method</th>
                   <th>Starts</th>
                   <th>Expires</th>
                   <th>Status</th>
-                  <th>Assigned by</th>
+                  <th>Sold by</th>
                   <th>Note</th>
                 </tr>
               </thead>
@@ -296,18 +428,29 @@ const ManageMemberships = () => {
                   <tr key={item.id}>
                     <td>{item.membershipNameSnapshot}</td>
                     <td>{Number(item.discountPercentageSnapshot)}%</td>
+                    <td>{formatMoney(item.walletCredited)}</td>
+                    <td>
+                      {item.amountPaid == null
+                        ? "—"
+                        : formatMoney(item.amountPaid)}
+                    </td>
+                    <td>
+                      {item.paymentMethod ? labelize(item.paymentMethod) : "—"}
+                    </td>
                     <td>{formatDate(item.startsAt)}</td>
                     <td>{item.expiresAt ? formatDate(item.expiresAt) : "Never"}</td>
                     <td>
                       <StatusBadge value={item.status} />
                     </td>
-                    <td>{item.assignedBy?.name || "—"}</td>
+                    <td>
+                      {item.soldByStaff?.name || item.assignedBy?.name || "—"}
+                    </td>
                     <td>{item.note || "—"}</td>
                   </tr>
                 ))}
                 {history.length === 0 && (
                   <tr>
-                    <td colSpan="7" className="text-center text-soft py-4">
+                    <td colSpan="10" className="text-center text-soft py-4">
                       No membership history.
                     </td>
                   </tr>

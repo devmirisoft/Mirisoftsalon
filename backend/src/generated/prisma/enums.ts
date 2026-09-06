@@ -298,7 +298,8 @@ export const InvoiceItemType = {
   SERVICE: 'SERVICE',
   PRODUCT: 'PRODUCT',
   PACKAGE: 'PACKAGE',
-  PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION'
+  PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION',
+  MEMBERSHIP: 'MEMBERSHIP'
 } as const
 
 export type InvoiceItemType = (typeof InvoiceItemType)[keyof typeof InvoiceItemType]

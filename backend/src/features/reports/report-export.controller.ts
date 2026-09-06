@@ -22,7 +22,7 @@ const safePart = (value: string) =>
 const reportFilename: Record<ExportReportType, string> = {
   revenue: "billing-and-payments-report",
   expenses: "expense-report",
-  "profit-summary": "profit-summary-report",
+  "salon-report": "salon-report",
   inventory: "inventory-report",
   "low-stock": "low-stock-report",
   "staff-performance": "staff-performance-report",

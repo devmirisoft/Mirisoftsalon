@@ -10,7 +10,7 @@ import { transactionError, validateBranch } from "../products/inventory-access.j
 export const EXPORT_REPORT_TYPES = [
   "revenue",
   "expenses",
-  "profit-summary",
+  "salon-report",
   "inventory",
   "low-stock",
   "staff-performance",
@@ -23,7 +23,7 @@ export type ExportReportType = (typeof EXPORT_REPORT_TYPES)[number];
 const allowedRoles: Record<ExportReportType, string[]> = {
   revenue: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"],
   expenses: ["SUPER_ADMIN", "SALON_ADMIN"],
-  "profit-summary": ["SUPER_ADMIN", "SALON_ADMIN"],
+  "salon-report": ["SUPER_ADMIN", "SALON_ADMIN"],
   inventory: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   "low-stock": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   "staff-performance": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"],
@@ -190,22 +190,47 @@ const buildRows = async (
     ], rows: rows.map((r) => ({ date: r.expenseDate, title: r.title, category: r.category, vendor: r.vendor?.name ?? "", branch: r.branch?.name ?? "All branches", method: r.paymentMethod ?? "", amount: Number(r.amount) })),
     totals: { title: "TOTAL", amount: rows.reduce((s, r) => s + Number(r.amount), 0) } };
   }
-  if (reportType === "profit-summary") {
-    const [sales, retail, purchases, expenses, payments] = await Promise.all([
-      prisma.sale.aggregate({ where: { ...common, status: "ACTIVE", ...(context.range ? { saleDate: context.range } : {}) }, _sum: { totalAmount: true } }),
-      prisma.retailSale.aggregate({ where: { ...common, ...(context.range ? { saleDate: context.range } : {}) }, _sum: { totalAmount: true } }),
-      prisma.productPurchase.aggregate({ where: { ...common, ...(context.range ? { purchaseDate: context.range } : {}) }, _sum: { totalAmount: true } }),
-      prisma.expense.aggregate({ where: { ...common, ...(context.range ? { expenseDate: context.range } : {}) }, _sum: { amount: true } }),
-      prisma.payment.aggregate({ where: { ...common, ...(context.range ? { paidAt: context.range } : {}) }, _sum: { amount: true } }),
-    ]);
+  if (reportType === "salon-report") {
+    const [sales, retail, purchases, expenses, payments, salePayments, memberships, customers, appointments] =
+      await Promise.all([
+        prisma.sale.aggregate({ where: { ...common, status: "ACTIVE", ...(context.range ? { saleDate: context.range } : {}) }, _sum: { totalAmount: true } }),
+        prisma.retailSale.findMany({ where: { ...common, ...(context.range ? { saleDate: context.range } : {}) }, select: { totalAmount: true, paymentMethod: true } }),
+        prisma.productPurchase.aggregate({ where: { ...common, ...(context.range ? { purchaseDate: context.range } : {}) }, _sum: { totalAmount: true } }),
+        prisma.expense.aggregate({ where: { ...common, ...(context.range ? { expenseDate: context.range } : {}) }, _sum: { amount: true } }),
+        prisma.payment.findMany({ where: { ...common, ...(context.range ? { paidAt: context.range } : {}) }, select: { amount: true, method: true } }),
+        prisma.salePayment.findMany({ where: { ...(context.range ? { paidAt: context.range } : {}), sale: { is: { ...common, status: "ACTIVE" } } }, select: { amount: true, method: true } }),
+        prisma.customerMembership.findMany({ where: { ...common, ...(context.range ? { startsAt: context.range } : {}) }, select: { amountPaid: true } }),
+        prisma.customer.count({ where: { ...common, ...(context.range ? { createdAt: context.range } : {}) } }),
+        prisma.appointment.findMany({ where: { ...common, ...(context.range ? { startTime: context.range } : {}) }, select: { walkInJobCart: true } }),
+      ]);
+    const retailTotal = retail.reduce((sum, row) => sum + numberValue(row.totalAmount), 0);
+    const servicePayments = payments.reduce((sum, row) => sum + numberValue(row.amount), 0);
+    const saleTotal = numberValue(sales._sum.totalAmount);
+    const purchaseTotal = numberValue(purchases._sum.totalAmount);
+    const expenseTotal = numberValue(expenses._sum.amount);
+    const methodTotals = new Map<string, number>();
+    for (const row of [...payments, ...salePayments]) {
+      methodTotals.set(row.method, (methodTotals.get(row.method) ?? 0) + numberValue(row.amount));
+    }
+    for (const row of retail) {
+      const method = row.paymentMethod ?? "OTHER";
+      methodTotals.set(method, (methodTotals.get(method) ?? 0) + numberValue(row.totalAmount));
+    }
     const metrics: [string, number][] = [
-      ["Service payments", numberValue(payments._sum.amount)],
-      ["Sale revenue", numberValue(sales._sum.totalAmount)],
-      ["Retail sales", numberValue(retail._sum.totalAmount)],
-      ["Product purchases", -numberValue(purchases._sum.totalAmount)],
-      ["Other expenses", -numberValue(expenses._sum.amount)],
+      ["Service payments", servicePayments],
+      ["Sale revenue", saleTotal],
+      ["Retail sales", retailTotal],
+      ["Product purchases", -purchaseTotal],
+      ["Expenses", -expenseTotal],
+      ["Memberships sold", memberships.length],
+      ["Membership revenue", memberships.reduce((sum, row) => sum + numberValue(row.amountPaid), 0)],
+      ["New customers", customers],
+      ["Appointments", appointments.filter((row) => !row.walkInJobCart).length],
+      ["Job cards", appointments.filter((row) => row.walkInJobCart).length],
+      ...Array.from(methodTotals, ([method, total]): [string, number] => [`Paid via ${method}`, total]),
     ];
-    return { title: "Profit Summary", columns: [{ key: "metric", label: "Metric", width: 28 }, { key: "amount", label: "Amount", type: "currency", width: 18 }], rows: metrics.map(([metric, amount]) => ({ metric, amount })), totals: { metric: "ESTIMATED PROFIT", amount: metrics.reduce((sum, row) => sum + Number(row[1]), 0) } };
+    return { title: "Salon Report", columns: [{ key: "metric", label: "Metric", width: 28 }, { key: "amount", label: "Amount", type: "currency", width: 18 }], rows: metrics.map(([metric, amount]) => ({ metric, amount })),
+      totals: { metric: "NET EARNINGS", amount: servicePayments + saleTotal + retailTotal - purchaseTotal - expenseTotal } };
   }
   if (reportType === "inventory" || reportType === "low-stock") {
     let products = limited(await prisma.product.findMany({

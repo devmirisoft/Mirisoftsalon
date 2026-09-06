@@ -180,7 +180,8 @@ export const InvoiceItemType = {
     SERVICE: 'SERVICE',
     PRODUCT: 'PRODUCT',
     PACKAGE: 'PACKAGE',
-    PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION'
+    PACKAGE_REDEMPTION: 'PACKAGE_REDEMPTION',
+    MEMBERSHIP: 'MEMBERSHIP'
 };
 export const CustomerTransactionType = {
     INVOICE: 'INVOICE',

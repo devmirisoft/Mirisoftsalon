@@ -26,7 +26,12 @@ import {
 import { applyCouponSchema } from "../coupons/coupon.validation.js";
 import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
-import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import { createStockMovement } from "../stock/stockMovement.service.js";
+import { sendInventoryError } from "../products/inventory-access.js";
+import {
+  assignCustomerMembershipInTransaction,
+  resolveCurrentCustomerMembership,
+} from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
 
 
@@ -100,6 +105,37 @@ const decimalOrZero = (value: unknown) => {
   }
 };
 
+/**
+ * A product or package sold on the appointment's bill. Prices are never taken
+ * from the request: the server reads them from the catalogue so the counter
+ * cannot bill a product at its own price.
+ */
+type ExtraItemInput = {
+  itemType?: string;
+  productId?: string;
+  packageId?: string;
+  membershipId?: string;
+  quantity?: number;
+  soldByStaffId?: string;
+};
+
+type BillLine = {
+  itemType: "SERVICE" | "PRODUCT" | "PACKAGE" | "MEMBERSHIP";
+  quantity: number;
+  unitPrice: Prisma.Decimal;
+  description: string;
+  serviceName: string;
+  itemCode: string;
+  serviceId?: string;
+  productId?: string;
+  packageId?: string;
+  membershipId?: string;
+  soldByStaffId?: string;
+  // Products and packages are billed at full price; only services take a
+  // share of the manual and membership discount.
+  discountable: boolean;
+};
+
 const getExistingInvoiceByAccess = async (req: Request, invoiceId: string) => {
   if (req.user?.role === "SUPER_ADMIN") {
     return InvoiceModel.findById(invoiceId);
@@ -135,17 +171,23 @@ export const createInvoiceFromAppointment = async (
       discountAmount,
       processingFeeAmount,
       taxPercent,
+      serviceTaxPercent,
+      productTaxPercent,
       status,
       billingNote,
       footerNote,
+      extraItems,
     } = req.body as {
       invoiceType?: string;
       discountAmount?: number;
       processingFeeAmount?: number;
       taxPercent?: number;
+      serviceTaxPercent?: number;
+      productTaxPercent?: number;
       status?: string;
       billingNote?: string;
       footerNote?: string;
+      extraItems?: ExtraItemInput[];
     };
 
     if (!appointmentId) {
@@ -217,9 +259,172 @@ export const createInvoiceFromAppointment = async (
         ? invoiceType
         : "BILL_OF_SUPPLY";
 
-    const subtotalAmount = appointment.services
+    const requestedExtras = Array.isArray(extraItems) ? extraItems : [];
+    for (const extra of requestedExtras) {
+      if (
+        extra.itemType !== "PRODUCT" &&
+        extra.itemType !== "PACKAGE" &&
+        extra.itemType !== "MEMBERSHIP"
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Extra items must be a PRODUCT, PACKAGE or MEMBERSHIP",
+        });
+      }
+      const quantity = Number(extra.quantity ?? 1);
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {
+        return res.status(400).json({
+          success: false,
+          message: "Extra item quantity must be a whole number from 1 to 1000",
+        });
+      }
+    }
+    const productExtras = requestedExtras.filter(
+      (extra) => extra.itemType === "PRODUCT"
+    );
+    const packageExtras = requestedExtras.filter(
+      (extra) => extra.itemType === "PACKAGE"
+    );
+    const membershipExtras = requestedExtras.filter(
+      (extra) => extra.itemType === "MEMBERSHIP"
+    );
+    // One plan per bill: a second one would immediately supersede the first
+    // and forfeit the wallet it was just sold with.
+    if (membershipExtras.length > 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Only one membership can be sold on a bill",
+      });
+    }
+    if (packageExtras.length && !appointment.branchId) {
+      return res.status(400).json({
+        success: false,
+        message: "Set a branch on the appointment before selling a package",
+      });
+    }
+    const [soldProducts, soldPackages, soldMemberships] = await Promise.all([
+      productExtras.length
+        ? prisma.product.findMany({
+            where: {
+              id: { in: productExtras.map((extra) => String(extra.productId)) },
+              salonId: appointment.salonId,
+              status: true,
+            },
+            select: { id: true, name: true, sku: true, sellingPrice: true },
+          })
+        : Promise.resolve([]),
+      packageExtras.length
+        ? prisma.servicePackage.findMany({
+            where: {
+              id: { in: packageExtras.map((extra) => String(extra.packageId)) },
+              salonId: appointment.salonId,
+              status: "ACTIVE",
+            },
+            include: { items: true },
+          })
+        : Promise.resolve([]),
+      membershipExtras.length
+        ? prisma.membership.findMany({
+            where: {
+              id: {
+                in: membershipExtras.map((extra) => String(extra.membershipId)),
+              },
+              salonId: appointment.salonId,
+              status: true,
+            },
+            select: { id: true, name: true, price: true },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const serviceLines: BillLine[] = appointment.services.map((item) => ({
+      itemType: "SERVICE",
+      quantity: 1,
+      unitPrice: new Prisma.Decimal(item.price),
+      description: item.serviceName,
+      serviceName: item.serviceName,
+      itemCode: item.serviceId.slice(0, 8),
+      serviceId: item.serviceId,
+      discountable: true,
+    }));
+    const extraLines: BillLine[] = [];
+    for (const extra of requestedExtras) {
+      const quantity = Number(extra.quantity ?? 1);
+      if (extra.itemType === "PRODUCT") {
+        const product = soldProducts.find((item) => item.id === extra.productId);
+        if (!product) {
+          return res.status(400).json({
+            success: false,
+            message: "A selected product is unavailable in this salon",
+          });
+        }
+        extraLines.push({
+          itemType: "PRODUCT",
+          quantity,
+          unitPrice: new Prisma.Decimal(product.sellingPrice),
+          description: product.name,
+          serviceName: product.name,
+          itemCode: product.sku || product.id.slice(0, 8),
+          productId: product.id,
+          discountable: false,
+          ...(extra.soldByStaffId ? { soldByStaffId: extra.soldByStaffId } : {}),
+        });
+        continue;
+      }
+      if (extra.itemType === "MEMBERSHIP") {
+        const membership = soldMemberships.find(
+          (item) => item.id === extra.membershipId
+        );
+        if (!membership) {
+          return res.status(400).json({
+            success: false,
+            message: "The selected membership plan is unavailable",
+          });
+        }
+        extraLines.push({
+          itemType: "MEMBERSHIP",
+          quantity: 1,
+          unitPrice: new Prisma.Decimal(membership.price),
+          description: membership.name,
+          serviceName: membership.name,
+          itemCode: membership.id.slice(0, 8),
+          membershipId: membership.id,
+          // Buying a plan is never cheaper because you already hold one.
+          discountable: false,
+          ...(extra.soldByStaffId
+            ? { soldByStaffId: extra.soldByStaffId }
+            : {}),
+        });
+        continue;
+      }
+      const servicePackage = soldPackages.find(
+        (item) => item.id === extra.packageId
+      );
+      if (!servicePackage) {
+        return res.status(400).json({
+          success: false,
+          message: "A selected package is unavailable in this salon",
+        });
+      }
+      extraLines.push({
+        itemType: "PACKAGE",
+        quantity,
+        unitPrice: new Prisma.Decimal(servicePackage.specialPrice),
+        description: servicePackage.name,
+        serviceName: servicePackage.name,
+        itemCode: servicePackage.id.slice(0, 8),
+        packageId: servicePackage.id,
+        discountable: false,
+        ...(extra.soldByStaffId ? { soldByStaffId: extra.soldByStaffId } : {}),
+      });
+    }
+    const billLines = [...serviceLines, ...extraLines];
+
+    // Only the service lines back the manual and membership discounts, so a
+    // product or package added at the counter is always billed in full.
+    const subtotalAmount = serviceLines
       .reduce(
-        (total, item) => total.plus(new Prisma.Decimal(item.price)),
+        (total, line) => total.plus(line.unitPrice.mul(line.quantity)),
         new Prisma.Decimal(0)
       )
       .toDecimalPlaces(2);
@@ -242,13 +447,27 @@ export const createInvoiceFromAppointment = async (
         message: "Processing fee must be non-negative",
       });
     }
-    const requestedTaxPercent =
-      taxPercent === undefined ? null : decimalOrZero(taxPercent);
-    if (requestedTaxPercent?.isNegative() || requestedTaxPercent?.gt(100)) {
-      return res.status(400).json({
-        success: false,
-        message: "Tax percent must be between 0 and 100",
-      });
+    // A single taxPercent still sets both rates; serviceTaxPercent and
+    // productTaxPercent override it per line type. Any of them left out falls
+    // back to the salon's configured GST rates.
+    const asPercent = (value: number | undefined) =>
+      value === undefined ? null : decimalOrZero(value);
+    const requestedServiceTaxPercent = asPercent(
+      serviceTaxPercent ?? taxPercent
+    );
+    const requestedProductTaxPercent = asPercent(
+      productTaxPercent ?? taxPercent
+    );
+    for (const percent of [
+      requestedServiceTaxPercent,
+      requestedProductTaxPercent,
+    ]) {
+      if (percent?.isNegative() || percent?.gt(100)) {
+        return res.status(400).json({
+          success: false,
+          message: "Tax percent must be between 0 and 100",
+        });
+      }
     }
     const auditContext = requestAuditContext(req);
     const membershipActor = {
@@ -278,12 +497,15 @@ export const createInvoiceFromAppointment = async (
           subtotalAmount
         ).toDecimalPlaces(2);
         const gstSettings =
-          requestedTaxPercent && finalInvoiceType === "GST_INVOICE"
+          (requestedServiceTaxPercent || requestedProductTaxPercent) &&
+          finalInvoiceType === "GST_INVOICE"
             ? {
                 ...appointment.salon,
                 gstEnabled: true,
-                serviceGstRate: requestedTaxPercent,
-                productGstRate: requestedTaxPercent,
+                serviceGstRate:
+                  requestedServiceTaxPercent ?? appointment.salon.serviceGstRate,
+                productGstRate:
+                  requestedProductTaxPercent ?? appointment.salon.productGstRate,
               }
             : appointment.salon;
         const calculation = calculateInvoiceGst(
@@ -292,11 +514,7 @@ export const createInvoiceFromAppointment = async (
             discountAmount: finalDiscountAmount,
             couponDiscountAmount: new Prisma.Decimal(0),
             processingFeeAmount: finalProcessingFeeAmount,
-            items: appointment.services.map((item) => ({
-              itemType: "SERVICE",
-              quantity: 1,
-              unitPrice: new Prisma.Decimal(item.price),
-            })),
+            items: billLines,
           },
           gstSettings
         );
@@ -356,6 +574,7 @@ export const createInvoiceFromAppointment = async (
             discountAmount: finalDiscountAmount,
             processingFeeAmount: finalProcessingFeeAmount,
             taxAmount: calculation.totalGstAmount,
+            roundOffAmount: calculation.roundOffAmount,
             totalAmount: calculation.totalAmount,
             paidAmount: 0,
             balanceAmount: calculation.totalAmount,
@@ -363,13 +582,22 @@ export const createInvoiceFromAppointment = async (
             paymentStatus: "UNPAID",
             ...(billingNote ? { billingNote } : {}),
             ...(footerNote ? { footerNote } : {}),
-            items: appointment.services.map((item, index) => ({
-              serviceId: item.serviceId,
-              itemCode: item.serviceId.slice(0, 8),
-              description: item.serviceName,
-              serviceName: item.serviceName,
-              quantity: 1,
-              unitPrice: new Prisma.Decimal(item.price),
+            items: billLines.map((line, index) => ({
+              itemType: line.itemType,
+              ...(line.serviceId ? { serviceId: line.serviceId } : {}),
+              ...(line.productId ? { productId: line.productId } : {}),
+              ...(line.packageId ? { packageId: line.packageId } : {}),
+              ...(line.membershipId
+                ? { membershipId: line.membershipId }
+                : {}),
+              ...(line.soldByStaffId
+                ? { soldByStaffId: line.soldByStaffId }
+                : {}),
+              itemCode: line.itemCode,
+              description: line.description,
+              serviceName: line.serviceName,
+              quantity: line.quantity,
+              unitPrice: line.unitPrice,
               discountAmount: 0,
               taxableAmount: calculation.lines[index]?.taxableAmount ?? 0,
               gstRateSnapshot: calculation.lines[index]?.gstRateSnapshot ?? 0,
@@ -382,6 +610,116 @@ export const createInvoiceFromAppointment = async (
           },
           tx
         );
+
+        // Stock leaves the shelf inside this transaction, so a shortfall rolls
+        // the whole bill back. Ordered by product id to keep the row-lock
+        // order stable between concurrent bills.
+        const productLines = extraLines
+          .filter((line) => line.itemType === "PRODUCT")
+          .sort((left, right) =>
+            String(left.productId).localeCompare(String(right.productId))
+          );
+        for (const line of productLines) {
+          await createStockMovement({
+            tx,
+            salonId: appointment.salonId,
+            ...(appointment.branchId ? { branchId: appointment.branchId } : {}),
+            productId: line.productId!,
+            type: "RETAIL_SALE",
+            quantity: line.quantity,
+            referenceType: "INVOICE",
+            referenceId: created.id,
+            ...(req.user?.userId ? { createdById: req.user.userId } : {}),
+          });
+        }
+
+        for (const line of extraLines.filter(
+          (item) => item.itemType === "PACKAGE"
+        )) {
+          const servicePackage = soldPackages.find(
+            (item) => item.id === line.packageId
+          )!;
+          const purchasedAt = new Date();
+          const validUntil = new Date(purchasedAt);
+          validUntil.setUTCDate(
+            validUntil.getUTCDate() + servicePackage.validityDays
+          );
+          const customerPackage = await tx.customerPackage.create({
+            data: {
+              salonId: appointment.salonId,
+              branchId: appointment.branchId!,
+              customerId: appointment.customerId,
+              packageId: servicePackage.id,
+              packageNameSnapshot: servicePackage.name,
+              totalPriceSnapshot: servicePackage.totalPrice,
+              specialPriceSnapshot: line.unitPrice,
+              validityDaysSnapshot: servicePackage.validityDays,
+              purchasedAt,
+              validUntil,
+              status: "ACTIVE",
+              ...(line.soldByStaffId
+                ? { soldByStaffId: line.soldByStaffId }
+                : {}),
+              invoiceId: created.id,
+              ...(req.user?.userId ? { createdById: req.user.userId } : {}),
+              serviceBalances: {
+                create: servicePackage.items.map((packageItem) => ({
+                  salonId: appointment.salonId,
+                  branchId: appointment.branchId!,
+                  customerId: appointment.customerId,
+                  packageId: servicePackage.id,
+                  serviceId: packageItem.serviceId,
+                  serviceNameSnapshot: packageItem.serviceNameSnapshot,
+                  includedQuantity: packageItem.quantity,
+                  usedQuantity: 0,
+                  reservedQuantity: 0,
+                  priceSnapshot: packageItem.priceSnapshot,
+                  durationMinutesSnapshot:
+                    packageItem.durationMinutesSnapshot,
+                })),
+              },
+            },
+          });
+          await createAuditLog({
+            tx,
+            salonId: appointment.salonId,
+            branchId: appointment.branchId,
+            userId: req.user?.userId,
+            module: "PACKAGE",
+            action: "CREATE",
+            entityId: customerPackage.id,
+            entityName: customerPackage.packageNameSnapshot,
+            description: `Customer package ${customerPackage.packageNameSnapshot} sold on invoice ${created.invoiceCode}`,
+            newData: customerPackage,
+            ...auditContext,
+          });
+        }
+
+        // Enrollment comes after the discount above is resolved, so the plan
+        // being bought never discounts the bill that sells it.
+        for (const line of extraLines) {
+          if (line.itemType !== "MEMBERSHIP" || !line.membershipId) continue;
+          const calculated =
+            calculation.lines[serviceLines.length + extraLines.indexOf(line)];
+          // CustomerMembershipError carries a status, which is what
+          // sendInventoryError below turns into the response code.
+          await assignCustomerMembershipInTransaction(
+            tx,
+            membershipActor,
+            appointment.customerId,
+            {
+              membershipId: line.membershipId,
+              // What the customer was charged for the plan, tax included.
+              amountPaid: Number(calculated?.lineTotal ?? line.unitPrice),
+              invoiceId: created.id,
+              ...(line.soldByStaffId
+                ? { soldByStaffId: line.soldByStaffId }
+                : {}),
+              note: `Sold on invoice ${created.invoiceCode}`,
+            },
+            auditContext
+          );
+        }
 
         if (created.status === "ISSUED" && created.totalAmount.gt(0)) {
           await CustomerModel.increaseOutstandingWithTransaction(
@@ -444,10 +782,9 @@ export const createInvoiceFromAppointment = async (
       },
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    // Stock shortfalls and the other catalogue errors raised above carry a
+    // status; anything else still reads as a 500.
+    return sendInventoryError(res, error);
   }
 };
 
@@ -717,6 +1054,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
           gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
           gstEnabledSnapshot: calculation.gstEnabledSnapshot,
           taxAmount: calculation.totalGstAmount,
+          roundOffAmount: calculation.roundOffAmount,
           totalAmount: calculation.totalAmount,
           balanceAmount,
           paymentStatus: balanceAmount.lte(0)

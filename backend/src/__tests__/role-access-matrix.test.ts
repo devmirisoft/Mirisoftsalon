@@ -121,7 +121,7 @@ describe("CRM logged-out and role access matrix", () => {
     expect(
       (await call("RECEPTIONIST", "/api/support-tickets/my")).status
     ).toBe(200);
-    expect((await post("RECEPTIONIST", "/api/staff/00000000-0000-4000-8000-000000000001/salary-config")).status).toBe(403);
+    expect((await post("RECEPTIONIST", "/api/staff")).status).toBe(403);
     expect((await post("RECEPTIONIST", "/api/salary-slips/generate")).status).toBe(403);
 
     expect((await call("STAFF", "/api/customers")).status).toBe(200);
@@ -134,7 +134,7 @@ describe("CRM logged-out and role access matrix", () => {
     ).toBe(200);
     expect((await post("STAFF", "/api/products")).status).toBe(403);
     expect((await post("STAFF", "/api/expenses")).status).toBe(403);
-    expect((await post("STAFF", "/api/staff/00000000-0000-4000-8000-000000000001/salary-config")).status).toBe(403);
+    expect((await post("STAFF", "/api/staff")).status).toBe(403);
     expect((await post("STAFF", "/api/salary-slips/generate")).status).toBe(403);
   });
 });

@@ -17,7 +17,7 @@ export const createJobCartSchema = z.object({
   branchId: uuid,
   customerName: z.string().trim().min(2).max(120),
   phone,
-  startTime: z.iso.datetime({ offset: true }),
+  startTime: z.iso.datetime({ offset: true }).optional(),
   staffId: uuid.optional(),
   serviceIds: z.array(uuid).max(30).default([]),
   serviceItems: z
@@ -57,9 +57,14 @@ export const updateJobCartSchema = z
 
 export const addJobCartItemSchema = z
   .object({
-    itemType: z.enum(["SERVICE", "PACKAGE"]).default("SERVICE"),
+    itemType: z
+      .enum(["SERVICE", "PACKAGE", "PRODUCT", "MEMBERSHIP"])
+      .default("SERVICE"),
     serviceId: uuid.optional(),
     packageId: uuid.optional(),
+    productId: uuid.optional(),
+    membershipId: uuid.optional(),
+    quantity: z.coerce.number().int().positive().max(999).optional(),
     staffId: uuid.optional(),
   })
   .superRefine((value, context) => {
@@ -75,6 +80,20 @@ export const addJobCartItemSchema = z
         code: "custom",
         path: ["packageId"],
         message: "packageId is required for a package item",
+      });
+    }
+    if (value.itemType === "PRODUCT" && !value.productId) {
+      context.addIssue({
+        code: "custom",
+        path: ["productId"],
+        message: "productId is required for a product item",
+      });
+    }
+    if (value.itemType === "MEMBERSHIP" && !value.membershipId) {
+      context.addIssue({
+        code: "custom",
+        path: ["membershipId"],
+        message: "membershipId is required for a membership item",
       });
     }
   });

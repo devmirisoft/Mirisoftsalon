@@ -30,12 +30,14 @@ export type ServicePackageAvgAggregateOutputType = {
   totalPrice: runtime.Decimal | null
   specialPrice: runtime.Decimal | null
   validityDays: number | null
+  maxRedemptions: number | null
 }
 
 export type ServicePackageSumAggregateOutputType = {
   totalPrice: runtime.Decimal | null
   specialPrice: runtime.Decimal | null
   validityDays: number | null
+  maxRedemptions: number | null
 }
 
 export type ServicePackageMinAggregateOutputType = {
@@ -52,6 +54,7 @@ export type ServicePackageMinAggregateOutputType = {
   totalPrice: runtime.Decimal | null
   specialPrice: runtime.Decimal | null
   validityDays: number | null
+  maxRedemptions: number | null
   status: $Enums.PackageStatus | null
   createdById: string | null
   createdAt: Date | null
@@ -72,6 +75,7 @@ export type ServicePackageMaxAggregateOutputType = {
   totalPrice: runtime.Decimal | null
   specialPrice: runtime.Decimal | null
   validityDays: number | null
+  maxRedemptions: number | null
   status: $Enums.PackageStatus | null
   createdById: string | null
   createdAt: Date | null
@@ -92,6 +96,7 @@ export type ServicePackageCountAggregateOutputType = {
   totalPrice: number
   specialPrice: number
   validityDays: number
+  maxRedemptions: number
   status: number
   createdById: number
   createdAt: number
@@ -104,12 +109,14 @@ export type ServicePackageAvgAggregateInputType = {
   totalPrice?: true
   specialPrice?: true
   validityDays?: true
+  maxRedemptions?: true
 }
 
 export type ServicePackageSumAggregateInputType = {
   totalPrice?: true
   specialPrice?: true
   validityDays?: true
+  maxRedemptions?: true
 }
 
 export type ServicePackageMinAggregateInputType = {
@@ -126,6 +133,7 @@ export type ServicePackageMinAggregateInputType = {
   totalPrice?: true
   specialPrice?: true
   validityDays?: true
+  maxRedemptions?: true
   status?: true
   createdById?: true
   createdAt?: true
@@ -146,6 +154,7 @@ export type ServicePackageMaxAggregateInputType = {
   totalPrice?: true
   specialPrice?: true
   validityDays?: true
+  maxRedemptions?: true
   status?: true
   createdById?: true
   createdAt?: true
@@ -166,6 +175,7 @@ export type ServicePackageCountAggregateInputType = {
   totalPrice?: true
   specialPrice?: true
   validityDays?: true
+  maxRedemptions?: true
   status?: true
   createdById?: true
   createdAt?: true
@@ -273,6 +283,7 @@ export type ServicePackageGroupByOutputType = {
   totalPrice: runtime.Decimal
   specialPrice: runtime.Decimal
   validityDays: number
+  maxRedemptions: number | null
   status: $Enums.PackageStatus
   createdById: string | null
   createdAt: Date
@@ -316,6 +327,7 @@ export type ServicePackageWhereInput = {
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFilter<"ServicePackage"> | number
+  maxRedemptions?: Prisma.IntNullableFilter<"ServicePackage"> | number | null
   status?: Prisma.EnumPackageStatusFilter<"ServicePackage"> | $Enums.PackageStatus
   createdById?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServicePackage"> | Date | string
@@ -348,6 +360,7 @@ export type ServicePackageOrderByWithRelationInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -384,6 +397,7 @@ export type ServicePackageWhereUniqueInput = Prisma.AtLeast<{
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFilter<"ServicePackage"> | number
+  maxRedemptions?: Prisma.IntNullableFilter<"ServicePackage"> | number | null
   status?: Prisma.EnumPackageStatusFilter<"ServicePackage"> | $Enums.PackageStatus
   createdById?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServicePackage"> | Date | string
@@ -416,6 +430,7 @@ export type ServicePackageOrderByWithAggregationInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -444,6 +459,7 @@ export type ServicePackageScalarWhereWithAggregatesInput = {
   totalPrice?: Prisma.DecimalWithAggregatesFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalWithAggregatesFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntWithAggregatesFilter<"ServicePackage"> | number
+  maxRedemptions?: Prisma.IntNullableWithAggregatesFilter<"ServicePackage"> | number | null
   status?: Prisma.EnumPackageStatusWithAggregatesFilter<"ServicePackage"> | $Enums.PackageStatus
   createdById?: Prisma.StringNullableWithAggregatesFilter<"ServicePackage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ServicePackage"> | Date | string
@@ -458,6 +474,7 @@ export type ServicePackageCreateInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -489,6 +506,7 @@ export type ServicePackageUncheckedCreateInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -508,6 +526,7 @@ export type ServicePackageUpdateInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -539,6 +558,7 @@ export type ServicePackageUncheckedUpdateInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -564,6 +584,7 @@ export type ServicePackageCreateManyInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -578,6 +599,7 @@ export type ServicePackageUpdateManyMutationInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -597,6 +619,7 @@ export type ServicePackageUncheckedUpdateManyInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -637,6 +660,7 @@ export type ServicePackageCountOrderByAggregateInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -647,6 +671,7 @@ export type ServicePackageAvgOrderByAggregateInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrder
 }
 
 export type ServicePackageMaxOrderByAggregateInput = {
@@ -663,6 +688,7 @@ export type ServicePackageMaxOrderByAggregateInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -683,6 +709,7 @@ export type ServicePackageMinOrderByAggregateInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -693,6 +720,7 @@ export type ServicePackageSumOrderByAggregateInput = {
   totalPrice?: Prisma.SortOrder
   specialPrice?: Prisma.SortOrder
   validityDays?: Prisma.SortOrder
+  maxRedemptions?: Prisma.SortOrder
 }
 
 export type ServicePackageScalarRelationFilter = {
@@ -1080,6 +1108,7 @@ export type ServicePackageCreateWithoutSalonInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1109,6 +1138,7 @@ export type ServicePackageUncheckedCreateWithoutSalonInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1163,6 +1193,7 @@ export type ServicePackageScalarWhereInput = {
   totalPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFilter<"ServicePackage"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFilter<"ServicePackage"> | number
+  maxRedemptions?: Prisma.IntNullableFilter<"ServicePackage"> | number | null
   status?: Prisma.EnumPackageStatusFilter<"ServicePackage"> | $Enums.PackageStatus
   createdById?: Prisma.StringNullableFilter<"ServicePackage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ServicePackage"> | Date | string
@@ -1177,6 +1208,7 @@ export type ServicePackageCreateWithoutCreatedByInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1207,6 +1239,7 @@ export type ServicePackageUncheckedCreateWithoutCreatedByInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1251,6 +1284,7 @@ export type ServicePackageCreateWithoutCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1280,6 +1314,7 @@ export type ServicePackageUncheckedCreateWithoutCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1309,6 +1344,7 @@ export type ServicePackageCreateWithoutSourceCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1338,6 +1374,7 @@ export type ServicePackageUncheckedCreateWithoutSourceCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1399,6 +1436,7 @@ export type ServicePackageCreateWithoutBranchInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1428,6 +1466,7 @@ export type ServicePackageUncheckedCreateWithoutBranchInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1473,6 +1512,7 @@ export type ServicePackageCreateWithoutCategoryInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1502,6 +1542,7 @@ export type ServicePackageUncheckedCreateWithoutCategoryInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1547,6 +1588,7 @@ export type ServicePackageCreateWithoutCopiedPackagesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1577,6 +1619,7 @@ export type ServicePackageUncheckedCreateWithoutCopiedPackagesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1600,6 +1643,7 @@ export type ServicePackageCreateWithoutSourcePackageInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1629,6 +1673,7 @@ export type ServicePackageUncheckedCreateWithoutSourcePackageInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1669,6 +1714,7 @@ export type ServicePackageUpdateWithoutCopiedPackagesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1699,6 +1745,7 @@ export type ServicePackageUncheckedUpdateWithoutCopiedPackagesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1733,6 +1780,7 @@ export type ServicePackageCreateWithoutItemsInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1763,6 +1811,7 @@ export type ServicePackageUncheckedCreateWithoutItemsInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1797,6 +1846,7 @@ export type ServicePackageUpdateWithoutItemsInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1827,6 +1877,7 @@ export type ServicePackageUncheckedUpdateWithoutItemsInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1845,6 +1896,7 @@ export type ServicePackageCreateWithoutInvoiceItemsInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1875,6 +1927,7 @@ export type ServicePackageUncheckedCreateWithoutInvoiceItemsInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -1909,6 +1962,7 @@ export type ServicePackageUpdateWithoutInvoiceItemsInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1939,6 +1993,7 @@ export type ServicePackageUncheckedUpdateWithoutInvoiceItemsInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1957,6 +2012,7 @@ export type ServicePackageCreateWithoutCustomerPackagesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1987,6 +2043,7 @@ export type ServicePackageUncheckedCreateWithoutCustomerPackagesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2021,6 +2078,7 @@ export type ServicePackageUpdateWithoutCustomerPackagesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2051,6 +2109,7 @@ export type ServicePackageUncheckedUpdateWithoutCustomerPackagesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2069,6 +2128,7 @@ export type ServicePackageCreateWithoutServiceBalancesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2099,6 +2159,7 @@ export type ServicePackageUncheckedCreateWithoutServiceBalancesInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2133,6 +2194,7 @@ export type ServicePackageUpdateWithoutServiceBalancesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2163,6 +2225,7 @@ export type ServicePackageUncheckedUpdateWithoutServiceBalancesInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2186,6 +2249,7 @@ export type ServicePackageCreateManySalonInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2200,6 +2264,7 @@ export type ServicePackageUpdateWithoutSalonInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2229,6 +2294,7 @@ export type ServicePackageUncheckedUpdateWithoutSalonInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2253,6 +2319,7 @@ export type ServicePackageUncheckedUpdateManyWithoutSalonInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2273,6 +2340,7 @@ export type ServicePackageCreateManyCreatedByInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -2286,6 +2354,7 @@ export type ServicePackageUpdateWithoutCreatedByInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2316,6 +2385,7 @@ export type ServicePackageUncheckedUpdateWithoutCreatedByInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2340,6 +2410,7 @@ export type ServicePackageUncheckedUpdateManyWithoutCreatedByInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2358,6 +2429,7 @@ export type ServicePackageCreateManyCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2377,6 +2449,7 @@ export type ServicePackageCreateManySourceCustomerInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2391,6 +2464,7 @@ export type ServicePackageUpdateWithoutCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2420,6 +2494,7 @@ export type ServicePackageUncheckedUpdateWithoutCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2444,6 +2519,7 @@ export type ServicePackageUncheckedUpdateManyWithoutCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2458,6 +2534,7 @@ export type ServicePackageUpdateWithoutSourceCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2487,6 +2564,7 @@ export type ServicePackageUncheckedUpdateWithoutSourceCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2511,6 +2589,7 @@ export type ServicePackageUncheckedUpdateManyWithoutSourceCustomerInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2530,6 +2609,7 @@ export type ServicePackageCreateManyBranchInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2544,6 +2624,7 @@ export type ServicePackageUpdateWithoutBranchInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2573,6 +2654,7 @@ export type ServicePackageUncheckedUpdateWithoutBranchInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2597,6 +2679,7 @@ export type ServicePackageUncheckedUpdateManyWithoutBranchInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2616,6 +2699,7 @@ export type ServicePackageCreateManyCategoryInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2630,6 +2714,7 @@ export type ServicePackageUpdateWithoutCategoryInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2659,6 +2744,7 @@ export type ServicePackageUncheckedUpdateWithoutCategoryInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2683,6 +2769,7 @@ export type ServicePackageUncheckedUpdateManyWithoutCategoryInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2702,6 +2789,7 @@ export type ServicePackageCreateManySourcePackageInput = {
   totalPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice: runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays: number
+  maxRedemptions?: number | null
   status?: $Enums.PackageStatus
   createdById?: string | null
   createdAt?: Date | string
@@ -2716,6 +2804,7 @@ export type ServicePackageUpdateWithoutSourcePackageInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2745,6 +2834,7 @@ export type ServicePackageUncheckedUpdateWithoutSourcePackageInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2769,6 +2859,7 @@ export type ServicePackageUncheckedUpdateManyWithoutSourcePackageInput = {
   totalPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   specialPrice?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   validityDays?: Prisma.IntFieldUpdateOperationsInput | number
+  maxRedemptions?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.EnumPackageStatusFieldUpdateOperationsInput | $Enums.PackageStatus
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -2856,6 +2947,7 @@ export type ServicePackageSelect<ExtArgs extends runtime.Types.Extensions.Intern
   totalPrice?: boolean
   specialPrice?: boolean
   validityDays?: boolean
+  maxRedemptions?: boolean
   status?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -2889,6 +2981,7 @@ export type ServicePackageSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   totalPrice?: boolean
   specialPrice?: boolean
   validityDays?: boolean
+  maxRedemptions?: boolean
   status?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -2916,6 +3009,7 @@ export type ServicePackageSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   totalPrice?: boolean
   specialPrice?: boolean
   validityDays?: boolean
+  maxRedemptions?: boolean
   status?: boolean
   createdById?: boolean
   createdAt?: boolean
@@ -2943,13 +3037,14 @@ export type ServicePackageSelectScalar = {
   totalPrice?: boolean
   specialPrice?: boolean
   validityDays?: boolean
+  maxRedemptions?: boolean
   status?: boolean
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ServicePackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "categoryId" | "type" | "customerId" | "sourceCustomerId" | "sourcePackageId" | "name" | "description" | "totalPrice" | "specialPrice" | "validityDays" | "status" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["servicePackage"]>
+export type ServicePackageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "categoryId" | "type" | "customerId" | "sourceCustomerId" | "sourcePackageId" | "name" | "description" | "totalPrice" | "specialPrice" | "validityDays" | "maxRedemptions" | "status" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["servicePackage"]>
 export type ServicePackageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ServicePackage$branchArgs<ExtArgs>
@@ -3014,6 +3109,10 @@ export type $ServicePackagePayload<ExtArgs extends runtime.Types.Extensions.Inte
     totalPrice: runtime.Decimal
     specialPrice: runtime.Decimal
     validityDays: number
+    /**
+     * Cap on how many times the package may be redeemed in total.
+     */
+    maxRedemptions: number | null
     status: $Enums.PackageStatus
     createdById: string | null
     createdAt: Date
@@ -3466,6 +3565,7 @@ export interface ServicePackageFieldRefs {
   readonly totalPrice: Prisma.FieldRef<"ServicePackage", 'Decimal'>
   readonly specialPrice: Prisma.FieldRef<"ServicePackage", 'Decimal'>
   readonly validityDays: Prisma.FieldRef<"ServicePackage", 'Int'>
+  readonly maxRedemptions: Prisma.FieldRef<"ServicePackage", 'Int'>
   readonly status: Prisma.FieldRef<"ServicePackage", 'PackageStatus'>
   readonly createdById: Prisma.FieldRef<"ServicePackage", 'String'>
   readonly createdAt: Prisma.FieldRef<"ServicePackage", 'DateTime'>

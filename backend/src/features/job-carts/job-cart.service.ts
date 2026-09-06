@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { prisma } from "../../config/prisma.js";
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma, type PaymentMethod } from "../../generated/prisma/client.js";
 import {
   buildBusinessCode,
   businessCodeDayRange,
@@ -13,12 +13,23 @@ import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.
 import { normalizePhone } from "../public-booking/public-booking.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
+import { createStockMovement } from "../stock/stockMovement.service.js";
 import {
+  assignCustomerMembershipInTransaction,
+  CustomerMembershipError,
   getCurrentMembershipForCustomer,
   getCustomerMembershipHistory,
   resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
-import { checkStaffAvailabilityForSlot } from "../staff-availability/staffAvailability.service.js";
+import {
+  checkStaffAvailabilityForSlot,
+  syncStaffOvertime,
+} from "../staff-availability/staffAvailability.service.js";
+import {
+  SettleInvoiceError,
+  settleInvoiceInTransaction,
+} from "../Payments/settle-invoice.service.js";
+import { getSpendableWalletForCustomer } from "../membership-wallets/membership-wallet.service.js";
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -37,6 +48,31 @@ type JobCartBillingInput = {
   taxPercent?: number | undefined;
   billingNote?: string | null | undefined;
   footerNote?: string | null | undefined;
+  /**
+   * Collected at the counter when the cart is confirmed. Omit `amount` to
+   * settle the whole bill, which is the usual walk-in case.
+   */
+  payment?:
+    | {
+        method: PaymentMethod;
+        amount?: number | undefined;
+        referenceNo?: string | undefined;
+        note?: string | undefined;
+        customerMembershipId?: string | undefined;
+      }
+    | undefined;
+  /** Split tender, e.g. 500 cash + 300 UPI. Settled in order. */
+  payments?:
+    | {
+        method: PaymentMethod;
+        amount: number;
+        referenceNo?: string | undefined;
+        note?: string | undefined;
+        customerMembershipId?: string | undefined;
+      }[]
+    | undefined;
+  idempotencyKey?: string | undefined;
+  confirmedAt?: string | undefined;
 };
 
 type AuditContext = {
@@ -73,6 +109,7 @@ const jobCartInclude = {
       gstStateCode: true,
       serviceGstRate: true,
       productGstRate: true,
+      membershipDiscountOnPackages: true,
     },
   },
   branch: { select: { id: true, name: true } },
@@ -129,6 +166,16 @@ const jobCartInclude = {
               validityDays: true,
             },
           },
+          membership: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              discountPercentage: true,
+              durationMonths: true,
+              walletCreditAmount: true,
+            },
+          },
           soldByStaff: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "asc" as const },
@@ -145,6 +192,9 @@ const jobCartInclude = {
           packageNameSnapshot: true,
           validUntil: true,
           status: true,
+          maxRedemptionsSnapshot: true,
+          usedRedemptions: true,
+          reservedRedemptions: true,
         },
       },
       items: {
@@ -211,6 +261,20 @@ const present = (cart: JobCartRecord) => ({
       .filter((item) => !item.customerPackageUsageItemId)
       .map((item) => ({ ...item, itemType: "SERVICE" as const })),
     ...(cart.invoice?.items ?? [])
+      .filter((item) => item.itemType === "PRODUCT")
+      .map((item) => ({
+        id: item.id,
+        itemType: "PRODUCT" as const,
+        productId: item.productId,
+        serviceName: item.description,
+        price: item.unitPrice,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal,
+        soldByStaffId: item.soldByStaffId,
+        soldByStaff: item.soldByStaff,
+        createdAt: item.createdAt,
+      })),
+    ...(cart.invoice?.items ?? [])
       .filter((item) => item.itemType === "PACKAGE")
       .map((item) => ({
         id: item.id,
@@ -223,6 +287,21 @@ const present = (cart: JobCartRecord) => ({
         soldByStaffId: item.soldByStaffId,
         soldByStaff: item.soldByStaff,
         package: item.package,
+        createdAt: item.createdAt,
+      })),
+    ...(cart.invoice?.items ?? [])
+      .filter((item) => item.itemType === "MEMBERSHIP")
+      .map((item) => ({
+        id: item.id,
+        itemType: "MEMBERSHIP" as const,
+        membershipId: item.membershipId,
+        serviceName: item.serviceName,
+        price: item.unitPrice,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal,
+        soldByStaffId: item.soldByStaffId,
+        soldByStaff: item.soldByStaff,
+        membership: item.membership,
         createdAt: item.createdAt,
       })),
   ],
@@ -399,6 +478,7 @@ const assertNoConflict = async (
     staffId: input.staffId,
     startTime: input.startTime,
     endTime: input.endTime,
+    allowOutsideAvailability: true,
     ...(input.excludeAppointmentId
       ? { excludeAppointmentId: input.excludeAppointmentId }
       : {}),
@@ -409,6 +489,14 @@ const assertNoConflict = async (
       availability.message
     );
   }
+  await syncStaffOvertime(tx, {
+    staffId: input.staffId,
+    startTime: input.startTime,
+    endTime: input.endTime,
+    ...(input.excludeAppointmentId
+      ? { excludeAppointmentId: input.excludeAppointmentId }
+      : {}),
+  });
 };
 
 const assertNoStaffConflicts = async (
@@ -488,6 +576,25 @@ const decimalOrZero = (value: unknown) => {
   }
 };
 
+/**
+ * Which invoice lines a membership percentage is allowed to reduce.
+ *
+ * Services: always. Products: never - a product is sold at its own price even
+ * to a member. Packages: only when the salon opts in, because a package is
+ * already sold at a discounted price and stacking is usually double-dipping.
+ * Memberships: never - a plan costs what it costs.
+ */
+const isMembershipDiscountable = (
+  itemType: string,
+  salon: { membershipDiscountOnPackages: boolean }
+) => {
+  if (itemType === "PRODUCT") return false;
+  // Buying a plan is never cheaper because you already hold one.
+  if (itemType === "MEMBERSHIP") return false;
+  if (itemType === "PACKAGE") return salon.membershipDiscountOnPackages;
+  return true;
+};
+
 const recalculateCart = async (
   tx: TransactionClient,
   appointmentId: string,
@@ -497,6 +604,17 @@ const recalculateCart = async (
   const cart = await tx.appointment.findUnique({
     where: { id: appointmentId },
     include: {
+      salon: {
+        select: {
+          gstEnabled: true,
+          gstNumber: true,
+          gstLegalName: true,
+          gstStateCode: true,
+          serviceGstRate: true,
+          productGstRate: true,
+          membershipDiscountOnPackages: true,
+        },
+      },
       services: { orderBy: { createdAt: "asc" } },
       customer: {
         include: {
@@ -533,19 +651,36 @@ const recalculateCart = async (
     );
   }
 
-  const packageItems = cart.invoice.items.filter(
-    (item) => item.itemType === "PACKAGE"
+  // Lines that survive a recalculation: packages and products already sit on
+  // the invoice, services are rebuilt below from the cart. Services covered by
+  // a package redemption are excluded - the customer already paid for those.
+  const keptItems = cart.invoice.items.filter(
+    (item) =>
+      item.itemType === "PACKAGE" ||
+      item.itemType === "PRODUCT" ||
+      item.itemType === "MEMBERSHIP"
   );
   const paidServices = cart.services.filter(
     (item) => !item.customerPackageUsageItemId
   );
-  const serviceSubtotal = paidServices.reduce(
-    (sum, item) => sum.add(item.price),
+  const gstLines = [
+    ...paidServices.map((item) => ({
+      itemType: "SERVICE",
+      quantity: 1,
+      unitPrice: item.price,
+      discountable: isMembershipDiscountable("SERVICE", cart.salon),
+    })),
+    ...keptItems.map((item) => ({
+      itemType: item.itemType,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      discountable: isMembershipDiscountable(item.itemType, cart.salon),
+    })),
+  ];
+  const subtotal = gstLines.reduce(
+    (sum, line) =>
+      sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice)),
     new Prisma.Decimal(0)
-  );
-  const subtotal = packageItems.reduce(
-    (sum, item) => sum.add(item.lineTotal),
-    serviceSubtotal
   );
   const currentMembership = await resolveCurrentCustomerMembership(tx, {
     customerId: cart.customerId,
@@ -554,11 +689,32 @@ const recalculateCart = async (
   });
   const membershipPercentage =
     currentMembership?.discountPercentageSnapshot ?? new Prisma.Decimal(0);
-  const membershipDiscount = Prisma.Decimal.min(
-    subtotal.mul(membershipPercentage).div(100).toDecimalPlaces(2),
-    subtotal
+  // The percentage applies only to the lines it is allowed to touch, so a
+  // member never gets money off a product.
+  const discountableSubtotal = gstLines.reduce(
+    (sum, line) =>
+      line.discountable
+        ? sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice))
+        : sum,
+    new Prisma.Decimal(0)
   );
-  const total = subtotal.minus(membershipDiscount).toDecimalPlaces(2);
+  const membershipDiscount = Prisma.Decimal.min(
+    discountableSubtotal.mul(membershipPercentage).div(100).toDecimalPlaces(2),
+    discountableSubtotal
+  );
+  // Tax is computed live so the running total on the job card matches the bill
+  // the customer will actually be asked to pay.
+  const draftCalculation = calculateInvoiceGst(
+    {
+      invoiceType: cart.invoice.invoiceType,
+      discountAmount: membershipDiscount,
+      couponDiscountAmount: new Prisma.Decimal(0),
+      processingFeeAmount: new Prisma.Decimal(0),
+      items: gstLines,
+    },
+    cart.salon
+  );
+  const total = draftCalculation.totalAmount;
   const totalDurationMinutes = cart.services.reduce(
     (sum, item) =>
       sum +
@@ -592,29 +748,67 @@ const recalculateCart = async (
     data: {
       subtotalAmount: subtotal,
       discountAmount: membershipDiscount,
+      membershipDiscountAmount: membershipDiscount,
       couponDiscountAmount: 0,
       processingFeeAmount: 0,
-      taxAmount: 0,
+      serviceTaxableAmount: draftCalculation.serviceTaxableAmount,
+      productTaxableAmount: draftCalculation.productTaxableAmount,
+      serviceGstAmount: draftCalculation.serviceGstAmount,
+      productGstAmount: draftCalculation.productGstAmount,
+      totalGstAmount: draftCalculation.totalGstAmount,
+      taxAmount: draftCalculation.totalGstAmount,
+      roundOffAmount: draftCalculation.roundOffAmount,
       totalAmount: total,
       balanceAmount: total,
       items: {
-        create: paidServices.map((item) => ({
-          itemType: "SERVICE",
-          serviceId: item.serviceId,
-          soldByStaffId: item.staffId,
-          itemCode: item.serviceId.slice(0, 8),
-          description: item.serviceName,
-          serviceName: item.serviceName,
-          quantity: 1,
-          unitPrice: item.price,
-          discountAmount: 0,
-          taxPercent: 0,
-          taxAmount: 0,
-          lineTotal: item.price,
-        })),
+        // Line tax comes from the same calculation as the invoice total, so the
+        // running summary can read a real rate instead of a hardcoded zero.
+        create: paidServices.map((item, index) => {
+          const line = draftCalculation.lines[index];
+          return {
+            itemType: "SERVICE",
+            serviceId: item.serviceId,
+            soldByStaffId: item.staffId,
+            itemCode: item.serviceId.slice(0, 8),
+            description: item.serviceName,
+            serviceName: item.serviceName,
+            quantity: 1,
+            unitPrice: item.price,
+            discountAmount: 0,
+            ...(line
+              ? {
+                  taxableAmount: line.taxableAmount,
+                  gstRateSnapshot: line.gstRateSnapshot,
+                  gstAmount: line.gstAmount,
+                  totalWithTax: line.totalWithTax,
+                  taxPercent: line.taxPercent,
+                  taxAmount: line.taxAmount,
+                  lineTotal: line.lineTotal,
+                }
+              : { taxPercent: 0, taxAmount: 0, lineTotal: item.price }),
+          };
+        }),
       },
     },
   });
+  // Kept lines (packages, products) survive the rebuild, so their snapshot has
+  // to be refreshed in place or they keep a stale zero rate.
+  for (const [index, item] of keptItems.entries()) {
+    const line = draftCalculation.lines[paidServices.length + index];
+    if (!line) continue;
+    await tx.invoiceItem.update({
+      where: { id: item.id },
+      data: {
+        taxableAmount: line.taxableAmount,
+        gstRateSnapshot: line.gstRateSnapshot,
+        gstAmount: line.gstAmount,
+        totalWithTax: line.totalWithTax,
+        taxPercent: line.taxPercent,
+        taxAmount: line.taxAmount,
+        lineTotal: line.lineTotal,
+      },
+    });
+  }
   await tx.appointment.update({
     where: { id: cart.id },
     data: {
@@ -655,7 +849,7 @@ export const listJobCarts = async (
       : filters.status === "COMPLETED"
         ? {
             status: "COMPLETED",
-            invoice: { is: { status: "ISSUED" } },
+            invoice: { is: { status: { in: ["DRAFT", "ISSUED"] } } },
           }
         : filters.status === "CANCELLED"
           ? {
@@ -799,7 +993,7 @@ export const getJobCartReferences = async (
         })
       : [];
   if (!salonId) {
-    return { salons, branches: [], staff: [], services: [] };
+    return { salons, branches: [], staff: [], services: [], memberships: [] };
   }
   const salon = await prisma.salon.findFirst({
     where: { id: salonId, status: true },
@@ -869,7 +1063,44 @@ export const getJobCartReferences = async (
     },
     orderBy: { name: "asc" },
   });
-  return { salons, salon, branches, staff, services, packages };
+  const products = await prisma.product.findMany({
+    where: {
+      salonId,
+      status: true,
+      ...(branchId ? { OR: [{ branchId: null }, { branchId }] } : {}),
+    },
+    select: {
+      id: true,
+      name: true,
+      sku: true,
+      sellingPrice: true,
+      currentStock: true,
+      unit: true,
+    },
+    orderBy: { name: "asc" },
+  });
+  const memberships = await prisma.membership.findMany({
+    where: { salonId, status: true },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      discountPercentage: true,
+      durationMonths: true,
+      walletCreditAmount: true,
+    },
+    orderBy: { name: "asc" },
+  });
+  return {
+    salons,
+    salon,
+    branches,
+    staff,
+    services,
+    packages,
+    products,
+    memberships,
+  };
 };
 
 export const getJobCartCustomerSummary = async (
@@ -929,6 +1160,11 @@ export const getJobCartCustomerSummary = async (
     ? []
     : await getCustomerMembershipHistory(actor, customer.id, {});
   const latestMembership = membershipHistory[0];
+  const spendableWallet = await getSpendableWalletForCustomer(
+    prisma,
+    actor,
+    customer.id
+  );
 
   await prisma.customerPackage.updateMany({
     where: {
@@ -944,7 +1180,7 @@ export const getJobCartCustomerSummary = async (
     status: "COMPLETED",
     ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
   };
-  const [visits, activePackages, recentInvoices] = await Promise.all([
+  const [visits, activePackages, recentInvoices, spend, productPurchases, retailPurchases] = await Promise.all([
     prisma.appointment.findMany({
       where: appointmentWhere,
       select: {
@@ -992,6 +1228,62 @@ export const getJobCartCustomerSummary = async (
       orderBy: { invoiceDate: "desc" },
       take: 10,
     }),
+    prisma.invoice.aggregate({
+      where: {
+        customerId: customer.id,
+        status: { not: "CANCELLED" },
+        ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+      },
+      _sum: { totalAmount: true, paidAmount: true },
+      _count: { _all: true },
+    }),
+    prisma.invoiceItem.findMany({
+      where: {
+        itemType: "PRODUCT",
+        invoice: {
+          customerId: customer.id,
+          status: { not: "CANCELLED" },
+          ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+        },
+      },
+      select: {
+        id: true,
+        description: true,
+        serviceName: true,
+        quantity: true,
+        unitPrice: true,
+        totalWithTax: true,
+        lineTotal: true,
+        soldByStaff: { select: { name: true } },
+        invoice: { select: { invoiceCode: true, invoiceDate: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
+    prisma.retailSaleItem.findMany({
+      where: {
+        sale: {
+          customerId: customer.id,
+          ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+        },
+      },
+      select: {
+        id: true,
+        quantity: true,
+        unitPrice: true,
+        totalPrice: true,
+        product: { select: { name: true } },
+        sale: {
+          select: {
+            saleCode: true,
+            saleDate: true,
+            staff: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 100,
+    }),
   ]);
 
   const staffStats = new Map<
@@ -1034,11 +1326,23 @@ export const getJobCartCustomerSummary = async (
     membershipStatus:
       currentMembership?.status ?? latestMembership?.status ?? null,
     currentCustomerMembershipId: currentMembership?.id ?? null,
+    // What the counter may put on the bill from membership wallets right now,
+    // summed across every spendable membership the customer holds.
+    membershipWalletBalance: spendableWallet.total,
     loyaltyPoints: customer.loyaltyPoints,
     walletBalance: customer.walletBalance,
     outstandingBalance: customer.outstandingAmount,
     totalVisits: visits.length,
     lastVisitDate: visits[0]?.startTime ?? null,
+    firstVisitDate: visits[visits.length - 1]?.startTime ?? null,
+    visitDates: visits.map((visit) => visit.startTime),
+    invoiceCount: spend._count._all,
+    totalSpend: spend._sum.totalAmount ?? 0,
+    totalPaid: spend._sum.paidAmount ?? 0,
+    averageSpend:
+      spend._count._all > 0
+        ? Number(spend._sum.totalAmount ?? 0) / spend._count._all
+        : 0,
     preferredStaff: preferred
       ? {
           staffId: preferred.staffId,
@@ -1065,7 +1369,32 @@ export const getJobCartCustomerSummary = async (
           balance.reservedQuantity,
       })),
     })),
+    productPurchases: [
+      ...productPurchases.map((item) => ({
+        id: item.id,
+        source: "INVOICE" as const,
+        reference: item.invoice.invoiceCode,
+        date: item.invoice.invoiceDate,
+        productName: item.description || item.serviceName,
+        quantity: Number(item.quantity),
+        unitPrice: item.unitPrice,
+        totalAmount: Number(item.totalWithTax) || Number(item.lineTotal),
+        soldByStaffName: item.soldByStaff?.name ?? null,
+      })),
+      ...retailPurchases.map((item) => ({
+        id: item.id,
+        source: "RETAIL" as const,
+        reference: item.sale.saleCode,
+        date: item.sale.saleDate,
+        productName: item.product.name,
+        quantity: Number(item.quantity),
+        unitPrice: item.unitPrice,
+        totalAmount: Number(item.totalPrice),
+        soldByStaffName: item.sale.staff?.name ?? null,
+      })),
+    ].sort((left, right) => right.date.getTime() - left.date.getTime()),
     recentInvoices: recentInvoices.map((invoice) => ({
+      id: invoice.id,
       invoiceId: invoice.id,
       invoiceCode: invoice.invoiceCode,
       date: invoice.invoiceDate,
@@ -1087,7 +1416,6 @@ export const createJobCart = async (
     branchId: string;
     customerName: string;
     phone: string;
-    startTime: Date;
     staffId?: string;
     serviceIds: string[];
     serviceItems?: Array<{ serviceId: string; staffId?: string | undefined }>;
@@ -1134,11 +1462,9 @@ export const createJobCart = async (
       (sum, service) => sum + durationMinutes(service),
       0
     );
-    if (input.startTime < new Date()) {
-      throw new JobCartError(400, "Job cart start time cannot be in the past");
-    }
+    const startTime = new Date();
     const endTime = new Date(
-      input.startTime.getTime() + Math.max(duration, 30) * 60_000
+      startTime.getTime() + Math.max(duration, 30) * 60_000
     );
     await assertNoStaffConflicts(tx, {
       salonId,
@@ -1147,7 +1473,7 @@ export const createJobCart = async (
         appointmentStaffId,
         ...services.map((service) => staffByServiceId.get(service.id)),
       ],
-      startTime: input.startTime,
+      startTime,
       endTime,
     });
     const customer = await resolveCustomer(tx, {
@@ -1181,7 +1507,7 @@ export const createJobCart = async (
         customerId: customer.id,
         ...(appointmentStaffId ? { staffId: appointmentStaffId } : {}),
         createdById: actor.userId,
-        startTime: input.startTime,
+        startTime,
         endTime,
         totalDurationMinutes: duration,
         estimatedAmount: services.reduce(
@@ -1227,7 +1553,25 @@ export const createJobCart = async (
           subtotal
         )
       : new Prisma.Decimal(0);
-    const total = subtotal.minus(discount).toDecimalPlaces(2);
+    // A GST-registered salon bills GST by default; without this every job cart
+    // opened as a bill of supply and the running total showed no tax at all.
+    const invoiceType = salon.gstEnabled ? "GST_INVOICE" : "BILL_OF_SUPPLY";
+    const calculation = calculateInvoiceGst(
+      {
+        invoiceType,
+        discountAmount: discount,
+        couponDiscountAmount: new Prisma.Decimal(0),
+        processingFeeAmount: new Prisma.Decimal(0),
+        items: services.map((service) => ({
+          itemType: "SERVICE",
+          quantity: 1,
+          unitPrice: new Prisma.Decimal(service.price),
+          discountable: isMembershipDiscountable("SERVICE", salon),
+        })),
+      },
+      salon
+    );
+    const total = calculation.totalAmount;
     const invoice = await InvoiceModel.create(
       {
         invoiceCode: buildBusinessCode({
@@ -1241,7 +1585,7 @@ export const createJobCart = async (
         branchId,
         customerId: customer.id,
         appointmentId: appointment.id,
-        invoiceType: "BILL_OF_SUPPLY",
+        invoiceType,
         salonName: salon.name,
         ...(salon.phone ? { salonPhone: salon.phone } : {}),
         ...(salon.email ? { salonEmail: salon.email } : {}),
@@ -1263,17 +1607,28 @@ export const createJobCart = async (
         subtotalAmount: Number(subtotal),
         discountAmount: Number(discount),
         processingFeeAmount: 0,
-        taxAmount: 0,
+        serviceTaxableAmount: calculation.serviceTaxableAmount,
+        productTaxableAmount: calculation.productTaxableAmount,
+        serviceGstAmount: calculation.serviceGstAmount,
+        productGstAmount: calculation.productGstAmount,
+        totalGstAmount: calculation.totalGstAmount,
+        gstNumberSnapshot: calculation.gstNumberSnapshot,
+        gstLegalNameSnapshot: calculation.gstLegalNameSnapshot,
+        gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
+        gstEnabledSnapshot: calculation.gstEnabledSnapshot,
+        taxAmount: calculation.totalGstAmount,
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount: Number(total),
         paidAmount: 0,
         balanceAmount: Number(total),
         status: "DRAFT",
         paymentStatus: "UNPAID",
         billingNote: `Walk-in job cart ${appointment.appointmentCode}`,
-        items: services.map((service) => {
+        items: services.map((service, index) => {
           const serviceStaffId = staffByServiceId.get(service.id);
+          const line = calculation.lines[index]!;
           return {
-            itemType: "SERVICE",
+            itemType: "SERVICE" as const,
             serviceId: service.id,
             ...(serviceStaffId ? { soldByStaffId: serviceStaffId } : {}),
             itemCode: service.id.slice(0, 8),
@@ -1282,9 +1637,13 @@ export const createJobCart = async (
             quantity: 1,
             unitPrice: Number(service.price),
             discountAmount: 0,
-            taxPercent: 0,
-            taxAmount: 0,
-            lineTotal: Number(service.price),
+            taxableAmount: line.taxableAmount,
+            gstRateSnapshot: line.gstRateSnapshot,
+            gstAmount: line.gstAmount,
+            totalWithTax: line.totalWithTax,
+            taxPercent: line.taxPercent,
+            taxAmount: line.taxAmount,
+            lineTotal: line.lineTotal,
           };
         }),
       },
@@ -1426,9 +1785,12 @@ export const addJobCartItem = async (
   actor: JobCartActor,
   id: string,
   input: {
-    itemType: "SERVICE" | "PACKAGE";
+    itemType: "SERVICE" | "PACKAGE" | "PRODUCT" | "MEMBERSHIP";
     serviceId?: string;
     packageId?: string;
+    productId?: string;
+    membershipId?: string;
+    quantity?: number;
     staffId?: string;
   },
   audit: AuditContext
@@ -1437,7 +1799,104 @@ export const addJobCartItem = async (
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
     const existing = await requireCart(tx, id, actor);
     requireMutable(existing);
-    if (input.itemType === "PACKAGE") {
+    if (input.itemType === "PRODUCT") {
+      const product = await tx.product.findFirst({
+        where: {
+          id: input.productId ?? "__missing__",
+          salonId: existing.salonId,
+          status: true,
+          OR: [{ branchId: null }, { branchId: existing.branchId }],
+        },
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          sellingPrice: true,
+          currentStock: true,
+        },
+      });
+      if (!product) {
+        throw new JobCartError(400, "Product is unavailable");
+      }
+      const quantity = input.quantity ?? 1;
+      // Stock leaves the shelf at confirm, not here, so the cart can still be
+      // edited. The check is repeated there under a row lock, which is what
+      // actually prevents overselling.
+      if (product.currentStock.lt(quantity)) {
+        throw new JobCartError(
+          409,
+          `Only ${product.currentStock} of ${product.name} in stock`
+        );
+      }
+      if (input.staffId) {
+        await validateStaff(
+          tx,
+          existing.salonId,
+          existing.branchId!,
+          input.staffId
+        );
+      }
+      const existingLine = existing.invoice!.items.find(
+        (item) => item.itemType === "PRODUCT" && item.productId === product.id
+      );
+      if (existingLine) {
+        // Same product twice is a quantity change, not a second line.
+        const newQuantity = existingLine.quantity + quantity;
+        if (product.currentStock.lt(newQuantity)) {
+          throw new JobCartError(
+            409,
+            `Only ${product.currentStock} of ${product.name} in stock`
+          );
+        }
+        await tx.invoiceItem.update({
+          where: { id: existingLine.id },
+          data: {
+            quantity: newQuantity,
+            lineTotal: product.sellingPrice.mul(newQuantity),
+          },
+        });
+      } else {
+        await tx.invoiceItem.create({
+          data: {
+            invoiceId: existing.invoice!.id,
+            itemType: "PRODUCT",
+            productId: product.id,
+            soldByStaffId: input.staffId ?? null,
+            itemCode: product.sku ?? product.id.slice(0, 8),
+            description: product.name,
+            serviceName: product.name,
+            quantity,
+            unitPrice: product.sellingPrice,
+            discountAmount: 0,
+            taxPercent: 0,
+            taxAmount: 0,
+            lineTotal: product.sellingPrice.mul(quantity),
+          },
+        });
+      }
+      await recalculateCart(tx, id, actor, audit);
+      await createAuditLog({
+        tx,
+        salonId: existing.salonId,
+        branchId: existing.branchId,
+        userId: actor.userId,
+        module: "JOB_CART",
+        action: "UPDATE",
+        entityId: id,
+        entityCode: existing.appointmentCode,
+        entityName: existing.customer.name,
+        description: `Product ${product.name} x${quantity} added to job cart ${existing.appointmentCode}`,
+        newData: {
+          itemType: "PRODUCT",
+          productId: product.id,
+          productName: product.name,
+          quantity,
+          unitPrice: product.sellingPrice,
+          soldByStaffId: input.staffId,
+        },
+        ...audit,
+      });
+    } else if (input.itemType === "PACKAGE") {
       const servicePackage = await tx.servicePackage.findFirst({
         where: {
           id: input.packageId ?? "__missing__",
@@ -1533,6 +1992,75 @@ export const addJobCartItem = async (
         },
         ...audit,
       });
+    } else if (input.itemType === "MEMBERSHIP") {
+      const membership = await tx.membership.findFirst({
+        where: {
+          id: input.membershipId ?? "__missing__",
+          salonId: existing.salonId,
+          status: true,
+        },
+        select: { id: true, name: true, price: true },
+      });
+      if (!membership) {
+        throw new JobCartError(400, "Membership plan is unavailable");
+      }
+      // One plan per bill: a second one would immediately supersede the first
+      // and forfeit the wallet it was just sold with.
+      if (
+        existing.invoice!.items.some((item) => item.itemType === "MEMBERSHIP")
+      ) {
+        throw new JobCartError(
+          409,
+          "A membership is already on this job cart"
+        );
+      }
+      if (input.staffId) {
+        await validateStaff(
+          tx,
+          existing.salonId,
+          existing.branchId!,
+          input.staffId
+        );
+      }
+      const item = await tx.invoiceItem.create({
+        data: {
+          invoiceId: existing.invoice!.id,
+          itemType: "MEMBERSHIP",
+          membershipId: membership.id,
+          soldByStaffId: input.staffId ?? null,
+          itemCode: membership.id.slice(0, 8),
+          description: membership.name,
+          serviceName: membership.name,
+          quantity: 1,
+          unitPrice: membership.price,
+          discountAmount: 0,
+          taxPercent: 0,
+          taxAmount: 0,
+          lineTotal: membership.price,
+        },
+      });
+      await recalculateCart(tx, id, actor, audit);
+      await createAuditLog({
+        tx,
+        salonId: existing.salonId,
+        branchId: existing.branchId,
+        userId: actor.userId,
+        module: "JOB_CART",
+        action: "UPDATE",
+        entityId: id,
+        entityCode: existing.appointmentCode,
+        entityName: existing.customer.name,
+        description: `Membership ${membership.name} added to job cart ${existing.appointmentCode}`,
+        newData: {
+          itemId: item.id,
+          itemType: "MEMBERSHIP",
+          membershipId: membership.id,
+          membershipName: membership.name,
+          price: membership.price,
+          soldByStaffId: input.staffId,
+        },
+        ...audit,
+      });
     } else {
       const [service] = await validateServices(
         tx,
@@ -1618,7 +2146,11 @@ export const removeJobCartItem = async (
       (service) => service.id === itemId
     );
     const packageItem = existing.invoice!.items.find(
-      (item) => item.id === itemId && item.itemType === "PACKAGE"
+      (item) =>
+        item.id === itemId &&
+        (item.itemType === "PACKAGE" ||
+          item.itemType === "PRODUCT" ||
+          item.itemType === "MEMBERSHIP")
     );
     if (!serviceItem && !packageItem) {
       throw new JobCartError(404, "Job cart item not found");
@@ -1639,14 +2171,17 @@ export const removeJobCartItem = async (
       entityId: id,
       entityCode: existing.appointmentCode,
       entityName: existing.customer.name,
-      description: `${serviceItem ? "Service" : "Package"} ${
+      description: `${
+        serviceItem ? "Service" : packageItem!.itemType
+      } ${
         serviceItem?.serviceName ?? packageItem!.serviceName
       } removed from job cart ${existing.appointmentCode}`,
       oldData: {
         itemId,
-        itemType: serviceItem ? "SERVICE" : "PACKAGE",
+        itemType: serviceItem ? "SERVICE" : packageItem!.itemType,
         serviceId: serviceItem?.serviceId,
         packageId: packageItem?.packageId,
+        membershipId: packageItem?.membershipId,
         itemName: serviceItem?.serviceName ?? packageItem?.serviceName,
         price: serviceItem?.price ?? packageItem?.unitPrice,
       },
@@ -2035,6 +2570,11 @@ export const confirmJobCart = async (
       excludeAppointmentId: existing.id,
     });
     await useReservedPackageRedemptions(tx, existing, actor, audit);
+    // Recorded on the enrollment below. A wallet redemption is never how a
+    // membership was bought, so that tender is left off.
+    const tenderMethod = (
+      billing.payments?.length ? billing.payments : billing.payment ? [billing.payment] : []
+    ).map((tender) => tender.method).find((method) => method !== "MEMBERSHIP_WALLET");
     const invoiceType = billing.invoiceType ?? existing.invoice.invoiceType;
     const manualDiscount = Prisma.Decimal.min(
       decimalOrZero(billing.discountAmount),
@@ -2046,12 +2586,24 @@ export const confirmJobCart = async (
       actor,
       audit,
     });
+    // Only the lines a membership may touch form the base, so products (and
+    // packages, unless the salon opted in) are billed at full price.
+    const membershipDiscountableSubtotal = existing.invoice.items.reduce(
+      (sum, item) =>
+        isMembershipDiscountable(item.itemType, existing.salon)
+          ? sum.plus(new Prisma.Decimal(item.quantity).mul(item.unitPrice))
+          : sum,
+      new Prisma.Decimal(0)
+    ).toDecimalPlaces(2);
     const membershipDiscount = currentMembership
       ? Prisma.Decimal.min(
-          existing.invoice.subtotalAmount
+          membershipDiscountableSubtotal
             .mul(currentMembership.discountPercentageSnapshot)
             .div(100),
-          existing.invoice.subtotalAmount.minus(manualDiscount)
+          Prisma.Decimal.max(
+            membershipDiscountableSubtotal.minus(manualDiscount),
+            new Prisma.Decimal(0)
+          )
         ).toDecimalPlaces(2)
       : new Prisma.Decimal(0);
     const discountAmount = Prisma.Decimal.min(
@@ -2075,7 +2627,10 @@ export const confirmJobCart = async (
         discountAmount,
         couponDiscountAmount: existing.invoice.couponDiscountAmount,
         processingFeeAmount: processingFee,
-        items: existing.invoice.items,
+        items: existing.invoice.items.map((item) => ({
+          ...item,
+          discountable: isMembershipDiscountable(item.itemType, existing.salon),
+        })),
       },
       gstSettings
     );
@@ -2100,6 +2655,7 @@ export const confirmJobCart = async (
       data: {
         invoiceType,
         discountAmount,
+        membershipDiscountAmount: membershipDiscount,
         processingFeeAmount: processingFee,
         serviceTaxableAmount: calculation.serviceTaxableAmount,
         productTaxableAmount: calculation.productTaxableAmount,
@@ -2111,8 +2667,12 @@ export const confirmJobCart = async (
         gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
         gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount: calculation.totalGstAmount,
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount: calculation.totalAmount,
         balanceAmount: calculation.totalAmount,
+        ...(billing.idempotencyKey
+          ? { idempotencyKey: billing.idempotencyKey }
+          : {}),
         ...(billing.billingNote !== undefined
           ? { billingNote: billing.billingNote }
           : {}),
@@ -2132,7 +2692,7 @@ export const confirmJobCart = async (
       tx
     );
     if (billing.status !== "DRAFT") {
-      await issueInvoice({
+      const issued = await issueInvoice({
         invoiceId: existing.invoice.id,
         salonId: existing.salonId,
         userId: actor.userId,
@@ -2140,6 +2700,74 @@ export const confirmJobCart = async (
         allowWalkInJobCart: true,
         ...audit,
       });
+      // Payment is taken against the issued totals, so rounding and GST
+      // applied above are already reflected in what the counter collects.
+      // One entry for a single tender, several for a split. Each is settled
+      // against the balance left by the previous one; the whole confirm rolls
+      // back if any of them fails.
+      const tenders = billing.payments?.length
+        ? billing.payments
+        : billing.payment
+          ? [billing.payment]
+          : [];
+      if (tenders.length && issued.totalAmount.gt(0)) {
+        for (const tender of tenders) {
+          try {
+            await settleInvoiceInTransaction(
+              tx,
+              actor,
+              existing.invoice.id,
+              {
+                method: tender.method,
+                amount: tender.amount,
+                referenceNo: tender.referenceNo,
+                note: tender.note,
+                customerMembershipId: tender.customerMembershipId,
+                jobCartAppointmentId: existing.id,
+              },
+              audit
+            );
+          } catch (error) {
+            if (error instanceof SettleInvoiceError) {
+              throw new JobCartError(error.status, error.message);
+            }
+            throw error;
+          }
+        }
+      }
+    } else if (billing.payment || billing.payments?.length) {
+      throw new JobCartError(
+        400,
+        "Issue the invoice to record a payment; a draft cannot be paid"
+      );
+    }
+    // Stock leaves the shelf here, inside the confirm transaction, so a
+    // shortfall or any later failure rolls the whole bill back. Ordered by id
+    // to keep the row-lock order stable between concurrent confirms.
+    const productItems = existing.invoice.items
+      .filter((item) => item.itemType === "PRODUCT" && item.productId)
+      .sort((left, right) => left.productId!.localeCompare(right.productId!));
+    for (const item of productItems) {
+      try {
+        await createStockMovement({
+          tx,
+          salonId: existing.salonId,
+          ...(existing.branchId ? { branchId: existing.branchId } : {}),
+          productId: item.productId!,
+          type: "RETAIL_SALE",
+          quantity: item.quantity,
+          referenceType: "JOB_CART",
+          referenceId: existing.id,
+          ...(actor.userId ? { createdById: actor.userId } : {}),
+        });
+      } catch (error) {
+        throw new JobCartError(
+          409,
+          error instanceof Error
+            ? error.message
+            : "Product stock could not be updated"
+        );
+      }
     }
     const packageItems = existing.invoice.items.filter(
       (item) => item.itemType === "PACKAGE" && item.packageId
@@ -2206,6 +2834,40 @@ export const confirmJobCart = async (
         ...audit,
       });
     }
+    // Enrollment happens last, after the bill is settled, so the wallet it
+    // credits cannot be spent on the very bill that bought it, and so the
+    // membership discount above is the one the customer walked in with.
+    for (const [index, item] of existing.invoice.items.entries()) {
+      if (item.itemType !== "MEMBERSHIP" || !item.membershipId) continue;
+      try {
+        await assignCustomerMembershipInTransaction(
+          tx,
+          actor,
+          existing.customerId,
+          {
+            membershipId: item.membershipId,
+            // What the customer was actually charged for the plan, tax
+            // included, taken from the same calculation as the invoice total.
+            amountPaid: Number(
+              calculation.lines[index]?.lineTotal ?? item.lineTotal
+            ),
+            invoiceId: existing.invoice.id,
+            jobCartAppointmentId: existing.id,
+            ...(item.soldByStaffId
+              ? { soldByStaffId: item.soldByStaffId }
+              : {}),
+            ...(tenderMethod ? { paymentMethod: tenderMethod } : {}),
+            note: `Sold on job cart ${existing.appointmentCode}`,
+          },
+          audit
+        );
+      } catch (error) {
+        if (error instanceof CustomerMembershipError) {
+          throw new JobCartError(error.status, error.message);
+        }
+        throw error;
+      }
+    }
     await createAuditLog({
       tx,
       salonId: existing.salonId,
@@ -2226,6 +2888,9 @@ export const confirmJobCart = async (
         invoiceStatus: billing.status === "DRAFT" ? "DRAFT" : "ISSUED",
         manualDiscountAmount: manualDiscount,
         membershipDiscountAmount: membershipDiscount,
+        ...(billing.payment
+          ? { paymentMethod: billing.payment.method }
+          : {}),
       },
       ...audit,
     });
@@ -2328,7 +2993,7 @@ export const cancelJobCart = async (
       return present(await requireCart(tx, id, actor));
     }
     const packageItems = existing.invoice!.items.filter(
-      (item) => item.itemType === "PACKAGE"
+      (item) => item.itemType === "PACKAGE" || item.itemType === "MEMBERSHIP"
     );
     if (packageItems.length) {
       await tx.invoiceItem.deleteMany({
@@ -2347,10 +3012,11 @@ export const cancelJobCart = async (
           entityId: existing.id,
           entityCode: existing.appointmentCode,
           entityName: existing.customer.name,
-          description: `Package ${item.serviceName} removed while cancelling job cart ${existing.appointmentCode}`,
+          description: `${item.itemType} ${item.serviceName} removed while cancelling job cart ${existing.appointmentCode}`,
           oldData: {
             itemId: item.id,
             packageId: item.packageId,
+            membershipId: item.membershipId,
             price: item.unitPrice,
           },
           ...audit,

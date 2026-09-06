@@ -58,8 +58,6 @@ const dateRange = async (req: Request, salonId?: string) => {
   }
 };
 
-const numberSum = (value: unknown) => Number(value ?? 0);
-
 export const getInventoryReport = async (req: Request, res: Response) => {
   try {
     const { salonId, branchId } = await resolveScope(req);
@@ -146,68 +144,6 @@ export const getExpenseReport = async (req: Request, res: Response) => {
           branch,
           ...value,
         })),
-      },
-    });
-  } catch (error) {
-    return sendInventoryError(res, error);
-  }
-};
-
-export const getProfitSummary = async (req: Request, res: Response) => {
-  try {
-    const { salonId, branchId } = await resolveScope(req);
-    const range = await dateRange(req, salonId);
-    const common = {
-      ...(salonId ? { salonId } : {}),
-      ...(branchId ? { branchId } : {}),
-    };
-    const [payments, sales, retailSales, purchases, expenses] =
-      await Promise.all([
-        prisma.payment.aggregate({
-          where: { ...common, ...(range ? { paidAt: range } : {}) },
-          _sum: { amount: true },
-        }),
-        prisma.sale.aggregate({
-          where: {
-            ...common,
-            status: "ACTIVE",
-            ...(range ? { saleDate: range } : {}),
-          },
-          _sum: { totalAmount: true },
-        }),
-        prisma.retailSale.aggregate({
-          where: { ...common, ...(range ? { saleDate: range } : {}) },
-          _sum: { totalAmount: true },
-        }),
-        prisma.productPurchase.aggregate({
-          where: { ...common, ...(range ? { purchaseDate: range } : {}) },
-          _sum: { totalAmount: true },
-        }),
-        prisma.expense.aggregate({
-          where: { ...common, ...(range ? { expenseDate: range } : {}) },
-          _sum: { amount: true },
-        }),
-      ]);
-    const serviceRevenue = numberSum(payments._sum.amount);
-    const saleRevenue = numberSum(sales._sum.totalAmount);
-    const retailSalesTotal = numberSum(retailSales._sum.totalAmount);
-    const productPurchaseCost = numberSum(purchases._sum.totalAmount);
-    const expensesTotal = numberSum(expenses._sum.amount);
-    const estimatedProfit =
-      serviceRevenue +
-      saleRevenue +
-      retailSalesTotal -
-      productPurchaseCost -
-      expensesTotal;
-    return res.json({
-      success: true,
-      data: {
-        serviceRevenue,
-        saleRevenue,
-        retailSalesTotal,
-        productPurchaseCost,
-        expensesTotal,
-        estimatedProfit,
       },
     });
   } catch (error) {

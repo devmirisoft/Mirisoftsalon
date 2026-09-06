@@ -27,6 +27,21 @@ import {
   updateJobCartSchema,
 } from "./job-cart.validation.js";
 
+// Mirrors the PaymentMethod enum in the Prisma schema; the counter can take
+// the bill in any of these when the cart is confirmed.
+const PAYMENT_METHODS = [
+  "CASH",
+  "UPI",
+  "GPAY",
+  "PAYTM",
+  "PHONEPE",
+  "CARD",
+  "BANK_TRANSFER",
+  "CHEQUE",
+  "MEMBERSHIP_WALLET",
+  "OTHER",
+] as const;
+
 const actorFrom = (req: Request): JobCartActor => {
   if (!req.user?.userId) throw new JobCartError(401, "Unauthorized");
   return {
@@ -152,7 +167,6 @@ export const postJobCart = async (req: Request, res: Response) => {
         ...(parsed.serviceItems
           ? { serviceItems: parsed.serviceItems }
           : {}),
-        startTime: new Date(parsed.startTime),
         ...(parsed.salonId ? { salonId: parsed.salonId } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
         ...(parsed.bookingNote
@@ -229,13 +243,18 @@ export const postJobCartItem = async (req: Request, res: Response) => {
         itemType: parsed.itemType,
         ...(parsed.serviceId ? { serviceId: parsed.serviceId } : {}),
         ...(parsed.packageId ? { packageId: parsed.packageId } : {}),
+        ...(parsed.productId ? { productId: parsed.productId } : {}),
+        ...(parsed.membershipId ? { membershipId: parsed.membershipId } : {}),
+        ...(parsed.quantity ? { quantity: parsed.quantity } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
       },
       requestAuditContext(req)
     );
     return res.status(200).json({
       success: true,
-      message: `${parsed.itemType === "PACKAGE" ? "Package" : "Service"} added to job cart`,
+      message: `${
+        parsed.itemType.charAt(0) + parsed.itemType.slice(1).toLowerCase()
+      } added to job cart`,
       data,
     });
   } catch (error) {
@@ -330,6 +349,35 @@ export const postConfirmJobCart = async (req: Request, res: Response) => {
         taxPercent: z.coerce.number().min(0).max(100).optional(),
         billingNote: z.string().optional().nullable(),
         footerNote: z.string().optional().nullable(),
+        payment: z
+          .object({
+            method: z.enum(PAYMENT_METHODS),
+            amount: z.coerce.number().positive().optional(),
+            referenceNo: z.string().trim().max(120).optional(),
+            note: z.string().trim().max(500).optional(),
+            customerMembershipId: z.string().uuid().optional(),
+          })
+          .optional(),
+        // Split tender: 500 cash + 300 UPI is two entries. Each is settled in
+        // turn inside the confirm transaction, so a failure on the second
+        // rolls back the first along with the confirm itself.
+        payments: z
+          .array(
+            z.object({
+              method: z.enum(PAYMENT_METHODS),
+              amount: z.coerce.number().positive(),
+              referenceNo: z.string().trim().max(120).optional(),
+              note: z.string().trim().max(500).optional(),
+              customerMembershipId: z.string().uuid().optional(),
+            })
+          )
+          .min(1)
+          .max(5)
+          .optional(),
+        /** Client-generated, makes a queued offline confirm safe to replay. */
+        idempotencyKey: z.string().trim().min(8).max(64).optional(),
+        /** When the operator pressed Confirm, for confirms queued offline. */
+        confirmedAt: z.iso.datetime({ offset: true }).optional(),
       })
       .safeParse(req.body || {});
 

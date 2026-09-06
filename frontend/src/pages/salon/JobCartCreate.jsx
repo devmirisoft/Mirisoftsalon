@@ -18,6 +18,7 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
+import ServicePickerModal from "@/components/salon/ServicePickerModal";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
@@ -36,6 +37,20 @@ const newServiceRow = () => ({
   price: "",
 });
 
+// Arrow to the picked customer's profile. Renders nothing until a saved
+// customer is matched, so a brand-new name never links to a dead page.
+const CustomerProfileLink = ({ customerId }) =>
+  customerId ? (
+    <Link
+      to={`/customers/${customerId}`}
+      className="btn btn-outline-primary flex-shrink-0 d-flex align-items-center justify-content-center"
+      style={{ width: 38, height: 38, padding: 0 }}
+      title="Open customer profile"
+    >
+      <Icon name="arrow-right" />
+    </Link>
+  ) : null;
+
 const JobCartCreate = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -50,8 +65,6 @@ const JobCartCreate = () => {
   // Staff chosen in the picker; services picked afterwards attach to them.
   const [pickerStaffId, setPickerStaffId] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerCategoryId, setPickerCategoryId] = useState("");
-  const [pickerSearch, setPickerSearch] = useState("");
   const [customPackage, setCustomPackage] = useState({
     serviceIds: [],
     name: "",
@@ -199,15 +212,16 @@ const JobCartCreate = () => {
     [refs.customers]
   );
 
-  // Match on name or on phone digits, so "987" finds "+91 98765 43210".
+  // Raw text in the customer box. The "+" uses this so a name never has to be
+  // committed through the dropdown before it can be saved.
+  const [customerInput, setCustomerInput] = useState("");
+
+  // Name-only search; phone lookup lives in the phone box next door.
   const filterCustomerOption = useCallback((option, rawInput) => {
     const input = rawInput.trim().toLowerCase();
     // Empty box shows nothing; suggestions only appear once you type.
     if (!input) return false;
-    if (option.label.toLowerCase().includes(input)) return true;
-    const inputDigits = input.replace(/\D/g, "");
-    if (!inputDigits) return false;
-    return (option.data.phone || "").replace(/\D/g, "").includes(inputDigits);
+    return (option.data.name || "").toLowerCase().includes(input);
   }, []);
 
   // Phone box suggestions: 3+ digits, matched against digits-only stored phones.
@@ -243,6 +257,9 @@ const JobCartCreate = () => {
       }) || null
     );
   }, [customerOptions, form.phone]);
+
+  // What the "+" will save: the committed name, else the raw typed text.
+  const pendingCustomerName = (form.customerName || customerInput).trim();
 
   const selectedCustomerOption = useMemo(() => {
     const matched = customerOptions.find(
@@ -317,6 +334,9 @@ const JobCartCreate = () => {
     refs.salon?.gstEnabled === false
       ? 0
       : Number(refs.salon?.serviceGstRate ?? 0);
+  // Estimate only: the real tax is computed server-side on the draft invoice,
+  // after the membership discount and any coupon are applied.
+  const estimatedTax = ((subtotal + packageSubtotal) * serviceGstPercent) / 100;
   const mainServices = useMemo(
     () =>
       Array.from(
@@ -463,13 +483,6 @@ const JobCartCreate = () => {
     );
   };
 
-  const pickerStaffName = useMemo(
-    () =>
-      pickerStaffOptions.find((member) => member.id === pickerStaffId)?.name ||
-      "",
-    [pickerStaffOptions, pickerStaffId]
-  );
-
   // Rows keyed by service, so the list can show what is already in the cart
   // and which staff each one went to.
   const rowsByServiceId = useMemo(() => {
@@ -479,6 +492,14 @@ const JobCartCreate = () => {
     });
     return map;
   }, [serviceRows]);
+
+  const assignedById = useMemo(
+    () =>
+      new Map(
+        [...rowsByServiceId].map(([serviceId, row]) => [serviceId, row.staffId])
+      ),
+    [rowsByServiceId]
+  );
 
   // Everything not covered by a selected package. Services already in the cart
   // stay listed (shown checked) so they can be unchecked to remove them.
@@ -496,28 +517,6 @@ const JobCartCreate = () => {
         })),
     [refs.services, selectedPackageServiceIds]
   );
-
-  // Main-service categories offered by the services still available to add.
-  const pickerCategories = useMemo(() => {
-    const seen = new Map();
-    pickerServiceOptions.forEach((option) => {
-      if (option.mainServiceId && !seen.has(option.mainServiceId)) {
-        seen.set(option.mainServiceId, option.mainServiceName);
-      }
-    });
-    return [...seen.entries()].map(([id, name]) => ({ id, name }));
-  }, [pickerServiceOptions]);
-
-  // Narrow the checkbox list by the chosen category and the search box.
-  const pickerVisibleServices = useMemo(() => {
-    const term = pickerSearch.trim().toLowerCase();
-    return pickerServiceOptions.filter((option) => {
-      if (pickerCategoryId && option.mainServiceId !== pickerCategoryId) {
-        return false;
-      }
-      return !term || option.name.toLowerCase().includes(term);
-    });
-  }, [pickerServiceOptions, pickerCategoryId, pickerSearch]);
 
   // Checking a service adds it to the cart immediately, assigned to whoever
   // is selected in the staff dropdown at that moment. Unchecking removes it.
@@ -668,8 +667,6 @@ const JobCartCreate = () => {
                         setServiceRows([newServiceRow()]);
                         setPickerStaffId("");
                         setPickerOpen(false);
-                        setPickerSearch("");
-                        setPickerCategoryId("");
                       }}
                     >
                       <option value="">Select salon</option>
@@ -685,7 +682,7 @@ const JobCartCreate = () => {
                   <Col md="6">
                     <FormGroup>
                       <Label>Phone Number</Label>
-                      <div className="position-relative">
+                      <div className="position-relative d-flex align-items-start gap-2">
                       <Input
                         required
                         autoComplete="off"
@@ -739,6 +736,7 @@ const JobCartCreate = () => {
                           ))}
                         </ul>
                       )}
+                      <CustomerProfileLink customerId={customerSummary?.customerId} />
                       </div>
                     </FormGroup>
                   </Col>
@@ -754,30 +752,33 @@ const JobCartCreate = () => {
                             isDisabled={loadingRefs || saving}
                             options={customerOptions}
                             filterOption={filterCustomerOption}
-                            placeholder="Search by name or phone"
+                            placeholder="Search by name"
                             value={selectedCustomerOption}
                             onInputChange={(inputValue, meta) => {
-                              if (meta.action === "input-change" && inputValue) {
+                              if (meta.action !== "input-change") return;
+                              setCustomerInput(inputValue);
+                              // Typing over a *saved* customer breaks the pair.
+                              // A phone typed by hand is kept: the "+" needs it.
+                              if (inputValue && customerSummary) {
                                 clearPairedField("phone");
                               }
                             }}
                             noOptionsMessage={({ inputValue }) =>
                               inputValue
                                 ? `No customer matching "${inputValue}"`
-                                : "Type a name or phone number"
+                                : "Type a customer name"
                             }
                             formatCreateLabel={(inputValue) =>
                               `Add "${inputValue}" as a new customer`
                             }
-                            isValidNewOption={(inputValue, _selectValue, options) => {
+                            isValidNewOption={(inputValue) => {
                               const normalized = inputValue.trim().toLowerCase();
                               if (!normalized) return false;
                               // A digits-only input is a phone lookup, not a new name.
                               if (!/[a-z]/i.test(normalized)) return false;
-                              return !options.some(
-                                (option) =>
-                                  option.name.trim().toLowerCase() === normalized
-                              );
+                              // A duplicate name is fine on a free number; the
+                              // phone is what has to be unique.
+                              return !existingPhoneCustomer;
                             }}
                             onChange={(option) => {
                               setCustomerSummary(null);
@@ -792,10 +793,11 @@ const JobCartCreate = () => {
                             }}
                             onCreateOption={(inputValue) => {
                               setCustomerSummary(null);
+                              // Keep the typed phone: the "+" needs name and
+                              // phone together to create the customer.
                               setForm((current) => ({
                                 ...current,
                                 customerName: inputValue.trim(),
-                                phone: "",
                               }));
                             }}
                           />
@@ -810,7 +812,7 @@ const JobCartCreate = () => {
                           disabled={
                             saving ||
                             addingCustomer ||
-                            !form.customerName.trim() ||
+                            !pendingCustomerName ||
                             form.phone.replace(/\D/g, "").length !== 10
                           }
                           onClick={async () => {
@@ -818,8 +820,10 @@ const JobCartCreate = () => {
                             setError("");
                             try {
                               const response = await salonApi.customers.create({
-                                name: form.customerName.trim(),
+                                name: pendingCustomerName,
                                 phone: form.phone.trim(),
+                                // Super admins aren't scoped to a salon server-side.
+                                ...(form.salonId ? { salonId: form.salonId } : {}),
                               });
                               const customer = response.data;
                               setRefs((current) => ({
@@ -831,6 +835,7 @@ const JobCartCreate = () => {
                                 customerName: customer.name,
                                 phone: customer.phone || current.phone,
                               }));
+                              setCustomerInput("");
                             } catch (createError) {
                               setError(createError.message);
                             } finally {
@@ -845,6 +850,7 @@ const JobCartCreate = () => {
                           )}
                         </Button>
                         )}
+                        <CustomerProfileLink customerId={customerSummary?.customerId} />
                       </div>
                       <small className="text-soft">
                         {existingPhoneCustomer
@@ -878,8 +884,6 @@ const JobCartCreate = () => {
                           setServiceRows([newServiceRow()]);
                           setPickerStaffId("");
                           setPickerOpen(false);
-                          setPickerSearch("");
-                          setPickerCategoryId("");
                         }}
                       >
                         <option value="">Select branch</option>
@@ -1400,10 +1404,20 @@ const JobCartCreate = () => {
                   <span>Duration</span>
                   <strong>{duration} min</strong>
                 </div>
-                <div className="d-flex justify-content-between py-3">
+                <div className="d-flex justify-content-between py-2 border-bottom">
                   <span>Estimated subtotal</span>
                   <strong>
                     {formatMoney(subtotal + packageSubtotal)}
+                  </strong>
+                </div>
+                <div className="d-flex justify-content-between py-2 border-bottom">
+                  <span>Estimated tax ({serviceGstPercent}%)</span>
+                  <strong>{formatMoney(estimatedTax)}</strong>
+                </div>
+                <div className="d-flex justify-content-between py-3">
+                  <span>Estimated total</span>
+                  <strong>
+                    {formatMoney(subtotal + packageSubtotal + estimatedTax)}
                   </strong>
                 </div>
                 <p className="text-soft small">
@@ -1425,133 +1439,17 @@ const JobCartCreate = () => {
           </Col>
         </Row>
       </Form>
-      <Modal
+      <ServicePickerModal
         isOpen={pickerOpen}
         toggle={() => setPickerOpen(false)}
-        centered
-        size="xl"
-        contentClassName="border-0"
-      >
-        <ModalHeader toggle={() => setPickerOpen(false)}>
-          Add Services
-        </ModalHeader>
-        <ModalBody>
-          {/* Choose the staff first; every service checked below is added
-              to the cart assigned to them. */}
-          <Row className="g-3 mb-3">
-            <Col md="4">
-              <Label className="mb-1">Category</Label>
-              <Input
-                type="select"
-                value={pickerCategoryId}
-                onChange={(event) => setPickerCategoryId(event.target.value)}
-              >
-                <option value="">All services</option>
-                {pickerCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Input>
-            </Col>
-            <Col md="4">
-              <Label className="mb-1">Assign next to</Label>
-              <Input
-                type="select"
-                value={pickerStaffId}
-                disabled={saving}
-                onChange={(event) => setPickerStaffId(event.target.value)}
-              >
-                <option value="">Assign later</option>
-                {pickerStaffOptions.map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.name}
-                    {member.jobRole ? ` - ${member.jobRole}` : ""}
-                  </option>
-                ))}
-              </Input>
-            </Col>
-            <Col md="4">
-              <Label className="mb-1">Search</Label>
-              <Input
-                type="search"
-                placeholder="Search services"
-                value={pickerSearch}
-                onChange={(event) => setPickerSearch(event.target.value)}
-              />
-            </Col>
-          </Row>
-          <div
-            className="border rounded"
-            style={{ maxHeight: 380, overflowY: "auto" }}
-          >
-            {pickerVisibleServices.length === 0 ? (
-              <div className="text-soft text-center py-4">
-                No services match this search
-              </div>
-            ) : (
-              // Two columns so the wider modal is not mostly empty space.
-              // CSS grid rather than a Bootstrap row: .row's negative margins
-              // overflow this scroll container and collapse the cells.
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                }}
-              >
-                {pickerVisibleServices.map((option) => {
-                  const addedRow = rowsByServiceId.get(option.id);
-                  // Staff is decided solely by "Assign next to" above, at the
-                  // moment a service is checked; the row just reflects it.
-                  const assignedName = addedRow?.staffId
-                    ? pickerStaffOptions.find(
-                        (member) => member.id === addedRow.staffId
-                      )?.name
-                    : "";
-                  return (
-                    <div key={option.id} style={{ minWidth: 0 }}>
-                      <label
-                        className="d-flex align-items-center gap-2 px-3 py-2 border-bottom mb-0 h-100"
-                        style={{ cursor: "pointer", minWidth: 0 }}
-                      >
-                        <input
-                          type="checkbox"
-                          className="form-check-input mt-0 flex-shrink-0"
-                          checked={Boolean(addedRow)}
-                          onChange={() => togglePickerService(option.id)}
-                        />
-                        <span className="text-truncate" style={{ minWidth: 0 }}>
-                          <span className="d-block text-truncate">
-                            {option.name}
-                          </span>
-                          <small className="text-soft">
-                            {option.mainServiceName} -{" "}
-                            {formatMoney(option.price)}
-                            {addedRow ? ` - ${assignedName || "unassigned"}` : ""}
-                          </small>
-                        </span>
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <span className="text-soft">
-              {rowsByServiceId.size} in cart
-              {pickerStaffName ? ` - adding for ${pickerStaffName}` : ""}
-            </span>
-            <Button
-              color="primary"
-              type="button"
-              onClick={() => setPickerOpen(false)}
-            >
-              Done
-            </Button>
-          </div>
-        </ModalBody>
-      </Modal>
+        services={pickerServiceOptions}
+        staff={pickerStaffOptions}
+        staffId={pickerStaffId}
+        onStaffChange={setPickerStaffId}
+        assignedById={assignedById}
+        onToggleService={togglePickerService}
+        disabled={saving}
+      />
       <Modal
         isOpen={packageModalOpen}
         toggle={() => setPackageModalOpen(false)}

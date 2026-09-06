@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Nav,
@@ -36,7 +36,6 @@ const TAX_OPTIONS = [
 const Billing = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [tab, setTab] = useState("invoices");
   const [invoices, setInvoices] = useState([]);
   const [payments, setPayments] = useState([]);
@@ -48,8 +47,6 @@ const Billing = () => {
   const [selected, setSelected] = useState(null);
   const [paymentDetails, setPaymentDetails] = useState(null);
   const [invoiceDefaults, setInvoiceDefaults] = useState({});
-  const [handledAppointmentInvoiceId, setHandledAppointmentInvoiceId] =
-    useState("");
   // Spendable membership wallet for the customer on the invoice being paid,
   // keyed by invoice id so switching invoices in the form refetches.
   const [wallet, setWallet] = useState(null);
@@ -103,20 +100,6 @@ const Billing = () => {
       .filter(Boolean)
       .some((value) => String(value).toLowerCase().includes(query));
   });
-
-  useEffect(() => {
-    const appointmentId = new URLSearchParams(location.search).get(
-      "appointmentId"
-    );
-    if (!appointmentId || handledAppointmentInvoiceId === appointmentId) return;
-    if (!completedWithoutInvoice.some((item) => item.id === appointmentId)) {
-      return;
-    }
-    setInvoiceDefaults({ appointmentId });
-    setSelected(null);
-    setAction("invoice");
-    setHandledAppointmentInvoiceId(appointmentId);
-  }, [completedWithoutInvoice, handledAppointmentInvoiceId, location.search]);
 
   const walletBalance = Number(wallet?.spendableBalance ?? 0);
 

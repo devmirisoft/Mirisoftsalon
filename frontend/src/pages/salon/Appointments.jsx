@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
 import {
   Alert,
   Col,
@@ -17,6 +18,7 @@ import PageShell from "@/components/salon/PageShell";
 import AppointmentBookingModal from "@/components/salon/AppointmentBookingModal";
 import AppointmentCalendar from "@/components/salon/AppointmentCalendar";
 import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal";
+import StaffDayBoard from "@/components/salon/StaffDayBoard";
 import DataGrid from "@/components/salon/DataGrid";
 import SchemaModal from "@/components/salon/SchemaModal";
 import StatusBadge from "@/components/salon/StatusBadge";
@@ -39,6 +41,29 @@ const STATUSES = [
   "CANCELLED",
   "NO_SHOW",
 ];
+
+const LIST_COLUMNS = [
+  { key: "appointmentCode", label: "Appointment" },
+  { key: "customer", label: "Customer", render: (value) => value?.name || "—" },
+  { key: "staff", label: "Staff", render: (value) => value?.name || "—" },
+  { key: "startTime", label: "Start", render: (value) => formatDate(value, true) },
+  { key: "estimatedAmount", label: "Amount", render: formatMoney },
+  { key: "status", label: "Status", render: (value) => <StatusBadge value={value} /> },
+];
+
+const toISODate = (date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`;
+
+const sameDay = (value, day) => {
+  const date = new Date(value);
+  return (
+    date.getFullYear() === day.getFullYear() &&
+    date.getMonth() === day.getMonth() &&
+    date.getDate() === day.getDate()
+  );
+};
 
 const nextAvailableTime = (dateInfo) => {
   const selected = new Date(dateInfo.date);
@@ -75,6 +100,7 @@ const Appointments = () => {
   });
   const [filters, setFilters] = useState({ date: "", status: "", staffId: "" });
   const [view, setView] = useState("calendar");
+  const [scheduleStaffId, setScheduleStaffId] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [action, setAction] = useState(null);
@@ -137,7 +163,7 @@ const Appointments = () => {
     setAction(type);
   };
 
-  const openCalendarBooking = (dateInfo) => {
+  const openCalendarBooking = (dateInfo, staffId = "") => {
     const startTime = nextAvailableTime(dateInfo);
     if (startTime < new Date()) {
       setError("Appointments cannot be booked in the past.");
@@ -145,7 +171,10 @@ const Appointments = () => {
     }
 
     setError("");
-    openAction("create", null, { startTime: toLocalInput(startTime) });
+    openAction("create", null, {
+      startTime: toLocalInput(startTime),
+      ...(staffId ? { staffId } : {}),
+    });
   };
 
   const viewDetails = async (row) => {
@@ -188,6 +217,36 @@ const Appointments = () => {
     });
     return Array.from(byId.values());
   }, [appointments, refs.staff]);
+
+  const boardStaff = useMemo(
+    () =>
+      scheduleStaffId
+        ? availableStaff.filter((member) => member.id === scheduleStaffId)
+        : availableStaff,
+    [availableStaff, scheduleStaffId]
+  );
+
+  const boardDate = useMemo(
+    () => (filters.date ? new Date(`${filters.date}T00:00`) : new Date()),
+    [filters.date]
+  );
+
+  const shiftBoardDay = (days) => {
+    const next = new Date(boardDate);
+    next.setDate(next.getDate() + days);
+    setFilters((current) => ({ ...current, date: toISODate(next) }));
+  };
+
+  const boardAppointments = useMemo(() => {
+    const ids = new Set(boardStaff.map((member) => member.id));
+    return appointments
+      .filter(
+        (appointment) =>
+          ids.has(appointment.staff?.id) &&
+          sameDay(appointment.startTime, boardDate)
+      )
+      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
+  }, [appointments, boardDate, boardStaff]);
 
   const formConfig = useMemo(() => {
     if (action === "status") {
@@ -374,7 +433,11 @@ const Appointments = () => {
       </div>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h5 className="title mb-0">
-          {view === "calendar" ? "Appointment calendar" : "Appointment list"}
+          {view === "calendar"
+            ? "Appointment calendar"
+            : view === "staff"
+              ? "Staff schedule"
+              : "Appointment list"}
         </h5>
         <div className="btn-group">
           <Button
@@ -382,6 +445,12 @@ const Appointments = () => {
             onClick={() => setView("calendar")}
           >
             <Icon name="calender-date" /> Calendar
+          </Button>
+          <Button
+            color={view === "staff" ? "primary" : "light"}
+            onClick={() => setView("staff")}
+          >
+            <Icon name="users" /> Staff
           </Button>
           <Button
             color={view === "list" ? "primary" : "light"}
@@ -392,7 +461,7 @@ const Appointments = () => {
         </div>
       </div>
 
-      {loading && view === "calendar" ? (
+      {loading && view !== "list" ? (
         <div className="card card-bordered">
           <div className="card-inner text-center py-5">
             <Spinner color="primary" />
@@ -405,18 +474,132 @@ const Appointments = () => {
           onAppointmentClick={viewDetails}
           onDateSelect={openCalendarBooking}
         />
+      ) : view === "staff" ? (
+        <>
+          <div className="card card-bordered mb-3">
+            <div className="card-inner">
+              <Row className="g-3 align-items-end">
+                <Col md="4">
+                  <Label>Staff member</Label>
+                  <Input
+                    type="select"
+                    value={scheduleStaffId}
+                    onChange={(event) => setScheduleStaffId(event.target.value)}
+                  >
+                    <option value="">All staff</option>
+                    {availableStaff.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </Input>
+                </Col>
+                <Col md="8">
+                  <div className="d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
+                    <Button color="light" onClick={() => shiftBoardDay(-1)}>
+                      <Icon name="chevron-left" />
+                    </Button>
+                    <span className="fw-bold">{formatDate(boardDate)}</span>
+                    <Button color="light" onClick={() => shiftBoardDay(1)}>
+                      <Icon name="chevron-right" />
+                    </Button>
+                    <Button
+                      color="light"
+                      onClick={() =>
+                        setFilters((current) => ({ ...current, date: "" }))
+                      }
+                    >
+                      Today
+                    </Button>
+                  </div>
+                </Col>
+              </Row>
+              <p className="mt-3 mb-0 text-soft small">
+                Click a slot in a staff column to book that staff member.
+              </p>
+            </div>
+          </div>
+          <Row className="g-3">
+            <Col xl="3">
+              <div className="card card-bordered h-100">
+                <div className="card-inner">
+                  <div className="staff-board-datepicker">
+                    <DatePicker
+                      inline
+                      selected={boardDate}
+                      onChange={(day) =>
+                        setFilters((current) => ({
+                          ...current,
+                          date: toISODate(day),
+                        }))
+                      }
+                    />
+                  </div>
+                  <h6 className="title mt-4 mb-2">{formatDate(boardDate)}</h6>
+                  <ul className="list-unstyled mb-0 small">
+                    {[
+                      ["All events", boardAppointments.length],
+                      [
+                        "Cancelled",
+                        boardAppointments.filter(
+                          (row) => row.status === "CANCELLED"
+                        ).length,
+                      ],
+                      [
+                        "No-show",
+                        boardAppointments.filter(
+                          (row) => row.status === "NO_SHOW"
+                        ).length,
+                      ],
+                      [
+                        "Completed",
+                        boardAppointments.filter(
+                          (row) => row.status === "COMPLETED"
+                        ).length,
+                      ],
+                    ].map(([label, count]) => (
+                      <li
+                        key={label}
+                        className="d-flex justify-content-between py-1"
+                      >
+                        <span className="text-soft">{label}</span>
+                        <span className="fw-bold">{count}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Col>
+            <Col xl="9">
+              <StaffDayBoard
+                date={boardDate}
+                staff={boardStaff}
+                appointments={appointments}
+                onAppointmentClick={viewDetails}
+                onSlotClick={(slot, member) =>
+                  openCalendarBooking({ date: slot, allDay: false }, member.id)
+                }
+              />
+            </Col>
+          </Row>
+          <h6 className="title mt-4 mb-2">
+            {scheduleStaffId
+              ? `${boardStaff[0]?.name || "Staff"}'s appointments`
+              : "Staff appointments"}{" "}
+            · {formatDate(boardDate)}
+          </h6>
+          <DataGrid
+            rows={boardAppointments}
+            loading={loading}
+            columns={LIST_COLUMNS}
+            onView={viewDetails}
+          />
+        </>
       ) : (
         <DataGrid
           rows={appointments}
           loading={loading}
-          columns={[
-            { key: "appointmentCode", label: "Appointment" },
-            { key: "customer", label: "Customer", render: (value) => value?.name || "—" },
-            { key: "staff", label: "Staff", render: (value) => value?.name || "—" },
-            { key: "startTime", label: "Start", render: (value) => formatDate(value, true) },
-            { key: "estimatedAmount", label: "Amount", render: formatMoney },
-            { key: "status", label: "Status", render: (value) => <StatusBadge value={value} /> },
-          ]}
+          columns={LIST_COLUMNS}
           onView={viewDetails}
           onDelete={roleCanManage(user?.role) ? remove : undefined}
           renderActions={(row) => (

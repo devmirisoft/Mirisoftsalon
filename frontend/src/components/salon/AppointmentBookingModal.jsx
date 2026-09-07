@@ -61,7 +61,7 @@ const AppointmentBookingModal = ({
     if (!isOpen) return;
     setForm({ ...emptyForm, ...defaults });
     setRows([]);
-    setPickerStaffId("");
+    setPickerStaffId(defaults?.staffId || "");
     setPickerOpen(false);
     setError("");
   }, [isOpen, defaults]);

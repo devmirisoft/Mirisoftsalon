@@ -130,3 +130,20 @@ export const isBranchAccessible = (
 
   return rowBranchId === scope;
 };
+
+/**
+ * The branch id to filter a query by: `undefined` for salon-wide roles, the
+ * caller's own branch for branch-locked ones.
+ *
+ * A branch-locked user without a branch cannot reach a controller
+ * (`authenticate` rejects them), but if one ever did, this returns a sentinel
+ * that matches no row rather than dropping the filter and exposing the whole
+ * salon.
+ */
+export const branchFilterFor = (req: Request): string | undefined => {
+  const scope = resolveBranchScope(req);
+
+  if (scope === undefined) return undefined;
+
+  return scope ?? "__no_branch__";
+};

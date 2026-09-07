@@ -98,6 +98,15 @@ export const addJobCartItemSchema = z
     }
   });
 
+export const updateJobCartItemSchema = z
+  .object({
+    price: z.coerce.number().min(0).max(10_000_000).optional(),
+    staffId: uuid.nullable().optional(),
+  })
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "At least one field is required",
+  });
+
 export const customerSummarySchema = z
   .object({
     customerId: uuid.optional(),

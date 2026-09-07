@@ -1,11 +1,14 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../../config/prisma.js";
 import {
+  branchScope,
   cleanText,
   getSalonId,
   sendInventoryError,
   validateBranch,
+  writableBranch,
 } from "../products/inventory-access.js";
+import { isBranchLockedRole } from "../../utils/branch-scope.js";
 import { ExpenseModel } from "./expense.model.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 
@@ -32,6 +35,7 @@ const accessWhere = (req: Request, id?: string) => ({
       ? { salonId: req.query.salonId }
       : {}
     : { salonId: req.user?.salonId || "__missing__" }),
+  ...branchScope(req),
 });
 
 const validateReferences = async (
@@ -116,7 +120,7 @@ export const createExpense = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: "Invalid payment method" });
     }
-    const branchId = cleanText(req.body.branchId);
+    const branchId = writableBranch(req, req.body.branchId);
     const vendorId = cleanText(req.body.vendorId);
     const referenceError = await validateReferences(
       salonId,
@@ -274,8 +278,11 @@ export const updateExpense = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: "Invalid payment method" });
     }
+    // A branch-locked caller cannot move an expense to another branch.
     const branchId =
-      "branchId" in req.body ? cleanText(req.body.branchId) ?? null : undefined;
+      "branchId" in req.body && !isBranchLockedRole(req.user?.role)
+        ? cleanText(req.body.branchId) ?? null
+        : undefined;
     const vendorId =
       "vendorId" in req.body ? cleanText(req.body.vendorId) ?? null : undefined;
     const referenceError = await validateReferences(

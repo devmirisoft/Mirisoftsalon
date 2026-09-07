@@ -14,6 +14,7 @@ const ALL_ROUTES = [
   "POST /api/auth/logout",
   "GET /api/users",
   "POST /api/users/salon-admin",
+  "POST /api/users/branch-manager",
   "POST /api/users/receptionist",
   "POST /api/users/staff",
   "PATCH /api/users/:id/status",
@@ -279,6 +280,22 @@ describe("All API routes", () => {
     });
     expect(salonAdminLogin.status).toBe(200);
     const salonAdminToken = salonAdminLogin.body.data.accessToken as string;
+
+    check(
+      "POST /api/users/branch-manager",
+      await agent
+        .post("/api/users/branch-manager")
+        .set(auth(superAdminToken))
+        .send({
+          name: "All Routes Branch Manager",
+          email: `all-routes-manager-${stamp}@example.com`,
+          phone_number: "9000000009",
+          password,
+          salonId,
+          branchId,
+        }),
+      201
+    );
 
     check(
       "POST /api/users/receptionist",

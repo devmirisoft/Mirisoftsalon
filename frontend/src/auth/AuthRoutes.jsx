@@ -2,6 +2,7 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "./AuthContext";
+import { allowsRole } from "@/utils/salonFormat";
 
 const SessionLoader = () => (
   <div className="min-vh-100 d-flex align-items-center justify-content-center">
@@ -36,5 +37,9 @@ export const RoleRoute = ({ roles }) => {
   const { checkingSession, user } = useAuth();
 
   if (checkingSession) return <SessionLoader />;
-  return roles.includes(user?.role) ? <Outlet /> : <Navigate to="/" replace />;
+  return allowsRole(roles, user?.role) ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/" replace />
+  );
 };

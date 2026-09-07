@@ -1,5 +1,6 @@
 import { type Request } from "express";
 import { prisma } from "../../config/prisma.js";
+import { isBranchLockedRole } from "../../utils/branch-scope.js";
 
 export const INVENTORY_VIEW_ROLES = [
   "SUPER_ADMIN",
@@ -27,6 +28,15 @@ export const exactBranchScope = (req: Request) =>
   req.user.branchId
     ? { branchId: req.user.branchId }
     : {};
+
+/**
+ * The branch a write may target. Branch-locked callers are pinned to their own
+ * branch and the body value is ignored; salon-wide roles keep what they sent.
+ */
+export const writableBranch = (req: Request, requested: unknown) =>
+  isBranchLockedRole(req.user?.role)
+    ? req.user?.branchId ?? "__no_branch__"
+    : cleanText(requested);
 
 export const validateBranch = async (
   salonId: string,

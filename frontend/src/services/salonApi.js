@@ -21,6 +21,8 @@ export const salonApi = {
     list: () => request("/api/users"),
     createSalonAdmin: (body) =>
       request("/api/users/salon-admin", { method: "POST", body }),
+    createBranchManager: (body) =>
+      request("/api/users/branch-manager", { method: "POST", body }),
     createReceptionist: (body) =>
       request("/api/users/receptionist", { method: "POST", body }),
   },
@@ -286,6 +288,11 @@ export const salonApi = {
           typeof item === "string"
             ? { itemType: "SERVICE", serviceId: item }
             : item,
+      }),
+    updateItem: (id, itemId, body) =>
+      request(`/api/job-carts/${id}/items/${itemId}`, {
+        method: "PATCH",
+        body,
       }),
     removeItem: (id, itemId) =>
       request(`/api/job-carts/${id}/items/${itemId}`, {

@@ -49,8 +49,14 @@ export const addMonthsInputDate = (value, months = 1) => {
 export const compactId = (value = "") =>
   value ? `${String(value).slice(0, 8)}…` : "—";
 
+// A branch manager is a salon admin confined to one branch, so it is allowed
+// everywhere a salon admin is; the API scopes its data to that branch.
+export const allowsRole = (roles, role) =>
+  roles.includes(role) ||
+  (role === "BRANCH_MANAGER" && roles.includes("SALON_ADMIN"));
+
 export const roleCanManage = (role) =>
-  role === "SUPER_ADMIN" || role === "SALON_ADMIN";
+  role === "SUPER_ADMIN" || role === "SALON_ADMIN" || role === "BRANCH_MANAGER";
 
 const displayNameKeys = [
   "displayName",

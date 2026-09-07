@@ -20,6 +20,7 @@ const PageShell = ({
   onAction,
   children,
   tools,
+  inlineDescription,
 }) => (
   <>
     <Head title={title} />
@@ -27,8 +28,13 @@ const PageShell = ({
       <BlockHead size="sm">
         <BlockBetween className="g-2">
           <BlockHeadContent>
-            <BlockTitle page>{title}</BlockTitle>
-            {description && (
+            <BlockTitle page>
+              {title}
+              {inlineDescription && description && (
+                <span className="text-soft fs-6 fw-normal ms-2">{description}</span>
+              )}
+            </BlockTitle>
+            {description && !inlineDescription && (
               <BlockDes className="text-soft">
                 <p>{description}</p>
               </BlockDes>

@@ -364,3 +364,7 @@
     padding: 0 !important;
   }
 }
+
+.form-control[readonly] {
+  cursor: not-allowed;
+}

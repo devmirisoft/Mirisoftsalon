@@ -236,6 +236,17 @@ const JobCarts = () => {
           },
         ]}
         onView={(row) => navigate(`/job-carts/${row.id}`)}
+        renderActions={(row) =>
+          row.status === "ACTIVE" && (
+            <Button
+              size="sm"
+              color="success"
+              onClick={() => navigate(`/job-carts/${row.id}?bill=1`)}
+            >
+              <Icon name="file-plus" /> Make bill
+            </Button>
+          )
+        }
       />
 
       <div className="d-flex justify-content-between align-items-center mt-3">

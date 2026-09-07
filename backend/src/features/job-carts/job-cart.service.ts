@@ -2132,6 +2132,70 @@ export const addJobCartItem = async (
     return present(await requireCart(tx, id, actor));
   });
 
+// Only standalone service lines are editable: a package, product or
+// membership line is sold at its own catalogue price, and a package-covered
+// service was already paid for when the package was bought.
+export const updateJobCartItem = async (
+  actor: JobCartActor,
+  id: string,
+  itemId: string,
+  input: { price?: number; staffId?: string | null },
+  audit: AuditContext
+) =>
+  prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
+    const existing = await requireCart(tx, id, actor);
+    requireMutable(existing);
+    const serviceItem = existing.services.find((item) => item.id === itemId);
+    if (!serviceItem) {
+      throw new JobCartError(404, "Job cart service not found");
+    }
+    if (serviceItem.customerPackageUsageItemId) {
+      throw new JobCartError(
+        409,
+        "A package-covered service cannot be changed here"
+      );
+    }
+    if (input.staffId) {
+      await validateStaff(
+        tx,
+        existing.salonId,
+        existing.branchId!,
+        input.staffId
+      );
+    }
+    await tx.appointmentService.update({
+      where: { id: serviceItem.id },
+      data: {
+        ...(input.price === undefined
+          ? {}
+          : { price: new Prisma.Decimal(input.price) }),
+        ...(input.staffId === undefined ? {} : { staffId: input.staffId }),
+      },
+    });
+    await recalculateCart(tx, id, actor, audit);
+    await createAuditLog({
+      tx,
+      salonId: existing.salonId,
+      branchId: existing.branchId,
+      userId: actor.userId,
+      module: "JOB_CART",
+      action: "UPDATE",
+      entityId: id,
+      entityCode: existing.appointmentCode,
+      entityName: existing.customer.name,
+      description: `Service ${serviceItem.serviceName} updated on job cart ${existing.appointmentCode}`,
+      oldData: {
+        itemId,
+        price: serviceItem.price,
+        staffId: serviceItem.staffId,
+      },
+      newData: { itemId, price: input.price, staffId: input.staffId },
+      ...audit,
+    });
+    return present(await requireCart(tx, id, actor));
+  });
+
 export const removeJobCartItem = async (
   actor: JobCartActor,
   id: string,

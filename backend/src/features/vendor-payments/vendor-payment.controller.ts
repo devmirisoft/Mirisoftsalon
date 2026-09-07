@@ -1,11 +1,13 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../../config/prisma.js";
 import {
+  branchScope,
   cleanText,
   getSalonId,
   sendInventoryError,
   transactionError,
   validateBranch,
+  writableBranch,
 } from "../products/inventory-access.js";
 import { VendorPaymentModel } from "./vendor-payment.model.js";
 
@@ -40,6 +42,7 @@ const listWhere = (req: Request) => ({
   ...(typeof req.query.branchId === "string"
     ? { branchId: req.query.branchId }
     : {}),
+  ...branchScope(req),
 });
 
 export const createVendorPayment = async (req: Request, res: Response) => {
@@ -51,10 +54,7 @@ export const createVendorPayment = async (req: Request, res: Response) => {
       typeof req.body.purchaseId === "string" && req.body.purchaseId
         ? req.body.purchaseId
         : undefined;
-    const branchId =
-      typeof req.body.branchId === "string" && req.body.branchId
-        ? req.body.branchId
-        : undefined;
+    const branchId = writableBranch(req, req.body.branchId);
     const amount = Number(req.body.amount);
     const method = req.body.paymentMethod as PaymentMethod;
     if (!salonId || !vendorId || !PAYMENT_METHODS.includes(method)) {

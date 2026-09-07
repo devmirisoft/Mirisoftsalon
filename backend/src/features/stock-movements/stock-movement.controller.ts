@@ -33,6 +33,14 @@ export const createManualStockMovement = async (req: Request, res: Response) => 
     if (!Number.isFinite(quantity) || quantity === 0 || (type !== "ADJUSTMENT" && quantity < 0)) {
       return res.status(400).json({ success: false, message: "Quantity must be positive; adjustments may be positive or negative" });
     }
+    // Branch-locked callers may only move stock they can see.
+    const product = await prisma.product.findFirst({
+      where: { id: productId, ...baseWhere(req) },
+      select: { id: true },
+    });
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
     const data = await prisma.$transaction(async (tx) => {
       const result = await createStockMovement({
         tx,

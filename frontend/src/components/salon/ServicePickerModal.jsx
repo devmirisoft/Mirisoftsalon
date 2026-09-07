@@ -74,6 +74,15 @@ const ServicePickerModal = ({
       <ModalBody>
         <Row className="g-3 mb-3">
           <Col md="4">
+            <Label className="mb-1">Search</Label>
+            <Input
+              type="search"
+              placeholder="Search services"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </Col>
+          <Col md="4">
             <Label className="mb-1">Category</Label>
             <Input
               type="select"
@@ -105,7 +114,7 @@ const ServicePickerModal = ({
               ))}
             </Input>
           </Col>
-          <Col md="4">
+          {/* <Col md="4">
             <Label className="mb-1">Search</Label>
             <Input
               type="search"
@@ -113,7 +122,7 @@ const ServicePickerModal = ({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
-          </Col>
+          </Col> */}
         </Row>
         <div
           className="border rounded"

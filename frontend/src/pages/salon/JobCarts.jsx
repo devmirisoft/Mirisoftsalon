@@ -16,6 +16,37 @@ const timeOnly = (value) =>
       }).format(new Date(value))
     : "—";
 
+const durationLabel = (minutes) =>
+  minutes >= 60
+    ? `${Math.floor(minutes / 60)}h ${minutes % 60}m`
+    : `${minutes}m`;
+
+// An active cart has no bill yet, so its calculated end time would read as a
+// promise the counter never made: show it only once the bill exists, with how
+// far the billing time ran over (red) or under (green) that estimate.
+// ponytail: updatedAt is the confirm time because a completed cart is locked
+// against further edits; store a billedAt if that ever stops holding.
+const endTimeCell = (row) => {
+  if (row.status !== "COMPLETED" || !row.endTime) return "";
+  const billedAt = row.updatedAt ? new Date(row.updatedAt) : null;
+  const drift = billedAt
+    ? Math.round((billedAt - new Date(row.endTime)) / 60000)
+    : 0;
+  return (
+    <>
+      {timeOnly(row.endTime)}
+      {drift !== 0 && (
+        <span
+          className={`ms-1 ${drift > 0 ? "text-danger" : "text-success"}`}
+        >
+          ({drift > 0 ? "+" : "-"}
+          {durationLabel(Math.abs(drift))})
+        </span>
+      )}
+    </>
+  );
+};
+
 const JobCarts = () => {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
@@ -217,7 +248,7 @@ const JobCarts = () => {
           {
             key: "end",
             label: "End Time",
-            render: (_value, row) => timeOnly(row.endTime),
+            render: (_value, row) => endTimeCell(row),
           },
           {
             key: "createdBy",

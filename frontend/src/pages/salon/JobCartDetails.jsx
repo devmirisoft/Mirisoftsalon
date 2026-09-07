@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import {
   Alert,
@@ -109,6 +109,7 @@ const JobCartDetails = () => {
     { method: "CASH", amount: "", referenceNo: "" },
   ]);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
@@ -165,6 +166,14 @@ const JobCartDetails = () => {
   useEffect(() => {
     load();
   }, [load]);
+
+  // "Make bill" on the job cart list lands here with ?bill=1: open the confirm
+  // bill modal straight away instead of making the user find the button.
+  useEffect(() => {
+    if (!searchParams.get("bill") || !cart) return;
+    setSearchParams({}, { replace: true });
+    if (cart.status === "ACTIVE" && cart.items.length) setConfirmOpen(true);
+  }, [cart, searchParams, setSearchParams]);
 
   // Push any bill confirmed while offline as soon as the connection is back.
   useEffect(

@@ -11,7 +11,7 @@ const RowActions = ({ row, onView, onEdit, onDelete, renderActions }) => (
         {onView && (
           <ActionMenuItem
             icon={<Icon name="eye" />}
-            label="View details"
+            label="Edit details"
             onClick={() => onView(row)}
           />
         )}

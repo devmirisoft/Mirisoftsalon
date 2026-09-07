@@ -11,7 +11,7 @@ import {
   Spinner,
   Table,
 } from "reactstrap";
-import { Button } from "@/components/Component";
+import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
@@ -64,6 +64,13 @@ const ManageMemberships = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState(defaultMembershipForm);
+  const [filters, setFilters] = useState({
+    q: "",
+    membership: "",
+    paymentMethod: "",
+    status: "",
+    soldBy: "",
+  });
 
   useEffect(() => {
     Promise.all([
@@ -82,14 +89,16 @@ const ManageMemberships = () => {
   }, []);
 
   const loadCustomer = useCallback(async (id) => {
-    if (!id) {
-      setCustomer(null);
-      setHistory([]);
-      return;
-    }
     setLoading(true);
     setError("");
     try {
+      // With nobody selected the page still shows the salon-wide history.
+      if (!id) {
+        setCustomer(null);
+        const allRes = await salonApi.customerMemberships.list({ limit: 100 });
+        setHistory(allRes.data || []);
+        return;
+      }
       const [detail, historyRes] = await Promise.all([
         salonApi.customers.get(id),
         salonApi.customers.memberships(id),
@@ -113,14 +122,75 @@ const ManageMemberships = () => {
 
   const selectedPlan = memberships.find((item) => item.id === form.membershipId);
 
+  // History filters run over the rows already loaded, so the dropdown options
+  // are whatever those rows actually contain.
+  const sellerName = (item) =>
+    item.soldByStaff?.name || item.assignedBy?.name || "";
+  const optionsOf = (pick) =>
+    [...new Set(history.map(pick).filter(Boolean))].sort();
+  // Hover text instead of a modal: the browser draws it, we write no CSS.
+  const rowDetails = (item) =>
+    [
+      `${item.customer?.name || "—"}${
+        item.customer?.phone ? ` · ${item.customer.phone}` : ""
+      }`,
+      `${item.membershipNameSnapshot} · ${Number(
+        item.discountPercentageSnapshot
+      )}% off`,
+      `Wallet ${formatMoney(item.walletCredited)}`,
+      `Paid ${item.amountPaid == null ? "—" : formatMoney(item.amountPaid)}${
+        item.paymentMethod ? ` (${labelize(item.paymentMethod)})` : ""
+      }`,
+      `${formatDate(item.startsAt)} → ${
+        item.expiresAt ? formatDate(item.expiresAt) : "Never"
+      }`,
+      `${labelize(item.status)}${
+        sellerName(item) ? ` · sold by ${sellerName(item)}` : ""
+      }`,
+    ].join("\n");
+
+  // Renew reuses the row: pick its customer and plan, the seller confirms.
+  const renewFrom = (item) => {
+    const plan = memberships.find((entry) => entry.id === item.membershipId);
+    setCustomerId(item.customerId || item.customer?.id || "");
+    setForm((value) => ({
+      ...value,
+      membershipId: item.membershipId || "",
+      amountPaid: plan?.price != null ? String(plan.price) : value.amountPaid,
+      expiresAt: plan?.durationMonths
+        ? addMonthsInputDate(value.startsAt || todayInputDate(), plan.durationMonths)
+        : "",
+    }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const filtered = Object.values(filters).some(Boolean);
+  const clearFilters = () =>
+    setFilters({
+      q: "",
+      membership: "",
+      paymentMethod: "",
+      status: "",
+      soldBy: "",
+    });
+  const search = filters.q.trim().toLowerCase();
+  const visibleHistory = history.filter(
+    (item) =>
+      (!search ||
+        `${item.customer?.name || ""} ${item.customer?.phone || ""}`
+          .toLowerCase()
+          .includes(search)) &&
+      (!filters.membership ||
+        item.membershipNameSnapshot === filters.membership) &&
+      (!filters.paymentMethod || item.paymentMethod === filters.paymentMethod) &&
+      (!filters.status || item.status === filters.status) &&
+      (!filters.soldBy || sellerName(item) === filters.soldBy)
+  );
+
   const submitMembership = async (event) => {
     event.preventDefault();
     if (!customerId || !form.membershipId) return;
     const today = todayInputDate();
-    if (form.startsAt && form.startsAt < today) {
-      setError("Membership start date cannot be in the past.");
-      return;
-    }
     if (form.expiresAt && form.expiresAt < today) {
       setError("Membership expiry date cannot be in the past.");
       return;
@@ -130,8 +200,16 @@ const ManageMemberships = () => {
     try {
       await salonApi.customers.assignMembership(customerId, {
         membershipId: form.membershipId,
+        // A start of today is stamped with the click time, not local midnight:
+        // midnight here can already be "in the past" for a server in another
+        // timezone, which the API rejects.
         ...(form.startsAt
-          ? { startsAt: new Date(`${form.startsAt}T00:00:00`).toISOString() }
+          ? {
+              startsAt:
+                form.startsAt <= today
+                  ? new Date().toISOString()
+                  : new Date(`${form.startsAt}T00:00:00`).toISOString(),
+            }
           : {}),
         ...(form.expiresAt
           ? { expiresAt: new Date(`${form.expiresAt}T23:59:59`).toISOString() }
@@ -141,8 +219,13 @@ const ManageMemberships = () => {
         ...(form.soldByStaffId ? { soldByStaffId: form.soldByStaffId } : {}),
         ...(form.note ? { note: form.note } : {}),
       });
-      setForm(defaultMembershipForm());
-      await refresh();
+      // Reload so every panel (wallet, current plan, history) comes back fresh.
+      window.location.assign(
+        customerId
+          ? `${window.location.pathname}?customerId=${customerId}`
+          : window.location.pathname
+      );
+      return;
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -197,8 +280,9 @@ const ManageMemberships = () => {
           <Spinner color="primary" />
         </div>
       ) : (
-        customer && (
-          <>
+        <>
+          {customer && (
+            <>
             <div className="card card-bordered mb-4">
               <div className="card-inner d-flex justify-content-between align-items-start flex-wrap gap-3">
                 <div>
@@ -252,6 +336,13 @@ const ManageMemberships = () => {
                             // seller can still override it below.
                             amountPaid:
                               plan?.price != null ? String(plan.price) : "",
+                            // Plans without a duration never expire.
+                            expiresAt: plan?.durationMonths
+                              ? addMonthsInputDate(
+                                  value.startsAt || todayInputDate(),
+                                  plan.durationMonths
+                                )
+                              : "",
                           }));
                         }}
                       >
@@ -277,10 +368,14 @@ const ManageMemberships = () => {
                           setForm((value) => ({
                             ...value,
                             startsAt: event.target.value,
-                            expiresAt:
-                              value.expiresAt && value.expiresAt >= event.target.value
-                                ? value.expiresAt
-                                : addMonthsInputDate(event.target.value, 1),
+                            expiresAt: (() => {
+                              const months = memberships.find(
+                                (item) => item.id === value.membershipId
+                              )?.durationMonths;
+                              return value.membershipId && !months
+                                ? ""
+                                : addMonthsInputDate(event.target.value, months || 1);
+                            })(),
                           }))
                         }
                       />
@@ -406,30 +501,151 @@ const ManageMemberships = () => {
                 </Row>
               </div>
             </Form>
+            </>
+          )}
 
-            <h6>Membership history</h6>
-            <Table responsive>
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h6 className="mb-0">
+                Membership history{" "}
+                <span className="text-soft fw-normal">
+                  ({visibleHistory.length}
+                  {visibleHistory.length === history.length
+                    ? ""
+                    : ` of ${history.length}`}
+                  )
+                </span>
+              </h6>
+              {filtered && (
+                <Button size="sm" color="light" onClick={clearFilters}>
+                  <Icon name="cross" /> Clear filters
+                </Button>
+              )}
+            </div>
+            <div className="card card-bordered">
+            <Table responsive hover className="align-middle mb-0">
               <thead>
                 <tr>
-                  <th>Membership</th>
-                  <th>Discount</th>
-                  <th>Wallet value</th>
-                  <th>Paid</th>
-                  <th>Payment method</th>
-                  <th>Starts</th>
-                  <th>Expires</th>
-                  <th>Status</th>
-                  <th>Sold by</th>
-                  <th>Note</th>
+                  <th style={{ minWidth: "180px" }}>
+                    <Input
+                      bsSize="sm"
+                      placeholder="Customer"
+                      value={filters.q}
+                      onChange={(event) =>
+                        setFilters((value) => ({ ...value, q: event.target.value }))
+                      }
+                    />
+                  </th>
+                  <th style={{ minWidth: "150px" }}>
+                    <Input
+                      type="select"
+                      bsSize="sm"
+                      value={filters.membership}
+                      onChange={(event) =>
+                        setFilters((value) => ({
+                          ...value,
+                          membership: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Membership</option>
+                      {optionsOf((item) => item.membershipNameSnapshot).map(
+                        (name) => (
+                          <option key={name} value={name}>
+                            {name}
+                          </option>
+                        )
+                      )}
+                    </Input>
+                  </th>
+                  <th className="align-middle text-end">Discount</th>
+                  <th className="align-middle text-end">Wallet value</th>
+                  <th className="align-middle text-end">Paid</th>
+                  <th style={{ minWidth: "150px" }}>
+                    <Input
+                      type="select"
+                      bsSize="sm"
+                      value={filters.paymentMethod}
+                      onChange={(event) =>
+                        setFilters((value) => ({
+                          ...value,
+                          paymentMethod: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Payment method</option>
+                      {optionsOf((item) => item.paymentMethod).map((method) => (
+                        <option key={method} value={method}>
+                          {labelize(method)}
+                        </option>
+                      ))}
+                    </Input>
+                  </th>
+                  <th className="align-middle">Starts</th>
+                  <th className="align-middle">Expires</th>
+                  <th style={{ minWidth: "130px" }}>
+                    <Input
+                      type="select"
+                      bsSize="sm"
+                      value={filters.status}
+                      onChange={(event) =>
+                        setFilters((value) => ({
+                          ...value,
+                          status: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Status</option>
+                      {optionsOf((item) => item.status).map((status) => (
+                        <option key={status} value={status}>
+                          {labelize(status)}
+                        </option>
+                      ))}
+                    </Input>
+                  </th>
+                  <th style={{ minWidth: "150px" }}>
+                    <Input
+                      type="select"
+                      bsSize="sm"
+                      value={filters.soldBy}
+                      onChange={(event) =>
+                        setFilters((value) => ({
+                          ...value,
+                          soldBy: event.target.value,
+                        }))
+                      }
+                    >
+                      <option value="">Sold by</option>
+                      {optionsOf(sellerName).map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </Input>
+                  </th>
+                  <th className="align-middle text-end">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {history.map((item) => (
+                {visibleHistory.map((item) => (
                   <tr key={item.id}>
-                    <td>{item.membershipNameSnapshot}</td>
-                    <td>{Number(item.discountPercentageSnapshot)}%</td>
-                    <td>{formatMoney(item.walletCredited)}</td>
                     <td>
+                      <span className="fw-medium">
+                        {item.customer?.name || "—"}
+                      </span>
+                      {item.customer?.phone && (
+                        <small className="d-block text-soft">
+                          {item.customer.phone}
+                        </small>
+                      )}
+                    </td>
+                    <td>{item.membershipNameSnapshot}</td>
+                    <td className="text-end">
+                      {Number(item.discountPercentageSnapshot)}%
+                    </td>
+                    <td className="text-end">
+                      {formatMoney(item.walletCredited)}
+                    </td>
+                    <td className="text-end">
                       {item.amountPaid == null
                         ? "—"
                         : formatMoney(item.amountPaid)}
@@ -437,28 +653,61 @@ const ManageMemberships = () => {
                     <td>
                       {item.paymentMethod ? labelize(item.paymentMethod) : "—"}
                     </td>
-                    <td>{formatDate(item.startsAt)}</td>
-                    <td>{item.expiresAt ? formatDate(item.expiresAt) : "Never"}</td>
+                    <td className="text-nowrap">{formatDate(item.startsAt)}</td>
+                    <td className="text-nowrap">
+                      {item.expiresAt ? formatDate(item.expiresAt) : "Never"}
+                    </td>
                     <td>
                       <StatusBadge value={item.status} />
                     </td>
                     <td>
-                      {item.soldByStaff?.name || item.assignedBy?.name || "—"}
+                      {sellerName(item) || "—"}
                     </td>
-                    <td>{item.note || "—"}</td>
+                    <td className="text-end text-nowrap">
+                      {item.note && (
+                        <Button
+                          size="sm"
+                          color="light"
+                          className="btn-icon"
+                          title={item.note}
+                        >
+                          <Icon name="eye" />
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        color="light"
+                        className="btn-icon ms-1"
+                        title={rowDetails(item)}
+                      >
+                        <Icon name="info" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        color="primary"
+                        outline
+                        className="ms-1"
+                        title="Prefill the form to renew this plan"
+                        onClick={() => renewFrom(item)}
+                      >
+                        <Icon name="repeat" /> <span>Renew</span>
+                      </Button>
+                    </td>
                   </tr>
                 ))}
-                {history.length === 0 && (
+                {visibleHistory.length === 0 && (
                   <tr>
-                    <td colSpan="10" className="text-center text-soft py-4">
-                      No membership history.
+                    <td colSpan="11" className="text-center text-soft py-4">
+                      {filtered
+                        ? "No rows match these filters."
+                        : "No membership history yet."}
                     </td>
                   </tr>
                 )}
               </tbody>
             </Table>
-          </>
-        )
+            </div>
+        </>
       )}
     </PageShell>
   );

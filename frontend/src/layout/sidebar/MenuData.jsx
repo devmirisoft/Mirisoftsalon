@@ -3,9 +3,34 @@ import { allowsRole } from "@/utils/salonFormat";
 const hasRole = (role, roles) => allowsRole(roles, role);
 
 
+// SUPER_ADMIN is a platform role: it has no salonId, so every salon-scoped page
+// below either 400s or mixes tenants for it. It gets its own menu of the four
+// things the backend actually lets it do (salons, user accounts, GST, support)
+// plus the two reports that take an explicit salonId.
+const superAdminMenu = [
+  { icon: "dashboard-fill", text: "Dashboard", link: "/" },
+  { icon: "user", text: "Profile", link: "/profile" },
+  { heading: "Platform" },
+  // /management already tabs Salons / Branches / Staff / GST / User accounts.
+  { icon: "building", text: "Salon Management", link: "/management" },
+  { heading: "Reports" },
+  {
+    icon: "reports",
+    text: "Reports",
+    subMenu: [
+      { text: "Salon Report", link: "/reports/salon-report" },
+      { text: "Audit Trails", link: "/reports/audit-trails" },
+    ],
+  },
+  { heading: "Help" },
+  { icon: "help", text: "Support Queue", link: "/support" },
+  { icon: "policy", text: "Terms & Policy", link: "/pages/terms-policy" },
+];
+
 const getMenu = (role) => {
+  if (role === "SUPER_ADMIN") return superAdminMenu;
+
   const operationalRoles = [
-    "SUPER_ADMIN",
     "SALON_ADMIN",
     "RECEPTIONIST",
     "STAFF",
@@ -18,7 +43,7 @@ const getMenu = (role) => {
     text: "Dashboard",
     link: "/",
   },
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
+  ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
         {
           icon: "user",
@@ -27,7 +52,7 @@ const getMenu = (role) => {
         },
       ]
     : []),
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
+  ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
         { heading: "Staff Operations" },
         {
@@ -37,10 +62,10 @@ const getMenu = (role) => {
             { text: "Shift Roster", link: "/staff/shift-roster" },
             { text: "Attendance", link: "/staff-operations/attendance" },
             ...(role !== "RECEPTIONIST" ? [{ text: "Leaves", link: "/staff-operations/leaves" }] : []),
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "STAFF"])
+            ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "STAFF"])
               ? [{ text: "Salary Slips", link: "/staff-operations/salary-slips" }]
               : []),
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"])
+            ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
               ? [{ text: "Staff Performance", link: "/reports/staff-performance" }]
               : []),
           ],
@@ -60,7 +85,6 @@ const getMenu = (role) => {
             ]
           : []),
         ...(hasRole(role, [
-          "SUPER_ADMIN",
           "SALON_ADMIN",
           "BRANCH_MANAGER",
           "RECEPTIONIST",
@@ -103,7 +127,7 @@ const getMenu = (role) => {
           : []),
       ]
     : []),
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "STAFF"])
+  ...(hasRole(role, ["SALON_ADMIN", "STAFF"])
     ? [
         {
           icon: "file-docs",
@@ -120,10 +144,10 @@ const getMenu = (role) => {
           text: "Product",
           subMenu: [
             { text: "Product Brand", link: "/admin/product-brands" },
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN"])
+            ...(hasRole(role, ["SALON_ADMIN"])
               ? [{ text: "Purchase Products", link: "/admin/product-purchases" }]
               : []),
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"])
+            ...(hasRole(role, ["SALON_ADMIN", "RECEPTIONIST"])
               ? [{ text: "Retail Products", link: "/admin/retail-products" }]
               : []),
           ],
@@ -139,7 +163,7 @@ const getMenu = (role) => {
           subMenu: [
             { text: "Products", link: "/admin/products" },
             { text: "Vendors", link: "/admin/vendors" },
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN"])
+            ...(hasRole(role, ["SALON_ADMIN"])
               ? [
                   {
                     text: "Vendor Payments",
@@ -161,7 +185,7 @@ const getMenu = (role) => {
         },
       ]
     : []),
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
+  ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
     ? [
         { heading: "Customer Retention" },
         {
@@ -175,7 +199,7 @@ const getMenu = (role) => {
             { text: "Coupons", link: "/customer-retention/coupons" },
           ],
         },
-        ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN"]) ? [
+        ...(hasRole(role, ["SALON_ADMIN"]) ? [
         { heading: "Expenses" },
         {
           icon: "money",
@@ -196,17 +220,17 @@ const getMenu = (role) => {
           text: "Reports",
           subMenu: [
             { text: "Inventory Report", link: "/reports/inventory" },
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"])
+            ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
               ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]
               : []),
-            ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN"])
+            ...(hasRole(role, ["SALON_ADMIN"])
               ? [{ text: "Salon Report", link: "/reports/salon-report" }]
               : []),
           ],
         },
       ]
     : []),
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"])
+  ...(hasRole(role, ["SALON_ADMIN", "RECEPTIONIST"])
     ? [
         {
           heading: "Administration",
@@ -218,7 +242,7 @@ const getMenu = (role) => {
         },
       ]
     : []),
-  ...(hasRole(role, ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
+  ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
     ? [
         {
           icon: "setting",
@@ -232,7 +256,7 @@ const getMenu = (role) => {
     ? [
         {
           icon: "help",
-          text: role === "SUPER_ADMIN" ? "Support Queue" : "Support",
+          text: "Support",
           link: "/support",
         },
       ]

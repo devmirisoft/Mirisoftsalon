@@ -5,6 +5,7 @@ import { isUuid } from "../../middlewares/uuid.middleware.js";
 import { prisma } from "../../config/prisma.js";
 import { createAuditLog, requestAuditContext } from "../audit-logs/audit-log.service.js";
 import { assignCustomerMembershipHistory, CustomerMembershipError, endCustomerMembership, getCustomerMembershipHistory, synchronizeCustomerMembershipExpiry, } from "../customer-memberships/customer-membership.service.js";
+import { branchFilterFor, isBranchLockedRole, } from "../../utils/branch-scope.js";
 const CUSTOMER_STATUSES = ["REGULAR", "PREMIUM", "IRREGULAR"];
 const isValidCustomerStatus = (status) => {
     return CUSTOMER_STATUSES.includes(status);
@@ -39,7 +40,7 @@ const getExistingCustomerByAccess = async (req, customerId) => {
     if (!salonId) {
         return null;
     }
-    return CustomerModel.findByIdAndSalon(customerId, salonId, req.user?.role === "RECEPTIONIST" ? req.user.branchId : undefined);
+    return CustomerModel.findByIdAndSalon(customerId, salonId, branchFilterFor(req));
 };
 const membershipActorFrom = (req) => req.user?.userId
     ? {
@@ -120,14 +121,14 @@ export const createCustomer = async (req, res) => {
             });
         }
         let finalBranchId = branchId;
-        if (req.user?.role === "RECEPTIONIST" && req.user.branchId) {
-            if (branchId && branchId !== req.user.branchId) {
+        if (isBranchLockedRole(req.user?.role) && req.user?.branchId) {
+            if (branchId && branchId !== req.user?.branchId) {
                 return res.status(403).json({
                     success: false,
                     message: "You do not have access to this branch",
                 });
             }
-            finalBranchId = req.user.branchId;
+            finalBranchId = req.user?.branchId;
         }
         if (finalBranchId) {
             const branch = await BranchModel.findByIdAndSalon(finalBranchId, finalSalonId);
@@ -188,7 +189,7 @@ export const getCustomers = async (req, res) => {
                 message: "Salon ID is missing",
             });
         }
-        const customers = await CustomerModel.findBySalon(req.user.salonId, req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined);
+        const customers = await CustomerModel.findBySalon(req.user.salonId, branchFilterFor(req));
         return res.status(200).json({
             success: true,
             message: "Customers fetched successfully",
@@ -270,10 +271,10 @@ export const updateCustomer = async (req, res) => {
                 message: "Invalid customer status",
             });
         }
-        if (req.user?.role === "RECEPTIONIST" &&
-            req.user.branchId &&
+        if (isBranchLockedRole(req.user?.role) &&
+            req.user?.branchId &&
             "branchId" in req.body &&
-            branchId !== req.user.branchId) {
+            branchId !== req.user?.branchId) {
             return res.status(403).json({
                 success: false,
                 message: "You do not have access to this branch",
@@ -398,9 +399,7 @@ export const assignCustomerMembership = async (req, res) => {
         }
         const data = req.user.role === "SUPER_ADMIN"
             ? await CustomerModel.findById(id)
-            : await CustomerModel.findByIdAndSalon(id, existingCustomer.salonId, req.user.role === "RECEPTIONIST"
-                ? req.user.branchId
-                : undefined);
+            : await CustomerModel.findByIdAndSalon(id, existingCustomer.salonId, branchFilterFor(req));
         return res.status(200).json({
             success: true,
             message: membershipId

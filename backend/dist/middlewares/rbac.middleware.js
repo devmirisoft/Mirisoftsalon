@@ -1,18 +1,29 @@
 import {} from "express";
-export const requireRole = (...roles) => {
-    return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
-            });
-        }
-        if (!roles.includes(req.user.role)) {
-            return res.status(403).json({
-                success: false,
-                message: "Forbidden",
-            });
-        }
-        next();
-    };
+const check = (allowed) => (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+    if (!allowed(req.user.role)) {
+        return res.status(403).json({
+            success: false,
+            message: "Forbidden",
+        });
+    }
+    next();
 };
+/**
+ * A branch manager is a salon admin confined to one branch, so it inherits
+ * every SALON_ADMIN grant. The branch limit is enforced separately by the
+ * helpers in utils/branch-scope.ts, which filter the manager's reads and pin
+ * their writes to their own branch.
+ *
+ * Salon-wide actions a manager must not perform (creating branches, salon GST,
+ * provisioning admins and other managers) are guarded with requireExactRole.
+ */
+export const requireRole = (...roles) => check((role) => roles.includes(role) ||
+    (role === "BRANCH_MANAGER" && roles.includes("SALON_ADMIN")));
+/** Like requireRole, but without the branch-manager inheritance. */
+export const requireExactRole = (...roles) => check((role) => roles.includes(role));

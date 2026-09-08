@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { getUsers, createSalonAdmin, createReceptionist, createStaffAccount, updateUserStatus, } from "./user.controller.js";
+import { getUsers, createSalonAdmin, createBranchManager, createReceptionist, createStaffAccount, updateUserStatus, } from "./user.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { requireRole } from "../../middlewares/rbac.middleware.js";
+import { requireExactRole, requireRole, } from "../../middlewares/rbac.middleware.js";
 import { validateUuidParam } from "../../middlewares/uuid.middleware.js";
 const router = Router();
 router.param("id", validateUuidParam("id"));
@@ -9,6 +9,7 @@ router.use(authenticate);
 router.get("/", requireRole("SUPER_ADMIN"), getUsers);
 router.post("/salon-admin", requireRole("SUPER_ADMIN"), createSalonAdmin);
 router.patch("/:id/status", requireRole("SUPER_ADMIN", "SALON_ADMIN"), updateUserStatus);
+router.post("/branch-manager", requireExactRole("SUPER_ADMIN", "SALON_ADMIN"), createBranchManager);
 router.post("/receptionist", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), createReceptionist);
 router.post("/staff", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER"), createStaffAccount);
 export default router;

@@ -2,7 +2,7 @@ import {} from "express";
 import { UserModel } from "./user.model.js";
 import { hashPass } from "../../utils/password.js";
 import { BranchModel } from "../branches/branch.model.js";
-import { isBranchAccessible, resolveWritableBranchId, } from "../../utils/branch-scope.js";
+import { isBranchAccessible, isBranchLockedRole, resolveWritableBranchId, } from "../../utils/branch-scope.js";
 import { StaffModel } from "../staff/staff.model.js";
 export const getUsers = async (req, res) => {
     return res.status(200).json({
@@ -55,7 +55,9 @@ export const createSalonAdmin = async (req, res) => {
         });
     }
 };
-export const createReceptionist = async (req, res) => {
+// Branch managers and receptionists are provisioned the same way � same
+// fields, same branch resolution � so only the role differs.
+const createBranchScopedUser = (role, label) => async (req, res) => {
     try {
         const { name, email, phone_number, password, salonId, branchId } = req.body;
         if (!name || !email || !phone_number || !password) {
@@ -79,11 +81,11 @@ export const createReceptionist = async (req, res) => {
             });
         }
         const finalBranchId = branchResolution.branchId;
-        // A receptionist is always branch-locked, so a branch is mandatory here.
+        // Both roles are branch-locked, so a branch is mandatory here.
         if (!finalBranchId) {
             return res.status(400).json({
                 success: false,
-                message: "branchId is required to create a receptionist",
+                message: `branchId is required to create a ${label.toLowerCase()}`,
             });
         }
         const branch = await BranchModel.findByIdAndSalon(finalBranchId, finalSalonId);
@@ -105,18 +107,19 @@ export const createReceptionist = async (req, res) => {
                 message: "Phone number already exists",
             });
         }
-        const receptionist = await UserModel.createReceptionist({
+        const user = await UserModel.create({
             name,
             email,
             phone_number,
             passwordHash: await hashPass(password),
+            role,
             salonId: finalSalonId,
             branchId: finalBranchId,
         });
         return res.status(201).json({
             success: true,
-            message: "Receptionist created successfully",
-            data: receptionist,
+            message: `${label} created successfully`,
+            data: user,
         });
     }
     catch (error) {
@@ -126,6 +129,8 @@ export const createReceptionist = async (req, res) => {
         });
     }
 };
+export const createBranchManager = createBranchScopedUser("BRANCH_MANAGER", "Branch manager");
+export const createReceptionist = createBranchScopedUser("RECEPTIONIST", "Receptionist");
 export const createStaffAccount = async (req, res) => {
     try {
         const { staffId, password } = req.body;
@@ -221,6 +226,14 @@ export const updateUserStatus = async (req, res) => {
         }
         if (req.user?.role !== "SUPER_ADMIN" &&
             (!req.user?.salonId || target.salonId !== req.user.salonId)) {
+            return res.status(403).json({ success: false, message: "Forbidden" });
+        }
+        // A branch manager administers its own branch only, and never an account
+        // that outranks it.
+        if (isBranchLockedRole(req.user?.role) &&
+            (target.branchId !== req.user?.branchId ||
+                target.role === "SUPER_ADMIN" ||
+                target.role === "SALON_ADMIN")) {
             return res.status(403).json({ success: false, message: "Forbidden" });
         }
         const user = await UserModel.updateStatus(id, status);

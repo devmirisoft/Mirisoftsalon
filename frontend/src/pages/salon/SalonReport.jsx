@@ -146,6 +146,50 @@ const RankTable = ({ title, rows, countLabel = "Qty" }) => (
   </div>
 );
 
+/**
+ * Only present for a SUPER_ADMIN viewing every salon at once: the stat cards
+ * above are the platform total, this says which salon each rupee came from.
+ */
+const SalonBreakdown = ({ rows }) => (
+  <div className="card card-bordered mb-4">
+    <div className="card-inner">
+      <h6 className="title mb-2">Per salon</h6>
+      <div className="table-responsive">
+        <table className="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th>Salon</th>
+              <th className="text-end">Service payments</th>
+              <th className="text-end">Sales</th>
+              <th className="text-end">Retail</th>
+              <th className="text-end">Purchases</th>
+              <th className="text-end">Expenses</th>
+              <th className="text-end">Net</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.salonId}>
+                <td>{row.name}</td>
+                <td className="text-end">{formatMoney(row.servicePayments)}</td>
+                <td className="text-end">{formatMoney(row.saleRevenue)}</td>
+                <td className="text-end">{formatMoney(row.retailSalesTotal)}</td>
+                <td className="text-end">{formatMoney(row.productPurchaseCost)}</td>
+                <td className="text-end">{formatMoney(row.expensesTotal)}</td>
+                <td
+                  className={`text-end ${row.netEarnings < 0 ? "text-danger" : "text-success"}`}
+                >
+                  {formatMoney(row.netEarnings)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+);
+
 const SalonReport = () => {
   const [period, setPeriod] = useState("month");
   const [customerType, setCustomerType] = useState("all");
@@ -280,6 +324,10 @@ const SalonReport = () => {
                 tone={totals.netEarnings < 0 ? "danger" : "success"}
               />
             </Row>
+
+            {data.salonBreakdown?.length > 0 && (
+              <SalonBreakdown rows={data.salonBreakdown} />
+            )}
 
             <Row className="g-4 mb-4">
               <Col lg="8">

@@ -9,18 +9,22 @@ import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
 
+// SUPER_ADMIN has no salonId, so the salon-scoped endpoints below either 400 or
+// return every tenant's rows for it. It gets the platform-wide pair instead.
 const endpointAccess = {
-  branches: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"],
-  staff: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"],
-  customers: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
-  services: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
-  appointments: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
-  invoices: ["SUPER_ADMIN", "SALON_ADMIN", "STAFF"],
-  payments: ["SUPER_ADMIN", "SALON_ADMIN", "STAFF"],
+  salons: ["SUPER_ADMIN"],
+  branches: ["SALON_ADMIN", "RECEPTIONIST"],
+  staff: ["SALON_ADMIN", "RECEPTIONIST"],
+  customers: ["SALON_ADMIN", "RECEPTIONIST", "STAFF"],
+  services: ["SALON_ADMIN", "RECEPTIONIST", "STAFF"],
+  appointments: ["SALON_ADMIN", "RECEPTIONIST", "STAFF"],
+  invoices: ["SALON_ADMIN", "STAFF"],
+  payments: ["SALON_ADMIN", "STAFF"],
   support: ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"],
 };
 
 const statMeta = {
+  salons: { label: "Salons", icon: "building", color: "info" },
   branches: { label: "Branches", icon: "building", color: "info" },
   staff: { label: "Staff", icon: "users", color: "primary" },
   customers: { label: "Customers", icon: "user-list", color: "success" },
@@ -44,6 +48,7 @@ const Homepage = () => {
     let active = true;
     const load = async () => {
       const calls = {
+        salons: () => salonApi.salons.list(),
         branches: () => salonApi.branches.list(),
         staff: () => salonApi.staff.list(),
         customers: () => salonApi.customers.list(),

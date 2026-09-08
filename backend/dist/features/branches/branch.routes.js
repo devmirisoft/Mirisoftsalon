@@ -1,14 +1,14 @@
 import { Router } from "express";
 import { createBranch, deleteBranch, getBranchById, getBranches, updateBranch, } from "./branch.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { requireRole } from "../../middlewares/rbac.middleware.js";
+import { requireExactRole, requireRole, } from "../../middlewares/rbac.middleware.js";
 import { validateUuidParam } from "../../middlewares/uuid.middleware.js";
 const router = Router();
 router.param("id", validateUuidParam("id"));
 router.use(authenticate);
-router.post("/", requireRole("SUPER_ADMIN", "SALON_ADMIN"), createBranch);
+router.post("/", requireExactRole("SUPER_ADMIN", "SALON_ADMIN"), createBranch);
 router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"), getBranches);
 router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"), getBranchById);
-router.put("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), updateBranch);
-router.delete("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), deleteBranch);
+router.put("/:id", requireExactRole("SUPER_ADMIN", "SALON_ADMIN"), updateBranch);
+router.delete("/:id", requireExactRole("SUPER_ADMIN", "SALON_ADMIN"), deleteBranch);
 export default router;

@@ -1,5 +1,6 @@
 import {} from "express";
 import { BranchModel } from "./branch.model.js";
+import { isBranchLockedRole, } from "../../utils/branch-scope.js";
 const getBranchIdParam = (req) => {
     const { id } = req.params;
     return typeof id === "string" ? id : null;
@@ -12,9 +13,9 @@ const getExistingBranchByAccess = async (req, branchId) => {
     if (!salonId) {
         return null;
     }
-    if (req.user?.role === "RECEPTIONIST" &&
-        req.user.branchId &&
-        branchId !== req.user.branchId) {
+    if (isBranchLockedRole(req.user?.role) &&
+        req.user?.branchId &&
+        branchId !== req.user?.branchId) {
         return null;
     }
     return BranchModel.findByIdAndSalon(branchId, salonId);
@@ -85,7 +86,7 @@ export const getBranches = async (req, res) => {
                 message: "Salon ID is missing",
             });
         }
-        if (req.user.role === "RECEPTIONIST" && req.user.branchId) {
+        if (isBranchLockedRole(req.user.role) && req.user.branchId) {
             const branch = await BranchModel.findByIdAndSalon(req.user.branchId, req.user.salonId);
             return res.status(200).json({
                 success: true,

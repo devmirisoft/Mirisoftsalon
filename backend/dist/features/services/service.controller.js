@@ -4,6 +4,7 @@ import { BranchModel } from "../branches/branch.model.js";
 import { MainServiceModel } from "../main-services/mainService.model.js";
 import { prisma } from "../../config/prisma.js";
 import { defaultSalonServices } from "./defaultServices.js";
+import { branchFilterFor, isBranchLockedRole, resolveWritableBranchId, } from "../../utils/branch-scope.js";
 const DURATION_UNITS = ["MINUTES", "HOURS"];
 const isValidDurationUnit = (unit) => {
     return DURATION_UNITS.includes(unit);
@@ -68,6 +69,15 @@ export const createService = async (req, res) => {
                 message: "Salon ID is required",
             });
         }
+        // A branch-locked caller creates services in their own branch only.
+        const branchResolution = resolveWritableBranchId(req, branchId);
+        if (!branchResolution.ok) {
+            return res.status(400).json({
+                success: false,
+                message: branchResolution.message,
+            });
+        }
+        const finalBranchId = branchResolution.branchId;
         const mainService = await MainServiceModel.findByIdAndSalon(mainServiceId, finalSalonId);
         if (!mainService) {
             return res.status(400).json({
@@ -75,8 +85,8 @@ export const createService = async (req, res) => {
                 message: "Invalid main service for this salon",
             });
         }
-        if (branchId) {
-            const branch = await BranchModel.findByIdAndSalon(branchId, finalSalonId);
+        if (finalBranchId) {
+            const branch = await BranchModel.findByIdAndSalon(finalBranchId, finalSalonId);
             if (!branch) {
                 return res.status(400).json({
                     success: false,
@@ -101,7 +111,7 @@ export const createService = async (req, res) => {
                 ? { durationValue: normalizedDuration }
                 : {}),
             ...(durationUnit ? { durationUnit } : {}),
-            ...(branchId ? { branchId } : {}),
+            ...(finalBranchId ? { branchId: finalBranchId } : {}),
         });
         return res.status(201).json({
             success: true,
@@ -132,7 +142,7 @@ export const getServices = async (req, res) => {
                 message: "Salon ID is missing",
             });
         }
-        const services = await ServiceModel.findBySalon(req.user.salonId, req.user.role === "RECEPTIONIST" ? req.user.branchId : undefined);
+        const services = await ServiceModel.findBySalon(req.user.salonId, branchFilterFor(req));
         return res.status(200).json({
             success: true,
             message: "Services fetched successfully",
@@ -155,8 +165,8 @@ export const getServiceById = async (req, res) => {
                 message: "Service ID is required",
             });
         }
-        const service = req.user?.role === "RECEPTIONIST" && req.user.salonId
-            ? await ServiceModel.findByIdAndSalon(id, req.user.salonId, req.user.branchId)
+        const service = isBranchLockedRole(req.user?.role) && req.user?.salonId
+            ? await ServiceModel.findByIdAndSalon(id, req.user?.salonId, req.user?.branchId)
             : await getExistingServiceByAccess(req, id);
         if (!service) {
             return res.status(404).json({
@@ -317,6 +327,13 @@ export const updateService = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Invalid duration unit",
+            });
+        }
+        if (isBranchLockedRole(req.user?.role) && "branchId" in req.body &&
+            branchId !== req.user?.branchId) {
+            return res.status(403).json({
+                success: false,
+                message: "You do not have access to this branch",
             });
         }
         if (branchId) {

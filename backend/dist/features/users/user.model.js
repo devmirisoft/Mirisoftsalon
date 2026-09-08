@@ -24,25 +24,6 @@ export const UserModel = {
             },
         });
     },
-    createReceptionist: async (data) => {
-        return prisma.user.create({
-            data: {
-                ...data,
-                role: "RECEPTIONIST",
-            },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone_number: true,
-                role: true,
-                status: true,
-                salonId: true,
-                branchId: true,
-                createdAt: true,
-            },
-        });
-    },
     createStaffAccount: async (data) => {
         const { staffId, ...userData } = data;
         return prisma.$transaction(async (tx) => {

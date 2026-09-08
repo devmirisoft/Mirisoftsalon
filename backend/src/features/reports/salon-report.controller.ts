@@ -139,6 +139,91 @@ const resolveRange = async (req: Request, salonId?: string) => {
   }
 };
 
+type DateRange = { gte?: Date; lt?: Date } | undefined;
+
+/**
+ * The platform view: a SUPER_ADMIN with no salon selected gets totals summed
+ * across every salon, which says nothing about which salon earned what. This
+ * breaks the same money streams out per salon so they can be compared.
+ */
+const perSalonTotals = async (range: DateRange) => {
+  const bySalon = (
+    rows: {
+      salonId: string | null;
+      _sum: { amount?: unknown; totalAmount?: unknown };
+    }[]
+  ) =>
+    new Map(
+      rows.map((row) => [
+        row.salonId,
+        num(row._sum.amount ?? row._sum.totalAmount),
+      ])
+    );
+
+  const [salons, payments, sales, retailSales, purchases, expenses] =
+    await Promise.all([
+      prisma.salon.findMany({ select: { id: true, name: true } }),
+      prisma.payment.groupBy({
+        by: ["salonId"],
+        where: { ...(range ? { paidAt: range } : {}) },
+        _sum: { amount: true },
+      }),
+      prisma.sale.groupBy({
+        by: ["salonId"],
+        where: { status: "ACTIVE", ...(range ? { saleDate: range } : {}) },
+        _sum: { totalAmount: true },
+      }),
+      prisma.retailSale.groupBy({
+        by: ["salonId"],
+        where: { ...(range ? { saleDate: range } : {}) },
+        _sum: { totalAmount: true },
+      }),
+      prisma.productPurchase.groupBy({
+        by: ["salonId"],
+        where: { ...(range ? { purchaseDate: range } : {}) },
+        _sum: { totalAmount: true },
+      }),
+      prisma.expense.groupBy({
+        by: ["salonId"],
+        where: { ...(range ? { expenseDate: range } : {}) },
+        _sum: { amount: true },
+      }),
+    ]);
+
+  const paymentTotals = bySalon(payments);
+  const saleTotals = bySalon(sales);
+  const retailTotals = bySalon(retailSales);
+  const purchaseTotals = bySalon(purchases);
+  const expenseTotals = bySalon(expenses);
+
+  return salons
+    .map((salon) => {
+      const servicePayments = paymentTotals.get(salon.id) ?? 0;
+      const saleRevenue = saleTotals.get(salon.id) ?? 0;
+      const retailSalesTotal = retailTotals.get(salon.id) ?? 0;
+      const productPurchaseCost = purchaseTotals.get(salon.id) ?? 0;
+      const expensesTotal = expenseTotals.get(salon.id) ?? 0;
+
+      return {
+        salonId: salon.id,
+        name: salon.name,
+        servicePayments,
+        saleRevenue,
+        retailSalesTotal,
+        productPurchaseCost,
+        expensesTotal,
+        // Same formula as the headline netEarnings, per salon.
+        netEarnings:
+          servicePayments +
+          saleRevenue +
+          retailSalesTotal -
+          productPurchaseCost -
+          expensesTotal,
+      };
+    })
+    .sort((a, b) => b.netEarnings - a.netEarnings);
+};
+
 export const getSalonReport = async (req: Request, res: Response) => {
   try {
     const { salonId, branchId } = await resolveScope(req);
@@ -151,6 +236,10 @@ export const getSalonReport = async (req: Request, res: Response) => {
       ...(salonId ? { salonId } : {}),
       ...(branchId ? { branchId } : {}),
     };
+
+    // Only the all-salons view needs the breakdown; a selected salon is already
+    // the whole report.
+    const salonBreakdown = salonId ? null : await perSalonTotals(range);
 
     const [
       payments,
@@ -498,6 +587,7 @@ export const getSalonReport = async (req: Request, res: Response) => {
           timezone,
           customerType,
         },
+        ...(salonBreakdown ? { salonBreakdown } : {}),
         totals: {
           servicePayments,
           serviceSalesTotal,

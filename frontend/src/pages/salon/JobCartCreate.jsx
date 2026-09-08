@@ -1188,7 +1188,7 @@ const JobCartCreate = () => {
                     ))}
                   </div>
                 )}
-                {selectedServices.length > 0 && (
+                {/* {selectedServices.length > 0 && (
                   <div className="border rounded p-3 mb-3">
                     <h6>Create Customer Custom Package</h6>
                     <Row className="g-2">
@@ -1302,7 +1302,7 @@ const JobCartCreate = () => {
                       package after the job cart is created.
                     </small>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </Col>

@@ -29,6 +29,9 @@ const ServicePickerModal = ({
   onToggleService,
   disabled = false,
   staffPlaceholder = "Assign later",
+  // When set, services stay locked until a staff member is chosen, so every
+  // service added is attributed to someone.
+  requireStaff = false,
 }) => {
   const [categoryId, setCategoryId] = useState("");
   const [search, setSearch] = useState("");
@@ -54,6 +57,7 @@ const ServicePickerModal = ({
   }, [options, categoryId, search]);
 
   const staffNameFor = (id) => staff.find((member) => member.id === id)?.name;
+  const servicesLocked = disabled || (requireStaff && !staffId);
 
   // Filters are scratch state, so they start clean on the next open.
   const close = () => {
@@ -105,7 +109,9 @@ const ServicePickerModal = ({
               disabled={disabled}
               onChange={(event) => onStaffChange?.(event.target.value)}
             >
-              <option value="">{staffPlaceholder}</option>
+              <option value="" disabled={requireStaff}>
+                {staffPlaceholder}
+              </option>
               {staff.map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.name}
@@ -128,7 +134,11 @@ const ServicePickerModal = ({
           className="border rounded"
           style={{ maxHeight: 380, overflowY: "auto" }}
         >
-          {visible.length === 0 ? (
+          {requireStaff && !staffId ? (
+            <div className="text-soft text-center py-4">
+              Select a staff member to start adding services
+            </div>
+          ) : visible.length === 0 ? (
             <div className="text-soft text-center py-4">
               No services match this search
             </div>
@@ -157,7 +167,7 @@ const ServicePickerModal = ({
                         type="checkbox"
                         className="form-check-input mt-0 flex-shrink-0"
                         checked={added}
-                        disabled={disabled}
+                        disabled={servicesLocked}
                         onChange={() => onToggleService?.(option.id)}
                       />
                       <span className="text-truncate" style={{ minWidth: 0 }}>

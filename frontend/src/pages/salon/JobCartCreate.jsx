@@ -35,7 +35,13 @@ const newServiceRow = () => ({
   serviceId: "",
   staffId: "",
   price: "",
+  total: "",
 });
+
+const round2 = (value) => Math.round(Number(value || 0) * 100) / 100;
+// Row price is pre-GST, row total is post-GST. Editing either derives the other.
+const priceToTotal = (price, gst) => String(round2(Number(price || 0) * (1 + gst / 100)));
+const totalToPrice = (total, gst) => String(round2(Number(total || 0) / (1 + gst / 100)));
 
 // Arrow to the picked customer's profile. Renders nothing until a saved
 // customer is matched, so a brand-new name never links to a dead page.
@@ -61,7 +67,7 @@ const JobCartCreate = () => {
     phone: "",
     packageIds: [],
   });
-  const [serviceRows, setServiceRows] = useState([newServiceRow()]);
+  const [serviceRows, setServiceRows] = useState([]);
   // Staff chosen in the picker; services picked afterwards attach to them.
   const [pickerStaffId, setPickerStaffId] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -461,9 +467,7 @@ const JobCartCreate = () => {
             ? { ...row, serviceId: "", mainServiceId: "" }
             : row
         )
-        .filter(
-          (row, index, rows) => row.serviceId || rows.length === 1 || index === 0
-        )
+        .filter((row) => row.serviceId)
     );
   };
 
@@ -528,8 +532,7 @@ const JobCartCreate = () => {
     setServiceRows((current) => {
       const existing = current.find((row) => row.serviceId === serviceId);
       if (existing) {
-        const next = current.filter((row) => row.serviceId !== serviceId);
-        return next.length ? next : [newServiceRow()];
+        return current.filter((row) => row.serviceId !== serviceId);
       }
       const row = {
         ...newServiceRow(),
@@ -538,6 +541,7 @@ const JobCartCreate = () => {
         mainServiceId: service.mainService?.id || service.mainServiceId || "",
         staffId: pickerStaffId || "",
         price: String(service.price ?? ""),
+        total: priceToTotal(service.price ?? 0, serviceGstPercent),
       };
       // Drop the leading blank row so the first add does not leave a gap.
       const kept = current.filter((item) => item.serviceId);
@@ -547,8 +551,7 @@ const JobCartCreate = () => {
 
   const removeServiceRow = (rowId) =>
     setServiceRows((current) => {
-      const next = current.filter((row) => row.rowId !== rowId);
-      return next.length ? next : [newServiceRow()];
+      return current.filter((row) => row.rowId !== rowId);
     });
 
   const toggleCustomPackageService = (serviceId) =>
@@ -571,6 +574,9 @@ const JobCartCreate = () => {
         .filter(Boolean);
       if (new Set(selectedServiceIds).size !== selectedServiceIds.length) {
         throw new Error("Each service can be selected only once.");
+      }
+      if (serviceRows.some((row) => row.serviceId && !row.staffId)) {
+        throw new Error("Assign staff to every service.");
       }
       if (customPackage.serviceIds.length && !customPackage.name.trim()) {
         throw new Error("Enter a custom package name");
@@ -664,7 +670,7 @@ const JobCartCreate = () => {
                           branchId: "",
                           packageIds: [],
                         }));
-                        setServiceRows([newServiceRow()]);
+                        setServiceRows([]);
                         setPickerStaffId("");
                         setPickerOpen(false);
                       }}
@@ -881,7 +887,7 @@ const JobCartCreate = () => {
                             branchId: event.target.value,
                             packageIds: [],
                           }));
-                          setServiceRows([newServiceRow()]);
+                          setServiceRows([]);
                           setPickerStaffId("");
                           setPickerOpen(false);
                         }}
@@ -1006,11 +1012,6 @@ const JobCartCreate = () => {
                                 mainServiceId === row.mainServiceId)
                             );
                           });
-                          const rowPrice = Number(
-                            row.price === "" || row.price === undefined
-                              ? selectedService?.price || 0
-                              : row.price
-                          );
                           return (
                             <tr key={row.rowId}>
                               {/* <td>
@@ -1074,6 +1075,13 @@ const JobCartCreate = () => {
                                         service === undefined
                                           ? ""
                                           : String(service.price ?? ""),
+                                      total:
+                                        service === undefined
+                                          ? ""
+                                          : priceToTotal(
+                                              service.price ?? 0,
+                                              serviceGstPercent
+                                            ),
                                     });
                                   }}
                                 />
@@ -1093,7 +1101,7 @@ const JobCartCreate = () => {
                                     })
                                   }
                                 >
-                                  <option value="">Assign later</option>
+                                  <option value="">Select staff</option>
                                   {refs.staff.map((member) => (
                                     <option key={member.id} value={member.id}>
                                       {member.name} - {member.jobRole}
@@ -1114,6 +1122,10 @@ const JobCartCreate = () => {
                                   onChange={(event) =>
                                     updateServiceRow(row.rowId, {
                                       price: event.target.value,
+                                      total: priceToTotal(
+                                        event.target.value,
+                                        serviceGstPercent
+                                      ),
                                     })
                                   }
                                 />
@@ -1123,12 +1135,20 @@ const JobCartCreate = () => {
                               </td>
                               <td>
                                 <Input
-                                  value={
-                                    selectedService
-                                      ? formatMoney(rowPrice * (1 + serviceGstPercent / 100))
-                                      : ""
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={row.total}
+                                  disabled={!selectedService || saving}
+                                  onChange={(event) =>
+                                    updateServiceRow(row.rowId, {
+                                      total: event.target.value,
+                                      price: totalToPrice(
+                                        event.target.value,
+                                        serviceGstPercent
+                                      ),
+                                    })
                                   }
-                                  disabled
                                 />
                               </td>
                               <td className="text-end">
@@ -1449,6 +1469,8 @@ const JobCartCreate = () => {
         assignedById={assignedById}
         onToggleService={togglePickerService}
         disabled={saving}
+        requireStaff
+        staffPlaceholder="Select staff first"
       />
       <Modal
         isOpen={packageModalOpen}

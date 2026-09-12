@@ -5,6 +5,8 @@ import { Alert, Col, Row, Spinner } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import DataGrid from "@/components/salon/DataGrid";
 import PageShell from "@/components/salon/PageShell";
+import SchemaModal from "@/components/salon/SchemaModal";
+import { customerFields } from "@/components/salon/customerFields";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
@@ -69,6 +71,7 @@ const JobCartCustomerHistory = () => {
   const [appointmentRows, setAppointmentRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editing, setEditing] = useState(false);
 
   const load = useCallback(
     async (page = 1) => {
@@ -127,12 +130,38 @@ const JobCartCustomerHistory = () => {
           : "Full job and appointment history for this customer"
       }
       tools={
-        <Button color="light" outline onClick={() => navigate("/customers")}>
-          <Icon name="arrow-left" /> Back to Customers
-        </Button>
+        <>
+          {customer && (
+            <Button
+              color="primary"
+              outline
+              className="me-2"
+              onClick={() => setEditing(true)}
+            >
+              <Icon name="edit" /> Edit Details
+            </Button>
+          )}
+          <Button color="light" outline onClick={() => navigate("/customers")}>
+            <Icon name="arrow-left" /> Back to Customers
+          </Button>
+        </>
       }
     >
       {error && <Alert color="danger">{error}</Alert>}
+
+      {/* Branch and salon stay on the Customers list: moving a customer is a
+          bulk-admin action, not part of reading their profile. */}
+      <SchemaModal
+        isOpen={editing}
+        toggle={() => setEditing(false)}
+        title={`Edit ${customer?.name || "customer"}`}
+        fields={customerFields()}
+        initialValues={customer}
+        onSubmit={async (values) => {
+          await salonApi.customers.update(customerId, values);
+          await load(pagination.page);
+        }}
+      />
 
       {loading && !customer ? (
         <div className="text-center py-5">

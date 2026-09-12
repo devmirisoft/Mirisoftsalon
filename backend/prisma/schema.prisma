@@ -1248,6 +1248,7 @@ model AppointmentService {
 
   serviceName String
   price       Decimal @db.Decimal(10, 2)
+  quantity    Int     @default(1)
 
   staffId String?
   staff   Staff?  @relation(fields: [staffId], references: [id])

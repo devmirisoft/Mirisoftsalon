@@ -12,6 +12,7 @@ import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import ResourcePanel from "@/components/salon/ResourcePanel";
 import SchemaModal from "@/components/salon/SchemaModal";
+import { customerFields } from "@/components/salon/customerFields";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
@@ -52,71 +53,11 @@ const Customers = () => {
   }, [loadRefs]);
 
   const fields = useMemo(
-    () => [
-      { name: "name", label: "Customer name", required: true },
-      { name: "phone", label: "Phone", type: "tel", required: true },
-      { name: "email", label: "Email", type: "email", nullable: true },
-      { name: "gst", label: "GST number", nullable: true },
-      {
-        name: "status",
-        label: "Customer status",
-        type: "select",
-        defaultValue: "REGULAR",
-        options: ["REGULAR", "PREMIUM", "IRREGULAR"].map((value) => ({
-          value,
-          label: value,
-        })),
-      },
-      {
-        name: "dateOfBirth",
-        initialName: "dob",
-        label: "Date of birth",
-        type: "date",
-        nullable: true,
-      },
-      {
-        name: "anniversaryDate",
-        label: "Anniversary date",
-        type: "date",
-        nullable: true,
-      },
-      ...(user?.role !== "STAFF"
-        ? [
-            {
-              name: "branchId",
-              label: "Branch",
-              type: "select",
-              nullable: true,
-              options: refs.branches.map((item) => ({
-                value: item.id,
-                label: item.name,
-              })),
-            },
-          ]
-        : []),
-      ...(isSuper
-        ? [
-            {
-              name: "salonId",
-              label: "Salon",
-              type: "select",
-              required: true,
-              options: refs.salons.map((item) => ({
-                value: item.id,
-                label: item.name,
-              })),
-            },
-          ]
-        : []),
-      {
-        name: "customNotes",
-        label: "Customer notes",
-        type: "textarea",
-        fullWidth: true,
-        nullable: true,
-        rows: 3,
-      },
-    ],
+    () =>
+      customerFields({
+        ...(user?.role !== "STAFF" ? { branches: refs.branches } : {}),
+        ...(isSuper ? { salons: refs.salons } : {}),
+      }),
     [isSuper, refs, user?.role]
   );
 

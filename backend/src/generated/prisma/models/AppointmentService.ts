@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.js"
-import type * as Prisma from "../internal/prismaNamespace.js"
+import type * as $Enums from "../enums.ts"
+import type * as Prisma from "../internal/prismaNamespace.ts"
 
 /**
  * Model AppointmentService
@@ -28,11 +28,13 @@ export type AggregateAppointmentService = {
 
 export type AppointmentServiceAvgAggregateOutputType = {
   price: runtime.Decimal | null
+  quantity: number | null
   durationValue: number | null
 }
 
 export type AppointmentServiceSumAggregateOutputType = {
   price: runtime.Decimal | null
+  quantity: number | null
   durationValue: number | null
 }
 
@@ -42,6 +44,7 @@ export type AppointmentServiceMinAggregateOutputType = {
   serviceId: string | null
   serviceName: string | null
   price: runtime.Decimal | null
+  quantity: number | null
   staffId: string | null
   durationValue: number | null
   durationUnit: $Enums.DurationUnit | null
@@ -55,6 +58,7 @@ export type AppointmentServiceMaxAggregateOutputType = {
   serviceId: string | null
   serviceName: string | null
   price: runtime.Decimal | null
+  quantity: number | null
   staffId: string | null
   durationValue: number | null
   durationUnit: $Enums.DurationUnit | null
@@ -68,6 +72,7 @@ export type AppointmentServiceCountAggregateOutputType = {
   serviceId: number
   serviceName: number
   price: number
+  quantity: number
   staffId: number
   durationValue: number
   durationUnit: number
@@ -79,11 +84,13 @@ export type AppointmentServiceCountAggregateOutputType = {
 
 export type AppointmentServiceAvgAggregateInputType = {
   price?: true
+  quantity?: true
   durationValue?: true
 }
 
 export type AppointmentServiceSumAggregateInputType = {
   price?: true
+  quantity?: true
   durationValue?: true
 }
 
@@ -93,6 +100,7 @@ export type AppointmentServiceMinAggregateInputType = {
   serviceId?: true
   serviceName?: true
   price?: true
+  quantity?: true
   staffId?: true
   durationValue?: true
   durationUnit?: true
@@ -106,6 +114,7 @@ export type AppointmentServiceMaxAggregateInputType = {
   serviceId?: true
   serviceName?: true
   price?: true
+  quantity?: true
   staffId?: true
   durationValue?: true
   durationUnit?: true
@@ -119,6 +128,7 @@ export type AppointmentServiceCountAggregateInputType = {
   serviceId?: true
   serviceName?: true
   price?: true
+  quantity?: true
   staffId?: true
   durationValue?: true
   durationUnit?: true
@@ -219,6 +229,7 @@ export type AppointmentServiceGroupByOutputType = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal
+  quantity: number
   staffId: string | null
   durationValue: number | null
   durationUnit: $Enums.DurationUnit | null
@@ -255,6 +266,7 @@ export type AppointmentServiceWhereInput = {
   serviceId?: Prisma.StringFilter<"AppointmentService"> | string
   serviceName?: Prisma.StringFilter<"AppointmentService"> | string
   price?: Prisma.DecimalFilter<"AppointmentService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFilter<"AppointmentService"> | number
   staffId?: Prisma.StringNullableFilter<"AppointmentService"> | string | null
   durationValue?: Prisma.IntNullableFilter<"AppointmentService"> | number | null
   durationUnit?: Prisma.EnumDurationUnitNullableFilter<"AppointmentService"> | $Enums.DurationUnit | null
@@ -272,6 +284,7 @@ export type AppointmentServiceOrderByWithRelationInput = {
   serviceId?: Prisma.SortOrder
   serviceName?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   staffId?: Prisma.SortOrderInput | Prisma.SortOrder
   durationValue?: Prisma.SortOrderInput | Prisma.SortOrder
   durationUnit?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -292,6 +305,7 @@ export type AppointmentServiceWhereUniqueInput = Prisma.AtLeast<{
   serviceId?: Prisma.StringFilter<"AppointmentService"> | string
   serviceName?: Prisma.StringFilter<"AppointmentService"> | string
   price?: Prisma.DecimalFilter<"AppointmentService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFilter<"AppointmentService"> | number
   staffId?: Prisma.StringNullableFilter<"AppointmentService"> | string | null
   durationValue?: Prisma.IntNullableFilter<"AppointmentService"> | number | null
   durationUnit?: Prisma.EnumDurationUnitNullableFilter<"AppointmentService"> | $Enums.DurationUnit | null
@@ -309,6 +323,7 @@ export type AppointmentServiceOrderByWithAggregationInput = {
   serviceId?: Prisma.SortOrder
   serviceName?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   staffId?: Prisma.SortOrderInput | Prisma.SortOrder
   durationValue?: Prisma.SortOrderInput | Prisma.SortOrder
   durationUnit?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -330,6 +345,7 @@ export type AppointmentServiceScalarWhereWithAggregatesInput = {
   serviceId?: Prisma.StringWithAggregatesFilter<"AppointmentService"> | string
   serviceName?: Prisma.StringWithAggregatesFilter<"AppointmentService"> | string
   price?: Prisma.DecimalWithAggregatesFilter<"AppointmentService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntWithAggregatesFilter<"AppointmentService"> | number
   staffId?: Prisma.StringNullableWithAggregatesFilter<"AppointmentService"> | string | null
   durationValue?: Prisma.IntNullableWithAggregatesFilter<"AppointmentService"> | number | null
   durationUnit?: Prisma.EnumDurationUnitNullableWithAggregatesFilter<"AppointmentService"> | $Enums.DurationUnit | null
@@ -341,6 +357,7 @@ export type AppointmentServiceCreateInput = {
   id?: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
@@ -356,6 +373,7 @@ export type AppointmentServiceUncheckedCreateInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -367,6 +385,7 @@ export type AppointmentServiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -382,6 +401,7 @@ export type AppointmentServiceUncheckedUpdateInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -395,6 +415,7 @@ export type AppointmentServiceCreateManyInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -406,6 +427,7 @@ export type AppointmentServiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -417,6 +439,7 @@ export type AppointmentServiceUncheckedUpdateManyInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -440,6 +463,7 @@ export type AppointmentServiceCountOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   serviceName?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
   durationUnit?: Prisma.SortOrder
@@ -449,6 +473,7 @@ export type AppointmentServiceCountOrderByAggregateInput = {
 
 export type AppointmentServiceAvgOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
 }
 
@@ -458,6 +483,7 @@ export type AppointmentServiceMaxOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   serviceName?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
   durationUnit?: Prisma.SortOrder
@@ -471,6 +497,7 @@ export type AppointmentServiceMinOrderByAggregateInput = {
   serviceId?: Prisma.SortOrder
   serviceName?: Prisma.SortOrder
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   staffId?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
   durationUnit?: Prisma.SortOrder
@@ -480,6 +507,7 @@ export type AppointmentServiceMinOrderByAggregateInput = {
 
 export type AppointmentServiceSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
 }
 
@@ -659,6 +687,7 @@ export type AppointmentServiceCreateWithoutStaffInput = {
   id?: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
@@ -673,6 +702,7 @@ export type AppointmentServiceUncheckedCreateWithoutStaffInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
@@ -714,6 +744,7 @@ export type AppointmentServiceScalarWhereInput = {
   serviceId?: Prisma.StringFilter<"AppointmentService"> | string
   serviceName?: Prisma.StringFilter<"AppointmentService"> | string
   price?: Prisma.DecimalFilter<"AppointmentService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFilter<"AppointmentService"> | number
   staffId?: Prisma.StringNullableFilter<"AppointmentService"> | string | null
   durationValue?: Prisma.IntNullableFilter<"AppointmentService"> | number | null
   durationUnit?: Prisma.EnumDurationUnitNullableFilter<"AppointmentService"> | $Enums.DurationUnit | null
@@ -725,6 +756,7 @@ export type AppointmentServiceCreateWithoutServiceInput = {
   id?: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
@@ -738,6 +770,7 @@ export type AppointmentServiceUncheckedCreateWithoutServiceInput = {
   appointmentId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -775,6 +808,7 @@ export type AppointmentServiceCreateWithoutAppointmentInput = {
   id?: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
@@ -788,6 +822,7 @@ export type AppointmentServiceUncheckedCreateWithoutAppointmentInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -825,6 +860,7 @@ export type AppointmentServiceCreateWithoutCustomerPackageUsageItemInput = {
   id?: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
@@ -839,6 +875,7 @@ export type AppointmentServiceUncheckedCreateWithoutCustomerPackageUsageItemInpu
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -877,6 +914,7 @@ export type AppointmentServiceCreateManyStaffInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
@@ -887,6 +925,7 @@ export type AppointmentServiceUpdateWithoutStaffInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -901,6 +940,7 @@ export type AppointmentServiceUncheckedUpdateWithoutStaffInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -913,6 +953,7 @@ export type AppointmentServiceUncheckedUpdateManyWithoutStaffInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -924,6 +965,7 @@ export type AppointmentServiceCreateManyServiceInput = {
   appointmentId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -935,6 +977,7 @@ export type AppointmentServiceUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -948,6 +991,7 @@ export type AppointmentServiceUncheckedUpdateWithoutServiceInput = {
   appointmentId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -960,6 +1004,7 @@ export type AppointmentServiceUncheckedUpdateManyWithoutServiceInput = {
   appointmentId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -972,6 +1017,7 @@ export type AppointmentServiceCreateManyAppointmentInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -983,6 +1029,7 @@ export type AppointmentServiceUpdateWithoutAppointmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -996,6 +1043,7 @@ export type AppointmentServiceUncheckedUpdateWithoutAppointmentInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -1008,6 +1056,7 @@ export type AppointmentServiceUncheckedUpdateManyWithoutAppointmentInput = {
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -1021,6 +1070,7 @@ export type AppointmentServiceCreateManyCustomerPackageUsageItemInput = {
   serviceId: string
   serviceName: string
   price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
   staffId?: string | null
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
@@ -1031,6 +1081,7 @@ export type AppointmentServiceUpdateWithoutCustomerPackageUsageItemInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1045,6 +1096,7 @@ export type AppointmentServiceUncheckedUpdateWithoutCustomerPackageUsageItemInpu
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -1057,6 +1109,7 @@ export type AppointmentServiceUncheckedUpdateManyWithoutCustomerPackageUsageItem
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceName?: Prisma.StringFieldUpdateOperationsInput | string
   price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
   staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
@@ -1071,6 +1124,7 @@ export type AppointmentServiceSelect<ExtArgs extends runtime.Types.Extensions.In
   serviceId?: boolean
   serviceName?: boolean
   price?: boolean
+  quantity?: boolean
   staffId?: boolean
   durationValue?: boolean
   durationUnit?: boolean
@@ -1088,6 +1142,7 @@ export type AppointmentServiceSelectCreateManyAndReturn<ExtArgs extends runtime.
   serviceId?: boolean
   serviceName?: boolean
   price?: boolean
+  quantity?: boolean
   staffId?: boolean
   durationValue?: boolean
   durationUnit?: boolean
@@ -1105,6 +1160,7 @@ export type AppointmentServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.
   serviceId?: boolean
   serviceName?: boolean
   price?: boolean
+  quantity?: boolean
   staffId?: boolean
   durationValue?: boolean
   durationUnit?: boolean
@@ -1122,6 +1178,7 @@ export type AppointmentServiceSelectScalar = {
   serviceId?: boolean
   serviceName?: boolean
   price?: boolean
+  quantity?: boolean
   staffId?: boolean
   durationValue?: boolean
   durationUnit?: boolean
@@ -1129,7 +1186,7 @@ export type AppointmentServiceSelectScalar = {
   createdAt?: boolean
 }
 
-export type AppointmentServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appointmentId" | "serviceId" | "serviceName" | "price" | "staffId" | "durationValue" | "durationUnit" | "customerPackageUsageItemId" | "createdAt", ExtArgs["result"]["appointmentService"]>
+export type AppointmentServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "appointmentId" | "serviceId" | "serviceName" | "price" | "quantity" | "staffId" | "durationValue" | "durationUnit" | "customerPackageUsageItemId" | "createdAt", ExtArgs["result"]["appointmentService"]>
 export type AppointmentServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   appointment?: boolean | Prisma.AppointmentDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
@@ -1163,6 +1220,7 @@ export type $AppointmentServicePayload<ExtArgs extends runtime.Types.Extensions.
     serviceId: string
     serviceName: string
     price: runtime.Decimal
+    quantity: number
     staffId: string | null
     durationValue: number | null
     durationUnit: $Enums.DurationUnit | null
@@ -1600,6 +1658,7 @@ export interface AppointmentServiceFieldRefs {
   readonly serviceId: Prisma.FieldRef<"AppointmentService", 'String'>
   readonly serviceName: Prisma.FieldRef<"AppointmentService", 'String'>
   readonly price: Prisma.FieldRef<"AppointmentService", 'Decimal'>
+  readonly quantity: Prisma.FieldRef<"AppointmentService", 'Int'>
   readonly staffId: Prisma.FieldRef<"AppointmentService", 'String'>
   readonly durationValue: Prisma.FieldRef<"AppointmentService", 'Int'>
   readonly durationUnit: Prisma.FieldRef<"AppointmentService", 'DurationUnit'>

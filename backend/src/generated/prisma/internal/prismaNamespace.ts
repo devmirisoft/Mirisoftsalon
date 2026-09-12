@@ -16,10 +16,10 @@
  */
 
 import * as runtime from "@prisma/client/runtime/client"
-import type * as Prisma from "../models.js"
-import { type PrismaClient } from "./class.js"
+import type * as Prisma from "../models.ts"
+import { type PrismaClient } from "./class.ts"
 
-export type * from '../models.js'
+export type * from '../models.ts'
 
 export type DMMF = typeof runtime.DMMF
 
@@ -5382,6 +5382,7 @@ export const AppointmentServiceScalarFieldEnum = {
   serviceId: 'serviceId',
   serviceName: 'serviceName',
   price: 'price',
+  quantity: 'quantity',
   staffId: 'staffId',
   durationValue: 'durationValue',
   durationUnit: 'durationUnit',

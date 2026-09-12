@@ -259,7 +259,22 @@ const present = (cart: JobCartRecord) => ({
   items: [
     ...cart.services
       .filter((item) => !item.customerPackageUsageItemId)
-      .map((item) => ({ ...item, itemType: "SERVICE" as const })),
+      .map((item) => {
+        // Tax belongs to the invoice line, which is rebuilt from the cart on
+        // every change and already accounts for the membership discount, so
+        // the row reports what the bill will charge instead of re-deriving it.
+        // A cart holds a service at most once, so serviceId pairs the two.
+        const line = (cart.invoice?.items ?? []).find(
+          (row) => row.itemType === "SERVICE" && row.serviceId === item.serviceId
+        );
+        return {
+          ...item,
+          itemType: "SERVICE" as const,
+          gstPercent: line?.gstRateSnapshot ?? line?.taxPercent ?? null,
+          taxAmount: line?.taxAmount ?? null,
+          lineTotal: line?.lineTotal ?? null,
+        };
+      }),
     ...(cart.invoice?.items ?? [])
       .filter((item) => item.itemType === "PRODUCT")
       .map((item) => ({
@@ -269,6 +284,8 @@ const present = (cart: JobCartRecord) => ({
         serviceName: item.description,
         price: item.unitPrice,
         quantity: item.quantity,
+        gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        taxAmount: item.taxAmount,
         lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
         soldByStaff: item.soldByStaff,
@@ -284,6 +301,9 @@ const present = (cart: JobCartRecord) => ({
         serviceName: item.serviceName,
         price: item.unitPrice,
         quantity: item.quantity,
+        gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        taxAmount: item.taxAmount,
+        lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
         soldByStaff: item.soldByStaff,
         package: item.package,
@@ -298,6 +318,8 @@ const present = (cart: JobCartRecord) => ({
         serviceName: item.serviceName,
         price: item.unitPrice,
         quantity: item.quantity,
+        gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        taxAmount: item.taxAmount,
         lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
         soldByStaff: item.soldByStaff,
@@ -666,7 +688,7 @@ const recalculateCart = async (
   const gstLines = [
     ...paidServices.map((item) => ({
       itemType: "SERVICE",
-      quantity: 1,
+      quantity: item.quantity,
       unitPrice: item.price,
       discountable: isMembershipDiscountable("SERVICE", cart.salon),
     })),
@@ -772,7 +794,7 @@ const recalculateCart = async (
             itemCode: item.serviceId.slice(0, 8),
             description: item.serviceName,
             serviceName: item.serviceName,
-            quantity: 1,
+            quantity: item.quantity,
             unitPrice: item.price,
             discountAmount: 0,
             ...(line
@@ -785,7 +807,11 @@ const recalculateCart = async (
                   taxAmount: line.taxAmount,
                   lineTotal: line.lineTotal,
                 }
-              : { taxPercent: 0, taxAmount: 0, lineTotal: item.price }),
+              : {
+                  taxPercent: 0,
+                  taxAmount: 0,
+                  lineTotal: new Prisma.Decimal(item.price).mul(item.quantity),
+                }),
           };
         }),
       },
@@ -1418,7 +1444,12 @@ export const createJobCart = async (
     phone: string;
     staffId?: string;
     serviceIds: string[];
-    serviceItems?: Array<{ serviceId: string; staffId?: string | undefined }>;
+    serviceItems?: Array<{
+      serviceId: string;
+      staffId?: string | undefined;
+      price?: number | undefined;
+      quantity?: number | undefined;
+    }>;
     bookingNote?: string;
     internalNote?: string;
   },
@@ -1453,6 +1484,20 @@ export const createJobCart = async (
         item.staffId,
       ])
     );
+    // The form may override the catalogue price and bill a service more than
+    // once. Anything it leaves out falls back to the catalogue.
+    const itemByServiceId = new Map(
+      (input.serviceItems ?? []).map((item) => [item.serviceId, item])
+    );
+    const lineOf = (service: { id: string; price: Prisma.Decimal }) => {
+      const override = itemByServiceId.get(service.id);
+      const price =
+        override?.price === undefined
+          ? new Prisma.Decimal(service.price)
+          : new Prisma.Decimal(override.price);
+      const quantity = override?.quantity ?? 1;
+      return { price, quantity, lineTotal: price.mul(quantity) };
+    };
     const appointmentStaffId =
       input.staffId ??
       services
@@ -1511,7 +1556,7 @@ export const createJobCart = async (
         endTime,
         totalDurationMinutes: duration,
         estimatedAmount: services.reduce(
-          (sum, service) => sum + Number(service.price),
+          (sum, service) => sum + Number(lineOf(service).lineTotal),
           0
         ),
         status: "SCHEDULED",
@@ -1521,10 +1566,12 @@ export const createJobCart = async (
         ...(input.internalNote ? { internalNote: input.internalNote } : {}),
         services: services.map((service) => {
           const serviceStaffId = staffByServiceId.get(service.id);
+          const line = lineOf(service);
           return {
             serviceId: service.id,
             serviceName: service.name,
-            price: Number(service.price),
+            price: Number(line.price),
+            quantity: line.quantity,
             ...(serviceStaffId ? { staffId: serviceStaffId } : {}),
             ...(service.durationValue !== null
               ? { durationValue: service.durationValue }
@@ -1541,7 +1588,7 @@ export const createJobCart = async (
       audit,
     });
     const subtotal = services.reduce(
-      (sum, service) => sum.add(service.price),
+      (sum, service) => sum.add(lineOf(service).lineTotal),
       new Prisma.Decimal(0)
     );
     const discount = membership
@@ -1562,12 +1609,15 @@ export const createJobCart = async (
         discountAmount: discount,
         couponDiscountAmount: new Prisma.Decimal(0),
         processingFeeAmount: new Prisma.Decimal(0),
-        items: services.map((service) => ({
-          itemType: "SERVICE",
-          quantity: 1,
-          unitPrice: new Prisma.Decimal(service.price),
-          discountable: isMembershipDiscountable("SERVICE", salon),
-        })),
+        items: services.map((service) => {
+          const line = lineOf(service);
+          return {
+            itemType: "SERVICE" as const,
+            quantity: line.quantity,
+            unitPrice: line.price,
+            discountable: isMembershipDiscountable("SERVICE", salon),
+          };
+        }),
       },
       salon
     );
@@ -1668,6 +1718,8 @@ export const createJobCart = async (
         serviceItems: services.map((service) => ({
           serviceId: service.id,
           staffId: staffByServiceId.get(service.id) ?? null,
+          price: Number(lineOf(service).price),
+          quantity: lineOf(service).quantity,
         })),
         invoiceId: invoice.id,
       },
@@ -2101,6 +2153,7 @@ export const addJobCartItem = async (
           serviceId: service.id,
           serviceName: service.name,
           price: service.price,
+          quantity: input.quantity ?? 1,
           staffId: input.staffId ?? null,
           durationValue: service.durationValue,
           durationUnit: service.durationUnit,
@@ -2139,7 +2192,7 @@ export const updateJobCartItem = async (
   actor: JobCartActor,
   id: string,
   itemId: string,
-  input: { price?: number; staffId?: string | null },
+  input: { price?: number; quantity?: number; staffId?: string | null },
   audit: AuditContext
 ) =>
   prisma.$transaction(async (tx) => {
@@ -2170,6 +2223,7 @@ export const updateJobCartItem = async (
         ...(input.price === undefined
           ? {}
           : { price: new Prisma.Decimal(input.price) }),
+        ...(input.quantity === undefined ? {} : { quantity: input.quantity }),
         ...(input.staffId === undefined ? {} : { staffId: input.staffId }),
       },
     });
@@ -2188,9 +2242,15 @@ export const updateJobCartItem = async (
       oldData: {
         itemId,
         price: serviceItem.price,
+        quantity: serviceItem.quantity,
         staffId: serviceItem.staffId,
       },
-      newData: { itemId, price: input.price, staffId: input.staffId },
+      newData: {
+        itemId,
+        price: input.price,
+        quantity: input.quantity,
+        staffId: input.staffId,
+      },
       ...audit,
     });
     return present(await requireCart(tx, id, actor));

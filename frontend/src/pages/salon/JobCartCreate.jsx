@@ -34,26 +34,33 @@ const newServiceRow = () => ({
   mainServiceId: "",
   serviceId: "",
   staffId: "",
+  qty: "1",
   price: "",
   total: "",
 });
 
 const round2 = (value) => Math.round(Number(value || 0) * 100) / 100;
-// Row price is pre-GST, row total is post-GST. Editing either derives the other.
-const priceToTotal = (price, gst) => String(round2(Number(price || 0) * (1 + gst / 100)));
-const totalToPrice = (total, gst) => String(round2(Number(total || 0) / (1 + gst / 100)));
+// A quantity below 1 would make the price back-solve divide by zero.
+const qtyOf = (qty) => Math.max(1, Math.floor(Number(qty) || 1));
+// Row price is the pre-GST unit price, row total is the post-GST line total.
+// Editing either one derives the other; quantity re-derives the total.
+const priceToTotal = (price, qty, gst) =>
+  String(round2(Number(price || 0) * qtyOf(qty) * (1 + gst / 100)));
+const totalToPrice = (total, qty, gst) =>
+  String(round2(Number(total || 0) / qtyOf(qty) / (1 + gst / 100)));
 
-// Arrow to the picked customer's profile. Renders nothing until a saved
-// customer is matched, so a brand-new name never links to a dead page.
+// Pencil to the picked customer's profile, where their details are editable.
+// Renders nothing until a saved customer is matched, so a brand-new name never
+// links to a dead page.
 const CustomerProfileLink = ({ customerId }) =>
   customerId ? (
     <Link
       to={`/customers/${customerId}`}
       className="btn btn-outline-primary flex-shrink-0 d-flex align-items-center justify-content-center"
       style={{ width: 38, height: 38, padding: 0 }}
-      title="Open customer profile"
+      title="Edit customer details"
     >
-      <Icon name="arrow-right" />
+      <Icon name="edit" />
     </Link>
   ) : null;
 
@@ -218,8 +225,8 @@ const JobCartCreate = () => {
     [refs.customers]
   );
 
-  // Raw text in the customer box. The "+" uses this so a name never has to be
-  // committed through the dropdown before it can be saved.
+  // Raw text in the customer box. The blur-save uses this so a name never has
+  // to be committed through the dropdown before it can be saved.
   const [customerInput, setCustomerInput] = useState("");
 
   // Name-only search; phone lookup lives in the phone box next door.
@@ -264,8 +271,52 @@ const JobCartCreate = () => {
     );
   }, [customerOptions, form.phone]);
 
-  // What the "+" will save: the committed name, else the raw typed text.
+  const savedCustomerId =
+    customerSummary?.customerId || existingPhoneCustomer?.value || "";
+
+  // What gets saved: the committed name, else the raw typed text.
   const pendingCustomerName = (form.customerName || customerInput).trim();
+
+  // A 10-digit number nobody else uses plus a typed name is everything a
+  // customer record needs, so the same save runs from the "+" and from simply
+  // leaving the name field. customerSummary catches a customer who exists
+  // server-side but is missing from this branch's reference list.
+  const canSaveNewCustomer =
+    !saving &&
+    !addingCustomer &&
+    !existingPhoneCustomer &&
+    !customerSummary &&
+    Boolean(pendingCustomerName) &&
+    form.phone.replace(/\D/g, "").length === 10;
+
+  const saveNewCustomer = async () => {
+    if (!canSaveNewCustomer) return;
+    setAddingCustomer(true);
+    setError("");
+    try {
+      const response = await salonApi.customers.create({
+        name: pendingCustomerName,
+        phone: form.phone.trim(),
+        // Super admins aren't scoped to a salon server-side.
+        ...(form.salonId ? { salonId: form.salonId } : {}),
+      });
+      const customer = response.data;
+      setRefs((current) => ({
+        ...current,
+        customers: [...current.customers, customer],
+      }));
+      setForm((current) => ({
+        ...current,
+        customerName: customer.name,
+        phone: customer.phone || current.phone,
+      }));
+      setCustomerInput("");
+    } catch (createError) {
+      setError(createError.message);
+    } finally {
+      setAddingCustomer(false);
+    }
+  };
 
   const selectedCustomerOption = useMemo(() => {
     const matched = customerOptions.find(
@@ -294,10 +345,10 @@ const JobCartCreate = () => {
   const subtotal = serviceRows.reduce((sum, row) => {
     if (!row.serviceId) return sum;
     const service = refs.services.find((item) => item.id === row.serviceId);
-    return (
-      sum +
-      Number(row.price === "" || row.price === undefined ? service?.price || 0 : row.price)
+    const unitPrice = Number(
+      row.price === "" || row.price === undefined ? service?.price || 0 : row.price
     );
+    return sum + unitPrice * qtyOf(row.qty);
   }, 0);
   const selectedPackages = useMemo(
     () =>
@@ -541,7 +592,7 @@ const JobCartCreate = () => {
         mainServiceId: service.mainService?.id || service.mainServiceId || "",
         staffId: pickerStaffId || "",
         price: String(service.price ?? ""),
-        total: priceToTotal(service.price ?? 0, serviceGstPercent),
+        total: priceToTotal(service.price ?? 0, 1, serviceGstPercent),
       };
       // Drop the leading blank row so the first add does not leave a gap.
       const kept = current.filter((item) => item.serviceId);
@@ -597,6 +648,7 @@ const JobCartCreate = () => {
           serviceId: row.serviceId,
           ...(row.staffId ? { staffId: row.staffId } : {}),
           ...(row.price === "" ? {} : { price: Number(row.price) }),
+          quantity: qtyOf(row.qty),
         }));
       const response = await salonApi.jobCarts.create({
         ...(form.salonId ? { salonId: form.salonId } : {}),
@@ -742,7 +794,7 @@ const JobCartCreate = () => {
                           ))}
                         </ul>
                       )}
-                      <CustomerProfileLink customerId={customerSummary?.customerId} />
+                      <CustomerProfileLink customerId={savedCustomerId} />
                       </div>
                     </FormGroup>
                   </Col>
@@ -760,6 +812,7 @@ const JobCartCreate = () => {
                             filterOption={filterCustomerOption}
                             placeholder="Search by name"
                             value={selectedCustomerOption}
+                            onBlur={saveNewCustomer}
                             onInputChange={(inputValue, meta) => {
                               if (meta.action !== "input-change") return;
                               setCustomerInput(inputValue);
@@ -808,60 +861,15 @@ const JobCartCreate = () => {
                             }}
                           />
                         </div>
-                        {!existingPhoneCustomer && (
-                        <Button
-                          type="button"
-                          color="primary"
-                          className="flex-shrink-0 d-flex align-items-center justify-content-center"
-                          style={{ width: 38, height: 38, padding: 0 }}
-                          title="Add as new customer"
-                          disabled={
-                            saving ||
-                            addingCustomer ||
-                            !pendingCustomerName ||
-                            form.phone.replace(/\D/g, "").length !== 10
-                          }
-                          onClick={async () => {
-                            setAddingCustomer(true);
-                            setError("");
-                            try {
-                              const response = await salonApi.customers.create({
-                                name: pendingCustomerName,
-                                phone: form.phone.trim(),
-                                // Super admins aren't scoped to a salon server-side.
-                                ...(form.salonId ? { salonId: form.salonId } : {}),
-                              });
-                              const customer = response.data;
-                              setRefs((current) => ({
-                                ...current,
-                                customers: [...current.customers, customer],
-                              }));
-                              setForm((current) => ({
-                                ...current,
-                                customerName: customer.name,
-                                phone: customer.phone || current.phone,
-                              }));
-                              setCustomerInput("");
-                            } catch (createError) {
-                              setError(createError.message);
-                            } finally {
-                              setAddingCustomer(false);
-                            }
-                          }}
-                        >
-                          {addingCustomer ? (
-                            <Spinner size="sm" />
-                          ) : (
-                            <Icon name="plus" />
-                          )}
-                        </Button>
+                        {addingCustomer && (
+                          <Spinner size="sm" className="flex-shrink-0 mt-2" />
                         )}
-                        <CustomerProfileLink customerId={customerSummary?.customerId} />
+                        <CustomerProfileLink customerId={savedCustomerId} />
                       </div>
                       <small className="text-soft">
                         {existingPhoneCustomer
                           ? `${existingPhoneCustomer.name} already uses this number.`
-                          : "Adds a new customer using the 10-digit phone and name above."}
+                          : "Saved automatically when you leave this field, once the phone is 10 digits."}
                       </small>
                     </FormGroup>
                   </Col>
@@ -1080,6 +1088,7 @@ const JobCartCreate = () => {
                                           ? ""
                                           : priceToTotal(
                                               service.price ?? 0,
+                                              row.qty,
                                               serviceGstPercent
                                             ),
                                     });
@@ -1110,7 +1119,23 @@ const JobCartCreate = () => {
                                 </Input>
                               </td>
                               <td>
-                                <Input value="1" disabled />
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  value={row.qty}
+                                  disabled={!selectedService || saving}
+                                  onChange={(event) =>
+                                    updateServiceRow(row.rowId, {
+                                      qty: event.target.value,
+                                      total: priceToTotal(
+                                        row.price,
+                                        event.target.value,
+                                        serviceGstPercent
+                                      ),
+                                    })
+                                  }
+                                />
                               </td>
                               <td>
                                 <Input
@@ -1124,6 +1149,7 @@ const JobCartCreate = () => {
                                       price: event.target.value,
                                       total: priceToTotal(
                                         event.target.value,
+                                        row.qty,
                                         serviceGstPercent
                                       ),
                                     })
@@ -1145,6 +1171,7 @@ const JobCartCreate = () => {
                                       total: event.target.value,
                                       price: totalToPrice(
                                         event.target.value,
+                                        row.qty,
                                         serviceGstPercent
                                       ),
                                     })

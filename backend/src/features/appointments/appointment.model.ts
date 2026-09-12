@@ -58,6 +58,7 @@ export const AppointmentModel = {
       serviceId: string;
       serviceName: string;
       price: number;
+      quantity?: number;
       staffId?: string;
       durationValue?: number;
       durationUnit?: DurationUnit;
@@ -90,6 +91,7 @@ export const AppointmentModel = {
             },
             serviceName: service.serviceName,
             price: service.price,
+            ...(service.quantity ? { quantity: service.quantity } : {}),
             ...(service.staffId
               ? { staff: { connect: { id: service.staffId } } }
               : {}),

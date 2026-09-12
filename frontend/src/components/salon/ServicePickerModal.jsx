@@ -57,6 +57,9 @@ const ServicePickerModal = ({
   }, [options, categoryId, search]);
 
   const staffNameFor = (id) => staff.find((member) => member.id === id)?.name;
+  // A branch with nobody on it cannot satisfy requireStaff, so say that
+  // outright: an empty service list otherwise reads as a missing catalogue.
+  const noStaffAvailable = requireStaff && staff.length === 0;
   const servicesLocked = disabled || (requireStaff && !staffId);
 
   // Filters are scratch state, so they start clean on the next open.
@@ -109,8 +112,8 @@ const ServicePickerModal = ({
               disabled={disabled}
               onChange={(event) => onStaffChange?.(event.target.value)}
             >
-              <option value="" disabled={requireStaff}>
-                {staffPlaceholder}
+              <option value="" disabled={requireStaff && !noStaffAvailable}>
+                {noStaffAvailable ? "No staff at this branch" : staffPlaceholder}
               </option>
               {staff.map((member) => (
                 <option key={member.id} value={member.id}>
@@ -134,7 +137,17 @@ const ServicePickerModal = ({
           className="border rounded"
           style={{ maxHeight: 380, overflowY: "auto" }}
         >
-          {requireStaff && !staffId ? (
+          {noStaffAvailable ? (
+            <div className="text-center py-4">
+              <span className="text-danger d-block">
+                No staff assigned to this branch
+              </span>
+              <small className="text-soft">
+                Services go to whoever performs them, so add staff to this
+                branch before building a cart.
+              </small>
+            </div>
+          ) : requireStaff && !staffId ? (
             <div className="text-soft text-center py-4">
               Select a staff member to start adding services
             </div>

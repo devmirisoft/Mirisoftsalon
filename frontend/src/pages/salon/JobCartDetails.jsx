@@ -50,6 +50,26 @@ const PAYMENT_METHODS = [
   { value: "OTHER", label: "Other" },
 ];
 
+// One editable number cell. The value is held as a draft while typing and
+// only committed on blur or Enter, so a half-typed number never hits the API.
+const LineInput = ({ value, onChange, onCommit, disabled, step = "0.01" }) => (
+  <Input
+    type="number"
+    min={step === "1" ? "1" : "0"}
+    step={step}
+    bsSize="sm"
+    className="text-end ms-auto"
+    style={{ maxWidth: 110 }}
+    disabled={disabled}
+    value={value}
+    onChange={(event) => onChange(event.target.value)}
+    onBlur={onCommit}
+    onKeyDown={(event) => {
+      if (event.key === "Enter") event.target.blur();
+    }}
+  />
+);
+
 const JobCartDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -70,7 +90,8 @@ const JobCartDetails = () => {
   const [servicePickerSearch, setServicePickerSearch] = useState("");
   const [servicePickerStaffId, setServicePickerStaffId] = useState("");
   // Price edits live here until blur so each keystroke does not hit the API.
-  const [priceDrafts, setPriceDrafts] = useState({});
+  // Keyed "<itemId>:<field>" so qty, price and total each edit independently.
+  const [drafts, setDrafts] = useState({});
   const [packageStaffId, setPackageStaffId] = useState("");
   const [membershipStaffId, setMembershipStaffId] = useState("");
   const [packagePickerOpen, setPackagePickerOpen] = useState(false);
@@ -344,18 +365,47 @@ const JobCartDetails = () => {
   const updateServiceItem = (itemId, body) =>
     run(() => salonApi.jobCarts.updateItem(id, itemId, body));
 
-  const savePriceDraft = (item) => {
-    const draft = priceDrafts[item.id];
-    setPriceDrafts((current) => {
+  const draftKey = (itemId, field) => `${itemId}:${field}`;
+  const draftOf = (item, field, fallback) =>
+    drafts[draftKey(item.id, field)] ?? fallback;
+  const setDraft = (itemId, field, value) =>
+    setDrafts((current) => ({ ...current, [draftKey(itemId, field)]: value }));
+
+  // The line total already carries the membership discount and the tax, and
+  // both scale straight off quantity x unit price, so a new total back-solves
+  // the unit price by ratio and the browser never has to know which discount
+  // applied. A line sitting at zero has no ratio, so that falls back to the
+  // row's own GST rate.
+  const priceFromTotal = (item, total) => {
+    const currentTotal = Number(item.lineTotal ?? 0);
+    const price = Number(item.price ?? 0);
+    const next =
+      currentTotal > 0 && price > 0
+        ? (price * total) / currentTotal
+        : total /
+          Math.max(1, Number(item.quantity ?? 1)) /
+          (1 + Number(item.gstPercent || 0) / 100);
+    return Math.round(next * 100) / 100;
+  };
+
+  const saveLineDraft = (item, field) => {
+    const raw = drafts[draftKey(item.id, field)];
+    setDrafts((current) => {
       const next = { ...current };
-      delete next[item.id];
+      delete next[draftKey(item.id, field)];
       return next;
     });
-    const price = Number(draft);
-    if (draft === undefined || draft === "" || Number.isNaN(price) || price < 0) {
+    if (raw === undefined || raw === "") return;
+    const value = Number(raw);
+    if (Number.isNaN(value) || value < 0) return;
+    if (field === "quantity") {
+      const quantity = Math.floor(value);
+      if (quantity < 1 || quantity === Number(item.quantity ?? 1)) return;
+      updateServiceItem(item.id, { quantity });
       return;
     }
-    if (price === Number(item.price)) return;
+    const price = field === "total" ? priceFromTotal(item, value) : value;
+    if (price < 0 || price === Number(item.price)) return;
     updateServiceItem(item.id, { price });
   };
 
@@ -1262,8 +1312,11 @@ const JobCartDetails = () => {
                       <tr>
                         <th>Item</th>
                         <th>Duration</th>
+                        <th className="text-end">Qty</th>
                         <th className="text-end">Price</th>
-                        {active && <th className="text-end">Action</th>}
+                        <th className="text-end">Tax</th>
+                        <th className="text-end">Total</th>
+                        {/* {active && <th className="text-end">Action</th>} */}
                       </tr>
                     </thead>
                     <tbody>
@@ -1327,30 +1380,36 @@ const JobCartDetails = () => {
                             </td>
                             <td className="text-end">
                               {active && item.itemType === "SERVICE" ? (
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  bsSize="sm"
-                                  className="text-end ms-auto"
-                                  style={{ maxWidth: 120 }}
+                                <LineInput
+                                  step="1"
                                   disabled={working}
-                                  value={
-                                    priceDrafts[item.id] ??
+                                  value={draftOf(
+                                    item,
+                                    "quantity",
+                                    String(item.quantity ?? 1)
+                                  )}
+                                  onChange={(value) =>
+                                    setDraft(item.id, "quantity", value)
+                                  }
+                                  onCommit={() => saveLineDraft(item, "quantity")}
+                                />
+                              ) : (
+                                (item.quantity ?? 1)
+                              )}
+                            </td>
+                            <td className="text-end">
+                              {active && item.itemType === "SERVICE" ? (
+                                <LineInput
+                                  disabled={working}
+                                  value={draftOf(
+                                    item,
+                                    "price",
                                     String(item.price ?? "")
+                                  )}
+                                  onChange={(value) =>
+                                    setDraft(item.id, "price", value)
                                   }
-                                  onChange={(event) =>
-                                    setPriceDrafts((current) => ({
-                                      ...current,
-                                      [item.id]: event.target.value,
-                                    }))
-                                  }
-                                  onBlur={() => savePriceDraft(item)}
-                                  onKeyDown={(event) => {
-                                    if (event.key === "Enter") {
-                                      event.target.blur();
-                                    }
-                                  }}
+                                  onCommit={() => saveLineDraft(item, "price")}
                                 />
                               ) : (
                                 <>
@@ -1366,6 +1425,42 @@ const JobCartDetails = () => {
                                     </div>
                                   ) : null}
                                 </>
+                              )}
+                            </td>
+                            <td className="text-end">
+                              {item.taxAmount === null ||
+                              item.taxAmount === undefined ? (
+                                "-"
+                              ) : (
+                                <>
+                                  {formatMoney(item.taxAmount)}
+                                  {Number(item.gstPercent) > 0 ? (
+                                    <div className="small text-soft">
+                                      {Number(item.gstPercent)}%
+                                    </div>
+                                  ) : null}
+                                </>
+                              )}
+                            </td>
+                            <td className="text-end">
+                              {active && item.itemType === "SERVICE" ? (
+                                <LineInput
+                                  disabled={working}
+                                  value={draftOf(
+                                    item,
+                                    "total",
+                                    String(item.lineTotal ?? "")
+                                  )}
+                                  onChange={(value) =>
+                                    setDraft(item.id, "total", value)
+                                  }
+                                  onCommit={() => saveLineDraft(item, "total")}
+                                />
+                              ) : item.lineTotal === null ||
+                                item.lineTotal === undefined ? (
+                                "-"
+                              ) : (
+                                formatMoney(item.lineTotal)
                               )}
                             </td>
                             {active && (
@@ -1390,7 +1485,7 @@ const JobCartDetails = () => {
                       ) : (
                         <tr>
                           <td
-                            colSpan={active ? 4 : 3}
+                            colSpan={active ? 7 : 6}
                             className="text-center text-soft py-4"
                           >
                             No services or packages added yet.

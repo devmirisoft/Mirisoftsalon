@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
-import CreatableSelect from "react-select/creatable";
+import { CreatableSelect } from "@/components/select/PortalSelect";
 import {
   Alert,
   Col,

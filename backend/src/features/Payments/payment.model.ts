@@ -1,9 +1,8 @@
 import { prisma } from "../../config/prisma.js";
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma, type PaymentMethod } from "../../generated/prisma/client.js";
 import { awardInvoiceLoyaltyInTransaction } from "../Invoices/invoice-retention.service.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 
-type PaymentMethod = "CASH" | "CARD" | "UPI" | "OTHER";
 type PaymentStatus = "UNPAID" | "PARTIALLY_PAID" | "PAID";
 
 export class PaymentConflictError extends Error {}

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(///wsl.localhost/Ubuntu-26.04/home/jojo/projects/salon/**)",
+      "Bash(node src/utils/__checks__/paymentMethods.check.mjs)",
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc \"cd ~/projects/salon/backend && npx tsc --noEmit 2>&1 | tail -30\")",
+      "Read(//c/Windows/**)",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc \"cd ~/projects/salon/backend && ls node_modules/.bin/tsc && ./node_modules/.bin/tsc --noEmit 2>&1 | tail -30\")",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'ls ~/.nvm/versions/node 2>/dev/null; which -a node; ls /usr/local/bin/node /usr/bin/node 2>/dev/null')",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'export PATH=$HOME/.nvm/versions/node/v20.20.2/bin:$PATH; cd ~/projects/salon/backend && ./node_modules/.bin/tsc --noEmit 2>&1 | tail -30; echo \"TSC_EXIT=$?\"')",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'export PATH=\"$HOME/.nvm/versions/node/v20.20.2/bin:/usr/bin:/bin\"; cd ~/projects/salon/backend && ./node_modules/.bin/tsc --noEmit; echo \"TSC_EXIT=$?\"')",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'export PATH=\"$HOME/.nvm/versions/node/v20.20.2/bin:/usr/bin:/bin\"; cd ~/projects/salon/frontend && ./node_modules/.bin/eslint . 2>&1 | tail -40; echo \"LINT_EXIT=${PIPESTATUS[0]}\"')",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'export PATH=\"$HOME/.nvm/versions/node/v20.20.2/bin:/usr/bin:/bin\"; cd ~/projects/salon/frontend && node src/utils/__checks__/paymentMethods.check.mjs && node src/utils/__checks__/appointmentTotals.check.mjs')",
+      "Bash(wsl.exe -d Ubuntu-26.04 -- bash -lc 'export PATH=\"$HOME/.nvm/versions/node/v20.20.2/bin:/usr/bin:/bin\"; cd ~/projects/salon/frontend && ./node_modules/.bin/eslint . -f json 2>/dev/null | node -e \"let s=\\\\\"\\\\\";process.stdin.on\\(\\\\\"data\\\\\",d=>s+=d\\).on\\(\\\\\"end\\\\\",\\(\\)=>{for\\(const f of JSON.parse\\(s\\)\\)for\\(const m of f.messages\\)if\\(m.severity===2\\)console.log\\(f.filePath+\\\\\":\\\\\"+m.line+\\\\\" \\\\\"+m.ruleId+\\\\\" \\\\\"+m.message\\)}\\)\"')"
+    ]
+  }
+}

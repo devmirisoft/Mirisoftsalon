@@ -14,8 +14,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import CreatableSelect from "react-select/creatable";
-import Select from "react-select";
+import { Select, CreatableSelect } from "@/components/select/PortalSelect";
 import { Button, Icon } from "@/components/Component";
 
 const normalizeInitial = (fields, initialValues) =>
@@ -229,14 +228,6 @@ const SchemaModal = ({
                             ),
                           }))
                         }
-                        menuPortalTarget={document.body}
-                        menuPosition="fixed"
-                        styles={{
-                          menuPortal: (base) => ({
-                            ...base,
-                            zIndex: 2000,
-                          }),
-                        }}
                       />
                     ) : (
                       <Input

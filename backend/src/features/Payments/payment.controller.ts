@@ -3,13 +3,17 @@ import { type Request, type Response } from "express";
 import { PaymentConflictError, PaymentModel } from "./payment.model.js";
 import { InvoiceModel } from "../Invoices/invoice.model.js";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
-const PAYMENT_METHODS = ["CASH", "CARD", "UPI", "OTHER"] as const;
+import { PaymentMethod } from "../../generated/prisma/client.js";
 
-type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+const isValidPaymentMethod = (method: string): method is PaymentMethod =>
+  method in PaymentMethod;
 
-const isValidPaymentMethod = (method: string): method is PaymentMethod => {
-  return PAYMENT_METHODS.includes(method as PaymentMethod);
-};
+// Wallet payments are readable here (the settle service writes them), but not
+// creatable: this route records the payment without debiting the wallet, so it
+// would credit the invoice against a balance that never drops. Taking one goes
+// through payInvoiceFromMembershipWallet (membership-wallet.service.ts).
+const isCollectableMethod = (method: string): method is PaymentMethod =>
+  isValidPaymentMethod(method) && method !== PaymentMethod.MEMBERSHIP_WALLET;
 
 const getPaymentIdParam = (req: Request) => {
   const { id } = req.params;
@@ -49,10 +53,13 @@ export const createPayment = async (req: Request, res: Response) => {
       });
     }
 
-    if (!isValidPaymentMethod(method)) {
+    if (!isCollectableMethod(method)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid payment method",
+        message:
+          method === PaymentMethod.MEMBERSHIP_WALLET
+            ? "Membership wallet payments must be taken through the wallet endpoint"
+            : "Invalid payment method",
       });
     }
 

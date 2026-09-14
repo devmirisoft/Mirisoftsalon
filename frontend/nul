@@ -85,10 +85,7 @@
   background: transparent;
   color: inherit;
   text-align: left;
-  transition:
-    background-color 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .service-category-item:hover {
@@ -255,33 +252,27 @@
   .nk-sidebar {
     width: 220px;
   }
-
   .nk-sidebar + .nk-wrap,
   .nk-sidebar-overlay + .nk-wrap {
     padding-left: 220px;
   }
-
   .nk-sidebar + .nk-wrap > .nk-header-fixed,
   .nk-sidebar-overlay + .nk-wrap > .nk-header-fixed {
     left: 220px;
   }
-
   .nk-sidebar-head {
     width: 220px;
     padding-left: 18px;
     padding-right: 18px;
   }
-
   .nk-sidebar .nk-menu-link {
     padding-left: 18px;
     padding-right: 18px;
   }
-
   .nk-sidebar .nk-menu-sub .nk-menu-link {
     padding-left: 54px;
   }
 }
-
 .nk-sidebar .logo-img,
 .nk-header-brand .logo-img {
   height: 47px;
@@ -294,56 +285,45 @@
   .service-category-panel {
     position: static;
   }
-
   .table-tranx {
     min-width: 760px;
   }
-
   .appointment-detail-modal .modal-dialog {
     width: calc(100% - 1rem);
     margin: 0.5rem;
   }
-
   .appointment-detail-modal .modal-body {
     padding: 1rem;
   }
-
   .appointment-detail-main {
     padding: 1.25rem;
   }
-
   .appointment-detail-hero {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-
   .appointment-detail-total {
     min-width: 0;
     text-align: left;
   }
-
   .appointment-detail-meta {
     grid-template-columns: 1fr;
     gap: 1.25rem;
     padding: 1.5rem 0;
   }
-
   .appointment-detail-actions {
     align-items: stretch;
     flex-direction: column;
   }
-
   .appointment-detail-actions > div {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
     width: 100%;
   }
-
   .appointment-detail-actions .btn {
     width: 100%;
   }
 }
-
 @media print {
   .invoice-action,
   .nk-header,
@@ -351,20 +331,16 @@
   .nk-sidebar {
     display: none !important;
   }
-
   .invoice-print {
     margin: 0 auto !important;
   }
-
   .invoice-print .invoice-wrap {
     box-shadow: none !important;
   }
-
   .nk-content {
     padding: 0 !important;
   }
 }
-
 .form-control[readonly] {
   cursor: not-allowed;
 }
@@ -453,9 +429,6 @@
   color: #b6c6e3;
 }
 
-// Theme stacks header at 1010, sidebar at 1021 and modal at 1051, while
-// Bootstrap's dropdown sits at 1000 - any menu portaled to <body> rendered
-// underneath them. Lift every overlay layer above the whole chrome.
 .dropdown-menu,
 .react-select__menu,
 .react-select__menu-portal,

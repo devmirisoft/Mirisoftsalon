@@ -1341,6 +1341,7 @@ export const getJobCartCustomerSummary = async (
     customerId: customer.id,
     customerName: customer.name,
     phone: customer.phone,
+    notes: customer.customNotes ?? null,
     membershipName:
       currentMembership?.membershipNameSnapshot ??
       latestMembership?.membershipNameSnapshot ??

@@ -1,11 +1,33 @@
 /* eslint-disable react/prop-types */
 import { Icon } from "@/components/Component";
 import StatusBadge from "@/components/salon/StatusBadge";
-import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
+import { formatDate, formatMoney, labelize, splitGst } from "@/utils/salonFormat";
+import { groupPaymentsByMethod } from "@/utils/paymentMethods";
 
 const MirisoftLogo = "/mirisoftlogo.png";
 
-const InvoiceDocument = ({ invoice, printable = false }) => (
+const halfRate = (value) => Number(value || 0) / 2;
+
+const InvoiceDocument = ({ invoice, printable = false }) => {
+  const paidByMethod = groupPaymentsByMethod(invoice.payments);
+  // Package-covered lines are billed at 0, so the package never shows up as a
+  // payment. Its value comes off the redemption item it was reserved from.
+  const packageCovered = (invoice.items || [])
+    .filter((item) => item.itemType === "PACKAGE_REDEMPTION")
+    .reduce(
+      (sum, item) =>
+        sum +
+        Number(item.customerPackageUsageItem?.priceSnapshot || 0) *
+          Number(item.quantity || 0),
+      0
+    );
+  const serviceGstRate = Number(
+    (invoice.items || []).find(
+      (item) => item.itemType !== "PRODUCT" && Number(item.gstRateSnapshot || 0) > 0
+    )?.gstRateSnapshot || 0
+  );
+
+  return (
   <div className={`invoice ${printable ? "invoice-print" : ""}`}>
     <div className="invoice-wrap">
       <div className="invoice-brand text-center">
@@ -150,8 +172,13 @@ const InvoiceDocument = ({ invoice, printable = false }) => (
               </tr>
               <tr>
                 <td colSpan="4" />
-                <td colSpan="2">Service GST</td>
-                <td>{formatMoney(invoice.serviceGstAmount)}</td>
+                <td colSpan="2">CGST @ {halfRate(serviceGstRate)}%</td>
+                <td>{formatMoney(splitGst(invoice.serviceGstAmount).cgst)}</td>
+              </tr>
+              <tr>
+                <td colSpan="4" />
+                <td colSpan="2">SGST @ {halfRate(serviceGstRate)}%</td>
+                <td>{formatMoney(splitGst(invoice.serviceGstAmount).sgst)}</td>
               </tr>
               <tr>
                 <td colSpan="4" />
@@ -192,19 +219,28 @@ const InvoiceDocument = ({ invoice, printable = false }) => (
                 <td colSpan="2">Balance</td>
                 <td className="text-danger">{formatMoney(invoice.balanceAmount)}</td>
               </tr>
-              <tr>
-                <td colSpan="4" />
-                <td colSpan="2">Payment method</td>
-                <td>
-                  {[
-                    ...new Set(
-                      (invoice.payments || []).map((payment) =>
-                        labelize(payment.method)
-                      )
-                    ),
-                  ].join(", ") || "—"}
-                </td>
-              </tr>
+              {packageCovered > 0 && (
+                <tr>
+                  <td colSpan="4" />
+                  <td colSpan="2">Covered by package</td>
+                  <td>{formatMoney(packageCovered)}</td>
+                </tr>
+              )}
+              {paidByMethod.length ? (
+                paidByMethod.map((row) => (
+                  <tr key={row.method}>
+                    <td colSpan="4" />
+                    <td colSpan="2">Paid via {row.label}</td>
+                    <td>{formatMoney(row.amount)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" />
+                  <td colSpan="2">Payment method</td>
+                  <td>—</td>
+                </tr>
+              )}
             </tfoot>
           </table>
           {invoice.billingNote && (
@@ -220,6 +256,7 @@ const InvoiceDocument = ({ invoice, printable = false }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default InvoiceDocument;

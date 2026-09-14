@@ -8,6 +8,7 @@ import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
+import { groupPaymentsByMethod } from "@/utils/paymentMethods";
 
 // SUPER_ADMIN has no salonId, so the salon-scoped endpoints below either 400 or
 // return every tenant's rows for it. It gets the platform-wide pair instead.
@@ -125,6 +126,9 @@ const Homepage = () => {
     (total, payment) => total + Number(payment.amount || 0),
     0
   );
+  // Same rows as the headline figure, split by tender so the counter can see
+  // how much of the till is cash versus GPay, card and the rest.
+  const receivedByMethod = groupPaymentsByMethod(payments);
   const hasOperationalAccess = endpointAccess.customers.includes(user?.role);
 
   return (
@@ -180,6 +184,19 @@ const Homepage = () => {
                     <div className="fs-2 fw-bold text-success mt-1">
                       {formatMoney(received)}
                     </div>
+                    {receivedByMethod.length > 0 && (
+                      <ul className="list-plain mt-2 fs-12px">
+                        {receivedByMethod.map((row) => (
+                          <li
+                            key={row.method}
+                            className="d-flex justify-content-between"
+                          >
+                            <span className="text-soft">{row.label}</span>
+                            <span>{formatMoney(row.amount)}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </Card>
               </Col>

@@ -23,6 +23,7 @@ import {
   roleCanManage,
   toLocalInput,
 } from "@/utils/salonFormat";
+import { PAYABLE_METHODS } from "@/utils/paymentMethods";
 import ReportExportButtons from "@/components/salon/ReportExportButtons";
 
 const TAX_OPTIONS = [
@@ -190,10 +191,7 @@ const Billing = () => {
           type: "select",
           required: true,
           options: [
-            ...["CASH", "CARD", "UPI", "OTHER"].map((value) => ({
-              value,
-              label: value,
-            })),
+            ...PAYABLE_METHODS,
             // Only offered when the customer actually has spendable funds.
             ...(walletBalance > 0
               ? [

@@ -18,6 +18,7 @@ import {
 } from "@/components/Component";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, toLocalInput } from "@/utils/salonFormat";
+import { PAYABLE_METHODS } from "@/utils/paymentMethods";
 import { useAuth } from "@/auth/AuthContext";
 
 const InvoiceDetails = () => {
@@ -116,10 +117,7 @@ const InvoiceDetails = () => {
         label: "Payment method",
         type: "select",
         required: true,
-        options: ["CASH", "CARD", "UPI", "OTHER"].map((value) => ({
-          value,
-          label: value,
-        })),
+        options: PAYABLE_METHODS,
       },
       { name: "referenceNo", label: "Reference number" },
       {

@@ -123,3 +123,11 @@ export const formatDisplayValue = (value, emptyText = "\u2014") => {
     .map(([key, entryValue]) => `${labelize(key)}: ${formatDisplayValue(entryValue, emptyText)}`)
     .join(" | ");
 };
+
+// Intra-state supply: one GST rate is billed as equal CGST + SGST halves. An
+// odd paisa goes to SGST so the two printed halves still add up to the total.
+export const splitGst = (value) => {
+  const total = Math.round(Number(value || 0) * 100);
+  const cgst = Math.floor(total / 2);
+  return { cgst: cgst / 100, sgst: (total - cgst) / 100 };
+};

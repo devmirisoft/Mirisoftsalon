@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Select from "react-select";
-import CreatableSelect from "react-select/creatable";
+import { Select } from "@/components/select/PortalSelect";
 import {
   Alert,
   Col,
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -36,6 +36,8 @@ const newServiceRow = () => ({
   staffId: "",
   qty: "1",
   price: "",
+  discount: "",
+  discountType: "AMT",
   total: "",
 });
 
@@ -44,10 +46,28 @@ const round2 = (value) => Math.round(Number(value || 0) * 100) / 100;
 const qtyOf = (qty) => Math.max(1, Math.floor(Number(qty) || 1));
 // Row price is the pre-GST unit price, row total is the post-GST line total.
 // Editing either one derives the other; quantity re-derives the total.
-const priceToTotal = (price, qty, gst) =>
-  String(round2(Number(price || 0) * qtyOf(qty) * (1 + gst / 100)));
-const totalToPrice = (total, qty, gst) =>
-  String(round2(Number(total || 0) / qtyOf(qty) / (1 + gst / 100)));
+// The discount comes off the base unit price, as a flat amount ("AMT") or a
+// percentage of it ("PCT"), and never takes the price below 0.
+const pctOf = (discount) => Math.min(100, Math.max(0, Number(discount || 0)));
+const discountAmountOf = (price, discount, type) =>
+  type === "PCT"
+    ? (Number(price || 0) * pctOf(discount)) / 100
+    : Number(discount || 0);
+const netPrice = (price, discount, type) =>
+  Math.max(
+    0,
+    round2(Number(price || 0) - discountAmountOf(price, discount, type))
+  );
+const priceToTotal = (price, qty, gst, discount = 0, type = "AMT") =>
+  String(round2(netPrice(price, discount, type) * qtyOf(qty) * (1 + gst / 100)));
+// Back-solving a percentage discount at 100% off has no single answer, so the
+// base price collapses to 0 rather than dividing by zero.
+const totalToPrice = (total, qty, gst, discount = 0, type = "AMT") => {
+  const net = Number(total || 0) / qtyOf(qty) / (1 + gst / 100);
+  if (type !== "PCT") return String(round2(net + Number(discount || 0)));
+  const pct = pctOf(discount);
+  return String(pct >= 100 ? 0 : round2(net / (1 - pct / 100)));
+};
 
 // Pencil to the picked customer's profile, where their details are editable.
 // Renders nothing until a saved customer is matched, so a brand-new name never
@@ -72,6 +92,7 @@ const JobCartCreate = () => {
     branchId: "",
     customerName: "",
     phone: "",
+    date: todayInputDate(),
     packageIds: [],
   });
   const [serviceRows, setServiceRows] = useState([]);
@@ -99,7 +120,6 @@ const JobCartCreate = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [customerSummary, setCustomerSummary] = useState(null);
-  const [addingCustomer, setAddingCustomer] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
   const [packageModalOpen, setPackageModalOpen] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
@@ -140,15 +160,6 @@ const JobCartCreate = () => {
     }, 350);
     return () => window.clearTimeout(timer);
   }, [form.phone, loadCustomerSummary]);
-
-  // Name and phone are filled as a pair when a customer is picked. Editing
-  // one afterwards breaks that pair, so the other is cleared.
-  const clearPairedField = (field) =>
-    setForm((current) =>
-      customerSummary || (current.customerName && current.phone)
-        ? { ...current, [field]: "" }
-        : current
-    );
 
   const serviceIds = useMemo(
     () => serviceRows.map((row) => row.serviceId).filter(Boolean),
@@ -218,24 +229,11 @@ const JobCartCreate = () => {
     () =>
       refs.customers.map((customer) => ({
         value: customer.id,
-        label: `${customer.name}${customer.phone ? ` · ${customer.phone}` : ""}`,
         name: customer.name,
         phone: customer.phone || "",
       })),
     [refs.customers]
   );
-
-  // Raw text in the customer box. The blur-save uses this so a name never has
-  // to be committed through the dropdown before it can be saved.
-  const [customerInput, setCustomerInput] = useState("");
-
-  // Name-only search; phone lookup lives in the phone box next door.
-  const filterCustomerOption = useCallback((option, rawInput) => {
-    const input = rawInput.trim().toLowerCase();
-    // Empty box shows nothing; suggestions only appear once you type.
-    if (!input) return false;
-    return (option.data.name || "").toLowerCase().includes(input);
-  }, []);
 
   // Phone box suggestions: 3+ digits, matched against digits-only stored phones.
   const [phoneFocused, setPhoneFocused] = useState(false);
@@ -274,66 +272,6 @@ const JobCartCreate = () => {
   const savedCustomerId =
     customerSummary?.customerId || existingPhoneCustomer?.value || "";
 
-  // What gets saved: the committed name, else the raw typed text.
-  const pendingCustomerName = (form.customerName || customerInput).trim();
-
-  // A 10-digit number nobody else uses plus a typed name is everything a
-  // customer record needs, so the same save runs from the "+" and from simply
-  // leaving the name field. customerSummary catches a customer who exists
-  // server-side but is missing from this branch's reference list.
-  const canSaveNewCustomer =
-    !saving &&
-    !addingCustomer &&
-    !existingPhoneCustomer &&
-    !customerSummary &&
-    Boolean(pendingCustomerName) &&
-    form.phone.replace(/\D/g, "").length === 10;
-
-  const saveNewCustomer = async () => {
-    if (!canSaveNewCustomer) return;
-    setAddingCustomer(true);
-    setError("");
-    try {
-      const response = await salonApi.customers.create({
-        name: pendingCustomerName,
-        phone: form.phone.trim(),
-        // Super admins aren't scoped to a salon server-side.
-        ...(form.salonId ? { salonId: form.salonId } : {}),
-      });
-      const customer = response.data;
-      setRefs((current) => ({
-        ...current,
-        customers: [...current.customers, customer],
-      }));
-      setForm((current) => ({
-        ...current,
-        customerName: customer.name,
-        phone: customer.phone || current.phone,
-      }));
-      setCustomerInput("");
-    } catch (createError) {
-      setError(createError.message);
-    } finally {
-      setAddingCustomer(false);
-    }
-  };
-
-  const selectedCustomerOption = useMemo(() => {
-    const matched = customerOptions.find(
-      (option) =>
-        option.name === form.customerName &&
-        (!form.phone || option.phone === form.phone)
-    );
-    if (matched) return matched;
-    if (!form.customerName) return null;
-    return {
-      value: form.customerName,
-      label: form.customerName,
-      name: form.customerName,
-      phone: form.phone,
-    };
-  }, [customerOptions, form.customerName, form.phone]);
-
   const selectedServices = useMemo(
     () =>
       refs.services.filter((service) =>
@@ -348,7 +286,9 @@ const JobCartCreate = () => {
     const unitPrice = Number(
       row.price === "" || row.price === undefined ? service?.price || 0 : row.price
     );
-    return sum + unitPrice * qtyOf(row.qty);
+    return (
+      sum + netPrice(unitPrice, row.discount, row.discountType) * qtyOf(row.qty)
+    );
   }, 0);
   const selectedPackages = useMemo(
     () =>
@@ -394,6 +334,48 @@ const JobCartCreate = () => {
   // Estimate only: the real tax is computed server-side on the draft invoice,
   // after the membership discount and any coupon are applied.
   const estimatedTax = ((subtotal + packageSubtotal) * serviceGstPercent) / 100;
+  const membershipLabel = !customerSummary?.membershipName
+    ? "None"
+    : `${customerSummary.membershipName}${
+        customerSummary.membershipExpiresAt
+          ? `, expires ${formatDate(customerSummary.membershipExpiresAt)}`
+          : ""
+      }${
+        customerSummary.membershipStatus !== "ACTIVE"
+          ? ` (${customerSummary.membershipStatus})`
+          : ""
+      }`;
+  const customerRows = [
+    {
+      icon: "award-fill",
+      label: "Membership",
+      value: membershipLabel,
+      muted: !customerSummary?.membershipName,
+    },
+    {
+      icon: "user",
+      label: "Preferred Staff",
+      value: customerSummary?.preferredStaff?.staffName || "Not known",
+      muted: !customerSummary?.preferredStaff,
+    },
+    {
+      icon: "notes-alt",
+      label: "Notes",
+      value: customerSummary?.notes || "No notes yet",
+      muted: !customerSummary?.notes,
+    },
+    // Money already owed stays visible before another cart is opened.
+    ...(Number(customerSummary?.outstandingBalance) > 0
+      ? [
+          {
+            icon: "alert-circle",
+            label: "Outstanding",
+            value: formatMoney(customerSummary.outstandingBalance),
+            danger: true,
+          },
+        ]
+      : []),
+  ];
   const mainServices = useMemo(
     () =>
       Array.from(
@@ -406,10 +388,9 @@ const JobCartCreate = () => {
       ).map(([id, name]) => ({ id, name })),
     [refs.services]
   );
-  // Job carts always start now, so availability is looked up for today at the
-  // current clock rather than a chosen date/time.
-  const today = todayInputDate();
-  const selectedStartKey = `${today}T${currentInputTime()}`;
+  // Carts start at the chosen date and the current clock, so availability is
+  // looked up for that date.
+  const selectedStartKey = `${form.date}T${currentInputTime()}`;
   // Slots are generated on a fixed grid (15-minute steps), so the form's
   // live "current time" default almost never lands on a boundary exactly.
   // Match each staff member's slot nearest to (at or before) the selected
@@ -470,7 +451,7 @@ const JobCartCreate = () => {
 
   useEffect(() => {
     let active = true;
-    if (!form.branchId || !today || !serviceIds.length) {
+    if (!form.branchId || !form.date || !serviceIds.length) {
       setAvailableSlots([]);
       setLoadingSlots(false);
       return undefined;
@@ -479,7 +460,7 @@ const JobCartCreate = () => {
     salonApi.staffAvailability
       .slots({
         branchId: form.branchId,
-        date: today,
+        date: form.date,
         serviceIds: serviceIds.join(","),
       })
       .then((response) => {
@@ -494,7 +475,7 @@ const JobCartCreate = () => {
     return () => {
       active = false;
     };
-  }, [form.branchId, today, serviceIds]);
+  }, [form.branchId, form.date, serviceIds]);
 
   const togglePackage = (packageId) => {
     const packageIds = form.packageIds.includes(packageId)
@@ -618,8 +599,7 @@ const JobCartCreate = () => {
     setSaving(true);
     setError("");
     try {
-      // Start time is stamped at submit, not chosen.
-      const startTime = new Date();
+      const startTime = new Date(`${form.date}T${currentInputTime()}`);
       const selectedServiceIds = serviceRows
         .map((row) => row.serviceId)
         .filter(Boolean);
@@ -647,7 +627,9 @@ const JobCartCreate = () => {
         .map((row) => ({
           serviceId: row.serviceId,
           ...(row.staffId ? { staffId: row.staffId } : {}),
-          ...(row.price === "" ? {} : { price: Number(row.price) }),
+          ...(row.price === ""
+            ? {}
+            : { price: netPrice(row.price, row.discount, row.discountType) }),
           quantity: qtyOf(row.qty),
         }));
       const response = await salonApi.jobCarts.create({
@@ -737,7 +719,7 @@ const JobCartCreate = () => {
                   </FormGroup>
                 )}
                 <Row>
-                  <Col md="6">
+                  <Col md="3">
                     <FormGroup>
                       <Label>Phone Number</Label>
                       <div className="position-relative d-flex align-items-start gap-2">
@@ -753,20 +735,22 @@ const JobCartCreate = () => {
                           window.setTimeout(() => setPhoneFocused(false), 150)
                         }
                         onChange={(event) => {
-                          clearPairedField("customerName");
                           setCustomerSummary(null);
                           setForm((current) => ({
                             ...current,
                             phone: event.target.value
                               .replace(/\D/g, "")
                               .slice(0, 10),
+                            // A matched customer filled the name; changing the
+                            // phone breaks the match, so that name goes too.
+                            ...(customerSummary ? { customerName: "" } : {}),
                           }));
                         }}
                       />
                       {phoneFocused && phoneMatches.length > 0 && (
                         <ul
                           className="list-group position-absolute w-100 shadow-sm"
-                          style={{ zIndex: 5, maxHeight: 240, overflowY: "auto" }}
+                          style={{ zIndex: 1060, maxHeight: 240, overflowY: "auto" }}
                         >
                           {phoneMatches.map((option) => (
                             <li key={option.value} className="list-group-item p-0">
@@ -786,102 +770,66 @@ const JobCartCreate = () => {
                                 }}
                               >
                                 {option.name}
-                                <span className="text-muted ms-2">
-                                  {option.phone}
-                                </span>
                               </button>
                             </li>
                           ))}
                         </ul>
                       )}
-                      <CustomerProfileLink customerId={savedCustomerId} />
+                      {/* <CustomerProfileLink customerId={savedCustomerId} /> */}
                       </div>
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  <Col md="3">
                     <FormGroup>
                       <Label>Customer</Label>
                       <div className="d-flex align-items-start gap-2">
-                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                          <CreatableSelect
-                            className="react-select-container"
-                            classNamePrefix="react-select"
-                            isClearable
-                            isDisabled={loadingRefs || saving}
-                            options={customerOptions}
-                            filterOption={filterCustomerOption}
-                            placeholder="Search by name"
-                            value={selectedCustomerOption}
-                            onBlur={saveNewCustomer}
-                            onInputChange={(inputValue, meta) => {
-                              if (meta.action !== "input-change") return;
-                              setCustomerInput(inputValue);
-                              // Typing over a *saved* customer breaks the pair.
-                              // A phone typed by hand is kept: the "+" needs it.
-                              if (inputValue && customerSummary) {
-                                clearPairedField("phone");
-                              }
-                            }}
-                            noOptionsMessage={({ inputValue }) =>
-                              inputValue
-                                ? `No customer matching "${inputValue}"`
-                                : "Type a customer name"
-                            }
-                            formatCreateLabel={(inputValue) =>
-                              `Add "${inputValue}" as a new customer`
-                            }
-                            isValidNewOption={(inputValue) => {
-                              const normalized = inputValue.trim().toLowerCase();
-                              if (!normalized) return false;
-                              // A digits-only input is a phone lookup, not a new name.
-                              if (!/[a-z]/i.test(normalized)) return false;
-                              // A duplicate name is fine on a free number; the
-                              // phone is what has to be unique.
-                              return !existingPhoneCustomer;
-                            }}
-                            onChange={(option) => {
-                              setCustomerSummary(null);
-                              setForm((current) => ({
-                                ...current,
-                                customerName: option?.name || "",
-                                phone: option?.phone || current.phone,
-                              }));
-                              if (option?.value && option.value !== option.name) {
-                                loadCustomerSummary({ customerId: option.value });
-                              }
-                            }}
-                            onCreateOption={(inputValue) => {
-                              setCustomerSummary(null);
-                              // Keep the typed phone: the "+" needs name and
-                              // phone together to create the customer.
-                              setForm((current) => ({
-                                ...current,
-                                customerName: inputValue.trim(),
-                              }));
-                            }}
-                          />
-                        </div>
-                        {addingCustomer && (
-                          <Spinner size="sm" className="flex-shrink-0 mt-2" />
-                        )}
+                        <Input
+                          required
+                          autoComplete="off"
+                          placeholder="Customer name"
+                          // A matched customer's name is display only; it is
+                          // edited on their profile, behind the pencil.
+                          readOnly={Boolean(savedCustomerId)}
+                          style={
+                            savedCustomerId
+                              ? { borderColor: "transparent" }
+                              : undefined
+                          }
+                          value={form.customerName}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              customerName: event.target.value,
+                            }))
+                          }
+                        />
                         <CustomerProfileLink customerId={savedCustomerId} />
                       </div>
-                      <small className="text-soft">
-                        {existingPhoneCustomer
-                          ? `${existingPhoneCustomer.name} already uses this number.`
-                          : "Saved automatically when you leave this field, once the phone is 10 digits."}
-                      </small>
+                      {/* <small className="text-soft d-block mt-1">
+                        {savedCustomerId
+                          ? "Existing customer."
+                          : "New customer, created with the job cart."}
+                      </small> */}
                     </FormGroup>
                   </Col>
-                </Row>
-                {lookingUp && (
-                  <div className="small text-soft mb-3">
-                    <Spinner size="sm" className="me-1" />
-                    Checking customer phone
-                  </div>
-                )}
-                <Row>
-                  <Col md="4">
+                  <Col md="3">
+                    <FormGroup>
+                      <Label>Date</Label>
+                      <Input
+                        type="date"
+                        required
+                        value={form.date}
+                        disabled={saving}
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            date: event.target.value,
+                          }))
+                        }
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="3">
                     <FormGroup>
                       <Label>Branch</Label>
                       <Input
@@ -910,6 +858,12 @@ const JobCartCreate = () => {
                     </FormGroup>
                   </Col>
                 </Row>
+                {lookingUp && (
+                  <div className="small text-soft mb-3">
+                    <Spinner size="sm" className="me-1" />
+                    Checking customer phone
+                  </div>
+                )}
                 {/* {serviceIds.length > 0 && (
                   <div className="border rounded p-3 mb-3">
                     <Label className="form-label">Available Staff Slots</Label>
@@ -991,7 +945,8 @@ const JobCartCreate = () => {
                           <th>Service</th>
                           <th>Staff</th>
                           <th style={{ width: 90 }}>Qty</th>
-                          <th style={{ width: 130 }}>Price</th>
+                          <th style={{ width: 180 }}>Price</th>
+                          <th style={{ width: 160 }}>Discount</th>
                           <th style={{ width: 100 }}>GST %</th>
                           <th style={{ width: 130 }}>Total</th>
                           <th style={{ width: 70 }}></th>
@@ -1020,6 +975,16 @@ const JobCartCreate = () => {
                                 mainServiceId === row.mainServiceId)
                             );
                           });
+                          // Shown faded inside the price box, so the cashier
+                          // sees what the row actually bills at.
+                          const discountedPrice =
+                            Number(row.discount) > 0
+                              ? netPrice(
+                                  row.price,
+                                  row.discount,
+                                  row.discountType
+                                )
+                              : null;
                           return (
                             <tr key={row.rowId}>
                               {/* <td>
@@ -1079,6 +1044,8 @@ const JobCartCreate = () => {
                                         service?.mainServiceId ||
                                         row.mainServiceId,
                                       staffId: "",
+                                      discount: "",
+                                      discountType: "AMT",
                                       price:
                                         service === undefined
                                           ? ""
@@ -1131,30 +1098,105 @@ const JobCartCreate = () => {
                                       total: priceToTotal(
                                         row.price,
                                         event.target.value,
-                                        serviceGstPercent
+                                        serviceGstPercent,
+                                        row.discount,
+                                        row.discountType
                                       ),
                                     })
                                   }
                                 />
                               </td>
                               <td>
-                                <Input
-                                  type="number"
-                                  min="0"
-                                  step="0.01"
-                                  value={row.price}
-                                  disabled={!selectedService || saving}
-                                  onChange={(event) =>
-                                    updateServiceRow(row.rowId, {
-                                      price: event.target.value,
-                                      total: priceToTotal(
-                                        event.target.value,
-                                        row.qty,
-                                        serviceGstPercent
-                                      ),
-                                    })
-                                  }
-                                />
+                                <div className="position-relative">
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={row.price}
+                                    disabled={!selectedService || saving}
+                                    style={
+                                      discountedPrice === null
+                                        ? undefined
+                                        : { paddingRight: 96 }
+                                    }
+                                    onChange={(event) =>
+                                      updateServiceRow(row.rowId, {
+                                        price: event.target.value,
+                                        total: priceToTotal(
+                                          event.target.value,
+                                          row.qty,
+                                          serviceGstPercent,
+                                          row.discount,
+                                          row.discountType
+                                        ),
+                                      })
+                                    }
+                                  />
+                                  {discountedPrice !== null && (
+                                    <span
+                                      className="position-absolute top-50 translate-middle-y"
+                                      // Clears the number input spinners, and
+                                      // stays click-through to the input.
+                                      style={{
+                                        right: 28,
+                                        opacity: 0.55,
+                                        pointerEvents: "none",
+                                      }}
+                                      title="Price after discount"
+                                    >
+                                      {formatMoney(discountedPrice)}
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td>
+                                <InputGroup>
+                                  <Input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    max={
+                                      row.discountType === "PCT"
+                                        ? "100"
+                                        : undefined
+                                    }
+                                    value={row.discount}
+                                    disabled={!selectedService || saving}
+                                    onChange={(event) =>
+                                      updateServiceRow(row.rowId, {
+                                        discount: event.target.value,
+                                        total: priceToTotal(
+                                          row.price,
+                                          row.qty,
+                                          serviceGstPercent,
+                                          event.target.value,
+                                          row.discountType
+                                        ),
+                                      })
+                                    }
+                                  />
+                                  <Input
+                                    type="select"
+                                    style={{ maxWidth: 62 }}
+                                    value={row.discountType}
+                                    disabled={!selectedService || saving}
+                                    onChange={(event) =>
+                                      updateServiceRow(row.rowId, {
+                                        discountType: event.target.value,
+                                        total: priceToTotal(
+                                          row.price,
+                                          row.qty,
+                                          serviceGstPercent,
+                                          row.discount,
+                                          event.target.value
+                                        ),
+                                      })
+                                    }
+                                  >
+                                    <option value="AMT">&#8377;</option>
+                                    <option value="PCT">%</option>
+                                  </Input>
+                                </InputGroup>
                               </td>
                               <td>
                                 <Input value={serviceGstPercent} disabled />
@@ -1172,7 +1214,9 @@ const JobCartCreate = () => {
                                       price: totalToPrice(
                                         event.target.value,
                                         row.qty,
-                                        serviceGstPercent
+                                        serviceGstPercent,
+                                        row.discount,
+                                        row.discountType
                                       ),
                                     })
                                   }
@@ -1354,118 +1398,184 @@ const JobCartCreate = () => {
             </div>
           </Col>
           <Col lg="4">
-            <div className="card card-bordered position-sticky" style={{ top: 90 }}>
+            <div
+              className="card card-bordered cart-summary position-sticky"
+              style={{ top: 90 }}
+            >
               <div className="card-inner">
-                <h5>Cart Summary</h5>
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <h5 className="mb-0 d-flex align-items-center gap-2">
+                    <Icon name="file-text" className="text-primary" />
+                    <span>Cart Summary</span>
+                  </h5>
+                  <span className="cart-chip">
+                    <span className="cart-chip-dot" />
+                    Walk-in Visit
+                  </span>
+                </div>
                 {customerSummary && (
-                  <div className="alert alert-light border mb-3">
-                    <strong>
-                      {customerSummary.customerId ? (
-                        <Link to={`/customers/${customerSummary.customerId}`}>
-                          {customerSummary.customerName}
-                        </Link>
-                      ) : (
-                        customerSummary.customerName
-                      )}
-                    </strong>
-                    <div className="small mt-2">
-                      Last visit: {formatDate(customerSummary.lastVisitDate)}
-                      <br />
-                      Total visits: {customerSummary.totalVisits}
-                      <br />
-                      Loyalty: {customerSummary.loyaltyPoints} points
-                      <br />
-                      Wallet: {formatMoney(customerSummary.walletBalance)}
-                      <br />
-                      Outstanding:{" "}
-                      {formatMoney(customerSummary.outstandingBalance)}
-                      <br />
-                      Membership:{" "}
-                      {customerSummary.membershipName
-                        ? `${customerSummary.membershipName}${
-                            customerSummary.membershipExpiresAt
-                              ? `, Expire on ${formatDate(
-                                  customerSummary.membershipExpiresAt
-                                )}`
-                              : ""
-                          }${
-                            customerSummary.membershipStatus !== "ACTIVE"
-                              ? ` (${customerSummary.membershipStatus})`
-                              : ""
-                          }`
-                        : "None"}
-                      <br />
-                      Preferred staff:{" "}
-                      {customerSummary.preferredStaff?.staffName || "Not known"}
-                    </div>
-                    {customerSummary.activePackages?.length > 0 && (
-                      <div className="small mt-2">
-                        <strong>Available packages</strong>
-                        {customerSummary.activePackages.map((item) => (
-                          <div key={item.customerPackageId}>
-                            {item.packageName} — valid to{" "}
-                            {formatDate(item.validUntil)}
-                            {item.soldByStaffName
-                              ? ` — sold by ${item.soldByStaffName}`
-                              : ""}
+                  <>
+                    <div className="cart-panel mb-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="cart-avatar">
+                          {customerSummary.customerName
+                            ?.trim()?.[0]
+                            ?.toUpperCase() || "?"}
+                        </span>
+                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                          <div className="fw-bold text-truncate">
+                            {customerSummary.customerId ? (
+                              <Link
+                                to={`/customers/${customerSummary.customerId}`}
+                              >
+                                {customerSummary.customerName}
+                              </Link>
+                            ) : (
+                              customerSummary.customerName
+                            )}
+                          </div>
+                          <div className="small text-soft">
+                            {customerSummary.phone}
+                          </div>
+                        </div>
+                        <span className="cart-chip flex-shrink-0">
+                          {customerSummary.totalVisits > 0
+                            ? "Returning Customer"
+                            : "New Customer"}
+                        </span>
+                      </div>
+                      <div className="cart-stats">
+                        {[
+                          {
+                            icon: "calendar-alt",
+                            value: formatDate(customerSummary.lastVisitDate),
+                            label: "Last Visit",
+                          },
+                          {
+                            icon: "bar-chart",
+                            value: customerSummary.totalVisits,
+                            label: "Total Visits",
+                          },
+                          {
+                            icon: "star",
+                            value: customerSummary.loyaltyPoints,
+                            label: "Loyalty Points",
+                          },
+                          {
+                            icon: "wallet",
+                            value: formatMoney(customerSummary.walletBalance),
+                            label: "Wallet Balance",
+                          },
+                        ].map((stat) => (
+                          <div key={stat.label}>
+                            <Icon name={stat.icon} />
+                            <div className="cart-stat-value">{stat.value}</div>
+                            <div className="cart-stat-label">{stat.label}</div>
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                    <div className="cart-panel mb-3">
+                      {customerRows.map((row) => (
+                        <div key={row.label} className="cart-row">
+                          <span>
+                            <Icon name={row.icon} />
+                            {row.label}
+                          </span>
+                          <span
+                            className={
+                              row.danger
+                                ? "text-danger fw-bold"
+                                : row.muted
+                                ? "text-soft"
+                                : "fw-medium"
+                            }
+                          >
+                            {row.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {customerSummary?.activePackages?.length > 0 && (
-                  <div className="small mb-3">
+                  <div className="cart-panel mb-3">
+                    <h6 className="d-flex align-items-center gap-2 mb-2">
+                      <Icon name="package" className="text-primary" />
+                      <span>Available Packages</span>
+                    </h6>
                     {customerSummary.activePackages.map((item) => (
-                      <div
-                        key={`${item.customerPackageId}-balances`}
-                        className="border rounded p-2 mb-2"
-                      >
-                        <strong>{item.packageName} balances</strong>
-                        {(item.serviceBalances || []).map((balance) => (
-                          <div
-                            key={balance.balanceId}
-                            className="d-flex justify-content-between mt-1"
-                          >
-                            <span>{balance.serviceName}</span>
-                            <span>
-                              {balance.usedQuantity}/
-                              {balance.includedQuantity} used •{" "}
-                              {balance.remainingQuantity} remaining
+                      <div key={item.customerPackageId} className="cart-row">
+                        <span>
+                          <span className="d-block fw-medium">
+                            {item.packageName}
+                          </span>
+                          <span className="cart-stat-label">
+                            Valid to {formatDate(item.validUntil)}
+                            {item.soldByStaffName
+                              ? ` - sold by ${item.soldByStaffName}`
+                              : ""}
+                          </span>
+                        </span>
+                        <span className="text-end">
+                          {(item.serviceBalances || []).map((balance) => (
+                            <span
+                              key={balance.balanceId}
+                              className="d-block cart-stat-label"
+                            >
+                              {balance.serviceName}: {balance.remainingQuantity}{" "}
+                              of {balance.includedQuantity} left
                             </span>
-                          </div>
-                        ))}
+                          ))}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-                <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Services</span>
-                  <strong>{selectedServices.length}</strong>
-                </div>
-                <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Packages</span>
-                  <strong>{selectedPackages.length}</strong>
-                </div>
-                <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Duration</span>
-                  <strong>{duration} min</strong>
-                </div>
-                <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Estimated subtotal</span>
-                  <strong>
-                    {formatMoney(subtotal + packageSubtotal)}
-                  </strong>
-                </div>
-                <div className="d-flex justify-content-between py-2 border-bottom">
-                  <span>Estimated tax ({serviceGstPercent}%)</span>
-                  <strong>{formatMoney(estimatedTax)}</strong>
-                </div>
-                <div className="d-flex justify-content-between py-3">
-                  <span>Estimated total</span>
-                  <strong>
-                    {formatMoney(subtotal + packageSubtotal + estimatedTax)}
-                  </strong>
+                <div className="cart-panel mb-3">
+                  <h6 className="d-flex align-items-center gap-2 mb-2">
+                    <Icon name="scissor" className="text-primary" />
+                    <span>Order Details</span>
+                  </h6>
+                  {[
+                    {
+                      icon: "scissor",
+                      label: "Services",
+                      value: selectedServices.length,
+                    },
+                    {
+                      icon: "gift",
+                      label: "Packages",
+                      value: selectedPackages.length,
+                    },
+                    {
+                      icon: "clock",
+                      label: "Total Duration",
+                      value: `${duration} min`,
+                    },
+                  ].map((row) => (
+                    <div key={row.label} className="cart-row">
+                      <span>
+                        <Icon name={row.icon} />
+                        {row.label}
+                      </span>
+                      <span className="fw-bold">{row.value}</span>
+                    </div>
+                  ))}
+                  <div className="cart-row">
+                    <span>Estimated Subtotal</span>
+                    <span>{formatMoney(subtotal + packageSubtotal)}</span>
+                  </div>
+                  <div className="cart-row">
+                    <span>Estimated Tax ({serviceGstPercent}%)</span>
+                    <span>{formatMoney(estimatedTax)}</span>
+                  </div>
+                  <div className="cart-total">
+                    <span>Estimated Total</span>
+                    <span>
+                      {formatMoney(subtotal + packageSubtotal + estimatedTax)}
+                    </span>
+                  </div>
                 </div>
                 <p className="text-soft small">
                   Membership discount is calculated when the draft invoice is
@@ -1475,11 +1585,12 @@ const JobCartCreate = () => {
                 <Button
                   type="submit"
                   color="primary"
-                  block
+                  className="cart-cta"
                   disabled={saving || loadingRefs}
                 >
-                  {saving && <Spinner size="sm" className="me-1" />}
-                  Create Job Cart
+                  {saving ? <Spinner size="sm" /> : <Icon name="file-text" />}
+                  <span>Create Job Cart</span>
+                  <Icon name="arrow-right" />
                 </Button>
               </div>
             </div>

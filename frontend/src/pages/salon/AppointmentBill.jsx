@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Select from "react-select";
+import { Select } from "@/components/select/PortalSelect";
 import {
   Alert,
   Col,
@@ -18,6 +18,7 @@ import StatusBadge from "@/components/salon/StatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, toLocalInput } from "@/utils/salonFormat";
+import { PAYABLE_METHODS } from "@/utils/paymentMethods";
 
 const TAX_OPTIONS = [
   { value: "", label: "Salon GST setting" },
@@ -27,8 +28,6 @@ const TAX_OPTIONS = [
   { value: 18, label: "GST 18%" },
   { value: 28, label: "GST 28%" },
 ];
-
-const PAYMENT_METHODS = ["CASH", "CARD", "UPI", "OTHER"];
 
 const SummaryRow = ({ label, value, strong, muted }) => (
   <div className="d-flex justify-content-between py-2 border-bottom">
@@ -859,9 +858,9 @@ const AppointmentBill = () => {
                             value={payment.method}
                             onChange={setPaymentField("method")}
                           >
-                            {PAYMENT_METHODS.map((method) => (
-                              <option key={method} value={method}>
-                                {method}
+                            {PAYABLE_METHODS.map((method) => (
+                              <option key={method.value} value={method.value}>
+                                {method.label}
                               </option>
                             ))}
                             {walletBalance > 0 && (

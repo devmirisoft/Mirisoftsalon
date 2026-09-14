@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import Select from "react-select";
+import { Select } from "@/components/select/PortalSelect";
 import {
   Alert,
   Col,
@@ -28,6 +28,7 @@ import {
   minDateTimeInput,
   toLocalInput,
 } from "@/utils/salonFormat";
+import { PAYMENT_METHODS } from "@/utils/paymentMethods";
 
 const TAX_OPTIONS = [
   { value: 0, label: "No tax" },
@@ -35,19 +36,6 @@ const TAX_OPTIONS = [
   { value: 12, label: "GST 12%" },
   { value: 18, label: "GST 18%" },
   { value: 28, label: "GST 28%" },
-];
-
-const PAYMENT_METHODS = [
-  { value: "CASH", label: "Cash" },
-  { value: "UPI", label: "UPI" },
-  { value: "GPAY", label: "GPay" },
-  { value: "PAYTM", label: "Paytm" },
-  { value: "PHONEPE", label: "PhonePe" },
-  { value: "CARD", label: "Card" },
-  { value: "BANK_TRANSFER", label: "Bank transfer" },
-  { value: "CHEQUE", label: "Cheque" },
-  { value: "MEMBERSHIP_WALLET", label: "Membership wallet" },
-  { value: "OTHER", label: "Other" },
 ];
 
 // One editable number cell. The value is held as a draft while typing and
@@ -519,19 +507,40 @@ const JobCartDetails = () => {
       0
     );
 
+  // A member pays from the wallet first; whatever the balance cannot cover is
+  // split onto a second tender below.
+  useEffect(() => {
+    if (membershipWalletBalance <= 0) return;
+    setTenders((current) =>
+      current.length === 1 &&
+      current[0].method === "CASH" &&
+      !current[0].amount &&
+      !current[0].referenceNo
+        ? [{ ...current[0], method: "MEMBERSHIP_WALLET" }]
+        : current
+    );
+  }, [membershipWalletBalance]);
+
   const collecting = billingForm.status !== "DRAFT" && paymentForm.collect;
   const activeTenders = collecting
     ? tenders.filter((tender) => tender.method)
     : [];
   // A blank amount on a lone tender means "the whole bill", which the server
   // settles against its own rounded total so a stale estimate cannot underpay.
+  // The wallet is the exception: it can only ever settle what it holds, so a
+  // blank wallet amount means "up to the balance" and the rest stays to split.
   const tenderTotal = activeTenders.reduce(
     (sum, tender) => sum + Number(tender.amount || 0),
     0
   );
   const singleFullTender =
     activeTenders.length === 1 && !activeTenders[0].amount;
-  const collectedAmount = singleFullTender ? payableAmount : tenderTotal;
+  const singleFullAmount = !singleFullTender
+    ? 0
+    : activeTenders[0].method === "MEMBERSHIP_WALLET"
+      ? Math.min(membershipWalletBalance, payableAmount)
+      : payableAmount;
+  const collectedAmount = singleFullTender ? singleFullAmount : tenderTotal;
   const outstandingAfter = Math.max(payableAmount - collectedAmount, 0);
   const overpaying = collectedAmount - payableAmount > 0.004;
   const walletTender = activeTenders.find(
@@ -539,7 +548,7 @@ const JobCartDetails = () => {
   );
   const walletShort =
     walletTender &&
-    (singleFullTender ? payableAmount : Number(walletTender.amount || 0)) >
+    (singleFullTender ? singleFullAmount : Number(walletTender.amount || 0)) >
       membershipWalletBalance + 0.004;
 
   const buildConfirmBody = () => ({
@@ -557,7 +566,7 @@ const JobCartDetails = () => {
           payments: activeTenders.map((tender) => ({
             method: tender.method,
             amount: singleFullTender
-              ? Number(payableAmount.toFixed(2))
+              ? Number(singleFullAmount.toFixed(2))
               : Number(tender.amount),
             ...(tender.referenceNo?.trim()
               ? { referenceNo: tender.referenceNo.trim() }
@@ -569,7 +578,7 @@ const JobCartDetails = () => {
                     customerSummary.currentCustomerMembershipId,
                 }
               : {}),
-          })),
+          })).filter((tender) => tender.amount > 0),
         }
       : {}),
   });
@@ -1495,7 +1504,7 @@ const JobCartDetails = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className="border-top mt-3 pt-3">
+                {/* <div className="border-top mt-3 pt-3">
                   <div className="d-flex justify-content-between py-1">
                     <span className="text-soft">Subtotal</span>
                     <span>{formatMoney(subtotalAmount)}</span>
@@ -1523,7 +1532,7 @@ const JobCartDetails = () => {
                     <span>Payable</span>
                     <span>{formatMoney(payableAmount)}</span>
                   </div>
-                </div>
+                </div> */}
                 {(cart.packageRedemptions || []).length > 0 && (
                   <div className="mt-4">
                     <h6>Package-covered Services</h6>
@@ -2033,7 +2042,7 @@ const JobCartDetails = () => {
                                 step="0.01"
                                 placeholder={
                                   index === 0 && tenders.length === 1
-                                    ? formatMoney(payableAmount)
+                                    ? formatMoney(collectedAmount)
                                     : "0.00"
                                 }
                                 value={tender.amount}
@@ -2123,11 +2132,17 @@ const JobCartDetails = () => {
                           </Alert>
                         ) : (
                           <small className="text-soft">
-                            {outstandingAfter > 0.004
-                              ? "Part payment. " +
-                                formatMoney(outstandingAfter) +
-                                " stays outstanding and the bill is marked partially paid."
-                              : "Invoice will be issued and marked paid."}
+                            {outstandingAfter <= 0.004
+                              ? "Invoice will be issued and marked paid."
+                              : walletTender
+                                ? "Membership wallet covers " +
+                                  formatMoney(collectedAmount) +
+                                  ". Add a payment method for the remaining " +
+                                  formatMoney(outstandingAfter) +
+                                  ", or leave it outstanding."
+                                : "Part payment. " +
+                                  formatMoney(outstandingAfter) +
+                                  " stays outstanding and the bill is marked partially paid."}
                           </small>
                         )}
                       </>

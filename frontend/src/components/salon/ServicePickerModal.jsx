@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
-import { Col, Input, Label, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-import { Button } from "@/components/Component";
+import { Col, Input, Label, Modal, ModalBody, Row } from "reactstrap";
+import { Button, Icon } from "@/components/Component";
+import { serviceMinutes } from "@/utils/appointmentTotals";
 import { formatMoney } from "@/utils/salonFormat";
 
 // Services arrive either from the catalog list (service.mainService) or from
@@ -9,10 +10,19 @@ const normalize = (service) => ({
   id: service.id,
   name: service.name,
   price: service.price,
+  minutes: serviceMinutes(service),
   mainServiceId: service.mainService?.id || service.mainServiceId || "",
   mainServiceName:
     service.mainService?.name || service.mainServiceName || "Other",
 });
+
+const initialsOf = (name = "") =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("") || "?";
 
 // Shared "Add Services" picker: choose who the next services go to, then check
 // them off. Checking adds to the cart immediately, unchecking removes it.
@@ -35,6 +45,7 @@ const ServicePickerModal = ({
 }) => {
   const [categoryId, setCategoryId] = useState("");
   const [search, setSearch] = useState("");
+  const [listView, setListView] = useState(false);
 
   const options = useMemo(() => services.map(normalize), [services]);
 
@@ -56,7 +67,9 @@ const ServicePickerModal = ({
     });
   }, [options, categoryId, search]);
 
-  const staffNameFor = (id) => staff.find((member) => member.id === id)?.name;
+  const staffMemberFor = (id) => staff.find((member) => member.id === id);
+  const staffNameFor = (id) => staffMemberFor(id)?.name;
+  const selectedStaff = staffMemberFor(staffId);
   // A branch with nobody on it cannot satisfy requireStaff, so say that
   // outright: an empty service list otherwise reads as a missing catalogue.
   const noStaffAvailable = requireStaff && staff.length === 0;
@@ -75,37 +88,29 @@ const ServicePickerModal = ({
       toggle={close}
       centered
       size="xl"
-      contentClassName="border-0"
+      contentClassName="border-0 svc-picker"
     >
-      <ModalHeader toggle={close}>{title}</ModalHeader>
+      <div className="svc-picker-head">
+        <h5 className="mb-0 d-flex align-items-center gap-2">
+          <Icon name="scissor" className="text-primary" />
+          <span>{title}</span>
+        </h5>
+        <button
+          type="button"
+          className="btn-icon btn btn-sm btn-trigger"
+          onClick={close}
+          aria-label="Close"
+        >
+          <Icon name="cross" />
+        </button>
+      </div>
       <ModalBody>
-        <Row className="g-3 mb-3">
+        <Row className="g-3">
           <Col md="4">
-            <Label className="mb-1">Search</Label>
-            <Input
-              type="search"
-              placeholder="Search services"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-          </Col>
-          <Col md="4">
-            <Label className="mb-1">Category</Label>
-            <Input
-              type="select"
-              value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
-            >
-              <option value="">All services</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Input>
-          </Col>
-          <Col md="4">
-            <Label className="mb-1">Assign next to</Label>
+            <Label className="svc-picker-label">
+              <Icon name="user" />
+              Assign next to{requireStaff ? " *" : ""}
+            </Label>
             <Input
               type="select"
               value={staffId}
@@ -123,20 +128,100 @@ const ServicePickerModal = ({
               ))}
             </Input>
           </Col>
-          {/* <Col md="4">
-            <Label className="mb-1">Search</Label>
+          <Col md="4">
+            <Label className="svc-picker-label">
+              <Icon name="grid-alt" />
+              Category
+            </Label>
+            <Input
+              type="select"
+              value={categoryId}
+              onChange={(event) => setCategoryId(event.target.value)}
+            >
+              <option value="">All services</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Input>
+          </Col>
+          <Col md="4">
+            <Label className="svc-picker-label">
+              <Icon name="search" />
+              Search
+            </Label>
             <Input
               type="search"
-              placeholder="Search services"
+              placeholder="Search services..."
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
-          </Col> */}
+          </Col>
         </Row>
-        <div
-          className="border rounded"
-          style={{ maxHeight: 380, overflowY: "auto" }}
-        >
+
+        {selectedStaff && (
+          <div className="svc-staff-bar">
+            <span className="svc-avatar">{initialsOf(selectedStaff.name)}</span>
+            <div className="flex-grow-1" style={{ minWidth: 0 }}>
+              <div className="d-flex align-items-center gap-2">
+                <span className="fw-bold text-truncate">
+                  {selectedStaff.name}
+                </span>
+                <span className="svc-chip">Selected</span>
+              </div>
+              <div className="svc-muted">
+                {selectedStaff.jobRole || "Staff"}
+              </div>
+            </div>
+            <Button
+              color="light"
+              outline
+              size="sm"
+              type="button"
+              className="d-flex align-items-center gap-1 flex-shrink-0"
+              disabled={disabled}
+              onClick={() => onStaffChange?.("")}
+            >
+              <Icon name="reload" />
+              <span className="d-none d-sm-inline">Change Staff</span>
+            </Button>
+          </div>
+        )}
+
+        <div className="svc-tabs">
+          <div className="svc-tabs-scroll">
+            <button
+              type="button"
+              className={`svc-tab${categoryId ? "" : " is-active"}`}
+              onClick={() => setCategoryId("")}
+            >
+              All Services
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                className={`svc-tab${
+                  categoryId === category.id ? " is-active" : ""
+                }`}
+                onClick={() => setCategoryId(category.id)}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="svc-view"
+            onClick={() => setListView((current) => !current)}
+          >
+            <Icon name={listView ? "list" : "grid-alt"} />
+            {listView ? "List View" : "Grid View"}
+          </button>
+        </div>
+
+        <div className="svc-scroll">
           {noStaffAvailable ? (
             <div className="text-center py-4">
               <span className="text-danger d-block">
@@ -156,59 +241,69 @@ const ServicePickerModal = ({
               No services match this search
             </div>
           ) : (
-            // Two columns so the wider modal is not mostly empty space.
-            // CSS grid rather than a Bootstrap row: .row's negative margins
-            // overflow this scroll container and collapse the cells.
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              }}
-            >
+            <div className={`svc-grid${listView ? " is-list" : ""}`}>
               {visible.map((option) => {
                 const added = assignedById.has(option.id);
                 const assignedName = added
                   ? staffNameFor(assignedById.get(option.id))
                   : "";
                 return (
-                  <div key={option.id} style={{ minWidth: 0 }}>
-                    <label
-                      className="d-flex align-items-center gap-2 px-3 py-2 border-bottom mb-0 h-100"
-                      style={{ cursor: "pointer", minWidth: 0 }}
-                    >
-                      <input
-                        type="checkbox"
-                        className="form-check-input mt-0 flex-shrink-0"
-                        checked={added}
-                        disabled={servicesLocked}
-                        onChange={() => onToggleService?.(option.id)}
-                      />
-                      <span className="text-truncate" style={{ minWidth: 0 }}>
-                        <span className="d-block text-truncate">
-                          {option.name}
-                        </span>
-                        <small className="text-soft">
-                          {option.mainServiceName} - {formatMoney(option.price)}
-                          {added ? ` - ${assignedName || "unassigned"}` : ""}
-                        </small>
+                  <label
+                    key={option.id}
+                    className={`svc-card${added ? " is-added" : ""}${
+                      servicesLocked ? " is-locked" : ""
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-check-input flex-shrink-0"
+                      checked={added}
+                      disabled={servicesLocked}
+                      onChange={() => onToggleService?.(option.id)}
+                    />
+                    <span className="svc-card-body">
+                      <span className="svc-card-name">{option.name}</span>
+                      <span className="svc-muted d-flex align-items-center gap-1">
+                        {option.minutes > 0 && (
+                          <>
+                            <Icon name="clock" />
+                            {option.minutes} min
+                          </>
+                        )}
+                        {added && (
+                          <span className="text-truncate">
+                            {option.minutes > 0 ? "- " : ""}
+                            {assignedName || "unassigned"}
+                          </span>
+                        )}
                       </span>
-                    </label>
-                  </div>
+                      <span className="svc-card-foot">
+                        <span className="svc-card-price">
+                          {formatMoney(option.price)}
+                        </span>
+                        <span className="svc-card-add">
+                          <Icon name={added ? "check-thick" : "plus"} />
+                          {added ? "Added" : "Add"}
+                        </span>
+                      </span>
+                    </span>
+                  </label>
                 );
               })}
             </div>
           )}
         </div>
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <span className="text-soft">
-            {assignedById.size} in cart
-            {staffId ? ` - adding for ${staffNameFor(staffId) || ""}` : ""}
-          </span>
-          <Button color="primary" type="button" onClick={close}>
-            Done
-          </Button>
-        </div>
       </ModalBody>
+      <div className="svc-picker-foot">
+        <span className="d-flex align-items-center gap-2 text-soft">
+          <Icon name="cart" />
+          {assignedById.size} service{assignedById.size === 1 ? "" : "s"}{" "}
+          selected
+        </span>
+        <Button color="primary" type="button" onClick={close}>
+          Done
+        </Button>
+      </div>
     </Modal>
   );
 };

@@ -547,6 +547,8 @@ const JobCartCreate = () => {
           id: service.id,
           name: service.name,
           price: service.price,
+          durationValue: service.durationValue,
+          durationUnit: service.durationUnit,
           mainServiceId: service.mainService?.id || service.mainServiceId || "",
           mainServiceName:
             service.mainService?.name || service.mainServiceName || "Other",

@@ -547,6 +547,8 @@ const JobCartCreate = () => {
           id: service.id,
           name: service.name,
           price: service.price,
+          durationValue: service.durationValue,
+          durationUnit: service.durationUnit,
           mainServiceId: service.mainService?.id || service.mainServiceId || "",
           mainServiceName:
             service.mainService?.name || service.mainServiceName || "Other",
@@ -1416,14 +1418,14 @@ const JobCartCreate = () => {
                 {customerSummary && (
                   <>
                     <div className="cart-panel mb-3">
-                      <div className="d-flex align-items-center gap-2">
-                        <span className="cart-avatar">
+                      <div className="d-flex align-items-center gap-2 mt-2">
+                        <span className="cart-avatar mb-2">
                           {customerSummary.customerName
                             ?.trim()?.[0]
                             ?.toUpperCase() || "?"}
                         </span>
-                        <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                          <div className="fw-bold text-truncate">
+                        <div className="flex-grow-1 " style={{ minWidth: 0 }}>
+                          <div className="fw-bold text-truncate ">
                             {customerSummary.customerId ? (
                               <Link
                                 to={`/customers/${customerSummary.customerId}`}
@@ -1434,7 +1436,7 @@ const JobCartCreate = () => {
                               customerSummary.customerName
                             )}
                           </div>
-                          <div className="small text-soft">
+                          <div className="small text-soft mb-2">
                             {customerSummary.phone}
                           </div>
                         </div>

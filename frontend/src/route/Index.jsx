@@ -42,6 +42,7 @@ import OnlineBookingSettings from "@/pages/salon/OnlineBookingSettings";
 import JobCarts from "@/pages/salon/JobCarts";
 import JobCartCreate from "@/pages/salon/JobCartCreate";
 import JobCartDetails from "@/pages/salon/JobCartDetails";
+import JobCartView from "@/pages/salon/JobCartView";
 import JobCartCustomerHistory from "@/pages/salon/JobCartCustomerHistory";
 import PackageCategories from "@/pages/salon/PackageCategories";
 import ServicePackages from "@/pages/salon/ServicePackages";
@@ -132,6 +133,7 @@ const Router = () => (
                 <Route path="job-carts" element={<JobCarts />} />
                 <Route path="job-carts/create" element={<JobCartCreate />} />
                 <Route path="job-carts/:id" element={<JobCartDetails />} />
+                <Route path="job-carts/:id/view" element={<JobCartView />} />
                 <Route
                   path="packages/categories"
                   element={<PackageCategories />}

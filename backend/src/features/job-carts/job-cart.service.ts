@@ -38,6 +38,8 @@ export type JobCartActor = {
   role: string;
   salonId?: string;
   branchId?: string;
+  /** Branch a salon-wide role has opened a session on. */
+  activeBranchId?: string;
 };
 
 type JobCartBillingInput = {
@@ -91,6 +93,15 @@ export class JobCartError extends Error {
 }
 
 const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
+
+/**
+ * The branch a request is confined to: the counter's own branch, or the branch
+ * a salon-wide role has opened a session on. `undefined` means all branches.
+ */
+const scopedBranchId = (actor: JobCartActor) =>
+  branchScopedRoles.has(actor.role)
+    ? (actor.branchId ?? "__unauthorized__")
+    : actor.activeBranchId;
 const activeAppointmentStatuses = [
   "SCHEDULED",
   "CONFIRMED",
@@ -336,9 +347,7 @@ const accessWhere = (actor: JobCartActor): Prisma.AppointmentWhereInput => {
   if (!actor.salonId) return { id: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...(scopedBranchId(actor) ? { branchId: scopedBranchId(actor)! } : {}),
   };
 };
 
@@ -352,9 +361,7 @@ const requireCreateScope = (
   if (!salonId) {
     throw new JobCartError(400, "Salon is required");
   }
-  const branchId = branchScopedRoles.has(actor.role)
-    ? actor.branchId
-    : requestedBranchId;
+  const branchId = scopedBranchId(actor) ?? requestedBranchId;
   if (!branchId) {
     throw new JobCartError(400, "Branch is required");
   }
@@ -863,9 +870,7 @@ export const listJobCarts = async (
   }
 ) => {
   const scope = accessWhere(actor);
-  const branchId = branchScopedRoles.has(actor.role)
-    ? actor.branchId
-    : filters.branchId;
+  const branchId = scopedBranchId(actor) ?? filters.branchId;
   const statusWhere: Prisma.AppointmentWhereInput =
     filters.status === "ACTIVE"
       ? {
@@ -1030,15 +1035,11 @@ export const getJobCartReferences = async (
       serviceGstRate: true,
     },
   });
-  const branchId = branchScopedRoles.has(actor.role)
-    ? actor.branchId
-    : requestedBranchId;
+  const branchId = scopedBranchId(actor) ?? requestedBranchId;
   const branchWhere: Prisma.BranchWhereInput = {
     salonId,
     status: true,
-    ...(branchScopedRoles.has(actor.role)
-      ? { id: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...(scopedBranchId(actor) ? { id: scopedBranchId(actor)! } : {}),
   };
   const resourceBranchWhere = branchId
     ? { OR: [{ branchId: null }, { branchId }] }
@@ -1133,9 +1134,8 @@ export const getJobCartCustomerSummary = async (
   actor: JobCartActor,
   query: { customerId?: string | undefined; phone?: string | undefined }
 ) => {
-  const branchWhere = branchScopedRoles.has(actor.role)
-    ? { branchId: actor.branchId ?? "__unauthorized__" }
-    : {};
+  const summaryBranchId = scopedBranchId(actor);
+  const branchWhere = summaryBranchId ? { branchId: summaryBranchId } : {};
   let customerId = query.customerId;
   if (!customerId && query.phone) {
     if (actor.role !== "SUPER_ADMIN" && !actor.salonId) {
@@ -1204,7 +1204,7 @@ export const getJobCartCustomerSummary = async (
   const appointmentWhere: Prisma.AppointmentWhereInput = {
     customerId: customer.id,
     status: "COMPLETED",
-    ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+    ...(branchWhere),
   };
   const [visits, activePackages, recentInvoices, spend, productPurchases, retailPurchases] = await Promise.all([
     prisma.appointment.findMany({
@@ -1222,7 +1222,7 @@ export const getJobCartCustomerSummary = async (
         customerId: customer.id,
         status: "ACTIVE",
         validUntil: { gte: new Date() },
-        ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+        ...(branchWhere),
       },
       select: {
         id: true,
@@ -1239,7 +1239,7 @@ export const getJobCartCustomerSummary = async (
     prisma.invoice.findMany({
       where: {
         customerId: customer.id,
-        ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+        ...(branchWhere),
       },
       select: {
         id: true,
@@ -1258,7 +1258,7 @@ export const getJobCartCustomerSummary = async (
       where: {
         customerId: customer.id,
         status: { not: "CANCELLED" },
-        ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+        ...(branchWhere),
       },
       _sum: { totalAmount: true, paidAmount: true },
       _count: { _all: true },
@@ -1269,7 +1269,7 @@ export const getJobCartCustomerSummary = async (
         invoice: {
           customerId: customer.id,
           status: { not: "CANCELLED" },
-          ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+          ...(branchWhere),
         },
       },
       select: {
@@ -1290,7 +1290,7 @@ export const getJobCartCustomerSummary = async (
       where: {
         sale: {
           customerId: customer.id,
-          ...(branchScopedRoles.has(actor.role) ? branchWhere : {}),
+          ...(branchWhere),
         },
       },
       select: {

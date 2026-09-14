@@ -8,11 +8,11 @@ import {
   CustomerMembershipError,
   type CustomerMembershipActor,
 } from "../customer-memberships/customer-membership.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type TransactionClient = Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
 
-const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 
 const zero = new Prisma.Decimal(0);
 
@@ -23,9 +23,7 @@ const walletScope = (
   if (!actor.salonId) return { salonId: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 
@@ -36,9 +34,7 @@ const ledgerScope = (
   if (!actor.salonId) return { salonId: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 

@@ -6,15 +6,18 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import AppointmentStatusBadge, {
+  appointmentStatusClass,
+} from "@/components/salon/AppointmentStatusBadge";
 
-const statusClasses = {
-  SCHEDULED: "fc-event-primary",
-  CONFIRMED: "fc-event-info",
-  CHECKED_IN: "fc-event-warning",
-  COMPLETED: "fc-event-success",
-  CANCELLED: "fc-event-danger-dim",
-  NO_SHOW: "fc-event-danger",
-};
+const STATUSES = [
+  "SCHEDULED",
+  "CONFIRMED",
+  "CHECKED_IN",
+  "COMPLETED",
+  "CANCELLED",
+  "NO_SHOW",
+];
 
 const startOfToday = () => {
   const today = new Date();
@@ -31,15 +34,14 @@ const AppointmentCalendar = ({
     () =>
       appointments.map((appointment) => ({
         id: appointment.id,
-        title: `${appointment.customer?.name || "Customer"} · ${
-          appointment.staff?.name || "Unassigned"
-        }`,
+        title: appointment.customer?.name || "Customer",
         start: appointment.startTime,
         end: appointment.endTime,
-        classNames: [statusClasses[appointment.status] || "fc-event-primary"],
+        classNames: [appointmentStatusClass(appointment.status)],
         extendedProps: {
           appointmentCode: appointment.appointmentCode,
           status: appointment.status,
+          staff: appointment.staff?.name || "Unassigned",
           branch: appointment.branch?.name,
           amount: appointment.estimatedAmount,
           services: appointment.services?.map((item) => item.serviceName).join(", "),
@@ -62,9 +64,9 @@ const AppointmentCalendar = ({
           events={events}
           initialView="dayGridMonth"
           headerToolbar={{
-            left: "title prev,next",
+            left: "today prev,next title",
             center: "",
-            right: "today dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+            right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
           }}
           buttonText={{
             today: "Today",
@@ -79,6 +81,7 @@ const AppointmentCalendar = ({
           aspectRatio={3}
           nowIndicator
           allDaySlot={false}
+          dayMaxEvents={3}
           slotMinTime="07:00:00"
           slotMaxTime="23:00:00"
           slotDuration="00:30:00"
@@ -102,6 +105,18 @@ const AppointmentCalendar = ({
             minute: "2-digit",
             meridiem: "short",
           }}
+          eventContent={(arg) => (
+            <div className="appt-ev">
+              <span className="appt-ev-dot" />
+              <div className="appt-ev-body">
+                <span className="appt-ev-time">{arg.timeText}</span>
+                <span className="appt-ev-title">{arg.event.title}</span>
+                <span className="appt-ev-staff">
+                  {arg.event.extendedProps.staff}
+                </span>
+              </div>
+            </div>
+          )}
           eventClick={(info) => {
             const appointment = appointments.find(
               (item) => item.id === info.event.id
@@ -113,6 +128,7 @@ const AppointmentCalendar = ({
             info.el.title = [
               props.appointmentCode,
               props.services,
+              props.staff,
               props.branch,
               props.status,
             ]
@@ -120,6 +136,11 @@ const AppointmentCalendar = ({
               .join(" · ");
           }}
         />
+        <div className="appt-legend">
+          {STATUSES.map((status) => (
+            <AppointmentStatusBadge key={status} value={status} />
+          ))}
+        </div>
       </div>
     </div>
   );

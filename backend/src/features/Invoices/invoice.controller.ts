@@ -34,6 +34,7 @@ import {
 } from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
 import {
+  branchFilterFor,
   isBranchLockedRole,
 } from "../../utils/branch-scope.js";
 
@@ -478,6 +479,9 @@ export const createInvoiceFromAppointment = async (
       role: req.user!.role,
       ...(req.user?.salonId ? { salonId: req.user.salonId } : {}),
       ...(req.user?.branchId ? { branchId: req.user.branchId } : {}),
+      ...(req.user?.activeBranchId
+        ? { activeBranchId: req.user.activeBranchId }
+        : {}),
     };
 
     const { invoice, membershipDiscountAmount } = await prisma.$transaction(
@@ -827,8 +831,8 @@ export const getInvoices = async (req: Request, res: Response) => {
     }
 
     const invoices = await InvoiceModel.findBySalon(req.user.salonId, {
-      ...(isBranchLockedRole(req.user.role) && req.user.branchId
-        ? { branchId: req.user.branchId }
+      ...(branchFilterFor(req)
+        ? { branchId: branchFilterFor(req)! }
         : branchId
           ? { branchId: String(branchId) }
           : {}),

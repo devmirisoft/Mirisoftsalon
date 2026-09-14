@@ -10,6 +10,7 @@ import {
   salonLocalDateTimeToUtc,
 } from "../../utils/timezone.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type DbClient = typeof prisma | Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -19,6 +20,8 @@ export type StaffAvailabilityActor = {
   role: string;
   salonId?: string;
   branchId?: string;
+  /** Branch a salon-wide role has opened a session on. */
+  activeBranchId?: string;
 };
 
 export class StaffAvailabilityError extends Error {
@@ -46,7 +49,6 @@ type AvailabilityStaff = {
   weekOff: string;
 };
 
-const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 const mutationRoles = new Set([
   "SUPER_ADMIN",
   "SALON_ADMIN",
@@ -177,9 +179,7 @@ const scopeForActor = async (
   }
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 

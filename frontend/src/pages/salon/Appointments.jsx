@@ -21,12 +21,13 @@ import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal"
 import StaffDayBoard from "@/components/salon/StaffDayBoard";
 import DataGrid from "@/components/salon/DataGrid";
 import SchemaModal from "@/components/salon/SchemaModal";
-import StatusBadge from "@/components/salon/StatusBadge";
+import AppointmentStatusBadge from "@/components/salon/AppointmentStatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
   formatDate,
   formatMoney,
+  labelize,
   minDateTimeInput,
   roleCanManage,
   toLocalInput,
@@ -48,7 +49,11 @@ const LIST_COLUMNS = [
   { key: "staff", label: "Staff", render: (value) => value?.name || "—" },
   { key: "startTime", label: "Start", render: (value) => formatDate(value, true) },
   { key: "estimatedAmount", label: "Amount", render: formatMoney },
-  { key: "status", label: "Status", render: (value) => <StatusBadge value={value} /> },
+  {
+    key: "status",
+    label: "Status",
+    render: (value) => <AppointmentStatusBadge value={value} />,
+  },
 ];
 
 const toISODate = (date) =>
@@ -259,7 +264,10 @@ const Appointments = () => {
             label: "New status",
             type: "select",
             required: true,
-            options: STATUSES.map((value) => ({ value, label: value })),
+            options: STATUSES.map((value) => ({
+              value,
+              label: labelize(value),
+            })),
           },
           { name: "note", label: "Status note", type: "textarea", fullWidth: true },
         ],
@@ -400,7 +408,9 @@ const Appointments = () => {
               >
                 <option value="">All statuses</option>
                 {STATUSES.map((status) => (
-                  <option key={status} value={status}>{status}</option>
+                  <option key={status} value={status}>
+                    {labelize(status)}
+                  </option>
                 ))}
               </Input>
             </Col>

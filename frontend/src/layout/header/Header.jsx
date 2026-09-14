@@ -11,6 +11,7 @@ import Icon from "@/components/icon/Icon";
 import { useAuth } from "@/auth/AuthContext";
 import { allowsRole } from "@/utils/salonFormat";
 import QuickSell from "./QuickSell";
+import BranchSwitcher from "./BranchSwitcher";
 
 import { useTheme, useThemeUpdate } from '../provider/Theme';
 
@@ -52,7 +53,10 @@ const Header = ({ fixed, className, ...props }) => {
           <div className="nk-header-news d-none d-xl-block">
             <News />
           </div>
-          <ul className="d-none d-sm-flex align-items-center gap-2 ms-auto me-3 mb-0 list-unstyled">
+          <div className="ms-auto d-flex align-items-center">
+            <BranchSwitcher />
+          </div>
+          <ul className="d-none d-sm-flex align-items-center gap-2 me-3 mb-0 list-unstyled">
             {SHORTCUTS.filter((item) => allowsRole(item.roles, user?.role)).map(
               (item) => {
                 const label = (

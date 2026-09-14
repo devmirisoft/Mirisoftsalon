@@ -87,6 +87,9 @@ const membershipActorFrom = (req: Request): CustomerMembershipActor | null =>
         role: req.user.role,
         ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
         ...(req.user.branchId ? { branchId: req.user.branchId } : {}),
+        ...(req.user.activeBranchId
+          ? { activeBranchId: req.user.activeBranchId }
+          : {}),
       }
     : null;
 

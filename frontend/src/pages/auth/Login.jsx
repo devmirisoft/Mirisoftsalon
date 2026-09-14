@@ -5,7 +5,7 @@ import Head from "@/layout/head/Head";
 import { useAuth } from "@/auth/AuthContext";
 import "./login.css";
 
-const MirisoftLogo = "/mirisoftlogo.png";
+const MirisoftLogo = "/logo1.png";
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
@@ -170,52 +170,55 @@ const Login = () => {
           </div>
         </section>
 
-        <aside className="visual-side" aria-label="MIRI secure workspace">
-          <div className="dot-grid" aria-hidden="true">
-            {Array.from({ length: 9 }, (_, i) => (
-              <span key={i} />
-            ))}
-          </div>
+        <aside className="visual-side" aria-label="Smarter salons powered by AI">
           <div className="wave wave-top" aria-hidden="true" />
+          <div className="wave wave-mid" aria-hidden="true" />
           <div className="wave wave-bottom" aria-hidden="true" />
-          <div className="spark spark-one" aria-hidden="true" />
-          <div className="spark spark-two" aria-hidden="true" />
-          <div className="spark spark-three" aria-hidden="true" />
 
           <div className="glass-card">
-            <img src={MirisoftLogo} alt="MiriSoft" />
-            <div className="shield" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 3l7 3v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3z" />
-                <path d="M12 8v6m-2-2l2 2 2-2" />
-              </svg>
+            <div className="hero-brand">
+              <img src={MirisoftLogo} alt="MiriSoft Solutions" />
+              <span>Custom Software. Our Passion. Your Advantage.</span>
             </div>
-            <div className="hero-rule" aria-hidden="true" />
-            <h2 className="hero-title">Secure. <em>Smart.</em> Seamless.</h2>
+
+            <h2 className="hero-title">
+              Smarter Salons.
+              <strong>
+                Powered by{" "}
+                <em>
+                  AI.
+                  <svg className="ai-underline" viewBox="0 0 120 12" aria-hidden="true">
+                    <path d="M3 8.5C28 2.5 92 1.5 117 5.5" />
+                  </svg>
+                </em>
+              </strong>
+            </h2>
+
             <p>
               Your data. Your workspace.
               <br />
-              Always protected with MIRI.
+              Now smarter with MIRI.
             </p>
+
             <div className="hero-features" aria-hidden="true">
-              <div className="hero-feature">
+              <div className="hero-feature tone-blue">
                 <span>
                   <svg viewBox="0 0 24 24">
                     <path d="M12 3l7 3v5c0 4.7-2.8 8-7 10-4.2-2-7-5.3-7-10V6l7-3z" />
                     <path d="M9.5 12.5l1.7 1.7 3.3-3.6" />
                   </svg>
                 </span>
-                <strong>Secure Access</strong>
+                <strong>Secure<br />Access</strong>
               </div>
-              <div className="hero-feature">
+              <div className="hero-feature tone-sky">
                 <span>
                   <svg viewBox="0 0 24 24">
                     <path d="M6 18h11a4 4 0 0 0 .7-7.9A5.5 5.5 0 0 0 7.2 8.2 3.8 3.8 0 0 0 6 18z" />
                   </svg>
                 </span>
-                <strong>Cloud Sync</strong>
+                <strong>Cloud<br />Sync</strong>
               </div>
-              <div className="hero-feature">
+              <div className="hero-feature tone-mint">
                 <span>
                   <svg viewBox="0 0 24 24">
                     <path d="M5 19V9" />
@@ -224,17 +227,23 @@ const Login = () => {
                     <path d="M20 19v-4" />
                   </svg>
                 </span>
-                <strong>Smart Insights</strong>
+                <strong>Smart<br />Insights</strong>
               </div>
-              <div className="hero-feature">
+              <div className="hero-feature tone-violet">
                 <span>
                   <svg viewBox="0 0 24 24">
                     <path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3z" />
                     <path d="M18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8L18 15z" />
                   </svg>
                 </span>
-                <strong>AI Powered</strong>
+                <strong>AI<br />Powered</strong>
               </div>
+            </div>
+
+            <div className="hero-foot">
+              <span className="hero-rule" aria-hidden="true" />
+              <strong>A Smarter Tomorrow</strong>
+              <span className="hero-foot-sub">Together</span>
             </div>
           </div>
         </aside>

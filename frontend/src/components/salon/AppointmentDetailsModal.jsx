@@ -8,7 +8,7 @@ import {
   Row,
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
-import StatusBadge from "./StatusBadge";
+import AppointmentStatusBadge from "./AppointmentStatusBadge";
 import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
 
 const InfoItem = ({ icon, label, children }) => (
@@ -61,7 +61,7 @@ const AppointmentDetailsModal = ({
       <ModalHeader toggle={toggle}>
         <div className="d-flex align-items-center gap-2 flex-wrap">
           <span>Appointment {appointment.appointmentCode}</span>
-          <StatusBadge value={appointment.status} />
+          <AppointmentStatusBadge value={appointment.status} />
         </div>
       </ModalHeader>
       <ModalBody>

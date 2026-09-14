@@ -51,11 +51,13 @@ const DataGrid = ({
   onEdit,
   onDelete,
   renderActions,
+  header,
 }) => {
   const hasActions = Boolean(onView || onEdit || onDelete || renderActions);
 
   return (
     <div className="card card-bordered">
+      {header}
       <div className="table-responsive">
         <table className="table table-tranx">
           <thead>
@@ -86,12 +88,12 @@ const DataGrid = ({
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
+              rows.map((row, index) => (
                 <tr key={row.id}>
                   {columns.map((column) => (
                     <td key={column.key}>
                       {column.render
-                        ? column.render(row[column.key], row)
+                        ? column.render(row[column.key], row, index)
                         : formatDisplayValue(row[column.key])}
                     </td>
                   ))}

@@ -18,6 +18,11 @@ const readSession = () => {
   }
 };
 
+// A salon-wide role can open a session on one branch; every request then
+// carries it so the API answers with that branch's data only.
+const branchHeader = (session) =>
+  session?.activeBranch?.id ? { "X-Branch-Id": session.activeBranch.id } : {};
+
 const toQuery = (params = {}) => {
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
@@ -44,6 +49,7 @@ export const request = async (path, options = {}, retrying = false) => {
         ...(session?.accessToken
           ? { Authorization: `Bearer ${session.accessToken}` }
           : {}),
+        ...branchHeader(session),
         ...headers,
       },
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
@@ -102,6 +108,7 @@ export const requestBlob = async (path) => {
     credentials: "include",
     headers: {
       ...(session?.accessToken ? { Authorization: `Bearer ${session.accessToken}` } : {}),
+      ...branchHeader(session),
     },
   });
   if (!response.ok) {
@@ -126,6 +133,7 @@ export const downloadFile = async (path, query) => {
       ...(session?.accessToken
         ? { Authorization: `Bearer ${session.accessToken}` }
         : {}),
+      ...branchHeader(session),
     },
   });
   if (!response.ok) {

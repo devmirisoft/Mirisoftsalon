@@ -21,6 +21,36 @@ export const isBranchUnrestrictedRole = (role?: string) =>
   typeof role === "string" && BRANCH_UNRESTRICTED_ROLES.has(role);
 
 /**
+ * Roles that already carry a branch filter in the feature services that build
+ * their own `where` (job carts, memberships, wallets, staff availability).
+ * Kept separate from BRANCH_LOCKED_ROLES so opening a branch session does not
+ * silently change what a STAFF user sees in those modules.
+ */
+const COUNTER_ROLES = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
+
+type BranchActor = {
+  role?: string;
+  branchId?: string | undefined;
+  activeBranchId?: string | undefined;
+};
+
+/**
+ * The `where` fragment that confines an actor to a branch.
+ *
+ * Counter roles are pinned to their own branch. Salon-wide roles stay
+ * unfiltered unless they have opened a branch session, in which case they read
+ * and write that branch only — that is what makes an admin's branch login show
+ * isolated data instead of the whole salon.
+ */
+export const actorBranchWhere = (actor: BranchActor) => {
+  if (COUNTER_ROLES.has(actor.role ?? "")) {
+    return { branchId: actor.branchId ?? "__unauthorized__" };
+  }
+
+  return actor.activeBranchId ? { branchId: actor.activeBranchId } : {};
+};
+
+/**
  * The branch a request is confined to.
  *
  * Returns `undefined` for SUPER_ADMIN and SALON_ADMIN, which preserves the
@@ -37,7 +67,7 @@ export const resolveBranchScope = (req: Request): string | undefined | null => {
   const role = req.user?.role;
 
   if (isBranchUnrestrictedRole(role)) {
-    return undefined;
+    return req.user?.activeBranchId ?? undefined;
   }
 
   if (isBranchLockedRole(role)) {
@@ -70,6 +100,13 @@ export const resolveWritableBranchId = (
     }
 
     return { ok: true, branchId };
+  }
+
+  // An open branch session pins writes to that branch the same way a
+  // branch-locked role is pinned, so a body-supplied branch cannot leak a row
+  // into a branch the admin is not currently working in.
+  if (req.user?.activeBranchId) {
+    return { ok: true, branchId: req.user.activeBranchId };
   }
 
   if (requestedBranchId === undefined || requestedBranchId === null) {
@@ -105,7 +142,15 @@ export const resolveBranchFilter = (
 
   if (scope) {
     if (requested && requested !== scope) {
-      return { ok: false, message: "You do not have access to this branch" };
+      // A salon-wide role does have access, they are just working inside
+      // another branch right now, so say that rather than "no access".
+      return req.user?.activeBranchId
+        ? {
+            ok: false,
+            message:
+              "You are working in another branch. Switch branch from the top bar to see this one.",
+          }
+        : { ok: false, message: "You do not have access to this branch" };
     }
 
     return { ok: true, branchId: scope };

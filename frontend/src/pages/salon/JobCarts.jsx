@@ -4,9 +4,17 @@ import { Alert, Col, Input, Label, Row } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import DataGrid from "@/components/salon/DataGrid";
 import PageShell from "@/components/salon/PageShell";
+import ServerPagination from "@/components/salon/ServerPagination";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
 import { formatDate } from "@/utils/salonFormat";
+
+const STATUS_TABS = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "COMPLETED", label: "Completed" },
+  { value: "CANCELLED", label: "Cancelled" },
+  { value: "", label: "All" },
+];
 
 const timeOnly = (value) =>
   value
@@ -54,7 +62,9 @@ const JobCarts = () => {
     page: 1,
     totalPages: 1,
     total: 0,
+    limit: 10,
   });
+  const [limit, setLimit] = useState(10);
   const [filters, setFilters] = useState({
     status: "ACTIVE",
     search: "",
@@ -77,25 +87,23 @@ const JobCarts = () => {
             : search;
         const response = await salonApi.jobCarts.list({
           page,
-          limit: 20,
+          limit,
           ...(filters.status ? { status: filters.status } : {}),
           ...(normalizedSearch ? { search: normalizedSearch } : {}),
           ...(filters.startDate ? { startDate: filters.startDate } : {}),
           ...(filters.endDate ? { endDate: filters.endDate } : {}),
         });
         setRows(response.data || []);
-        setPagination(response.pagination || {
-          page,
-          totalPages: 1,
-          total: 0,
-        });
+        setPagination(
+          response.pagination || { page, totalPages: 1, total: 0, limit }
+        );
       } catch (loadError) {
         setError(loadError.message);
       } finally {
         setLoading(false);
       }
     },
-    [filters]
+    [filters, limit]
   );
 
   useEffect(() => {
@@ -111,8 +119,11 @@ const JobCarts = () => {
       endDate: "",
     });
 
+  const firstOnPage = ((pagination.page || 1) - 1) * (pagination.limit || limit);
+
   return (
     <PageShell
+      className="jobcarts-page"
       title="Job Cart"
       description="Create and manage walk-in service carts using appointments and draft invoices."
       actionLabel="New Job Cart"
@@ -120,77 +131,86 @@ const JobCarts = () => {
     >
       {error && <Alert color="danger">{error}</Alert>}
 
-      <div className="card card-bordered mb-4">
+      <div className="card card-bordered jc-panel mb-4">
         <div className="card-inner">
-          <div className="d-flex flex-wrap gap-2 mb-4">
-            {["ACTIVE", "COMPLETED", "CANCELLED"].map((status) => (
-              <Button
-                key={status}
-                size="sm"
-                color={filters.status === status ? "primary" : "light"}
+          <div className="jc-tabs">
+            {STATUS_TABS.map((tab) => (
+              <button
+                key={tab.value || "ALL"}
+                type="button"
+                className={`jc-tab ${
+                  filters.status === tab.value ? "is-active" : ""
+                }`}
                 onClick={() =>
-                  setFilters((current) => ({ ...current, status }))
+                  setFilters((current) => ({ ...current, status: tab.value }))
                 }
               >
-                {status.charAt(0) + status.slice(1).toLowerCase()}
-              </Button>
+                {tab.label}
+              </button>
             ))}
-            <Button
-              size="sm"
-              color={!filters.status ? "primary" : "light"}
-              onClick={() =>
-                setFilters((current) => ({ ...current, status: "" }))
-              }
-            >
-              All
-            </Button>
           </div>
           <Row className="g-3 align-items-end">
             <Col md="5">
-              <Label>Search by phone or job</Label>
-              <Input
-                placeholder="Job cart ID, customer, phone or service"
-                value={filters.search}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    search: event.target.value,
-                    ...(event.target.value.trim() ? { status: "" } : {}),
-                  }))
-                }
-              />
+              <Label className="jc-label">Search by phone or job</Label>
+              <div className="cust-field">
+                <Icon name="search" className="cust-field-icon" />
+                <Input
+                  className="cust-input"
+                  placeholder="Job cart ID, customer, phone or service"
+                  value={filters.search}
+                  onChange={(event) =>
+                    setFilters((current) => ({
+                      ...current,
+                      search: event.target.value,
+                      ...(event.target.value.trim() ? { status: "" } : {}),
+                    }))
+                  }
+                />
+              </div>
             </Col>
             <Col md="2">
-              <Label>Start Date</Label>
-              <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    startDate: event.target.value,
-                  }))
-                }
-              />
+              <Label className="jc-label">Start Date</Label>
+              <div className="cust-field">
+                <Icon name="calendar" className="cust-field-icon" />
+                <Input
+                  className="cust-input"
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(event) =>
+                    setFilters((current) => ({
+                      ...current,
+                      startDate: event.target.value,
+                    }))
+                  }
+                />
+              </div>
             </Col>
             <Col md="2">
-              <Label>End Date</Label>
-              <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    endDate: event.target.value,
-                  }))
-                }
-              />
+              <Label className="jc-label">End Date</Label>
+              <div className="cust-field">
+                <Icon name="calendar" className="cust-field-icon" />
+                <Input
+                  className="cust-input"
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(event) =>
+                    setFilters((current) => ({
+                      ...current,
+                      endDate: event.target.value,
+                    }))
+                  }
+                />
+              </div>
             </Col>
             <Col md="3" className="d-flex gap-2">
-              <Button color="primary" outline onClick={() => load(1)}>
-                <Icon name="search" /> Search
+              <Button
+                color="primary"
+                className="jc-btn-primary"
+                onClick={() => load(1)}
+              >
+                <Icon name="search" /> <span>Search</span>
               </Button>
-              <Button color="light" onClick={reset}>
+              <Button color="light" className="jc-btn-ghost" onClick={reset}>
                 Reset
               </Button>
             </Col>
@@ -198,23 +218,43 @@ const JobCarts = () => {
         </div>
       </div>
 
-      <div className="d-flex justify-content-between mb-2">
-        <h5 className="mb-0">Job Carts</h5>
-        <span className="text-soft">{pagination.total || 0} records</span>
-      </div>
       <DataGrid
         loading={loading}
         rows={rows}
         emptyText="No job carts match these filters."
+        header={
+          <div className="jc-grid-head">
+            <h6>
+              <Icon name="file-docs" />
+              <span>Job Carts</span>
+            </h6>
+            <span className="jc-grid-count">
+              {pagination.total || 0} records
+            </span>
+          </div>
+        }
         columns={[
-          { key: "jobCartId", label: "Job Cart ID" },
+          {
+            key: "rowIndex",
+            label: "#",
+            render: (_value, _row, index) => firstOnPage + index + 1,
+          },
+          {
+            key: "jobCartId",
+            label: "Job Cart ID",
+            render: (value, row) => (
+              <Link className="jc-id" to={`/job-carts/${row.id}`}>
+                {value}
+              </Link>
+            ),
+          },
           {
             key: "customer",
             label: "Customer Name",
             render: (value) =>
               value ? (
                 <Link
-                  className="fw-medium"
+                  className="jc-link fw-medium"
                   to={`/customers/${value.id}`}
                 >
                   {value.name}
@@ -228,12 +268,17 @@ const JobCarts = () => {
             label: "Phone No",
             render: (_value, row) =>
               row.customer ? (
-                <Link to={`/customers/${row.customer.id}`}>
+                <Link className="jc-link" to={`/customers/${row.customer.id}`}>
                   {row.customer.phone || "—"}
                 </Link>
               ) : (
                 "—"
               ),
+          },
+          {
+            key: "branch",
+            label: "Branch",
+            render: (value) => value?.name || "—",
           },
           {
             key: "startTime",
@@ -267,42 +312,33 @@ const JobCarts = () => {
           },
         ]}
         onView={(row) => navigate(`/job-carts/${row.id}`)}
-        renderActions={(row) =>
-          row.status === "ACTIVE" && (
+        renderActions={(row) => (
+          <>
             <Button
               size="sm"
-              color="success"
-              onClick={() => navigate(`/job-carts/${row.id}?bill=1`)}
+              color="light"
+              onClick={() => navigate(`/job-carts/${row.id}/view`)}
             >
-              <Icon name="file-plus" /> Make bill
+              <Icon name="file-text" /> View job cart
             </Button>
-          )
-        }
+            {row.status === "ACTIVE" && (
+              <Button
+                size="sm"
+                color="success"
+                onClick={() => navigate(`/job-carts/${row.id}?bill=1`)}
+              >
+                <Icon name="file-plus" /> Make bill
+              </Button>
+            )}
+          </>
+        )}
       />
 
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <Button
-          color="light"
-          size="sm"
-          disabled={pagination.page <= 1 || loading}
-          onClick={() => load(pagination.page - 1)}
-        >
-          Previous
-        </Button>
-        <span className="text-soft">
-          Page {pagination.page || 1} of {pagination.totalPages || 1}
-        </span>
-        <Button
-          color="light"
-          size="sm"
-          disabled={
-            pagination.page >= pagination.totalPages || loading
-          }
-          onClick={() => load(pagination.page + 1)}
-        >
-          Next
-        </Button>
-      </div>
+      <ServerPagination
+        pagination={pagination}
+        onPage={(page) => load(page)}
+        onLimit={setLimit}
+      />
     </PageShell>
   );
 };

@@ -13,6 +13,7 @@ import { createStockMovement } from "../stock/stockMovement.service.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
 import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 const PAYMENT_METHODS = ["CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD", "BANK_TRANSFER", "CHEQUE", "OTHER"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
@@ -24,9 +25,7 @@ const listWhere = (req: Request) => ({
       ? { salonId: req.query.salonId }
       : {}
     : { salonId: req.user?.salonId || "__missing__" }),
-  ...((req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") && req.user.branchId
-    ? { branchId: req.user.branchId }
-    : {}),
+  ...actorBranchWhere(req.user ?? {}),
 });
 
 export const createRetailSale = async (req: Request, res: Response) => {
@@ -110,7 +109,12 @@ export const createRetailSale = async (req: Request, res: Response) => {
                 userId: req.user.userId,
                 role: req.user.role,
                 ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
-                ...(req.user.branchId ? { branchId: req.user.branchId } : {}),
+                ...(req.user.branchId
+                  ? { branchId: req.user.branchId }
+                  : {}),
+                ...(req.user.activeBranchId
+                  ? { activeBranchId: req.user.activeBranchId }
+                  : {}),
               },
               audit: requestAuditContext(req),
             })

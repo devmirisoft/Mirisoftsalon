@@ -13,9 +13,7 @@ type MovementType = (typeof TYPES)[number];
 
 const baseWhere = (req: Request) => ({
   ...(req.user?.role === "SUPER_ADMIN" ? {} : { salonId: req.user?.salonId || "__missing__" }),
-  ...((req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") && req.user.branchId
-    ? { OR: [{ branchId: req.user.branchId }, { branchId: null }] }
-    : {}),
+  ...branchScope(req),
 });
 
 export const createManualStockMovement = async (req: Request, res: Response) => {

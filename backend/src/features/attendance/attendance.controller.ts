@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { applyBranchSession } from "../../utils/branch-scope.js";
 import type { AttendanceStatus } from "../../generated/prisma/enums.js";
 import { AttendanceModel } from "./attendance.model.js";
 
@@ -486,6 +487,8 @@ const buildListFilters = async (req: Request, forcedStaffId?: string) => {
 
     branchId = req.user.branchId;
   }
+
+  branchId = applyBranchSession(req, branchId);
 
   if (branchId) {
     const branch = await AttendanceModel.findBranchById(branchId);

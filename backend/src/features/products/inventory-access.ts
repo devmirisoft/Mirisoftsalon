@@ -1,6 +1,10 @@
 import { type Request } from "express";
 import { prisma } from "../../config/prisma.js";
-import { isBranchLockedRole } from "../../utils/branch-scope.js";
+import {
+  actorBranchOrSalonWideWhere,
+  actorBranchWhere,
+  isBranchLockedRole,
+} from "../../utils/branch-scope.js";
 
 export const INVENTORY_VIEW_ROLES = [
   "SUPER_ADMIN",
@@ -17,17 +21,12 @@ export const getSalonId = (req: Request, requestedSalonId?: unknown) =>
       : undefined
     : req.user?.salonId;
 
+/** Inventory rows the caller may see, keeping salon-wide (null branch) rows. */
 export const branchScope = (req: Request) =>
-  (req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") &&
-  req.user.branchId
-    ? { OR: [{ branchId: req.user.branchId }, { branchId: null }] }
-    : {};
+  actorBranchOrSalonWideWhere(req.user ?? {});
 
-export const exactBranchScope = (req: Request) =>
-  (req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") &&
-  req.user.branchId
-    ? { branchId: req.user.branchId }
-    : {};
+/** Inventory rows that belong to exactly the caller's branch. */
+export const exactBranchScope = (req: Request) => actorBranchWhere(req.user ?? {});
 
 /**
  * The branch a write may target. Branch-locked callers are pinned to their own
@@ -36,7 +35,9 @@ export const exactBranchScope = (req: Request) =>
 export const writableBranch = (req: Request, requested: unknown) =>
   isBranchLockedRole(req.user?.role)
     ? req.user?.branchId ?? "__no_branch__"
-    : cleanText(requested);
+    : // An open branch session pins the write the same way a locked role is
+      // pinned, so a body-supplied branch cannot place the row elsewhere.
+      req.user?.activeBranchId ?? cleanText(requested);
 
 export const validateBranch = async (
   salonId: string,

@@ -23,6 +23,7 @@ import {
 import {
   branchFilterFor,
   isBranchLockedRole,
+  pinnedBranchId,
 } from "../../utils/branch-scope.js";
 
 const APPOINTMENT_STATUSES = [
@@ -147,15 +148,23 @@ export const createAppointment = async (req: Request, res: Response) => {
 
         let finalBranchId: string | undefined = branchId;
 
-        if (isBranchLockedRole(req.user?.role) && req.user?.branchId) {
-            if (branchId && branchId !== req.user?.branchId) {
+        const pinnedBranch = pinnedBranchId(req.user);
+
+        if (pinnedBranch) {
+            // A branch-locked role reaching for another branch is overreaching;
+            // a salon-wide role just has a session open, so that session wins.
+            if (
+                branchId &&
+                branchId !== pinnedBranch &&
+                !req.user?.activeBranchId
+            ) {
                 return res.status(403).json({
                     success: false,
                     message: "You do not have access to this branch",
                 });
             }
 
-            finalBranchId = req.user?.branchId;
+            finalBranchId = pinnedBranch;
         }
 
         const customer = await CustomerModel.findByIdAndSalon(
@@ -427,11 +436,13 @@ export const getAppointments = async (req: Request, res: Response) => {
             });
         }
 
+        const listBranchId = pinnedBranchId(req.user);
+
         if (
-            isBranchLockedRole(req.user.role) &&
-            req.user.branchId &&
+            listBranchId &&
             branchId &&
-            String(branchId) !== req.user.branchId
+            String(branchId) !== listBranchId &&
+            !req.user.activeBranchId
         ) {
             return res.status(403).json({
                 success: false,
@@ -441,8 +452,8 @@ export const getAppointments = async (req: Request, res: Response) => {
 
         const salon = await SalonModel.findById(req.user.salonId);
         const appointments = await AppointmentModel.findBySalon(req.user.salonId, {
-            ...(isBranchLockedRole(req.user.role) && req.user.branchId
-                ? { branchId: req.user.branchId }
+            ...(listBranchId
+                ? { branchId: listBranchId }
                 : branchId
                   ? { branchId: String(branchId) }
                   : {}),

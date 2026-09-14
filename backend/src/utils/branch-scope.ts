@@ -51,6 +51,49 @@ export const actorBranchWhere = (actor: BranchActor) => {
 };
 
 /**
+ * The branch this caller is confined to for the current request: their own
+ * branch for a branch-locked role, or the branch a salon-wide role has opened
+ * a session on. `undefined` means the caller may work across the whole salon.
+ */
+export const pinnedBranchId = (user?: BranchActor) =>
+  isBranchLockedRole(user?.role) ? user?.branchId : user?.activeBranchId;
+
+/**
+ * True when the caller may not choose which branch a row belongs to, so a
+ * branchId in the request body is ignored rather than honoured.
+ */
+export const isBranchPinned = (user?: BranchActor) =>
+  Boolean(pinnedBranchId(user));
+
+/**
+ * Applies an open branch session to a caller-supplied branch filter.
+ *
+ * The session always wins: a page that still remembers `?branchId=` for another
+ * branch gets the branch the admin is actually working in, rather than an error
+ * or another branch's rows. Returns `requested` unchanged when no session is
+ * open, which keeps the all-branches behaviour for an admin who has not logged
+ * into one.
+ */
+export const applyBranchSession = (
+  req: Request,
+  requested?: string | undefined
+) => req.user?.activeBranchId ?? requested;
+
+/**
+ * Like `actorBranchWhere`, but for tables whose rows may be salon-wide: a null
+ * branchId means "shared by every branch" (catalog services, products and
+ * packages), so those stay visible inside a branch session. Only rows owned by
+ * a *different* branch are hidden.
+ */
+export const actorBranchOrSalonWideWhere = (actor: BranchActor) => {
+  const scoped = actorBranchWhere(actor);
+
+  return "branchId" in scoped
+    ? { OR: [{ branchId: null }, { branchId: scoped.branchId }] }
+    : {};
+};
+
+/**
  * The branch a request is confined to.
  *
  * Returns `undefined` for SUPER_ADMIN and SALON_ADMIN, which preserves the
@@ -141,16 +184,11 @@ export const resolveBranchFilter = (
       : undefined;
 
   if (scope) {
-    if (requested && requested !== scope) {
-      // A salon-wide role does have access, they are just working inside
-      // another branch right now, so say that rather than "no access".
-      return req.user?.activeBranchId
-        ? {
-            ok: false,
-            message:
-              "You are working in another branch. Switch branch from the top bar to see this one.",
-          }
-        : { ok: false, message: "You do not have access to this branch" };
+    // A branch-locked user asking for another branch is overreaching, but a
+    // salon-wide role with a session open is just carrying a stale filter from
+    // a page, so the session quietly wins instead of failing the request.
+    if (requested && requested !== scope && !req.user?.activeBranchId) {
+      return { ok: false, message: "You do not have access to this branch" };
     }
 
     return { ok: true, branchId: scope };

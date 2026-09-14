@@ -1,6 +1,8 @@
 import { type Request, type Response } from "express";
 import { prisma } from "../../config/prisma.js";
 import {
+  exactBranchScope,
+  writableBranch,
   getSalonId,
   sendInventoryError,
   validateBranch,
@@ -16,16 +18,14 @@ const listWhere = (req: Request) => ({
       ? { salonId: req.query.salonId }
       : {}
     : { salonId: req.user?.salonId || "__missing__" }),
-  ...((req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") && req.user.branchId
-    ? { branchId: req.user.branchId }
-    : {}),
+  ...exactBranchScope(req),
   ...(typeof req.query.vendorId === "string" ? { vendorId: req.query.vendorId } : {}),
 });
 
 export const createProductPurchase = async (req: Request, res: Response) => {
   try {
     const salonId = getSalonId(req, req.body.salonId);
-    const branchId = typeof req.body.branchId === "string" && req.body.branchId ? req.body.branchId : undefined;
+    const branchId = writableBranch(req, req.body.branchId);
     const vendorId = typeof req.body.vendorId === "string" && req.body.vendorId ? req.body.vendorId : undefined;
     if (!salonId) return res.status(400).json({ success: false, message: "Salon is required" });
     if (!(await validateBranch(salonId, branchId))) {

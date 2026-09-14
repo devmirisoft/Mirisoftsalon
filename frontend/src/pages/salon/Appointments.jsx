@@ -369,7 +369,7 @@ const Appointments = () => {
   return (
     <PageShell
       title="Appointments"
-      description="Book services, prevent staff conflicts, track status, reschedule, and maintain operational notes."
+      description=""
       actionLabel="Book appointment"
       onAction={() => openAction("create")}
       tools={
@@ -384,8 +384,39 @@ const Appointments = () => {
       }
     >
       {error && <Alert color="danger">{error}</Alert>}
-      <div className="card card-bordered mb-4">
+      <div className="card card-bordered mb-3 appt-toolbar">
         <div className="card-inner">
+          <div className="appt-toolbar-head">
+            <h5 className="title mb-0">
+              {view === "calendar"
+                ? ""
+                : view === "staff"
+                  ? "Staff schedule"
+                  : "Appointment list"}
+            </h5>
+            {view !== "calendar" && (
+              <div className="btn-group">
+                <Button
+                  color="light"
+                  onClick={() => setView("calendar")}
+                >
+                  <Icon name="calender-date" /> Calendar
+                </Button>
+                <Button
+                  color={view === "staff" ? "primary" : "light"}
+                  onClick={() => setView("staff")}
+                >
+                  <Icon name="users" /> Staff
+                </Button>
+                <Button
+                  color={view === "list" ? "primary" : "light"}
+                  onClick={() => setView("list")}
+                >
+                  <Icon name="list-index" /> List
+                </Button>
+              </div>
+            )}
+          </div>
           <Row className="g-3 align-items-end">
             <Col md="3">
               <Label>Date</Label>
@@ -439,55 +470,9 @@ const Appointments = () => {
               </Button>
             </Col>
           </Row>
-        </div>
-      </div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="title mb-0">
-          {view === "calendar"
-            ? "Appointment calendar"
-            : view === "staff"
-              ? "Staff schedule"
-              : "Appointment list"}
-        </h5>
-        <div className="btn-group">
-          <Button
-            color={view === "calendar" ? "primary" : "light"}
-            onClick={() => setView("calendar")}
-          >
-            <Icon name="calender-date" /> Calendar
-          </Button>
-          <Button
-            color={view === "staff" ? "primary" : "light"}
-            onClick={() => setView("staff")}
-          >
-            <Icon name="users" /> Staff
-          </Button>
-          <Button
-            color={view === "list" ? "primary" : "light"}
-            onClick={() => setView("list")}
-          >
-            <Icon name="list-index" /> List
-          </Button>
-        </div>
-      </div>
-
-      {loading && view !== "list" ? (
-        <div className="card card-bordered">
-          <div className="card-inner text-center py-5">
-            <Spinner color="primary" />
-            <p className="text-soft mt-2 mb-0">Loading appointment calendar…</p>
-          </div>
-        </div>
-      ) : view === "calendar" ? (
-        <AppointmentCalendar
-          appointments={appointments}
-          onAppointmentClick={viewDetails}
-          onDateSelect={openCalendarBooking}
-        />
-      ) : view === "staff" ? (
-        <>
-          <div className="card card-bordered mb-3">
-            <div className="card-inner">
+          {view === "staff" && (
+            <>
+              <hr className="appt-toolbar-split" />
               <Row className="g-3 align-items-end">
                 <Col md="4">
                   <Label>Staff member</Label>
@@ -527,8 +512,27 @@ const Appointments = () => {
               <p className="mt-3 mb-0 text-soft small">
                 Click a slot in a staff column to book that staff member.
               </p>
-            </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {loading && view !== "list" ? (
+        <div className="card card-bordered">
+          <div className="card-inner text-center py-5">
+            <Spinner color="primary" />
+            <p className="text-soft mt-2 mb-0">Loading appointment calendar…</p>
           </div>
+        </div>
+      ) : view === "calendar" ? (
+        <AppointmentCalendar
+          appointments={appointments}
+          onAppointmentClick={viewDetails}
+          onDateSelect={openCalendarBooking}
+          onViewChange={setView}
+        />
+      ) : view === "staff" ? (
+        <>
           <Row className="g-3">
             <Col xl="3">
               <div className="card card-bordered h-100">

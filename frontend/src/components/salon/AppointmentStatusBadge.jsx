@@ -1,12 +1,15 @@
 /* eslint-disable react/prop-types */
 import { labelize } from "@/utils/salonFormat";
 
-// Colours live in salon-app.scss as .appt-status-<status in lower case>.
+// Only the colour variables. Calendar events take this on its own; the pill
+// shape lives in .appt-status, which the badge below adds.
 export const appointmentStatusClass = (status) =>
-  `appt-status appt-status-${String(status || "").toLowerCase()}`;
+  `appt-status-${String(status || "").toLowerCase()}`;
 
 const AppointmentStatusBadge = ({ value }) => (
-  <span className={appointmentStatusClass(value)}>{labelize(value)}</span>
+  <span className={`appt-status ${appointmentStatusClass(value)}`}>
+    {labelize(value)}
+  </span>
 );
 
 export default AppointmentStatusBadge;

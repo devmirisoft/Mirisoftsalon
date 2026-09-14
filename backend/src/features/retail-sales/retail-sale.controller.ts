@@ -7,6 +7,7 @@ import {
   sendInventoryError,
   transactionError,
   validateBranch,
+  writableBranch,
 } from "../products/inventory-access.js";
 import { RetailSaleModel } from "./retail-sale.model.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
@@ -31,12 +32,7 @@ const listWhere = (req: Request) => ({
 export const createRetailSale = async (req: Request, res: Response) => {
   try {
     const salonId = getSalonId(req, req.body.salonId);
-    const branchId =
-      req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER"
-        ? req.user.branchId
-        : typeof req.body.branchId === "string" && req.body.branchId
-          ? req.body.branchId
-          : undefined;
+    const branchId = writableBranch(req, req.body.branchId);
     if (!salonId) return res.status(400).json({ success: false, message: "Salon is required" });
     if (!(await validateBranch(salonId, branchId))) return res.status(400).json({ success: false, message: "Invalid branch for this salon" });
     if (req.body.paymentMethod && !PAYMENT_METHODS.includes(req.body.paymentMethod as PaymentMethod)) {

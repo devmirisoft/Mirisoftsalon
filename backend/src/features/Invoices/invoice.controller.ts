@@ -35,6 +35,7 @@ import {
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
 import {
   branchFilterFor,
+  pinnedBranchId,
   isBranchLockedRole,
 } from "../../utils/branch-scope.js";
 
@@ -152,12 +153,9 @@ const getExistingInvoiceByAccess = async (req: Request, invoiceId: string) => {
   }
 
   const invoice = await InvoiceModel.findByIdAndSalon(invoiceId, salonId);
-  if (
-    invoice &&
-    isBranchLockedRole(req.user?.role) &&
-    req.user?.branchId &&
-    invoice.branchId !== req.user?.branchId
-  ) {
+  const pinnedBranch = pinnedBranchId(req.user);
+
+  if (invoice && pinnedBranch && invoice.branchId !== pinnedBranch) {
     return null;
   }
   return invoice;
@@ -1234,8 +1232,8 @@ const invoiceCouponAccess = (req: Request) => ({
   ...(req.user?.role === "SUPER_ADMIN"
     ? {}
     : { salonId: req.user?.salonId ?? "__missing__" }),
-  ...(isBranchLockedRole(req.user?.role) && req.user?.branchId
-    ? { actorBranchId: req.user?.branchId }
+  ...(pinnedBranchId(req.user)
+    ? { actorBranchId: pinnedBranchId(req.user)! }
     : {}),
 });
 

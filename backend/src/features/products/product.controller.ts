@@ -10,7 +10,7 @@ import {
   sendInventoryError,
   validateBranch,
 } from "./inventory-access.js";
-import { isBranchLockedRole } from "../../utils/branch-scope.js";
+import { isBranchPinned } from "../../utils/branch-scope.js";
 
 const UNITS = ["PCS", "ML", "LITER", "GRAM", "KG", "PACK", "BOX", "BOTTLE", "TUBE"] as const;
 type ProductUnit = (typeof UNITS)[number];
@@ -173,7 +173,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (req.body.unit !== undefined && !isUnit(req.body.unit)) {
       return res.status(400).json({ success: false, message: "Invalid product unit" });
     }
-    const canMoveBranch = !isBranchLockedRole(req.user?.role);
+    const canMoveBranch = !isBranchPinned(req.user);
     const referenceError = await checkReferences(
       existing.salonId,
       req.body.brandId,

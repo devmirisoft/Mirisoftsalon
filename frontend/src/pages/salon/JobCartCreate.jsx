@@ -689,17 +689,8 @@ const JobCartCreate = () => {
       <Form onSubmit={submit}>
         <Row className="g-4 jobcart-fill">
           <Col lg="8">
-            <div className="card card-bordered">
+            <div className="card card-bordered jobcart-main">
               <div className="card-inner">
-                <div className="d-flex align-items-start gap-2 mb-3">
-                  <Icon name="user-add" className="cust-head-icon" />
-                  <div>
-                    <h5 className="mb-0">Customer Details</h5>
-                    <span className="text-soft small">
-                      Enter customer information to get started.
-                    </span>
-                  </div>
-                </div>
                 {user?.role === "SUPER_ADMIN" && (
                   <FormGroup>
                     <Label>Salon</Label>
@@ -837,14 +828,14 @@ const JobCartCreate = () => {
                           </span>
                           <div className="flex-grow-1" style={{ minWidth: 0 }}>
                             <div className="fw-bold text-truncate">
-                              {form.customerName}
+                                 <div className="cust-chip-sub">{form.customerName} {form.phone}</div>
+
                             </div>
-                            <div className="cust-chip-sub">{form.phone}</div>
                           </div>
-                          <span className="cust-tag">
+                          {/* <span className="cust-tag">
                             <span className="cust-tag-dot" />
                             Existing Customer
-                          </span>
+                          </span> */}
                           <CustomerProfileLink customerId={savedCustomerId} />
                         </div>
                       ) : (
@@ -997,8 +988,8 @@ const JobCartCreate = () => {
                       <thead>
                         <tr>
                           {/* <th>Main Service</th> */}
-                          <th>Service</th>
-                          <th>Staff</th>
+                          <th style={{ width: 90 }}>Service</th>
+                          <th style={{ width: 90 }}>Staff</th>
                           <th style={{ width: 90 }}>Qty</th>
                           <th style={{ width: 180 }}>Price</th>
                           <th style={{ width: 160 }}>Discount</th>
@@ -1065,58 +1056,71 @@ const JobCartCreate = () => {
                                 </Input>
                               </td> */}
                               <td>
-                                <Select
-                                  className="react-select-container"
-                                  classNamePrefix="react-select"
-                                  isClearable
-                                  isDisabled={!form.branchId || saving}
-                                  options={rowServices.map((service) => ({
-                                    value: service.id,
-                                    label: `${service.name} - ${formatMoney(
-                                      service.price
-                                    )}`,
-                                  }))}
-                                  value={
-                                    selectedService
-                                      ? {
-                                          value: selectedService.id,
-                                          label: `${selectedService.name} - ${formatMoney(
-                                            selectedService.price
-                                          )}`,
-                                        }
-                                      : null
-                                  }
-                                  placeholder="Search service"
-                                  noOptionsMessage={() => "No services"}
-                                  onChange={(option) => {
-                                    const service = refs.services.find(
-                                      (item) => item.id === option?.value
-                                    );
-                                    updateServiceRow(row.rowId, {
-                                      serviceId: option?.value || "",
-                                      mainServiceId:
-                                        service?.mainService?.id ||
-                                        service?.mainServiceId ||
-                                        row.mainServiceId,
-                                      staffId: "",
-                                      discount: "",
-                                      discountType: "AMT",
-                                      price:
-                                        service === undefined
-                                          ? ""
-                                          : String(service.price ?? ""),
-                                      total:
-                                        service === undefined
-                                          ? ""
-                                          : priceToTotal(
-                                              service.price ?? 0,
-                                              row.qty,
-                                              serviceGstPercent
-                                            ),
-                                    });
-                                  }}
-                                />
-                              </td>
+  <Select
+    className="react-select-container"
+    classNamePrefix="react-select"
+    isClearable
+    isDisabled={!form.branchId || saving}
+    options={rowServices.map((service) => ({
+      value: service.id,
+      label: service.name,
+    }))}
+    value={
+      selectedService
+        ? { value: selectedService.id, label: selectedService.name }
+        : null
+    }
+    placeholder="Search service"
+    noOptionsMessage={() => "No services"}
+    menuPortalTarget={document.body}
+    menuPosition="fixed"
+    styles={{
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+      menu: (base) => ({
+        ...base,
+        width: "max-content",
+        minWidth: "100%",
+        maxWidth: 420,
+      }),
+      option: (base) => ({
+        ...base,
+        whiteSpace: "normal",
+        wordBreak: "break-word",
+      }),
+      singleValue: (base) => ({
+        ...base,
+        whiteSpace: "normal",
+        overflow: "visible",
+        textOverflow: "unset",
+      }),
+      control: (base) => ({
+        ...base,
+        minHeight: 38,
+        height: "auto",
+      }),
+    }}
+    onChange={(option) => {
+      const service = refs.services.find(
+        (item) => item.id === option?.value
+      );
+      updateServiceRow(row.rowId, {
+        serviceId: option?.value || "",
+        mainServiceId:
+          service?.mainService?.id ||
+          service?.mainServiceId ||
+          row.mainServiceId,
+        staffId: "",
+        discount: "",
+        discountType: "AMT",
+        price: service === undefined ? "" : String(service.price ?? ""),
+        total:
+          service === undefined
+            ? ""
+            : priceToTotal(service.price ?? 0, row.qty, serviceGstPercent),
+      });
+    }}
+  />
+</td>
                               <td>
                                 <Input
                                   type="select"
@@ -1453,10 +1457,7 @@ const JobCartCreate = () => {
             </div>
           </Col>
           <Col lg="4">
-            <div
-              className="card card-bordered cart-summary position-sticky"
-              style={{ top: 90 }}
-            >
+            <div className="card card-bordered cart-summary">
               <div className="card-inner">
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
@@ -1468,6 +1469,7 @@ const JobCartCreate = () => {
                     Walk-in Visit
                   </span>
                 </div>
+                <div className="cart-scroll">
                 {customerSummary && (
                   <>
                     <div className="cart-panel mb-3">
@@ -1631,6 +1633,7 @@ const JobCartCreate = () => {
                       {formatMoney(subtotal + packageSubtotal + estimatedTax)}
                     </span>
                   </div>
+                </div>
                 </div>
                 <p className="text-soft small">
                   Membership discount is calculated when the draft invoice is

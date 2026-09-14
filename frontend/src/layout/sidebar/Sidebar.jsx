@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import SimpleBar from "simplebar-react";
-import Logo from "../logo/Logo";
+import Logo1 from "../../../public/logo1.png";
 import Menu from "../menu/Menu";
 import Toggle from "./Toggle";
 
@@ -45,13 +45,14 @@ const Sidebar = ({ fixed, className, compact = false, menuData, ...props }) => {
             />
           </div>
           <div className="nk-sidebar-brand">
-            <Logo />
+            <img src={Logo1} alt="Logo" className="" />
           </div>
         </div>
         <div className="nk-sidebar-content" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <SimpleBar className="nk-sidebar-menu">
             <Menu data={menuData} />
           </SimpleBar>
+          
         </div>
       </div>
       {theme.sidebarVisibility && <div 

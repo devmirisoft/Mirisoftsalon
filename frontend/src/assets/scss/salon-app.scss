@@ -961,3 +961,406 @@ body.dark-mode .svc-picker .svc-card-add {
 body.dark-mode .svc-picker .svc-card.is-added .svc-card-add {
   background: rgba(30, 224, 172, 0.16);
 }
+
+/* Sidebar: navy gradient, condensed rows, guided sub-menus */
+.nk-sidebar.is-dark {
+  --side-ink: #dbe6f7;
+  --side-icon: #fff;
+  --side-head: #5c92d8;
+  --side-accent: #4a90ff;
+  --side-line: rgba(105, 167, 245, 0.22);
+  background: linear-gradient(180deg, #0f2a52 0%, #081a33 100%) !important;
+  border-color: transparent !important;
+}
+
+.nk-sidebar.is-dark .nk-sidebar-head {
+  background: transparent;
+  border-color: transparent !important;
+}
+
+/* The foot is a second flex child, so the scroller shares the column
+   instead of claiming the container's full height and pushing it out. */
+.nk-sidebar-content .nk-sidebar-menu,
+.nk-sidebar-content .nk-sidebar-menu[data-simplebar] {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  padding-top: 0.25rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Condensed rows */
+.nk-sidebar.is-dark .nk-menu-item {
+  padding: 0;
+}
+
+.nk-sidebar.is-dark .nk-menu > .nk-menu-item > .nk-menu-link {
+  margin: 0 0.75rem;
+  padding: 0.375rem 2rem 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--side-ink);
+  font-size: 0.875rem;
+}
+
+.nk-sidebar.is-dark .nk-menu-icon {
+  width: 2.25rem;
+  color: var(--side-icon);
+}
+
+.nk-sidebar.is-dark .nk-menu-toggle:after {
+  right: 1rem;
+  color: rgba(219, 230, 247, 0.45);
+}
+
+/* Section headings */
+.nk-sidebar.is-dark .nk-menu-heading {
+  padding: 0.125rem 1.5rem;
+  color: var(--side-head);
+}
+
+.nk-sidebar.is-dark .nk-menu-item + .nk-menu-heading {
+  padding-top: 0.5rem;
+}
+
+.nk-sidebar.is-dark .nk-menu-heading .overline-title {
+  color: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+/* Hover + open parent */
+.nk-sidebar.is-dark .nk-menu > .nk-menu-item > .nk-menu-link:hover {
+  background: rgba(74, 144, 255, 0.12);
+  color: #fff;
+}
+
+.nk-sidebar.is-dark
+  .nk-menu
+  > .nk-menu-item.has-sub.active
+  > .nk-menu-link:not(.active),
+.nk-sidebar.is-dark
+  .nk-menu
+  > .nk-menu-item.has-sub.active
+  > .nk-menu-link:not(.active)
+  .nk-menu-icon {
+  color: #69a7f5;
+}
+
+/* Active top-level item */
+.nk-sidebar.is-dark .nk-menu > .nk-menu-item > .nk-menu-link.active,
+.nk-sidebar.is-dark
+  .nk-menu
+  > .nk-menu-item.current-page
+  > .nk-menu-link.active {
+  background: linear-gradient(90deg, #1a4f9e 0%, #123b78 100%);
+  box-shadow: inset 3px 0 0 var(--side-accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.nk-sidebar.is-dark
+  .nk-menu
+  > .nk-menu-item
+  > .nk-menu-link.active
+  .nk-menu-icon {
+  color: #fff;
+}
+
+/* Sub-menu: guide line, bullets, pill for the active child */
+.nk-sidebar.is-dark .nk-menu-sub {
+  position: relative;
+  padding-bottom: 0.125rem;
+}
+
+/* Guide line runs down the group; each row branches off it with a short tick,
+   and the bullet sits inside the row, clear of the line. */
+.nk-sidebar.is-dark .nk-menu-sub:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0.75rem;
+  left: 2.3rem;
+  border-left: 1px solid var(--side-line);
+}
+
+.nk-sidebar.is-dark .nk-menu-sub > .nk-menu-item {
+  position: relative;
+}
+
+.nk-sidebar.is-dark .nk-menu-sub > .nk-menu-item:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2.3rem;
+  width: 0.65rem;
+  border-top: 1px solid var(--side-line);
+}
+
+.nk-sidebar.is-dark .nk-menu-sub .nk-menu-link {
+  position: relative;
+  margin: 0 0.75rem 0 3rem;
+  padding: 0.3125rem 0.75rem 0.3125rem 2.5rem;
+  border-radius: 0.5rem;
+  color: rgba(219, 230, 247, 0.72);
+  font-size: 0.8125rem;
+}
+
+.nk-sidebar.is-dark .nk-menu-sub .nk-menu-link:before {
+  content: "";
+  position: absolute;
+  left: 1.0625rem;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: #5b9bf5;
+}
+
+.nk-sidebar.is-dark .nk-menu-sub .nk-menu-link:hover {
+  background: rgba(74, 144, 255, 0.1);
+  color: #fff;
+}
+
+.nk-sidebar.is-dark .nk-menu-sub .nk-menu-link.active {
+  background: linear-gradient(90deg, #1b57ad 0%, #123b78 100%);
+  box-shadow: inset 3px 0 0 var(--side-accent);
+  color: #fff;
+  font-weight: 600;
+}
+
+.nk-sidebar.is-dark .nk-menu-sub .nk-menu-link.active:before {
+  background: #8cc0ff;
+}
+
+/* Footer tagline */
+.nk-sidebar-foot {
+  flex-shrink: 0;
+  padding: 0.75rem 1.5rem 1.25rem;
+  border-top: 1px solid var(--side-line, rgba(105, 167, 245, 0.22));
+  color: #6f9fd6;
+  text-align: center;
+}
+
+.nk-sidebar-foot svg {
+  display: block;
+  width: 60%;
+  height: 10px;
+  margin: 0 auto 0.5rem;
+}
+
+.nk-sidebar-foot span {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+  .is-compact:not(.has-hover) .nk-sidebar-foot {
+    display: none;
+  }
+}
+
+/* Job cart: customer details block */
+.cust-head-icon {
+  flex-shrink: 0;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: #5a6ff0;
+}
+
+.cust-field {
+  position: relative;
+}
+
+.cust-field-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.875rem;
+  transform: translateY(-50%);
+  font-size: 1.0625rem;
+  color: #5a6ff0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cust-field .cust-input.form-control {
+  padding-left: 2.5rem;
+  border-radius: 0.5rem;
+}
+
+.cust-field .cust-input.form-control[type="date"] {
+  padding-right: 0.75rem;
+}
+
+.cust-field-clear {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #8094ae;
+  z-index: 2;
+}
+
+.cust-field-clear:hover {
+  background: #f5f6fa;
+  color: #364a63;
+}
+
+.cust-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.4375rem 0.5rem 0.4375rem 0.5rem;
+  border: 1px solid #e5e9f2;
+  border-radius: 0.5rem;
+  background: #fff;
+  min-height: calc(2.125rem + 2px);
+}
+
+.cust-avatar {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dbe4ff;
+  color: #5a6ff0;
+  font-weight: 700;
+}
+
+.cust-chip-sub {
+  font-size: 0.75rem;
+  color: #8094ae;
+  line-height: 1.2;
+}
+
+.cust-tag {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+  background: rgba(30, 224, 172, 0.14);
+  color: #0da884;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cust-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1cc99a;
+}
+
+body.dark-mode .cust-chip {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .cust-avatar {
+  background: rgba(90, 111, 240, 0.2);
+}
+
+body.dark-mode .cust-field-clear:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbdfea;
+}
+
+/* Job cart creation: edge-to-edge workspace that fills the window.
+   Chrome is squeezed page-wide so the whole cart still fits one screen once a
+   customer is picked and the summary grows its panels. */
+.nk-content.is-wide {
+  padding: 12px 10px;
+}
+
+@media (min-width: 576px) {
+  .nk-content.is-wide {
+    padding: 12px 14px;
+  }
+}
+
+.nk-content.is-wide .nk-block-head {
+  padding-bottom: 0.75rem;
+}
+
+.nk-content.is-wide .nk-block-head .nk-block-title {
+  font-size: 1.25rem;
+}
+
+.nk-content.is-wide .nk-block {
+  margin-bottom: 0;
+}
+
+.nk-content.is-wide .card-inner {
+  padding: 1rem;
+}
+
+.nk-content.is-wide .form-group {
+  margin-bottom: 0.75rem;
+}
+
+.nk-content.is-wide .form-label,
+.nk-content.is-wide .form-group > label {
+  margin-bottom: 0.25rem;
+}
+
+.nk-content.is-wide h5 {
+  font-size: 1.0625rem;
+}
+
+.nk-content.is-wide .cart-panel {
+  padding: 0.625rem 0.75rem;
+}
+
+.nk-content.is-wide .cart-row {
+  padding: 0.4rem 0;
+}
+
+.nk-content.is-wide .cart-stats {
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+}
+
+.nk-content.is-wide .cart-total {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.nk-content.is-wide .cart-cta {
+  padding: 0.625rem 1rem;
+}
+
+/* Fill the viewport so the page does not end in dead space, and let both
+   columns run the full height rather than stopping at their content. */
+.jobcart-fill {
+  min-height: calc(100vh - 10.5rem);
+}
+
+@media (min-width: 992px) {
+  .jobcart-fill > [class*="col-"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .jobcart-fill > [class*="col-"] > .card:not(.position-sticky) {
+    flex: 1 1 auto;
+  }
+}

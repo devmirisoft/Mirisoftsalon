@@ -21,10 +21,11 @@ const PageShell = ({
   children,
   tools,
   inlineDescription,
+  className,
 }) => (
   <>
     <Head title={title} />
-    <Content>
+    <Content className={className}>
       <BlockHead size="sm">
         <BlockBetween className="g-2">
           <BlockHeadContent>

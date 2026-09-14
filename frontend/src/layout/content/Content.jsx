@@ -2,7 +2,7 @@ import React from "react";
 
 const Content = ({ ...props }) => {
   return (
-    <div className="nk-content">
+    <div className={`nk-content${props.className ? ` ${props.className}` : ""}`}>
       <div className="container-fluid">
         <div className="nk-content-inner">
           <div className="nk-content-body">

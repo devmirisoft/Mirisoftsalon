@@ -9,7 +9,6 @@ const hasRole = (role, roles) => allowsRole(roles, role);
 // plus the two reports that take an explicit salonId.
 const superAdminMenu = [
   { icon: "dashboard-fill", text: "Dashboard", link: "/" },
-  { icon: "user", text: "Profile", link: "/profile" },
   { heading: "Platform" },
   // /management already tabs Salons / Branches / Staff / GST / User accounts.
   { icon: "building", text: "Salon Management", link: "/management" },
@@ -22,9 +21,6 @@ const superAdminMenu = [
       { text: "Audit Trails", link: "/reports/audit-trails" },
     ],
   },
-  { heading: "Help" },
-  { icon: "help", text: "Support Queue", link: "/support" },
-  { icon: "policy", text: "Terms & Policy", link: "/pages/terms-policy" },
 ];
 
 const getMenu = (role) => {
@@ -43,15 +39,6 @@ const getMenu = (role) => {
     text: "Dashboard",
     link: "/",
   },
-  ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
-    ? [
-        {
-          icon: "user",
-          text: "Profile",
-          link: "/profile",
-        },
-      ]
-    : []),
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
         { heading: "Staff Operations" },
@@ -119,7 +106,7 @@ const getMenu = (role) => {
                 link: "/customers",
               },
               {
-                icon: "scissors",
+                icon: "file-text-fill",
                 text: "Service Catalog",
                 link: "/services",
               },
@@ -130,7 +117,7 @@ const getMenu = (role) => {
   ...(hasRole(role, ["SALON_ADMIN", "STAFF"])
     ? [
         {
-          icon: "file-docs",
+          icon: "cc-alt-fill",
           text: "Billing & Payments",
           link: "/billing",
         },
@@ -158,7 +145,7 @@ const getMenu = (role) => {
     ? [
         { heading: "Vendors & Stock" },
         {
-          icon: "package-fill",
+          icon: "truck",
           text: "Vendors & Stock",
           subMenu: [
             { text: "Products", link: "/admin/products" },
@@ -189,7 +176,7 @@ const getMenu = (role) => {
     ? [
         { heading: "Customer Retention" },
         {
-          icon: "growth-fill",
+          icon: "heart-fill",
           text: "Customer Retention",
           subMenu: [
             { text: "Memberships", link: "/customer-retention/memberships" },
@@ -202,7 +189,7 @@ const getMenu = (role) => {
         ...(hasRole(role, ["SALON_ADMIN"]) ? [
         { heading: "Expenses" },
         {
-          icon: "money",
+          icon: "pie-fill",
           text: "Expenses",
           subMenu: [
             { text: "Expense Categories", link: "/admin/expense-categories" },
@@ -236,7 +223,7 @@ const getMenu = (role) => {
           heading: "Administration",
         },
         {
-          icon: "building",
+          icon: "setting-fill",
           text: "Salon Management",
           link: "/management",
         },
@@ -245,27 +232,12 @@ const getMenu = (role) => {
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
     ? [
         {
-          icon: "setting",
+          icon: "globe",
           text: "Online Booking",
           link: "/settings/online-booking",
         },
       ]
     : []),
-  { heading: "Help" },
-  ...(hasRole(role, operationalRoles)
-    ? [
-        {
-          icon: "help",
-          text: "Support",
-          link: "/support",
-        },
-      ]
-    : []),
-  {
-    icon: "policy",
-    text: "Terms & Policy",
-    link: "/pages/terms-policy",
-  },
   ];
 };
 

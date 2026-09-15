@@ -8,7 +8,7 @@ import {
   validateBranch,
   writableBranch,
 } from "../products/inventory-access.js";
-import { isBranchLockedRole } from "../../utils/branch-scope.js";
+import { isBranchPinned } from "../../utils/branch-scope.js";
 import { ExpenseModel } from "./expense.model.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 
@@ -280,7 +280,7 @@ export const updateExpense = async (req: Request, res: Response) => {
     }
     // A branch-locked caller cannot move an expense to another branch.
     const branchId =
-      "branchId" in req.body && !isBranchLockedRole(req.user?.role)
+      "branchId" in req.body && !isBranchPinned(req.user)
         ? cleanText(req.body.branchId) ?? null
         : undefined;
     const vendorId =

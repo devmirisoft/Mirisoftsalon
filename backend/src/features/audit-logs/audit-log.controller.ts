@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { applyBranchSession } from "../../utils/branch-scope.js";
 import {
   Prisma,
   type AuditAction,
@@ -66,9 +67,11 @@ const accessWhere = (req: Request): Prisma.AuditLogWhereInput => {
 
 const branchFilter = (req: Request): Prisma.AuditLogWhereInput => {
   if (req.user?.role === "BRANCH_MANAGER") return {};
-  return typeof req.query.branchId === "string"
-    ? { branchId: req.query.branchId }
-    : {};
+  const branchId = applyBranchSession(
+    req,
+    typeof req.query.branchId === "string" ? req.query.branchId : undefined
+  );
+  return branchId ? { branchId } : {};
 };
 
 const parseDate = (value: unknown, endOfDay = false) => {

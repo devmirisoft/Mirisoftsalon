@@ -69,8 +69,14 @@ const User = () => {
             <LinkItem link="/" icon="dashboard" onClick={toggle}>
               Dashboard
             </LinkItem>
+            <LinkItem link="/profile" icon="user-alt" onClick={toggle}>
+              Profile
+            </LinkItem>
             <LinkItem link="/support" icon="help" onClick={toggle}>
               Support
+            </LinkItem>
+            <LinkItem link="/pages/terms-policy" icon="policy" onClick={toggle}>
+              Terms &amp; Policy
             </LinkItem>
             <li>
               <a className={`dark-switch ${theme.skin === 'dark' ? 'active' : ''}`} href="#" 

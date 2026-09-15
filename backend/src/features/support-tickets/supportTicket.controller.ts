@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { type Request, type Response } from "express";
+import { pinnedBranchId } from "../../utils/branch-scope.js";
 
 import {
   SUPPORT_TICKET_CATEGORIES,
@@ -282,7 +283,9 @@ export const createTicket = async (req: Request, res: Response) => {
       title,
       description,
       ...(req.user?.salonId ? { salonId: req.user.salonId } : {}),
-      ...(req.user?.branchId ? { branchId: req.user.branchId } : {}),
+      ...((pinnedBranchId(req.user) ?? req.user?.branchId)
+        ? { branchId: (pinnedBranchId(req.user) ?? req.user?.branchId)! }
+        : {}),
       ...(reporter.phone_number
         ? { reporterPhone: reporter.phone_number }
         : {}),

@@ -98,9 +98,12 @@ export const login = async ({ email, password }) => {
   return createSessionFromResponse(body);
 };
 
-const verifySession = (accessToken) =>
+const verifySession = (accessToken, activeBranchId) =>
   apiRequest("/api/auth/me", {
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      ...(activeBranchId ? { "X-Branch-Id": activeBranchId } : {}),
+    },
   });
 
 const refreshSession = async (session) => {
@@ -117,25 +120,51 @@ const refreshSession = async (session) => {
   return saveSession({ ...session, accessToken });
 };
 
+// The server is the authority on the open branch session: if the stored branch
+// is gone or was never allowed, /me answers with activeBranch null and the
+// session falls back to all-branches instead of holding a dead branch id.
+const applyVerified = (session, verified) =>
+  saveSession({
+    ...session,
+    branch: verified?.branch || null,
+    activeBranch: verified?.activeBranch || null,
+  });
+
 export const restoreSession = async () => {
   const session = getStoredSession();
   if (!session) return null;
+  const activeBranchId = session.activeBranch?.id;
 
   try {
-    const verified = await verifySession(session.accessToken);
-    return saveSession({ ...session, branch: verified?.branch || null });
+    const verified = await verifySession(session.accessToken, activeBranchId);
+    return applyVerified(session, verified);
   } catch (error) {
+    if (error instanceof ApiError && error.status === 403) {
+      // The stored branch is no longer reachable; drop it and retry unscoped.
+      const verified = await verifySession(session.accessToken);
+      return applyVerified({ ...session, activeBranch: null }, verified);
+    }
     if (!(error instanceof ApiError) || error.status !== 401) throw error;
   }
 
   try {
     const refreshedSession = await refreshSession(session);
-    const verified = await verifySession(refreshedSession.accessToken);
-    return saveSession({ ...refreshedSession, branch: verified?.branch || null });
+    const verified = await verifySession(
+      refreshedSession.accessToken,
+      activeBranchId
+    );
+    return applyVerified(refreshedSession, verified);
   } catch {
     clearSession();
     return null;
   }
+};
+
+/** Opens (branch given) or closes (null) a branch session on the stored one. */
+export const setActiveBranch = (branch) => {
+  const session = getStoredSession();
+  if (!session) return null;
+  return saveSession({ ...session, activeBranch: branch || null });
 };
 
 export const logout = async () => {

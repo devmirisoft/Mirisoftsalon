@@ -22,7 +22,12 @@ import {
   appointmentTotals,
   serviceMinutes,
 } from "@/utils/appointmentTotals";
-import { formatDate, formatMoney, minDateTimeInput } from "@/utils/salonFormat";
+import {
+  formatDate,
+  formatMoney,
+  labelize,
+  minDateTimeInput,
+} from "@/utils/salonFormat";
 
 const emptyForm = {
   salonId: "",
@@ -267,10 +272,20 @@ const AppointmentBookingModal = ({
         toggle={toggle}
         centered
         scrollable
-        style={{ maxWidth: "70vw", width: "70vw", height: "70vh" }}
+        className="appointment-booking-modal"
       >
         <Form onSubmit={submit}>
-          <ModalHeader toggle={toggle}>Book appointment</ModalHeader>
+          <ModalHeader toggle={toggle}>
+            <span className="booking-head">
+              <span className="booking-head-icon">
+                <Icon name="calendar-booking" />
+              </span>
+              <span>
+                Book appointment
+                <small>Pick the customer, slot and services</small>
+              </span>
+            </span>
+          </ModalHeader>
           <ModalBody>
             {error && (
               <Alert color="danger">
@@ -280,6 +295,9 @@ const AppointmentBookingModal = ({
             )}
             <Row className="g-4">
               <Col lg="8">
+                <h6 className="booking-section-title">
+                  <Icon name="user-circle" /> Booking details
+                </h6>
                 <Row className="g-3">
                   {isSuper && (
                     <Col md="6">
@@ -389,7 +407,7 @@ const AppointmentBookingModal = ({
                       >
                         {statuses.map((status) => (
                           <option key={status} value={status}>
-                            {status}
+                            {labelize(status)}
                           </option>
                         ))}
                       </Input>
@@ -398,43 +416,63 @@ const AppointmentBookingModal = ({
                 </Row>
 
                 <FormGroup className="mt-4">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <Label className="mb-0">Services</Label>
+                  <div className="booking-section-head">
+                    <h6 className="booking-section-title mb-0">
+                      <Icon name="cart-fill" /> Services
+                      {cart.length > 0 && (
+                        <span className="booking-count">{cart.length}</span>
+                      )}
+                    </h6>
                     <Button
                       color="primary"
                       type="button"
-                      className="text-nowrap px-3 py-2"
+                      className="text-nowrap"
                       disabled={saving || (isSuper && !form.salonId)}
                       onClick={() => setPickerOpen(true)}
                     >
-                      + Service
+                      <Icon name="plus" /> <span>Add service</span>
                     </Button>
                   </div>
-                  <div className="table-responsive">
-                    <table className="table table-sm table-bordered mb-2">
+                  <div className="table-responsive booking-cart">
+                    <table className="table table-sm mb-2">
                       <thead>
                         <tr>
                           <th>Service</th>
                           <th style={{ width: 200 }}>Staff</th>
-                          <th style={{ width: 110 }}>Price</th>
-                          <th style={{ width: 80 }}>GST %</th>
-                          <th style={{ width: 120 }}>Total</th>
-                          <th style={{ width: 60 }} />
+                          <th style={{ width: 110 }} className="text-end">
+                            Price
+                          </th>
+                          <th style={{ width: 80 }} className="text-end">
+                            GST
+                          </th>
+                          <th style={{ width: 120 }} className="text-end">
+                            Total
+                          </th>
+                          <th style={{ width: 56 }} />
                         </tr>
                       </thead>
                       <tbody>
                         {cart.length === 0 && (
                           <tr>
-                            <td colSpan="6" className="text-center text-soft py-3">
-                              No services added yet.
+                            <td colSpan="6">
+                              <div className="booking-cart-empty">
+                                <Icon name="cart-fill" />
+                                <span>No services added yet</span>
+                                <small>
+                                  Use “Add service” to build the appointment.
+                                </small>
+                              </div>
                             </td>
                           </tr>
                         )}
                         {cart.map((item) => (
                           <tr key={item.serviceId}>
                             <td>
-                              {item.name}
+                              <span className="booking-service-name">
+                                {item.name}
+                              </span>
                               <small className="d-block text-soft">
+                                <Icon name="clock" />{" "}
                                 {item.minutes
                                   ? `${item.minutes} min`
                                   : "Duration not set"}
@@ -443,6 +481,7 @@ const AppointmentBookingModal = ({
                             <td>
                               <Input
                                 type="select"
+                                bsSize="sm"
                                 value={item.staffId}
                                 disabled={saving}
                                 onChange={(event) =>
@@ -464,20 +503,25 @@ const AppointmentBookingModal = ({
                                 ))}
                               </Input>
                             </td>
-                            <td>{formatMoney(item.price)}</td>
-                            <td>{gstPercent}</td>
-                            <td>{formatMoney(item.price + item.tax)}</td>
                             <td className="text-end">
-                              <Button
-                                color="danger"
-                                outline
-                                size="sm"
+                              {formatMoney(item.price)}
+                            </td>
+                            <td className="text-end text-soft">
+                              {gstPercent}%
+                            </td>
+                            <td className="text-end fw-bold">
+                              {formatMoney(item.price + item.tax)}
+                            </td>
+                            <td className="text-end">
+                              <button
                                 type="button"
+                                className="booking-row-remove"
+                                title="Remove service"
                                 disabled={saving}
                                 onClick={() => toggleService(item.serviceId)}
                               >
-                                X
-                              </Button>
+                                <Icon name="trash" />
+                              </button>
                             </td>
                           </tr>
                         ))}
@@ -491,6 +535,9 @@ const AppointmentBookingModal = ({
                   </small>
                 </FormGroup>
 
+                <h6 className="booking-section-title mt-4">
+                  <Icon name="file-text" /> Notes
+                </h6>
                 <Row className="g-3">
                   <Col md="6">
                     <FormGroup className="mb-0">
@@ -520,90 +567,108 @@ const AppointmentBookingModal = ({
               </Col>
 
               <Col lg="4">
-                <div className="card card-bordered">
-                  <div className="card-inner">
-                    <h6 className="mb-3">Appointment Summary</h6>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">Services</span>
-                      <strong>{cart.length}</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">Primary staff</span>
-                      <strong>{primaryStaffName || "—"}</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">Duration</span>
-                      <strong>{totals.minutes} min</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">Ends at</span>
-                      <strong>{endTime ? formatDate(endTime, true) : "—"}</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">Subtotal</span>
-                      <strong>{formatMoney(totals.subtotal)}</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-2 border-bottom">
-                      <span className="text-soft">
-                        GST {gstPercent ? `(${gstPercent}%)` : "(not enabled)"}
-                      </span>
-                      <strong>{formatMoney(totals.tax)}</strong>
-                    </div>
-                    <div className="d-flex justify-content-between py-3">
-                      <span>Estimated total</span>
-                      <strong>{formatMoney(totals.total)}</strong>
-                    </div>
-                    <p className="text-soft small">
-                      Tax is an estimate at the salon service GST rate. The final
-                      invoice is raised from the bill screen.
-                    </p>
-                    <Button type="submit" color="primary" block disabled={saving}>
-                      {saving && <Spinner size="sm" className="me-1" />}
-                      Book appointment
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="card card-bordered mt-3">
-                  <div className="card-inner">
-                    <h6 className="mb-3">Past visits</h6>
-                    {!form.customerId ? (
-                      <p className="text-soft small mb-0">
-                        Pick a customer to see their history.
-                      </p>
-                    ) : historyLoading ? (
-                      <Spinner size="sm" />
-                    ) : history.length === 0 ? (
-                      <p className="text-soft small mb-0">
-                        No past appointments or job carts.
-                      </p>
-                    ) : (
-                      <div style={{ maxHeight: 320, overflowY: "auto" }}>
-                        {history.map((visit) => (
-                          <div key={visit.key} className="border-bottom py-2">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <strong className="small">
-                                {visit.code || "—"}
-                              </strong>
-                              <StatusBadge value={visit.status} />
-                            </div>
-                            <div className="text-soft small">
-                              {formatDate(visit.startTime, true)}
-                            </div>
-                            <div className="small">
-                              {visit.services.filter(Boolean).join(", ") ||
-                                "—"}
-                            </div>
-                            <div className="text-soft small">
-                              {visit.staff || "Unassigned"}
-                              {visit.amount != null
-                                ? ` · ${formatMoney(visit.amount)}`
-                                : ""}
-                            </div>
-                          </div>
-                        ))}
+                <div className="booking-aside">
+                  <div className="card card-bordered booking-summary">
+                    <div className="card-inner">
+                      <h6 className="booking-section-title">
+                        <Icon name="calendar-booking" /> Appointment summary
+                      </h6>
+                      <div className="booking-summary-row">
+                        <span>Services</span>
+                        <strong>{cart.length}</strong>
                       </div>
-                    )}
+                      <div className="booking-summary-row">
+                        <span>Primary staff</span>
+                        <strong>{primaryStaffName || "—"}</strong>
+                      </div>
+                      <div className="booking-summary-row">
+                        <span>Duration</span>
+                        <strong>{totals.minutes} min</strong>
+                      </div>
+                      <div className="booking-summary-row">
+                        <span>Ends at</span>
+                        <strong>
+                          {endTime ? formatDate(endTime, true) : "—"}
+                        </strong>
+                      </div>
+                      <div className="booking-summary-row">
+                        <span>Subtotal</span>
+                        <strong>{formatMoney(totals.subtotal)}</strong>
+                      </div>
+                      <div className="booking-summary-row">
+                        <span>
+                          GST {gstPercent ? `(${gstPercent}%)` : "(not enabled)"}
+                        </span>
+                        <strong>{formatMoney(totals.tax)}</strong>
+                      </div>
+                      <div className="booking-summary-total">
+                        <span>Estimated total</span>
+                        <strong>{formatMoney(totals.total)}</strong>
+                      </div>
+                      <p className="text-soft small">
+                        Tax is an estimate at the salon service GST rate. The
+                        final invoice is raised from the bill screen.
+                      </p>
+                      <Button
+                        type="submit"
+                        color="primary"
+                        block
+                        size="lg"
+                        disabled={saving}
+                      >
+                        {saving ? (
+                          <Spinner size="sm" className="me-1" />
+                        ) : (
+                          <Icon name="check-circle" className="me-1" />
+                        )}
+                        Book appointment
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="card card-bordered mt-3">
+                    <div className="card-inner">
+                      <h6 className="booking-section-title">
+                        <Icon name="history" /> Past visits
+                      </h6>
+                      {!form.customerId ? (
+                        <p className="text-soft small mb-0">
+                          Pick a customer to see their history.
+                        </p>
+                      ) : historyLoading ? (
+                        <Spinner size="sm" />
+                      ) : history.length === 0 ? (
+                        <p className="text-soft small mb-0">
+                          No past appointments or job carts.
+                        </p>
+                      ) : (
+                        <div className="booking-history">
+                          {history.map((visit) => (
+                            <div key={visit.key} className="booking-history-item">
+                              <div className="d-flex justify-content-between align-items-center gap-2">
+                                <strong className="small">
+                                  {visit.code || "—"}
+                                </strong>
+                                <StatusBadge value={visit.status} />
+                              </div>
+                              <div className="text-soft small">
+                                {formatDate(visit.startTime, true)}
+                              </div>
+                              <div className="small">
+                                {visit.services.filter(Boolean).join(", ") ||
+                                  "—"}
+                              </div>
+                              <div className="text-soft small">
+                                {visit.staff || "Unassigned"}
+                                {visit.amount != null
+                                  ? ` · ${formatMoney(visit.amount)}`
+                                  : ""}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Col>

@@ -1,4 +1,9 @@
 import { type Request, type Response } from "express";
+import {
+  actorBranchOrSalonWideWhere,
+  isBranchPinned,
+  pinnedBranchId,
+} from "../../utils/branch-scope.js";
 import type { Prisma } from "../../generated/prisma/client.js";
 import { isUuid } from "../../middlewares/uuid.middleware.js";
 import { paginationMeta, parsePagination } from "../../utils/pagination.js";
@@ -33,11 +38,7 @@ const accessWhere = (
       ? { salonId: req.query.salonId }
       : {}
     : { salonId: req.user?.salonId ?? "__missing__" }),
-  ...((req.user?.role === "BRANCH_MANAGER" ||
-    req.user?.role === "RECEPTIONIST") &&
-  req.user.branchId
-    ? { OR: [{ branchId: req.user.branchId }, { branchId: null }] }
-    : {}),
+  ...actorBranchOrSalonWideWhere(req.user ?? {}),
 });
 
 const sendError = (res: Response, error: unknown) => {
@@ -229,10 +230,15 @@ export const createCouponHandler = async (
         message: "Valid salon ID is required",
       });
     }
-    const data = await createCoupon(salonId, parsed.data, {
-      ...(req.user?.userId ? { userId: req.user.userId } : {}),
-      ...requestAuditContext(req),
-    });
+    const pinnedBranch = pinnedBranchId(req.user);
+    const data = await createCoupon(
+      salonId,
+      pinnedBranch ? { ...parsed.data, branchId: pinnedBranch } : parsed.data,
+      {
+        ...(req.user?.userId ? { userId: req.user.userId } : {}),
+        ...requestAuditContext(req),
+      }
+    );
     return res.status(201).json({
       success: true,
       message: "Coupon created successfully",
@@ -259,10 +265,17 @@ export const updateCouponHandler = async (
     }
     const parsed = updateCouponSchema.safeParse(req.body);
     if (!parsed.success) return validationError(res, parsed);
-    const data = await updateCoupon(existing, parsed.data, {
-      ...(req.user?.userId ? { userId: req.user.userId } : {}),
-      ...requestAuditContext(req),
-    });
+    // A pinned caller may edit a coupon they can see, but not move it out of
+    // the branch they are working in.
+    const { branchId: _requestedBranch, ...withoutBranch } = parsed.data;
+    const data = await updateCoupon(
+      existing,
+      isBranchPinned(req.user) ? withoutBranch : parsed.data,
+      {
+        ...(req.user?.userId ? { userId: req.user.userId } : {}),
+        ...requestAuditContext(req),
+      }
+    );
     return res.status(200).json({
       success: true,
       message: "Coupon updated successfully",

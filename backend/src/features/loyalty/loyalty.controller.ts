@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { applyBranchSession } from "../../utils/branch-scope.js";
 import { cleanText } from "../products/inventory-access.js";
 import {
   adjustLoyaltyPoints,
@@ -24,11 +25,12 @@ const customerIdParam = (req: Request) =>
 const customerAccess = (req: Request) => ({
   salonId:
     req.user?.role === "SUPER_ADMIN" ? undefined : req.user?.salonId,
-  branchId:
-    req.user?.role === "RECEPTIONIST" ||
-    req.user?.role === "BRANCH_MANAGER"
+  branchId: applyBranchSession(
+    req,
+    req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER"
       ? req.user.branchId
-      : undefined,
+      : undefined
+  ),
 });
 
 const sendError = (res: Response, error: unknown) => {
@@ -157,12 +159,14 @@ export const getLoyaltyTransactions = async (
           ? req.query.salonId
           : undefined
         : req.user?.salonId ?? "__missing__";
-    const branchId =
+    const branchId = applyBranchSession(
+      req,
       (req.user?.role === "BRANCH_MANAGER" ||
         req.user?.role === "RECEPTIONIST") &&
       req.user.branchId
         ? req.user.branchId
-        : undefined;
+        : undefined
+    );
 
     const result = await listLoyaltyTransactions({
       page: pagination.page,

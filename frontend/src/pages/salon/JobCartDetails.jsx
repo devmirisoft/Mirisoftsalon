@@ -687,10 +687,9 @@ const JobCartDetails = () => {
       inlineDescription
       description={
         cart
-          ? `${cart.customer?.name || "Walk-in"} • ${formatDate(
-              cart.startTime,
-              true
-            )}`
+          ? `${cart.branch?.name || "No branch"} • ${
+              cart.customer?.name || "Walk-in"
+            } • ${formatDate(cart.startTime, true)}`
           : "Walk-in appointment and draft invoice"
       }
       tools={
@@ -698,6 +697,15 @@ const JobCartDetails = () => {
           <Button color="light" outline onClick={() => navigate("/job-carts")}>
             <Icon name="arrow-left" /> Back
           </Button>
+          {cart && (
+            <Button
+              color="light"
+              outline
+              onClick={() => navigate(`/job-carts/${cart.id}/view`)}
+            >
+              <Icon name="file-text" /> View job cart
+            </Button>
+          )}
           {cart && <StatusBadge value={cart.status} />}
         </>
       }

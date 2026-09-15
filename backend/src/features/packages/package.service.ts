@@ -7,6 +7,7 @@ import {
 } from "../../generated/prisma/client.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type TransactionClient = Prisma.TransactionClient;
 
@@ -15,6 +16,8 @@ export type PackageActor = {
   role: string;
   salonId?: string;
   branchId?: string;
+  /** Branch a salon-wide role has opened a session on. */
+  activeBranchId?: string;
 };
 
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -38,7 +41,9 @@ const scope = (actor: PackageActor) => {
     salonId: actor.salonId,
     ...(branchRoles.has(actor.role)
       ? { OR: [{ branchId: null }, { branchId: actor.branchId ?? "__unauthorized__" }] }
-      : {}),
+      : actor.activeBranchId
+        ? { OR: [{ branchId: null }, { branchId: actor.activeBranchId }] }
+        : {}),
   };
 };
 
@@ -49,7 +54,9 @@ const managementScope = (actor: PackageActor) => {
     salonId: actor.salonId,
     ...(actor.role === "BRANCH_MANAGER"
       ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+      : actor.activeBranchId
+        ? { branchId: actor.activeBranchId }
+        : {}),
   };
 };
 
@@ -58,9 +65,7 @@ const customerPackageScope = (actor: PackageActor) => {
   if (!actor.salonId) return { salonId: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 
@@ -73,7 +78,9 @@ const writeScope = (
     actor.role === "SUPER_ADMIN" ? requestedSalonId : actor.salonId;
   if (!salonId) throw new PackageError(400, "Salon is required");
   const branchId =
-    actor.role === "BRANCH_MANAGER" ? actor.branchId : requestedBranchId;
+    actor.role === "BRANCH_MANAGER"
+      ? actor.branchId
+      : (actor.activeBranchId ?? requestedBranchId);
   if (actor.role === "BRANCH_MANAGER" && !branchId) {
     throw new PackageError(400, "Branch is required");
   }
@@ -173,9 +180,7 @@ const assertCustomer = async (
     where: {
       id: customerId,
       salonId,
-      ...(branchRoles.has(actor.role)
-        ? { branchId: actor.branchId ?? "__unauthorized__" }
-        : {}),
+      ...actorBranchWhere(actor),
       ...(branchId ? { OR: [{ branchId: null }, { branchId }] } : {}),
     },
     select: { id: true, name: true, phone: true },
@@ -1404,9 +1409,7 @@ export const getCustomerPackageBalancesForCustomer = async (
       ...(actor.role === "SUPER_ADMIN"
         ? {}
         : { salonId: actor.salonId ?? "__unauthorized__" }),
-      ...(branchRoles.has(actor.role)
-        ? { branchId: actor.branchId ?? "__unauthorized__" }
-        : {}),
+      ...actorBranchWhere(actor),
     },
     select: { id: true },
   });

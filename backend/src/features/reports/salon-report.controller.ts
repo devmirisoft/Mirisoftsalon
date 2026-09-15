@@ -52,6 +52,7 @@ const resolveScope = async (req: Request) => {
       : undefined;
   const branchId =
     restrictedBranch ??
+    req.user?.activeBranchId ??
     (typeof req.query.branchId === "string" ? req.query.branchId : undefined);
   if (req.user?.role !== "SUPER_ADMIN" && !salonId) {
     throw transactionError("Salon is required");

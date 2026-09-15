@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { applyBranchSession } from "../../utils/branch-scope.js";
 import { SalarySlipModel } from "./salarySlip.model.js";
 import { generateSalarySlip as calculateSalarySlip } from "./salarySlip.service.js";
 import { validateGenerationInput } from "./salarySlip.validation.js";
@@ -113,6 +114,7 @@ export const getSalarySlips = async (req: Request, res: Response) => {
       salonId = req.user.salonId;
       if (managerBranch(req.user.role) && req.user.branchId) branchId = req.user.branchId;
     }
+    branchId = applyBranchSession(req, branchId);
     const month = req.query.month === undefined ? undefined : Number(req.query.month);
     const year = req.query.year === undefined ? undefined : Number(req.query.year);
     if ((month !== undefined && (!Number.isInteger(month) || month < 1 || month > 12)) || (year !== undefined && !Number.isInteger(year))) {

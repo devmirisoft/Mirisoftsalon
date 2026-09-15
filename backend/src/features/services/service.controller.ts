@@ -6,6 +6,8 @@ import { prisma } from "../../config/prisma.js";
 import { defaultSalonServices } from "./defaultServices.js";
 import {
   branchFilterFor,
+  isBranchPinned,
+  pinnedBranchId,
   isBranchLockedRole,
   resolveWritableBranchId,
 } from "../../utils/branch-scope.js";
@@ -231,11 +233,11 @@ export const getServiceById = async (req: Request, res: Response) => {
     }
 
     const service =
-      isBranchLockedRole(req.user?.role) && req.user?.salonId
+      pinnedBranchId(req.user) && req.user?.salonId
         ? await ServiceModel.findByIdAndSalon(
             id,
-            req.user?.salonId,
-            req.user?.branchId
+            req.user.salonId,
+            pinnedBranchId(req.user)
           )
         : await getExistingServiceByAccess(req, id);
 
@@ -438,8 +440,8 @@ export const updateService = async (req: Request, res: Response) => {
       });
     }
 
-    if (isBranchLockedRole(req.user?.role) && "branchId" in req.body &&
-      branchId !== req.user?.branchId) {
+    if (isBranchPinned(req.user) && "branchId" in req.body &&
+      branchId !== pinnedBranchId(req.user)) {
       return res.status(403).json({
         success: false,
         message: "You do not have access to this branch",

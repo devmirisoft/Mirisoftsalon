@@ -677,8 +677,8 @@ const JobCartCreate = () => {
 
   return (
     <PageShell
+      className="is-wide"
       title="Create Job Cart"
-      description="Start a walk-in appointment and its draft invoice."
       tools={
         <Button color="light" outline onClick={() => navigate("/job-carts")}>
           <Icon name="arrow-left" /> Back
@@ -687,11 +687,10 @@ const JobCartCreate = () => {
     >
       {error && <Alert color="danger">{error}</Alert>}
       <Form onSubmit={submit}>
-        <Row className="g-4">
+        <Row className="g-4 jobcart-fill">
           <Col lg="8">
-            <div className="card card-bordered">
+            <div className="card card-bordered jobcart-main">
               <div className="card-inner">
-                <h5 className="mb-4">Walk-in Details</h5>
                 {user?.role === "SUPER_ADMIN" && (
                   <FormGroup>
                     <Label>Salon</Label>
@@ -720,83 +719,130 @@ const JobCartCreate = () => {
                     </Input>
                   </FormGroup>
                 )}
-                <Row>
-                  <Col md="3">
+                <Row className="g-3">
+                  <Col md="6" lg="3">
                     <FormGroup>
                       <Label>Phone Number</Label>
-                      <div className="position-relative d-flex align-items-start gap-2">
-                      <Input
-                        required
-                        autoComplete="off"
-                        placeholder="Search or enter phone"
-                        inputMode="numeric"
-                        maxLength={10}
-                        value={form.phone}
-                        onFocus={() => setPhoneFocused(true)}
-                        onBlur={() =>
-                          window.setTimeout(() => setPhoneFocused(false), 150)
-                        }
-                        onChange={(event) => {
-                          setCustomerSummary(null);
-                          setForm((current) => ({
-                            ...current,
-                            phone: event.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 10),
-                            // A matched customer filled the name; changing the
-                            // phone breaks the match, so that name goes too.
-                            ...(customerSummary ? { customerName: "" } : {}),
-                          }));
-                        }}
-                      />
-                      {phoneFocused && phoneMatches.length > 0 && (
-                        <ul
-                          className="list-group position-absolute w-100 shadow-sm"
-                          style={{ zIndex: 1060, maxHeight: 240, overflowY: "auto" }}
-                        >
-                          {phoneMatches.map((option) => (
-                            <li key={option.value} className="list-group-item p-0">
-                              <button
-                                type="button"
-                                className="btn btn-link text-start text-decoration-none w-100 px-3 py-2"
-                                onMouseDown={(event) => event.preventDefault()}
-                                onClick={() => {
-                                  setPhoneFocused(false);
-                                  setCustomerSummary(null);
-                                  setForm((current) => ({
-                                    ...current,
-                                    customerName: option.name,
-                                    phone: option.phone,
-                                  }));
-                                  loadCustomerSummary({ customerId: option.value });
-                                }}
+                      <div className="position-relative">
+                        <div className="cust-field">
+                          <Icon name="call" className="cust-field-icon" />
+                          <Input
+                            required
+                            autoComplete="off"
+                            className="cust-input"
+                            placeholder="Search or enter phone"
+                            inputMode="numeric"
+                            maxLength={10}
+                            value={form.phone}
+                            onFocus={() => setPhoneFocused(true)}
+                            onBlur={() =>
+                              window.setTimeout(
+                                () => setPhoneFocused(false),
+                                150
+                              )
+                            }
+                            onChange={(event) => {
+                              setCustomerSummary(null);
+                              setForm((current) => ({
+                                ...current,
+                                phone: event.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 10),
+                                // A matched customer filled the name; changing
+                                // the phone breaks the match, so the name goes
+                                // too.
+                                ...(customerSummary ? { customerName: "" } : {}),
+                              }));
+                            }}
+                          />
+                          {form.phone && (
+                            <button
+                              type="button"
+                              className="cust-field-clear"
+                              title="Clear customer"
+                              onClick={() => {
+                                setCustomerSummary(null);
+                                setForm((current) => ({
+                                  ...current,
+                                  phone: "",
+                                  customerName: "",
+                                }));
+                              }}
+                            >
+                              <Icon name="cross" />
+                            </button>
+                          )}
+                        </div>
+                        {phoneFocused && phoneMatches.length > 0 && (
+                          <ul
+                            className="list-group position-absolute w-100 shadow-sm"
+                            style={{
+                              zIndex: 1060,
+                              maxHeight: 240,
+                              overflowY: "auto",
+                            }}
+                          >
+                            {phoneMatches.map((option) => (
+                              <li
+                                key={option.value}
+                                className="list-group-item p-0"
                               >
-                                {option.name}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {/* <CustomerProfileLink customerId={savedCustomerId} /> */}
+                                <button
+                                  type="button"
+                                  className="btn btn-link text-start text-decoration-none w-100 px-3 py-2"
+                                  onMouseDown={(event) =>
+                                    event.preventDefault()
+                                  }
+                                  onClick={() => {
+                                    setPhoneFocused(false);
+                                    setCustomerSummary(null);
+                                    setForm((current) => ({
+                                      ...current,
+                                      customerName: option.name,
+                                      phone: option.phone,
+                                    }));
+                                    loadCustomerSummary({
+                                      customerId: option.value,
+                                    });
+                                  }}
+                                >
+                                  {option.name}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     </FormGroup>
                   </Col>
-                  <Col md="3">
+                  <Col md="6" lg="4">
                     <FormGroup>
                       <Label>Customer</Label>
-                      <div className="d-flex align-items-start gap-2">
+                      {savedCustomerId ? (
+                        // A matched customer is display only; their details are
+                        // edited on the profile, behind the pencil.
+                        <div className="cust-chip">
+                          <span className="cust-avatar">
+                            {form.customerName?.trim()?.[0]?.toUpperCase() ||
+                              "?"}
+                          </span>
+                          <div className="flex-grow-1" style={{ minWidth: 0 }}>
+                            <div className="fw-bold text-truncate">
+                                 <div className="cust-chip-sub">{form.customerName} {form.phone}</div>
+
+                            </div>
+                          </div>
+                          {/* <span className="cust-tag">
+                            <span className="cust-tag-dot" />
+                            Existing Customer
+                          </span> */}
+                          <CustomerProfileLink customerId={savedCustomerId} />
+                        </div>
+                      ) : (
                         <Input
                           required
                           autoComplete="off"
                           placeholder="Customer name"
-                          // A matched customer's name is display only; it is
-                          // edited on their profile, behind the pencil.
-                          readOnly={Boolean(savedCustomerId)}
-                          style={
-                            savedCustomerId
-                              ? { borderColor: "transparent" }
-                              : undefined
-                          }
                           value={form.customerName}
                           onChange={(event) =>
                             setForm((current) => ({
@@ -805,33 +851,31 @@ const JobCartCreate = () => {
                             }))
                           }
                         />
-                        <CustomerProfileLink customerId={savedCustomerId} />
-                      </div>
-                      {/* <small className="text-soft d-block mt-1">
-                        {savedCustomerId
-                          ? "Existing customer."
-                          : "New customer, created with the job cart."}
-                      </small> */}
+                      )}
                     </FormGroup>
                   </Col>
-                  <Col md="3">
+                  <Col md="6" lg="3">
                     <FormGroup>
                       <Label>Date</Label>
-                      <Input
-                        type="date"
-                        required
-                        value={form.date}
-                        disabled={saving}
-                        onChange={(event) =>
-                          setForm((current) => ({
-                            ...current,
-                            date: event.target.value,
-                          }))
-                        }
-                      />
+                      <div className="cust-field">
+                        <Icon name="calendar" className="cust-field-icon" />
+                        <Input
+                          type="date"
+                          required
+                          className="cust-input"
+                          value={form.date}
+                          disabled={saving}
+                          onChange={(event) =>
+                            setForm((current) => ({
+                              ...current,
+                              date: event.target.value,
+                            }))
+                          }
+                        />
+                      </div>
                     </FormGroup>
                   </Col>
-                  <Col md="3">
+                  <Col md="6" lg="2">
                     <FormGroup>
                       <Label>Branch</Label>
                       <Input
@@ -944,8 +988,8 @@ const JobCartCreate = () => {
                       <thead>
                         <tr>
                           {/* <th>Main Service</th> */}
-                          <th>Service</th>
-                          <th>Staff</th>
+                          <th style={{ width: 90 }}>Service</th>
+                          <th style={{ width: 90 }}>Staff</th>
                           <th style={{ width: 90 }}>Qty</th>
                           <th style={{ width: 180 }}>Price</th>
                           <th style={{ width: 160 }}>Discount</th>
@@ -1012,58 +1056,71 @@ const JobCartCreate = () => {
                                 </Input>
                               </td> */}
                               <td>
-                                <Select
-                                  className="react-select-container"
-                                  classNamePrefix="react-select"
-                                  isClearable
-                                  isDisabled={!form.branchId || saving}
-                                  options={rowServices.map((service) => ({
-                                    value: service.id,
-                                    label: `${service.name} - ${formatMoney(
-                                      service.price
-                                    )}`,
-                                  }))}
-                                  value={
-                                    selectedService
-                                      ? {
-                                          value: selectedService.id,
-                                          label: `${selectedService.name} - ${formatMoney(
-                                            selectedService.price
-                                          )}`,
-                                        }
-                                      : null
-                                  }
-                                  placeholder="Search service"
-                                  noOptionsMessage={() => "No services"}
-                                  onChange={(option) => {
-                                    const service = refs.services.find(
-                                      (item) => item.id === option?.value
-                                    );
-                                    updateServiceRow(row.rowId, {
-                                      serviceId: option?.value || "",
-                                      mainServiceId:
-                                        service?.mainService?.id ||
-                                        service?.mainServiceId ||
-                                        row.mainServiceId,
-                                      staffId: "",
-                                      discount: "",
-                                      discountType: "AMT",
-                                      price:
-                                        service === undefined
-                                          ? ""
-                                          : String(service.price ?? ""),
-                                      total:
-                                        service === undefined
-                                          ? ""
-                                          : priceToTotal(
-                                              service.price ?? 0,
-                                              row.qty,
-                                              serviceGstPercent
-                                            ),
-                                    });
-                                  }}
-                                />
-                              </td>
+  <Select
+    className="react-select-container"
+    classNamePrefix="react-select"
+    isClearable
+    isDisabled={!form.branchId || saving}
+    options={rowServices.map((service) => ({
+      value: service.id,
+      label: service.name,
+    }))}
+    value={
+      selectedService
+        ? { value: selectedService.id, label: selectedService.name }
+        : null
+    }
+    placeholder="Search service"
+    noOptionsMessage={() => "No services"}
+    menuPortalTarget={document.body}
+    menuPosition="fixed"
+    styles={{
+      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+      menu: (base) => ({
+        ...base,
+        width: "max-content",
+        minWidth: "100%",
+        maxWidth: 420,
+      }),
+      option: (base) => ({
+        ...base,
+        whiteSpace: "normal",
+        wordBreak: "break-word",
+      }),
+      singleValue: (base) => ({
+        ...base,
+        whiteSpace: "normal",
+        overflow: "visible",
+        textOverflow: "unset",
+      }),
+      control: (base) => ({
+        ...base,
+        minHeight: 38,
+        height: "auto",
+      }),
+    }}
+    onChange={(option) => {
+      const service = refs.services.find(
+        (item) => item.id === option?.value
+      );
+      updateServiceRow(row.rowId, {
+        serviceId: option?.value || "",
+        mainServiceId:
+          service?.mainService?.id ||
+          service?.mainServiceId ||
+          row.mainServiceId,
+        staffId: "",
+        discount: "",
+        discountType: "AMT",
+        price: service === undefined ? "" : String(service.price ?? ""),
+        total:
+          service === undefined
+            ? ""
+            : priceToTotal(service.price ?? 0, row.qty, serviceGstPercent),
+      });
+    }}
+  />
+</td>
                               <td>
                                 <Input
                                   type="select"
@@ -1242,10 +1299,10 @@ const JobCartCreate = () => {
                       </tbody>
                     </table>
                   </div>
-                  <small className="text-soft">
+                  {/* <small className="text-soft">
                     Services covered by selected packages cannot be added as
                     standalone services.
-                  </small>
+                  </small> */}
                 </FormGroup>
                 {selectedPackages.length > 0 && (
                   <div className="border rounded p-3 mb-3">
@@ -1400,10 +1457,7 @@ const JobCartCreate = () => {
             </div>
           </Col>
           <Col lg="4">
-            <div
-              className="card card-bordered cart-summary position-sticky"
-              style={{ top: 90 }}
-            >
+            <div className="card card-bordered cart-summary">
               <div className="card-inner">
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
@@ -1415,6 +1469,7 @@ const JobCartCreate = () => {
                     Walk-in Visit
                   </span>
                 </div>
+                <div className="cart-scroll">
                 {customerSummary && (
                   <>
                     <div className="cart-panel mb-3">
@@ -1578,6 +1633,7 @@ const JobCartCreate = () => {
                       {formatMoney(subtotal + packageSubtotal + estimatedTax)}
                     </span>
                   </div>
+                </div>
                 </div>
                 <p className="text-soft small">
                   Membership discount is calculated when the draft invoice is

@@ -9,6 +9,7 @@ import {
   creditPurchaseWallet,
   forfeitMembershipWallet,
 } from "../membership-wallets/membership-wallet.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type TransactionClient = Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -18,6 +19,8 @@ export type CustomerMembershipActor = {
   role: string;
   salonId?: string;
   branchId?: string;
+  /** Branch a salon-wide role has opened a session on. */
+  activeBranchId?: string;
 };
 
 export class CustomerMembershipError extends Error {
@@ -30,7 +33,6 @@ export class CustomerMembershipError extends Error {
   }
 }
 
-const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 
 const addMonths = (value: Date, months: number) => {
   const date = new Date(value);
@@ -67,9 +69,7 @@ const historyScope = (
   if (!actor.salonId) return { salonId: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 
@@ -80,9 +80,7 @@ const customerScope = (
   if (!actor.salonId) return { salonId: "__unauthorized__" };
   return {
     salonId: actor.salonId,
-    ...(branchScopedRoles.has(actor.role)
-      ? { branchId: actor.branchId ?? "__unauthorized__" }
-      : {}),
+    ...actorBranchWhere(actor),
   };
 };
 

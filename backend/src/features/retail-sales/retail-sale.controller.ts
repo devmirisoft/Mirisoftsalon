@@ -7,12 +7,14 @@ import {
   sendInventoryError,
   transactionError,
   validateBranch,
+  writableBranch,
 } from "../products/inventory-access.js";
 import { RetailSaleModel } from "./retail-sale.model.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
 import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
+import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 const PAYMENT_METHODS = ["CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD", "BANK_TRANSFER", "CHEQUE", "OTHER"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
@@ -24,20 +26,13 @@ const listWhere = (req: Request) => ({
       ? { salonId: req.query.salonId }
       : {}
     : { salonId: req.user?.salonId || "__missing__" }),
-  ...((req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER") && req.user.branchId
-    ? { branchId: req.user.branchId }
-    : {}),
+  ...actorBranchWhere(req.user ?? {}),
 });
 
 export const createRetailSale = async (req: Request, res: Response) => {
   try {
     const salonId = getSalonId(req, req.body.salonId);
-    const branchId =
-      req.user?.role === "RECEPTIONIST" || req.user?.role === "BRANCH_MANAGER"
-        ? req.user.branchId
-        : typeof req.body.branchId === "string" && req.body.branchId
-          ? req.body.branchId
-          : undefined;
+    const branchId = writableBranch(req, req.body.branchId);
     if (!salonId) return res.status(400).json({ success: false, message: "Salon is required" });
     if (!(await validateBranch(salonId, branchId))) return res.status(400).json({ success: false, message: "Invalid branch for this salon" });
     if (req.body.paymentMethod && !PAYMENT_METHODS.includes(req.body.paymentMethod as PaymentMethod)) {
@@ -110,7 +105,12 @@ export const createRetailSale = async (req: Request, res: Response) => {
                 userId: req.user.userId,
                 role: req.user.role,
                 ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
-                ...(req.user.branchId ? { branchId: req.user.branchId } : {}),
+                ...(req.user.branchId
+                  ? { branchId: req.user.branchId }
+                  : {}),
+                ...(req.user.activeBranchId
+                  ? { activeBranchId: req.user.activeBranchId }
+                  : {}),
               },
               audit: requestAuditContext(req),
             })

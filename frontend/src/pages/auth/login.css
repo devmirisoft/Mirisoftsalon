@@ -52,6 +52,12 @@
 
 .miri-auth .brand { display: inline-flex; width: 108px; }
 .miri-auth .brand img { display: block; width: 100%; height: auto; }
+/* logo1.png ships as a white wordmark; tint it navy for light surfaces.
+   ponytail: one filter beats shipping a second colour variant of the asset. */
+.miri-auth .brand img,
+.miri-auth .hero-brand img {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(48%) saturate(3200%) hue-rotate(211deg) brightness(95%) contrast(96%);
+}
 
 .miri-auth .brand,
 .miri-auth .auth-content,
@@ -230,199 +236,170 @@
   place-items: center;
   isolation: isolate;
   order: 2;
+  padding: 40px 34px;
   background:
-    radial-gradient(circle at 80% 14%, rgba(56, 132, 255, .22), transparent 30%),
-    radial-gradient(circle at 14% 78%, rgba(31, 110, 235, .2), transparent 30%),
-    linear-gradient(155deg, #061a3f 0%, #0c2f6e 48%, #13509f 100%);
-  transition: transform .35s ease, filter .35s ease;
+    radial-gradient(circle at 78% 12%, rgba(255, 255, 255, .9), transparent 42%),
+    linear-gradient(157deg, #eef4ff 0%, #dfeafc 38%, #c3d8f7 72%, #a8c6f2 100%);
+  transition: filter .35s ease;
 }
 
-.miri-auth .visual-side::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: .48;
-  background:
-    radial-gradient(circle at 76% 16%, rgba(255, 255, 255, .07), transparent 34%),
-    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, .04), transparent 18%),
-    radial-gradient(circle at 88% 88%, rgba(64, 148, 255, .1), transparent 24%);
-  z-index: -2;
-  animation: miriDrift 18s linear infinite;
-}
-
-.miri-auth .visual-side::after {
-  content: "";
-  position: absolute;
-  left: -8%;
-  right: -6%;
-  bottom: -12%;
-  height: 260px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 20% 24%, rgba(56, 150, 255, .34) 0%, rgba(40, 110, 220, .14) 28%, transparent 58%),
-    radial-gradient(circle at 84% 88%, rgba(28, 92, 200, .3) 0%, rgba(28, 92, 200, .1) 24%, transparent 54%);
-  filter: blur(16px);
-  animation: miriPulseGlow 9s ease-in-out infinite;
-  z-index: -1;
-}
-
+/* soft ribboned light — the wave field behind the panel */
 .miri-auth .wave {
   position: absolute;
-  width: 132%;
-  height: 26%;
-  border: 1px solid rgba(120, 178, 255, .18);
   border-radius: 50%;
-  filter: blur(.2px);
-  transform: rotate(-12deg);
+  filter: blur(26px);
   z-index: -1;
-  animation: miriWaveFloat 10s ease-in-out infinite;
+  animation: miriWaveFloat 12s ease-in-out infinite;
 }
 .miri-auth .wave-top {
-  top: -9%;
-  right: -32%;
-  box-shadow: 0 0 90px rgba(70, 140, 255, .12) inset;
-  animation-delay: -2s;
+  top: -16%;
+  right: -26%;
+  width: 92%;
+  height: 62%;
+  background: linear-gradient(120deg, rgba(255, 255, 255, .95), rgba(178, 208, 248, .55));
+  animation-delay: -3s;
+}
+.miri-auth .wave-mid {
+  top: 24%;
+  left: -34%;
+  width: 88%;
+  height: 58%;
+  background: linear-gradient(120deg, rgba(146, 186, 244, .6), rgba(255, 255, 255, .35));
+  animation-duration: 15s;
 }
 .miri-auth .wave-bottom {
-  bottom: -8%;
-  left: -22%;
-  width: 138%;
-  height: 36%;
-  box-shadow: 0 0 120px rgba(70, 160, 255, .12) inset;
-  animation-duration: 13s;
+  bottom: -22%;
+  left: -18%;
+  width: 132%;
+  height: 56%;
+  background: linear-gradient(100deg, rgba(120, 168, 236, .62), rgba(206, 226, 252, .5));
+  animation-delay: -6s;
 }
 
 .miri-auth .glass-card {
-  width: min(100%, 418px);
-  min-height: 610px;
-  padding: 34px 30px 28px;
-  border: 1px solid rgba(160, 200, 255, .3);
-  border-radius: 28px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(56, 126, 226, .1));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .34), 0 36px 90px rgba(4, 12, 55, .28);
-  backdrop-filter: blur(18px);
+  width: min(100%, 440px);
+  padding: 40px 32px 30px;
+  border: 1px solid rgba(255, 255, 255, .85);
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .82), rgba(240, 246, 255, .62));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 30px 70px rgba(24, 62, 130, .16);
+  backdrop-filter: blur(16px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  gap: 26px;
   text-align: center;
-  animation: miriCardFloat 6s ease-in-out infinite;
-  position: relative;
-  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease, background .35s ease;
-}
-
-.miri-auth .visual-side:hover { filter: saturate(1.08); }
-.miri-auth .visual-side:hover .glass-card {
-  animation-play-state: paused;
-  transform: translateY(-10px) scale(1.01);
-  border-color: rgba(180, 216, 255, .45);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 42px 96px rgba(0, 0, 0, .3);
-  background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(64, 136, 236, .14));
-}
-.miri-auth .visual-side:hover .shield {
-  box-shadow: 0 0 52px rgba(74, 165, 255, .34);
-  transform: scale(1.04);
-}
-.miri-auth .visual-side:hover .spark { animation-duration: 6s; }
-
-.miri-auth .glass-card img { width: 176px; height: auto; filter: brightness(1.18) saturate(.95); }
-
-.miri-auth .shield {
-  margin: 0;
-  width: 126px;
-  height: 126px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(circle, rgba(60, 140, 255, .3), rgba(20, 70, 170, .1));
-  border: 1px solid rgba(120, 180, 255, .32);
-  box-shadow: 0 0 48px rgba(50, 130, 255, .2);
+  animation: miriCardFloat 7s ease-in-out infinite;
   transition: transform .35s ease, box-shadow .35s ease;
 }
-.miri-auth .shield svg {
-  width: 58px;
-  height: 58px;
+.miri-auth .visual-side:hover .glass-card {
+  animation-play-state: paused;
+  transform: translateY(-8px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 38px 84px rgba(24, 62, 130, .22);
+}
+
+.miri-auth .hero-brand { display: grid; justify-items: center; gap: 12px; }
+.miri-auth .hero-brand img { width: 210px; height: auto; }
+.miri-auth .hero-brand span {
+  color: #56678c;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: .1px;
+}
+
+.miri-auth .hero-title {
+  margin: 0;
+  color: var(--deep);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -1.2px;
+}
+.miri-auth .hero-title strong { display: block; font-weight: 800; }
+.miri-auth .hero-title em {
+  position: relative;
+  font-style: normal;
+  color: #2f74e6;
+}
+.miri-auth .ai-underline {
+  position: absolute;
+  left: -4%;
+  bottom: -12px;
+  width: 108%;
+  height: 12px;
   fill: none;
-  stroke: #fff;
-  stroke-width: 1.5;
+  stroke: #2f74e6;
+  stroke-width: 4;
   stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
 .miri-auth .glass-card p {
   margin: 0;
-  color: #fff;
-  font-weight: 500;
-  line-height: 1.58;
-  font-size: 16px;
-  max-width: 270px;
+  color: #3d4d70;
+  font-weight: 400;
+  line-height: 1.5;
+  font-size: 19px;
 }
-
-.miri-auth .hero-rule { width: 92px; height: 1px; margin: 0; background: rgba(255, 255, 255, .28); }
-.miri-auth .hero-title { margin: 0; color: #fff; font-size: 25px; font-weight: 700; line-height: 1.25; }
-.miri-auth .hero-title em { font-style: normal; color: #4f9bff; }
 
 .miri-auth .hero-features {
   width: 100%;
-  margin-top: 6px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-items: start;
-  gap: 10px;
 }
 .miri-auth .hero-feature {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, .96);
-  font-size: 11.5px;
-  line-height: 1.35;
-  text-align: center;
+  gap: 12px;
+  padding: 4px 6px;
+  color: #22345c;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.25;
 }
+.miri-auth .hero-feature + .hero-feature { border-left: 1px solid rgba(120, 152, 205, .28); }
 .miri-auth .hero-feature span {
-  width: 44px;
-  height: 44px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: rgba(60, 130, 235, .32);
-  border: 1px solid rgba(140, 190, 255, .28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+  transition: transform .25s ease;
 }
+.miri-auth .hero-feature:hover span { transform: translateY(-3px); }
 .miri-auth .hero-feature svg {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   fill: none;
-  stroke: #fff;
-  stroke-width: 1.8;
+  stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.miri-auth .tone-blue span { background: #dce9fc; }
+.miri-auth .tone-blue svg { stroke: #2f74e6; }
+.miri-auth .tone-sky span { background: #dceaf9; }
+.miri-auth .tone-sky svg { stroke: #3f92dd; }
+.miri-auth .tone-mint span { background: #d9f0e6; }
+.miri-auth .tone-mint svg { stroke: #1f9d74; }
+.miri-auth .tone-violet span { background: #e6e2fb; }
+.miri-auth .tone-violet svg { stroke: #6b4ee6; }
 
-.miri-auth .dot-grid {
-  position: absolute;
-  top: 102px;
-  left: 108px;
-  display: grid;
-  grid-template-columns: repeat(3, 8px);
-  gap: 10px;
-  opacity: .28;
-  animation: miriDrift 16s ease-in-out infinite;
+.miri-auth .hero-foot { display: grid; justify-items: center; gap: 14px; }
+.miri-auth .hero-rule { width: 96px; height: 2px; border-radius: 2px; background: #2f74e6; }
+.miri-auth .hero-foot strong {
+  color: #1b2d55;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 2.6px;
+  text-transform: uppercase;
 }
-.miri-auth .dot-grid span { width: 5px; height: 5px; border-radius: 50%; background: #6fa8f5; }
-
-.miri-auth .spark {
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .9);
-  box-shadow: 0 0 24px rgba(255, 255, 255, .45);
-  animation: miriSparkle 8s linear infinite;
+.miri-auth .hero-foot-sub {
+  color: #7387ab;
+  font-size: 10.5px;
+  letter-spacing: 3.4px;
+  text-transform: uppercase;
 }
-.miri-auth .spark-one { top: 34%; left: 10%; width: 9px; height: 9px; animation-delay: -1s; }
-.miri-auth .spark-two { top: 58%; left: 12%; width: 10px; height: 10px; animation-duration: 10s; }
-.miri-auth .spark-three { top: 36%; right: 14%; width: 8px; height: 8px; animation-delay: -4s; }
 
 .miri-auth .spinner {
   width: 20px;
@@ -438,31 +415,13 @@
 }
 
 @keyframes miriWaveFloat {
-  0%, 100% { transform: rotate(-12deg) translateY(0); }
-  50% { transform: rotate(-9deg) translateY(18px); }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-14px, 18px) scale(1.05); }
 }
 
 @keyframes miriCardFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }
-}
-
-@keyframes miriPulseGlow {
-  0%, 100% { transform: scale(1); opacity: .7; }
-  50% { transform: scale(1.12); opacity: 1; }
-}
-
-@keyframes miriDrift {
-  0% { transform: translateX(0) translateY(0); }
-  50% { transform: translateX(14px) translateY(-10px); }
-  100% { transform: translateX(0) translateY(0); }
-}
-
-@keyframes miriSparkle {
-  0% { transform: translateY(0) scale(.8); opacity: .15; }
-  25% { opacity: .9; }
-  50% { transform: translateY(-28px) scale(1.15); opacity: .45; }
-  100% { transform: translateY(-56px) scale(.8); opacity: 0; }
 }
 
 @keyframes miriFormEnter {
@@ -478,10 +437,9 @@
     overflow: auto;
   }
   .miri-auth .form-side { overflow: visible; }
-  .miri-auth .visual-side { height: 190px; min-height: 190px; order: -1; }
-  .miri-auth .dot-grid,
+  .miri-auth .visual-side { height: 190px; min-height: 190px; order: -1; padding: 0; }
   .miri-auth .hero-features,
-  .miri-auth .hero-rule,
+  .miri-auth .hero-foot,
   .miri-auth .hero-title,
   .miri-auth .glass-card p { display: none; }
   .miri-auth .glass-card {
@@ -493,8 +451,7 @@
     background: transparent;
     padding: 26px;
   }
-  .miri-auth .glass-card img { width: 112px; }
-  .miri-auth .glass-card .shield { display: none; }
+  .miri-auth .hero-brand img { width: 168px; }
   .miri-auth .form-inner {
     min-height: calc(100vh - 190px);
     max-width: 560px;
@@ -514,8 +471,8 @@
     justify-items: center;
     padding: 14px 0 0;
     background:
-      radial-gradient(circle at 50% 10%, rgba(116, 142, 255, .22), transparent 38%),
-      linear-gradient(135deg, #061a3f 0%, #0c2f6e 55%, #13509f 100%);
+      radial-gradient(circle at 50% 8%, rgba(255, 255, 255, .9), transparent 45%),
+      linear-gradient(135deg, #eef4ff 0%, #d8e6fb 55%, #b6d0f4 100%);
   }
   .miri-auth .form-side {
     position: relative;
@@ -547,12 +504,9 @@
     animation: none;
     justify-content: center;
   }
-  .miri-auth .glass-card img {
-    width: 92px;
-    margin: 0 auto;
-    display: block;
-    filter: brightness(1.12) saturate(1.08);
-  }
+  .miri-auth .hero-brand { gap: 8px; }
+  .miri-auth .hero-brand img { width: 140px; }
+  .miri-auth .hero-brand span { font-size: 11px; }
   .miri-auth .top-error { margin-bottom: 18px; padding: 11px 12px; border-radius: 10px; font-size: 12px; }
   .miri-auth form { margin-top: 22px; }
   .miri-auth .field + .field { margin-top: 16px; }
@@ -566,13 +520,9 @@
   .miri-auth .auth-foot nav { justify-content: center; flex-wrap: wrap; gap: 18px; }
   .miri-auth .auth-foot .language { width: 100%; margin-top: 14px; }
   .miri-auth .auth-foot .copyright { margin-top: 14px; font-size: 11px; }
-  .miri-auth .wave,
-  .miri-auth .spark,
-  .miri-auth .dot-grid,
-  .miri-auth .shield,
-  .miri-auth .hero-rule,
   .miri-auth .hero-title,
   .miri-auth .hero-features,
+  .miri-auth .hero-foot,
   .miri-auth .glass-card p { display: none; }
 }
 

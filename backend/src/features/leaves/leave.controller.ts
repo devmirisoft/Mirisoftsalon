@@ -1,4 +1,5 @@
 import { type Request, type Response } from "express";
+import { applyBranchSession } from "../../utils/branch-scope.js";
 import type { LeaveStatus, LeaveType } from "../../generated/prisma/enums.js";
 import { LeaveModel } from "./leave.model.js";
 
@@ -359,6 +360,8 @@ export const getLeaves = async (req: Request, res: Response) => {
 
       branchId = req.user.branchId;
     }
+
+    branchId = applyBranchSession(req, branchId);
 
     if (branchId) {
       const branch = await LeaveModel.findBranchById(branchId);

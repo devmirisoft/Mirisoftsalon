@@ -21,6 +21,79 @@ export const isBranchUnrestrictedRole = (role?: string) =>
   typeof role === "string" && BRANCH_UNRESTRICTED_ROLES.has(role);
 
 /**
+ * Roles that already carry a branch filter in the feature services that build
+ * their own `where` (job carts, memberships, wallets, staff availability).
+ * Kept separate from BRANCH_LOCKED_ROLES so opening a branch session does not
+ * silently change what a STAFF user sees in those modules.
+ */
+const COUNTER_ROLES = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
+
+type BranchActor = {
+  role?: string;
+  branchId?: string | undefined;
+  activeBranchId?: string | undefined;
+};
+
+/**
+ * The `where` fragment that confines an actor to a branch.
+ *
+ * Counter roles are pinned to their own branch. Salon-wide roles stay
+ * unfiltered unless they have opened a branch session, in which case they read
+ * and write that branch only — that is what makes an admin's branch login show
+ * isolated data instead of the whole salon.
+ */
+export const actorBranchWhere = (actor: BranchActor) => {
+  if (COUNTER_ROLES.has(actor.role ?? "")) {
+    return { branchId: actor.branchId ?? "__unauthorized__" };
+  }
+
+  return actor.activeBranchId ? { branchId: actor.activeBranchId } : {};
+};
+
+/**
+ * The branch this caller is confined to for the current request: their own
+ * branch for a branch-locked role, or the branch a salon-wide role has opened
+ * a session on. `undefined` means the caller may work across the whole salon.
+ */
+export const pinnedBranchId = (user?: BranchActor) =>
+  isBranchLockedRole(user?.role) ? user?.branchId : user?.activeBranchId;
+
+/**
+ * True when the caller may not choose which branch a row belongs to, so a
+ * branchId in the request body is ignored rather than honoured.
+ */
+export const isBranchPinned = (user?: BranchActor) =>
+  Boolean(pinnedBranchId(user));
+
+/**
+ * Applies an open branch session to a caller-supplied branch filter.
+ *
+ * The session always wins: a page that still remembers `?branchId=` for another
+ * branch gets the branch the admin is actually working in, rather than an error
+ * or another branch's rows. Returns `requested` unchanged when no session is
+ * open, which keeps the all-branches behaviour for an admin who has not logged
+ * into one.
+ */
+export const applyBranchSession = (
+  req: Request,
+  requested?: string | undefined
+) => req.user?.activeBranchId ?? requested;
+
+/**
+ * Like `actorBranchWhere`, but for tables whose rows may be salon-wide: a null
+ * branchId means "shared by every branch" (catalog services, products and
+ * packages), so those stay visible inside a branch session. Only rows owned by
+ * a *different* branch are hidden.
+ */
+export const actorBranchOrSalonWideWhere = (actor: BranchActor) => {
+  const scoped = actorBranchWhere(actor);
+
+  return "branchId" in scoped
+    ? { OR: [{ branchId: null }, { branchId: scoped.branchId }] }
+    : {};
+};
+
+/**
  * The branch a request is confined to.
  *
  * Returns `undefined` for SUPER_ADMIN and SALON_ADMIN, which preserves the
@@ -37,7 +110,7 @@ export const resolveBranchScope = (req: Request): string | undefined | null => {
   const role = req.user?.role;
 
   if (isBranchUnrestrictedRole(role)) {
-    return undefined;
+    return req.user?.activeBranchId ?? undefined;
   }
 
   if (isBranchLockedRole(role)) {
@@ -72,6 +145,13 @@ export const resolveWritableBranchId = (
     return { ok: true, branchId };
   }
 
+  // An open branch session pins writes to that branch the same way a
+  // branch-locked role is pinned, so a body-supplied branch cannot leak a row
+  // into a branch the admin is not currently working in.
+  if (req.user?.activeBranchId) {
+    return { ok: true, branchId: req.user.activeBranchId };
+  }
+
   if (requestedBranchId === undefined || requestedBranchId === null) {
     return { ok: true };
   }
@@ -104,7 +184,10 @@ export const resolveBranchFilter = (
       : undefined;
 
   if (scope) {
-    if (requested && requested !== scope) {
+    // A branch-locked user asking for another branch is overreaching, but a
+    // salon-wide role with a session open is just carrying a stale filter from
+    // a page, so the session quietly wins instead of failing the request.
+    if (requested && requested !== scope && !req.user?.activeBranchId) {
       return { ok: false, message: "You do not have access to this branch" };
     }
 

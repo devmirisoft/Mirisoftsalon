@@ -610,7 +610,7 @@ $dark-border-color: lighten($darker, 8%) !default;
                     background: linear-gradient(90deg, darken(#ee3148, 20%) 0%, darken(#ee3148, 20%) 30%, #ee3148 30%, #ee3148 72%, mix(#ee3148, $white, 20%) 72%, mix(#ee3148, $white, 20%) 100%) !important;
                 }
                 &.skin-bluelite {
-                    background: linear-gradient(90deg, darken(#6576ff, 20%) 0%, darken(#6576ff, 20%) 28%, #6576ff 28%, #6576ff 72%, mix(#6576ff, $white, 20%) 72%, mix(#6576ff, $white, 20%) 100%) !important;
+                    background: linear-gradient(90deg, darken(#212e6b, 20%) 0%, darken(#212e6b, 20%) 28%, #212e6b 28%, #212e6b 72%, mix(#212e6b, $white, 20%) 72%, mix(#212e6b, $white, 20%) 100%) !important;
                 }
             }
             &:hover, &:focus {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Alert, Col, Input, Label, Row } from "reactstrap";
+import { Alert, Input, Label } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import DataGrid from "@/components/salon/DataGrid";
 import PageShell from "@/components/salon/PageShell";
@@ -123,7 +123,7 @@ const JobCarts = () => {
 
   return (
     <PageShell
-      className="jobcarts-page"
+      className="jobcarts-page page-tight"
       title="Job Cart"
       description="Create and manage walk-in service carts using appointments and draft invoices."
       actionLabel="New Job Cart"
@@ -133,28 +133,15 @@ const JobCarts = () => {
 
       <div className="card card-bordered jc-panel mb-4">
         <div className="card-inner">
-          <div className="jc-tabs">
-            {STATUS_TABS.map((tab) => (
-              <button
-                key={tab.value || "ALL"}
-                type="button"
-                className={`jc-tab ${
-                  filters.status === tab.value ? "is-active" : ""
-                }`}
-                onClick={() =>
-                  setFilters((current) => ({ ...current, status: tab.value }))
-                }
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-          <Row className="g-3 align-items-end">
-            <Col md="5">
-              <Label className="jc-label">Search by phone or job</Label>
+          <div className="filter-bar">
+            <div className="filter-bar-item is-grow">
+              <Label className="jc-label" for="jc-search">
+                Search by phone or job
+              </Label>
               <div className="cust-field">
                 <Icon name="search" className="cust-field-icon" />
                 <Input
+                  id="jc-search"
                   className="cust-input"
                   placeholder="Job cart ID, customer, phone or service"
                   value={filters.search}
@@ -167,54 +154,70 @@ const JobCarts = () => {
                   }
                 />
               </div>
-            </Col>
-            <Col md="2">
-              <Label className="jc-label">Start Date</Label>
-              <div className="cust-field">
-                <Icon name="calendar" className="cust-field-icon" />
-                <Input
-                  className="cust-input"
-                  type="date"
-                  value={filters.startDate}
-                  onChange={(event) =>
-                    setFilters((current) => ({
-                      ...current,
-                      startDate: event.target.value,
-                    }))
+            </div>
+            {/* type="date" draws its own calendar button, so no icon here. */}
+            <div className="filter-bar-item">
+              <Label className="jc-label" for="jc-start-date">
+                Start Date
+              </Label>
+              <Input
+                id="jc-start-date"
+                className="cust-input"
+                type="date"
+                value={filters.startDate}
+                onChange={(event) =>
+                  setFilters((current) => ({
+                    ...current,
+                    startDate: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="filter-bar-item">
+              <Label className="jc-label" for="jc-end-date">
+                End Date
+              </Label>
+              <Input
+                id="jc-end-date"
+                className="cust-input"
+                type="date"
+                value={filters.endDate}
+                onChange={(event) =>
+                  setFilters((current) => ({
+                    ...current,
+                    endDate: event.target.value,
+                  }))
+                }
+              />
+            </div>
+            <Button
+              color="primary"
+              className="jc-btn-primary"
+              onClick={() => load(1)}
+            >
+              <Icon name="search" />
+              <span>Search</span>
+            </Button>
+            <Button color="light" className="jc-btn-ghost" onClick={reset}>
+              Reset
+            </Button>
+            <div className="jc-tabs">
+              {STATUS_TABS.map((tab) => (
+                <button
+                  key={tab.value || "ALL"}
+                  type="button"
+                  className={`jc-tab jc-tab-${tab.value.toLowerCase()} ${
+                    filters.status === tab.value ? "is-active" : ""
+                  }`}
+                  onClick={() =>
+                    setFilters((current) => ({ ...current, status: tab.value }))
                   }
-                />
-              </div>
-            </Col>
-            <Col md="2">
-              <Label className="jc-label">End Date</Label>
-              <div className="cust-field">
-                <Icon name="calendar" className="cust-field-icon" />
-                <Input
-                  className="cust-input"
-                  type="date"
-                  value={filters.endDate}
-                  onChange={(event) =>
-                    setFilters((current) => ({
-                      ...current,
-                      endDate: event.target.value,
-                    }))
-                  }
-                />
-              </div>
-            </Col>
-            <Col md="3" className="d-flex gap-2">
-              <Button
-                color="primary"
-                className="jc-btn-primary"
-                onClick={() => load(1)}
-              >
-                <Icon name="search" /> <span>Search</span>
-              </Button>
-              <Button color="light" className="jc-btn-ghost" onClick={reset}>
-                Reset
-              </Button>
-            </Col>
-          </Row>
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

@@ -9,7 +9,7 @@ const Progress = ({ value, size, className }) => {
   });
   return (
     <div className={progressClass}>
-      <div className="progress-bar" style={{ width: `${value}%`, backgroundColor: "#6576ff" }}></div>
+      <div className="progress-bar" style={{ width: `${value}%`, backgroundColor: "#212e6b" }}></div>
       <div className="progress-amount">{value}%</div>
     </div>
   );

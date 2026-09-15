@@ -51,16 +51,17 @@ $base-light:  		$base-400;
 $base-dim:  		mix($base-color,$white, 8%);
 
 // Base/Default color @used for text
-$accent-100:  		#eff1ff;
-$accent-200:  		#e3e7fe;
-$accent-300:  		#c4cefe;
-$accent-400:  		#9cabff;
-$accent-500:  		#798bff;
+$accent-color:  	#212e6b;
 
-$accent-color:  	#6576ff;
+$accent-100:  		mix($accent-color, $white, 6%);
+$accent-200:  		mix($accent-color, $white, 12%);
+$accent-300:  		mix($accent-color, $white, 28%);
+$accent-400:  		mix($accent-color, $white, 50%);
+$accent-500:  		lighten($accent-color, 9%);
+
 $accent-light:  	$accent-300;
-$accent-dark:  		#2c3782;
-$accent-dim:  	    #e3e7fe;
+$accent-dark:  		darken($accent-color, 7%);
+$accent-dim:  	    $accent-200;
 
 
 $body-bg:			$lighter;

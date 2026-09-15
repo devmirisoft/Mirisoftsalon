@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useMemo } from "react";
 import { withLanes } from "@/utils/dayBoardLanes";
 
@@ -100,18 +99,15 @@ const StaffDayBoard = ({
 
   if (!staff.length) {
     return (
-      <div className="card card-bordered">
-        <div className="card-inner text-center text-soft py-5">
-          No staff to show. Add staff members to see their day columns.
-        </div>
+      <div className="text-center text-soft py-5">
+        No staff to show. Add staff members to see their day columns.
       </div>
     );
   }
 
   return (
-    <div className="card card-bordered">
-      <div className="card-inner p-0" style={{ overflowX: "auto" }}>
-        <div style={{ display: "flex", minWidth: "fit-content" }}>
+    <div style={{ overflowX: "auto" }}>
+      <div style={{ display: "flex", minWidth: "fit-content" }}>
           <div style={{ width: GUTTER_WIDTH, flex: "none" }}>
             <div
               style={{
@@ -273,8 +269,7 @@ const StaffDayBoard = ({
                 </div>
               </div>
             );
-          })}
-        </div>
+        })}
       </div>
     </div>
   );

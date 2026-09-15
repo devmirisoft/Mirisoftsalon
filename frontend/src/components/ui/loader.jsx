@@ -19,8 +19,8 @@ export const LoaderOne = ({ label = "Loading" }) => (
         width: 10px;
         height: 10px;
         border-radius: 999px;
-        background: #6576ff;
-        box-shadow: 0 0 0 0 rgba(101, 118, 255, 0.35);
+        background: #212e6b;
+        box-shadow: 0 0 0 0 rgba(33, 46, 107, 0.35);
         animation: salon-loader-one-pulse 0.9s ease-in-out infinite;
       }
 
@@ -40,7 +40,7 @@ export const LoaderOne = ({ label = "Loading" }) => (
         40% {
           opacity: 1;
           transform: translateY(-5px) scale(1);
-          box-shadow: 0 8px 18px rgba(101, 118, 255, 0.26);
+          box-shadow: 0 8px 18px rgba(33, 46, 107, 0.26);
         }
       }
     `}</style>

@@ -20,7 +20,7 @@ export const solidLineChart = {
       label: "Total Send",
       backgroundColor: "white",
       pointBorderWidth: 2,
-      borderColor: "#798bff",
+      borderColor: "#2c3d8e",
       fill: false,
       categoryPercentage: 0.9,
       barPercentage: 0.6,
@@ -36,7 +36,7 @@ export const filledLineChart = {
     {
       label: "Total Received",
       lineTension: 0.4,
-      borderColor: "#798bff",
+      borderColor: "#2c3d8e",
       backgroundColor: "rgba(121, 139, 255, 0.4)",
       pointBorderWidth: 2,
       pointBackgroundColor: "white",
@@ -57,7 +57,7 @@ export const straightLineChart = {
     {
       label: "Total Received",
       lineTension: 0,
-      borderColor: "#798bff",
+      borderColor: "#2c3d8e",
       backgroundColor: "rgba(121, 139, 255, 0.4)",
       pointBorderWidth: 2,
       pointBackgroundColor: "white",
@@ -207,7 +207,7 @@ export const overviewKnob = {
   datasets: [
     {
       borderColor: "transparent",
-      backgroundColor: ["#6576ff", "#d9e5f7"],
+      backgroundColor: ["#212e6b", "#d9e5f7"],
       data: [220, 80],
     },
   ],

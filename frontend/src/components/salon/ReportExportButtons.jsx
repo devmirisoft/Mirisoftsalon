@@ -33,22 +33,24 @@ const ReportExportButtons = ({ reportType, filters = {} }) => {
   return (
     <div className="d-flex gap-2">
       <Button
-        color="danger"
+        color="light"
         outline
+        className="btn-export btn-export-pdf"
         disabled={Boolean(loading)}
         onClick={() => download("pdf")}
       >
         <Icon name="file-pdf" />
-        {loading === "pdf" ? "Exporting…" : "Export PDF"}
+        <span>{loading === "pdf" ? "Exporting…" : "Export PDF"}</span>
       </Button>
       <Button
-        color="success"
+        color="light"
         outline
+        className="btn-export btn-export-xls"
         disabled={Boolean(loading)}
         onClick={() => download("xlsx")}
       >
         <Icon name="file-xls" />
-        {loading === "xlsx" ? "Exporting…" : "Export Excel"}
+        <span>{loading === "xlsx" ? "Exporting…" : "Export Excel"}</span>
       </Button>
     </div>
   );

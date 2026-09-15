@@ -15,7 +15,7 @@ const defaults = {
   slotIntervalMinutes: 15,
   cancellationPolicyText: "",
   termsText: "",
-  themeColor: "#6576ff",
+  themeColor: "#212e6b",
 };
 
 const toForm = (setting) => ({
@@ -24,7 +24,7 @@ const toForm = (setting) => ({
   branchId: setting.branchId || "",
   cancellationPolicyText: setting.cancellationPolicyText || "",
   termsText: setting.termsText || "",
-  themeColor: setting.themeColor || "#6576ff",
+  themeColor: setting.themeColor || "#212e6b",
 });
 
 const OnlineBookingSettings = () => {

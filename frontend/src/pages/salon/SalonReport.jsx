@@ -46,7 +46,7 @@ const CUSTOMER_TYPES = [
 ];
 
 const PALETTE = [
-  "#6576ff", "#1ee0ac", "#f4bd0e", "#e85347", "#816bff",
+  "#212e6b", "#1ee0ac", "#f4bd0e", "#e85347", "#816bff",
   "#09c2de", "#ff63a5", "#8091a7", "#20c997", "#c4cefe",
 ];
 
@@ -341,7 +341,7 @@ const SalonReport = () => {
                             label: "Revenue",
                             data: trend.map((row) => row.revenue),
                             borderColor: PALETTE[0],
-                            backgroundColor: "rgba(101,118,255,.15)",
+                            backgroundColor: "rgba(33,46,107,.15)",
                             fill: true,
                             tension: 0.3,
                           },

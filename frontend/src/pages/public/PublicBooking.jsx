@@ -158,7 +158,7 @@ const PublicBooking = () => {
         <div className="card border-0 shadow-sm text-center p-4 p-md-5">
           <div
             className="rounded-circle text-white mx-auto mb-4 d-flex align-items-center justify-content-center"
-            style={{ width: 64, height: 64, background: config.themeColor || "#6576ff" }}
+            style={{ width: 64, height: 64, background: config.themeColor || "#212e6b" }}
           >
             ✓
           </div>
@@ -169,7 +169,7 @@ const PublicBooking = () => {
               : "Your appointment is scheduled."}
           </p>
           <p className="mt-4 mb-1 text-uppercase small text-soft">Appointment code</p>
-          <h3 style={{ color: config.themeColor || "#6576ff" }}>
+          <h3 style={{ color: config.themeColor || "#212e6b" }}>
             {success.appointmentCode}
           </h3>
           <p className="mt-3">
@@ -180,7 +180,7 @@ const PublicBooking = () => {
     );
   }
 
-  const accent = config.themeColor || "#6576ff";
+  const accent = config.themeColor || "#212e6b";
   return (
     <main className="container py-4 py-md-5" style={{ maxWidth: 920 }}>
       <header className="text-center mb-4">

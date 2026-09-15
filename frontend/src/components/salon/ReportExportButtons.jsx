@@ -39,7 +39,7 @@ const ReportExportButtons = ({ reportType, filters = {} }) => {
         onClick={() => download("pdf")}
       >
         <Icon name="file-pdf" />
-        {loading === "pdf" ? "Exporting…" : "Export PDF"}
+        <span>{loading === "pdf" ? "Exporting…" : "Export PDF"}</span>
       </Button>
       <Button
         color="success"
@@ -48,7 +48,7 @@ const ReportExportButtons = ({ reportType, filters = {} }) => {
         onClick={() => download("xlsx")}
       >
         <Icon name="file-xls" />
-        {loading === "xlsx" ? "Exporting…" : "Export Excel"}
+        <span>{loading === "xlsx" ? "Exporting…" : "Export Excel"}</span>
       </Button>
     </div>
   );

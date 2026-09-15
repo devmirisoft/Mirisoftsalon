@@ -34,6 +34,7 @@ const AppointmentDetailsModal = ({
   onNotes,
   onTracking,
   onMakeBill,
+  onDelete,
 }) => {
   if (!appointment) return null;
 
@@ -306,6 +307,11 @@ const AppointmentDetailsModal = ({
           <Button color="primary" onClick={() => onReschedule(appointment)}>
             <Icon name="calender-date" /> Reschedule
           </Button>
+          {onDelete && (
+            <Button color="danger" outline onClick={() => onDelete(appointment)}>
+              <Icon name="trash" /> Delete
+            </Button>
+          )}
           {appointment.status === "COMPLETED" && onMakeBill && (
             <Button color="success" onClick={() => onMakeBill(appointment)}>
               <Icon name="file-plus" /> Make bill

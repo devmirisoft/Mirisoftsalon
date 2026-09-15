@@ -77,7 +77,7 @@ const CustomerProfileLink = ({ customerId }) =>
     <Link
       to={`/customers/${customerId}`}
       className="btn btn-outline-primary flex-shrink-0 d-flex align-items-center justify-content-center"
-      style={{ width: 38, height: 38, padding: 0 }}
+      style={{ width: 26, height: 26, padding: 0 }}
       title="Edit customer details"
     >
       <Icon name="edit" />
@@ -904,6 +904,29 @@ const JobCartCreate = () => {
                     </FormGroup>
                   </Col>
                 </Row>
+                {customerSummary && (
+                  <div className="cart-panel cust-meta">
+                    {customerRows.map((row) => (
+                      <div key={row.label} className="cart-row">
+                        <span>
+                          <Icon name={row.icon} />
+                          {row.label}
+                        </span>
+                        <span
+                          className={
+                            row.danger
+                              ? "text-danger fw-bold"
+                              : row.muted
+                              ? "text-soft"
+                              : "fw-medium"
+                          }
+                        >
+                          {row.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {lookingUp && (
                   <div className="small text-soft mb-3">
                     <Spinner size="sm" className="me-1" />
@@ -988,13 +1011,13 @@ const JobCartCreate = () => {
                       <thead>
                         <tr>
                           {/* <th>Main Service</th> */}
-                          <th style={{ width: 90 }}>Service</th>
-                          <th style={{ width: 90 }}>Staff</th>
-                          <th style={{ width: 90 }}>Qty</th>
-                          <th style={{ width: 180 }}>Price</th>
-                          <th style={{ width: 160 }}>Discount</th>
-                          <th style={{ width: 100 }}>GST %</th>
-                          <th style={{ width: 130 }}>Total</th>
+                          <th style={{ width: 160 }}>Service</th>
+                          <th style={{ width: 190 }}>Staff</th>
+                          <th style={{ width: 70 }}>Qty</th>
+                          <th style={{ width: 160 }}>Price</th>
+                          <th style={{ width: 120 }}>Discount</th>
+                          <th style={{ width: 50 }}>GST %</th>
+                          <th style={{ width: 110 }}>Total</th>
                           <th style={{ width: 70 }}></th>
                         </tr>
                       </thead>
@@ -1531,27 +1554,6 @@ const JobCartCreate = () => {
                           </div>
                         ))}
                       </div>
-                    </div>
-                    <div className="cart-panel mb-3">
-                      {customerRows.map((row) => (
-                        <div key={row.label} className="cart-row">
-                          <span>
-                            <Icon name={row.icon} />
-                            {row.label}
-                          </span>
-                          <span
-                            className={
-                              row.danger
-                                ? "text-danger fw-bold"
-                                : row.muted
-                                ? "text-soft"
-                                : "fw-medium"
-                            }
-                          >
-                            {row.value}
-                          </span>
-                        </div>
-                      ))}
                     </div>
                   </>
                 )}

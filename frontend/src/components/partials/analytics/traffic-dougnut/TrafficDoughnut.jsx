@@ -61,7 +61,7 @@ const TrafficDougnut = () => {
         <div className="traffic-channel-group g-2">
           <div className="traffic-channel-data">
             <div className="title">
-              <span className="dot dot-lg sq" style={{ background: "#798bff" }}></span>
+              <span className="dot dot-lg sq" style={{ background: "#2c3d8e" }}></span>
               <span>Organic Search</span>
             </div>
             <div className="amount">

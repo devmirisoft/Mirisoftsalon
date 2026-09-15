@@ -4,13 +4,10 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import {
   Alert,
-  Col,
   Input,
-  Label,
   Modal,
   ModalBody,
   ModalHeader,
-  Row,
   Spinner,
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
@@ -18,15 +15,11 @@ import PageShell from "@/components/salon/PageShell";
 import AppointmentBookingModal from "@/components/salon/AppointmentBookingModal";
 import AppointmentCalendar from "@/components/salon/AppointmentCalendar";
 import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal";
-import StaffDayBoard from "@/components/salon/StaffDayBoard";
-import DataGrid from "@/components/salon/DataGrid";
 import SchemaModal from "@/components/salon/SchemaModal";
-import AppointmentStatusBadge from "@/components/salon/AppointmentStatusBadge";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
   formatDate,
-  formatMoney,
   labelize,
   minDateTimeInput,
   roleCanManage,
@@ -43,32 +36,14 @@ const STATUSES = [
   "NO_SHOW",
 ];
 
-const LIST_COLUMNS = [
-  { key: "appointmentCode", label: "Appointment" },
-  { key: "customer", label: "Customer", render: (value) => value?.name || "—" },
-  { key: "staff", label: "Staff", render: (value) => value?.name || "—" },
-  { key: "startTime", label: "Start", render: (value) => formatDate(value, true) },
-  { key: "estimatedAmount", label: "Amount", render: formatMoney },
-  {
-    key: "status",
-    label: "Status",
-    render: (value) => <AppointmentStatusBadge value={value} />,
-  },
-];
+const EMPTY_FILTERS = { from: "", to: "", status: "", staffId: "", q: "" };
 
 const toISODate = (date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
     date.getDate()
   ).padStart(2, "0")}`;
 
-const sameDay = (value, day) => {
-  const date = new Date(value);
-  return (
-    date.getFullYear() === day.getFullYear() &&
-    date.getMonth() === day.getMonth() &&
-    date.getDate() === day.getDate()
-  );
-};
+const fromISODate = (value) => (value ? new Date(`${value}T00:00`) : null);
 
 const nextAvailableTime = (dateInfo) => {
   const selected = new Date(dateInfo.date);
@@ -103,9 +78,9 @@ const Appointments = () => {
     staff: [],
     services: [],
   });
-  const [filters, setFilters] = useState({ date: "", status: "", staffId: "" });
-  const [view, setView] = useState("calendar");
-  const [scheduleStaffId, setScheduleStaffId] = useState("");
+  // `draft` is what the toolbar shows; `filters` is what has been searched.
+  const [draft, setDraft] = useState(EMPTY_FILTERS);
+  const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [action, setAction] = useState(null);
@@ -118,18 +93,28 @@ const Appointments = () => {
   const [trackingLoading, setTrackingLoading] = useState(false);
   const isSuper = user?.role === "SUPER_ADMIN";
 
+  const query = useMemo(
+    () => ({
+      ...(filters.from ? { from: filters.from } : {}),
+      ...(filters.to ? { to: filters.to } : {}),
+      ...(filters.status ? { status: filters.status } : {}),
+      ...(filters.staffId ? { staffId: filters.staffId } : {}),
+    }),
+    [filters.from, filters.staffId, filters.status, filters.to]
+  );
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await salonApi.appointments.list(filters);
+      const response = await salonApi.appointments.list(query);
       setAppointments(response.data || []);
     } catch (loadError) {
       setError(loadError.message);
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [query]);
 
   const loadRefs = useCallback(async () => {
     const [salons, branches, customers, staff, services] =
@@ -208,6 +193,7 @@ const Appointments = () => {
     if (!window.confirm(`Delete appointment ${row.appointmentCode}?`)) return;
     try {
       await salonApi.appointments.remove(row.id);
+      setDetails(null);
       await load();
     } catch (deleteError) {
       setError(deleteError.message);
@@ -223,35 +209,16 @@ const Appointments = () => {
     return Array.from(byId.values());
   }, [appointments, refs.staff]);
 
-  const boardStaff = useMemo(
-    () =>
-      scheduleStaffId
-        ? availableStaff.filter((member) => member.id === scheduleStaffId)
-        : availableStaff,
-    [availableStaff, scheduleStaffId]
-  );
-
-  const boardDate = useMemo(
-    () => (filters.date ? new Date(`${filters.date}T00:00`) : new Date()),
-    [filters.date]
-  );
-
-  const shiftBoardDay = (days) => {
-    const next = new Date(boardDate);
-    next.setDate(next.getDate() + days);
-    setFilters((current) => ({ ...current, date: toISODate(next) }));
-  };
-
-  const boardAppointments = useMemo(() => {
-    const ids = new Set(boardStaff.map((member) => member.id));
-    return appointments
-      .filter(
-        (appointment) =>
-          ids.has(appointment.staff?.id) &&
-          sameDay(appointment.startTime, boardDate)
-      )
-      .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-  }, [appointments, boardDate, boardStaff]);
+  // Name/phone search runs over the loaded set, so it costs no round trip.
+  const visible = useMemo(() => {
+    const term = filters.q.trim().toLowerCase();
+    if (!term) return appointments;
+    return appointments.filter((appointment) =>
+      `${appointment.customer?.name || ""} ${appointment.customer?.phone || ""}`
+        .toLowerCase()
+        .includes(term)
+    );
+  }, [appointments, filters.q]);
 
   const formConfig = useMemo(() => {
     if (action === "status") {
@@ -368,73 +335,71 @@ const Appointments = () => {
 
   return (
     <PageShell
+      className="appt-page page-tight"
       title="Appointments"
-      description=""
-      actionLabel="Book appointment"
+      description="Book services, prevent staff conflicts, track status, reschedule, and maintain operational notes."
+      actionLabel="Book Appointment"
       onAction={() => openAction("create")}
-      tools={
-        <ReportExportButtons
-          reportType="appointments"
-          filters={{
-            ...(filters.date ? { from: filters.date, to: filters.date } : {}),
-            ...(filters.status ? { status: filters.status } : {}),
-            ...(filters.staffId ? { staffId: filters.staffId } : {}),
-          }}
-        />
-      }
+      tools={<ReportExportButtons reportType="appointments" filters={query} />}
     >
       {error && <Alert color="danger">{error}</Alert>}
-      <div className="card card-bordered mb-3 appt-toolbar">
+      <div className="card card-bordered appt-filter-card">
         <div className="card-inner">
-          <div className="appt-toolbar-head">
-            <h5 className="title mb-0">
-              {view === "calendar"
-                ? ""
-                : view === "staff"
-                  ? "Staff schedule"
-                  : "Appointment list"}
-            </h5>
-            {view !== "calendar" && (
-              <div className="btn-group">
-                <Button
-                  color="light"
-                  onClick={() => setView("calendar")}
-                >
-                  <Icon name="calender-date" /> Calendar
-                </Button>
-                <Button
-                  color={view === "staff" ? "primary" : "light"}
-                  onClick={() => setView("staff")}
-                >
-                  <Icon name="users" /> Staff
-                </Button>
-                <Button
-                  color={view === "list" ? "primary" : "light"}
-                  onClick={() => setView("list")}
-                >
-                  <Icon name="list-index" /> List
-                </Button>
+          <div className="appt-filters">
+            <div className="appt-filter appt-filter-date">
+              <label className="appt-filter-label" htmlFor="appt-filter-date">
+                Date
+              </label>
+              <div className="form-control-wrap">
+                <div className="form-icon form-icon-right">
+                  <Icon name="calender-date" />
+                </div>
+                <DatePicker
+                  id="appt-filter-date"
+                  selectsRange
+                  className="form-control"
+                  dateFormat="dd-MM-yyyy"
+                  placeholderText="All dates"
+                  startDate={fromISODate(draft.from)}
+                  endDate={fromISODate(draft.to)}
+                  onChange={([start, end]) =>
+                    setDraft((current) => ({
+                      ...current,
+                      from: start ? toISODate(start) : "",
+                      to: end ? toISODate(end) : "",
+                    }))
+                  }
+                />
               </div>
-            )}
-          </div>
-          <Row className="g-1 align-items-end">
-            <Col md="3">
-              <Label>Date</Label>
+            </div>
+            <div className="appt-filter">
+              <label className="appt-filter-label" htmlFor="appt-filter-staff">
+                Staff
+              </label>
               <Input
-                type="date"
-                value={filters.date}
-                onChange={(event) =>
-                  setFilters((current) => ({ ...current, date: event.target.value }))
-                }
-              />
-            </Col>
-            <Col md="3">
-              <Label>Status</Label>
-              <Input
+                id="appt-filter-staff"
                 type="select"
-                value={filters.status}
+                value={draft.staffId}
                 onChange={(event) =>
-                  setFilters((current) => ({ ...current, status: event.target.value }))
+                  setDraft((current) => ({ ...current, staffId: event.target.value }))
+                }
+              >
+                <option value="">All staff</option>
+                {availableStaff.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </Input>
+            </div>
+            <div className="appt-filter">
+              <label className="appt-filter-label" htmlFor="appt-filter-status">
+                Status
+              </label>
+              <Input
+                id="appt-filter-status"
+                type="select"
+                value={draft.status}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, status: event.target.value }))
                 }
               >
                 <option value="">All statuses</option>
@@ -444,204 +409,54 @@ const Appointments = () => {
                   </option>
                 ))}
               </Input>
-            </Col>
-            <Col md="3">
-              <Label>Staff</Label>
-              <Input
-                type="select"
-                value={filters.staffId}
-                onChange={(event) =>
-                  setFilters((current) => ({ ...current, staffId: event.target.value }))
-                }
-              >
-                <option value="">All staff</option>
-                {refs.staff.map((item) => (
-                  <option key={item.id} value={item.id}>{item.name}</option>
-                ))}
-              </Input>
-            </Col>
-            <Col md="3">
-              <Button
-                color="light"
-                className="w-100"
-                onClick={() => setFilters({ date: "", status: "", staffId: "" })}
-              >
-                <Icon name="reload" /> Clear filters
-              </Button>
-            </Col>
-          </Row>
-          {view === "staff" && (
-            <>
-              <hr className="appt-toolbar-split" />
-              <Row className="g-3 align-items-end">
-                <Col md="4">
-                  <Label>Staff member</Label>
-                  <Input
-                    type="select"
-                    value={scheduleStaffId}
-                    onChange={(event) => setScheduleStaffId(event.target.value)}
-                  >
-                    <option value="">All staff</option>
-                    {availableStaff.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </Input>
-                </Col>
-                <Col md="8">
-                  <div className="d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
-                    <Button color="light" onClick={() => shiftBoardDay(-1)}>
-                      <Icon name="chevron-left" />
-                    </Button>
-                    <span className="fw-bold">{formatDate(boardDate)}</span>
-                    <Button color="light" onClick={() => shiftBoardDay(1)}>
-                      <Icon name="chevron-right" />
-                    </Button>
-                    <Button
-                      color="light"
-                      onClick={() =>
-                        setFilters((current) => ({ ...current, date: "" }))
-                      }
-                    >
-                      Today
-                    </Button>
-                  </div>
-                </Col>
-              </Row>
-              <p className="mt-3 mb-0 text-soft small">
-                Click a slot in a staff column to book that staff member.
-              </p>
-            </>
-          )}
+            </div>
+            <div className="appt-filter appt-filter-search">
+              <div className="form-control-wrap">
+                <div className="form-icon form-icon-left">
+                  <Icon name="search" />
+                </div>
+                <Input
+                  value={draft.q}
+                  placeholder="Search by customer name or phone"
+                  onChange={(event) =>
+                    setDraft((current) => ({ ...current, q: event.target.value }))
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") setFilters(draft);
+                  }}
+                />
+              </div>
+            </div>
+            <Button color="primary" onClick={() => setFilters(draft)}>
+              <Icon name="search" />
+              <span>Search</span>
+            </Button>
+            <Button
+              color="light"
+              onClick={() => {
+                setDraft(EMPTY_FILTERS);
+                setFilters(EMPTY_FILTERS);
+              }}
+            >
+              <Icon name="reload" />
+              <span>Clear</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      {loading && view !== "list" ? (
+      {loading ? (
         <div className="card card-bordered">
           <div className="card-inner text-center py-5">
             <Spinner color="primary" />
             <p className="text-soft mt-2 mb-0">Loading appointment calendar…</p>
           </div>
         </div>
-      ) : view === "calendar" ? (
+      ) : (
         <AppointmentCalendar
-          appointments={appointments}
+          appointments={visible}
           onAppointmentClick={viewDetails}
           onDateSelect={openCalendarBooking}
-          onViewChange={setView}
-        />
-      ) : view === "staff" ? (
-        <>
-          <Row className="g-3">
-            <Col xl="3">
-              <div className="card card-bordered h-100">
-                <div className="card-inner">
-                  <div className="staff-board-datepicker">
-                    <DatePicker
-                      inline
-                      selected={boardDate}
-                      onChange={(day) =>
-                        setFilters((current) => ({
-                          ...current,
-                          date: toISODate(day),
-                        }))
-                      }
-                    />
-                  </div>
-                  <h6 className="title mt-4 mb-2">{formatDate(boardDate)}</h6>
-                  <ul className="list-unstyled mb-0 small">
-                    {[
-                      ["All events", boardAppointments.length],
-                      [
-                        "Cancelled",
-                        boardAppointments.filter(
-                          (row) => row.status === "CANCELLED"
-                        ).length,
-                      ],
-                      [
-                        "No-show",
-                        boardAppointments.filter(
-                          (row) => row.status === "NO_SHOW"
-                        ).length,
-                      ],
-                      [
-                        "Completed",
-                        boardAppointments.filter(
-                          (row) => row.status === "COMPLETED"
-                        ).length,
-                      ],
-                    ].map(([label, count]) => (
-                      <li
-                        key={label}
-                        className="d-flex justify-content-between py-1"
-                      >
-                        <span className="text-soft">{label}</span>
-                        <span className="fw-bold">{count}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Col>
-            <Col xl="9">
-              <StaffDayBoard
-                date={boardDate}
-                staff={boardStaff}
-                appointments={appointments}
-                onAppointmentClick={viewDetails}
-                onSlotClick={(slot, member) =>
-                  openCalendarBooking({ date: slot, allDay: false }, member.id)
-                }
-              />
-            </Col>
-          </Row>
-          <h6 className="title mt-4 mb-2">
-            {scheduleStaffId
-              ? `${boardStaff[0]?.name || "Staff"}'s appointments`
-              : "Staff appointments"}{" "}
-            · {formatDate(boardDate)}
-          </h6>
-          <DataGrid
-            rows={boardAppointments}
-            loading={loading}
-            columns={LIST_COLUMNS}
-            onView={viewDetails}
-          />
-        </>
-      ) : (
-        <DataGrid
-          rows={appointments}
-          loading={loading}
-          columns={LIST_COLUMNS}
-          onView={viewDetails}
-          onDelete={roleCanManage(user?.role) ? remove : undefined}
-          renderActions={(row) => (
-            <>
-              {row.status === "COMPLETED" && (
-                <Button
-                  size="sm"
-                  color="success"
-                  className="me-1"
-                  onClick={() => navigate(`/appointments/${row.id}/bill`)}
-                >
-                  <Icon name="file-plus" /> Make bill
-                </Button>
-              )}
-              <Button size="sm" color="info" outline onClick={() => openAction("status", row)}>
-                Status
-              </Button>
-              <Button size="sm" color="primary" outline className="ms-1" onClick={() => openAction("reschedule", row)}>
-                Reschedule
-              </Button>
-              <Button size="sm" color="light" className="ms-1" onClick={() => openAction("notes", row)}>
-                Notes
-              </Button>
-              <Button size="sm" color="light" className="ms-1" onClick={() => viewTracking(row)}>
-                Track
-              </Button>
-            </>
-          )}
         />
       )}
 
@@ -722,6 +537,7 @@ const Appointments = () => {
           setDetails(null);
           viewTracking(appointment);
         }}
+        onDelete={roleCanManage(user?.role) ? remove : undefined}
         onMakeBill={(appointment) => {
           setDetails(null);
           navigate(`/appointments/${appointment.id}/bill`);

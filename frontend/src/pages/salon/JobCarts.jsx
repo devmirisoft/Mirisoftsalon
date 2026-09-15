@@ -123,7 +123,7 @@ const JobCarts = () => {
 
   return (
     <PageShell
-      className="jobcarts-page"
+      className="jobcarts-page page-tight"
       title="Job Cart"
       description="Create and manage walk-in service carts using appointments and draft invoices."
       actionLabel="New Job Cart"
@@ -138,7 +138,7 @@ const JobCarts = () => {
               <button
                 key={tab.value || "ALL"}
                 type="button"
-                className={`jc-tab ${
+                className={`jc-tab jc-tab-${tab.value.toLowerCase()} ${
                   filters.status === tab.value ? "is-active" : ""
                 }`}
                 onClick={() =>

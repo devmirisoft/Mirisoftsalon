@@ -16,14 +16,6 @@ const normalize = (service) => ({
     service.mainService?.name || service.mainServiceName || "Other",
 });
 
-const initialsOf = (name = "") =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join("") || "?";
-
 // Shared "Add Services" picker: choose who the next services go to, then check
 // them off. Checking adds to the cart immediately, unchecking removes it.
 // Rows added earlier keep the staff they were added with.
@@ -69,7 +61,6 @@ const ServicePickerModal = ({
 
   const staffMemberFor = (id) => staff.find((member) => member.id === id);
   const staffNameFor = (id) => staffMemberFor(id)?.name;
-  const selectedStaff = staffMemberFor(staffId);
   // A branch with nobody on it cannot satisfy requireStaff, so say that
   // outright: an empty service list otherwise reads as a missing catalogue.
   const noStaffAvailable = requireStaff && staff.length === 0;
@@ -105,8 +96,8 @@ const ServicePickerModal = ({
         </button>
       </div>
       <ModalBody>
-        <Row className="g-3">
-          <Col md="4">
+        <Row className="g-2">
+          <Col md="6">
             <Label className="svc-picker-label">
               <Icon name="user" />
               Assign next to{requireStaff ? " *" : ""}
@@ -128,25 +119,7 @@ const ServicePickerModal = ({
               ))}
             </Input>
           </Col>
-          <Col md="4">
-            <Label className="svc-picker-label">
-              <Icon name="grid-alt" />
-              Category
-            </Label>
-            <Input
-              type="select"
-              value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
-            >
-              <option value="">All services</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </Input>
-          </Col>
-          <Col md="4">
+          <Col md="6">
             <Label className="svc-picker-label">
               <Icon name="search" />
               Search
@@ -159,35 +132,6 @@ const ServicePickerModal = ({
             />
           </Col>
         </Row>
-
-        {selectedStaff && (
-          <div className="svc-staff-bar">
-            <span className="svc-avatar">{initialsOf(selectedStaff.name)}</span>
-            <div className="flex-grow-1" style={{ minWidth: 0 }}>
-              <div className="d-flex align-items-center gap-2">
-                <span className="fw-bold text-truncate">
-                  {selectedStaff.name}
-                </span>
-                <span className="svc-chip">Selected</span>
-              </div>
-              <div className="svc-muted">
-                {selectedStaff.jobRole || "Staff"}
-              </div>
-            </div>
-            <Button
-              color="light"
-              outline
-              size="sm"
-              type="button"
-              className="d-flex align-items-center gap-1 flex-shrink-0"
-              disabled={disabled}
-              onClick={() => onStaffChange?.("")}
-            >
-              <Icon name="reload" />
-              <span className="d-none d-sm-inline">Change Staff</span>
-            </Button>
-          </div>
-        )}
 
         <div className="svc-tabs">
           <div className="svc-tabs-scroll">

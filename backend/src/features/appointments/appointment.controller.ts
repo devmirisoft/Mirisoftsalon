@@ -74,12 +74,16 @@ const durationToMinutes = (
     return durationValue;
 };
 
-const getDateRange = (date: string | undefined, timezone: string) => {
-    if (!date) {
+const getDateRange = (
+    from: string | undefined,
+    to: string | undefined,
+    timezone: string
+) => {
+    if (!from && !to) {
         return {};
     }
 
-    const range = parseSalonDateRange(date, date, timezone);
+    const range = parseSalonDateRange(from || to!, to || from!, timezone);
 
     return {
         ...(range.start ? { dateFrom: range.start } : {}),
@@ -410,7 +414,14 @@ export const createAppointment = async (req: Request, res: Response) => {
 
 export const getAppointments = async (req: Request, res: Response) => {
     try {
-        const { branchId, staffId, customerId, status, date } = req.query;
+        const { branchId, staffId, customerId, status, date, from, to } = req.query;
+
+        if (from && to && String(from) > String(to)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid date range",
+            });
+        }
 
         if (status && !isValidAppointmentStatus(String(status))) {
             return res.status(400).json({
@@ -460,7 +471,11 @@ export const getAppointments = async (req: Request, res: Response) => {
             ...(staffId ? { staffId: String(staffId) } : {}),
             ...(customerId ? { customerId: String(customerId) } : {}),
             ...(status ? { status: String(status) as AppointmentStatus } : {}),
-            ...getDateRange(date ? String(date) : undefined, salon?.timezone ?? "Asia/Kolkata"),
+            ...getDateRange(
+                from ? String(from) : date ? String(date) : undefined,
+                to ? String(to) : date ? String(date) : undefined,
+                salon?.timezone ?? "Asia/Kolkata"
+            ),
         });
 
         return res.status(200).json({

@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import bootstrapPlugin from "@fullcalendar/bootstrap5";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { Icon } from "@/components/Component";
+import { Button, Icon } from "@/components/Component";
 import AppointmentStatusBadge, {
   appointmentStatusClass,
 } from "@/components/salon/AppointmentStatusBadge";
@@ -18,6 +18,13 @@ const STATUSES = [
   "COMPLETED",
   "CANCELLED",
   "NO_SHOW",
+];
+
+const VIEWS = [
+  { type: "dayGridMonth", label: "Month" },
+  { type: "timeGridWeek", label: "Week" },
+  { type: "timeGridDay", label: "Day" },
+  { type: "listWeek", label: "List" },
 ];
 
 const TIME_FORMAT = {
@@ -36,9 +43,13 @@ const AppointmentCalendar = ({
   appointments,
   onAppointmentClick,
   onDateSelect,
-  onViewChange,
 }) => {
   const calendarRef = useRef(null);
+  // FullCalendar's own toolbar cannot share a row with the card title, so the
+  // bar below is ours and these mirror whatever the calendar currently shows.
+  const [title, setTitle] = useState("");
+  const [view, setView] = useState("timeGridWeek");
+  const api = () => calendarRef.current?.getApi();
 
   const events = useMemo(
     () =>
@@ -62,6 +73,50 @@ const AppointmentCalendar = ({
 
   return (
     <div className="card card-bordered">
+      <div className="card-inner border-bottom appt-calendar-head">
+        <span className="appt-calendar-head-icon">
+          <Icon name="calender-date" />
+        </span>
+        <h5 className="title mb-0">Appointment Calendar</h5>
+        <Button
+          color="light"
+          className="btn-icon"
+          aria-label="Previous"
+          onClick={() => api()?.prev()}
+        >
+          <Icon name="chevron-left" />
+        </Button>
+        <Button
+          color="light"
+          className="btn-icon"
+          aria-label="Next"
+          onClick={() => api()?.next()}
+        >
+          <Icon name="chevron-right" />
+        </Button>
+        <span className="appt-calendar-range">{title}</span>
+        <div className="appt-calendar-views">
+          {/* "Today" is the day view pinned to the current date, so the today
+              and day screens are the same UI. */}
+          <Button
+            color="light"
+            onClick={() => api()?.changeView("timeGridDay", new Date())}
+          >
+            Today
+          </Button>
+          <div className="btn-group">
+            {VIEWS.map((item) => (
+              <Button
+                key={item.type}
+                color={view === item.type ? "primary" : "light"}
+                onClick={() => api()?.changeView(item.type)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="card-inner appointment-calendar">
         <FullCalendar
           ref={calendarRef}
@@ -73,35 +128,11 @@ const AppointmentCalendar = ({
             interactionPlugin,
           ]}
           events={events}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: "todayDay prev,next title",
-            center: "",
-            right:
-              "dayGridMonth,timeGridWeek,timeGridDay,listWeek pageCalendar,pageStaff,pageList",
-          }}
-          // "Today" is the day view pinned to the current date, so the today
-          // and day screens are the same UI.
-          customButtons={{
-            todayDay: {
-              text: "Today",
-              click: () => {
-                const api = calendarRef.current?.getApi();
-                if (!api) return;
-                api.changeView("timeGridDay", new Date());
-              },
-            },
-            // page-level view switcher; icons come from CSS since FullCalendar
-            // buttons take plain text only
-            pageCalendar: { text: "Calendar", click: () => {} },
-            pageStaff: { text: "Staff", click: () => onViewChange?.("staff") },
-            pageList: { text: "List", click: () => onViewChange?.("list") },
-          }}
-          buttonText={{
-            month: "Month",
-            week: "Week",
-            day: "Day",
-            list: "List",
+          initialView="timeGridWeek"
+          headerToolbar={false}
+          datesSet={(arg) => {
+            setTitle(arg.view.title);
+            setView(arg.view.type);
           }}
           views={{
             dayGridMonth: {
@@ -169,16 +200,16 @@ const AppointmentCalendar = ({
           }}
           eventContent={(arg) => (
             <div className="appt-ev">
-              <span className="appt-ev-dot" />
-              <div className="appt-ev-body">
-                <span className="appt-ev-time">{arg.timeText}</span>
-                <span className="appt-ev-title">{arg.event.title}</span>
-                {arg.event.extendedProps.services && (
-                  <span className="appt-ev-service">
-                    {arg.event.extendedProps.services}
-                  </span>
-                )}
-              </div>
+              <span className="appt-ev-time">
+                <span className="appt-ev-dot" />
+                {arg.timeText}
+              </span>
+              <span className="appt-ev-title">{arg.event.title}</span>
+              {arg.event.extendedProps.services && (
+                <span className="appt-ev-service">
+                  {arg.event.extendedProps.services}
+                </span>
+              )}
               <span className="appt-ev-staff">
                 <Icon name="user-alt" />
                 {arg.event.extendedProps.staff}

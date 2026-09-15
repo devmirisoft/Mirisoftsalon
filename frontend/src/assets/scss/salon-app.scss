@@ -5,7 +5,7 @@
   overflow: auto;
   padding: 0.75rem;
   border-radius: 0.375rem;
-  background: rgba(101, 118, 255, 0.06);
+  background: rgba(33, 46, 107, 0.06);
   color: inherit;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .appointment-calendar .appointment-calendar-bookable-day:hover {
-  background: rgba(101, 118, 255, 0.06);
+  background: rgba(33, 46, 107, 0.06);
 }
 
 .appointment-calendar .appointment-calendar-past-day {
@@ -48,15 +48,6 @@
 
 .appointment-calendar .appointment-calendar-past-day .fc-daygrid-day-number {
   opacity: 0.45;
-}
-
-.appointment-calendar .fc-toolbar {
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.appointment-calendar .fc-toolbar-title {
-  font-size: 1.25rem;
 }
 
 .appointment-calendar .fc-timegrid-event .fc-event-main {
@@ -92,14 +83,14 @@
 }
 
 .service-category-item:hover {
-  border-color: rgba(101, 118, 255, 0.25);
-  background: rgba(101, 118, 255, 0.06);
+  border-color: rgba(33, 46, 107, 0.25);
+  background: rgba(33, 46, 107, 0.06);
 }
 
 .service-category-item.active {
-  border-color: rgba(101, 118, 255, 0.35);
-  background: rgba(101, 118, 255, 0.12);
-  color: #6576ff;
+  border-color: rgba(33, 46, 107, 0.35);
+  background: rgba(33, 46, 107, 0.12);
+  color: #212e6b;
 }
 
 .service-category-item small {
@@ -162,7 +153,7 @@
 }
 
 .appointment-detail-info-icon {
-  color: #6576ff;
+  color: #212e6b;
   font-size: 1.25rem;
   line-height: 1.4;
   text-align: center;
@@ -195,7 +186,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  color: #6576ff;
+  color: #212e6b;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -206,7 +197,7 @@
   min-width: 1.5rem;
   padding: 0.125rem 0.4rem;
   border-radius: 999px;
-  background: rgba(101, 118, 255, 0.12);
+  background: rgba(33, 46, 107, 0.12);
   text-align: center;
 }
 
@@ -369,90 +360,6 @@
   cursor: not-allowed;
 }
 
-/* Inline month picker beside the staff day board. */
-.staff-board-datepicker .react-datepicker {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.8125rem;
-}
-
-.staff-board-datepicker .react-datepicker__month-container {
-  width: 100%;
-  float: none;
-}
-
-.staff-board-datepicker .react-datepicker__header {
-  padding: 0 0 0.25rem;
-  background: transparent;
-  border-bottom: 1px solid #e5e9f2;
-}
-
-.staff-board-datepicker .react-datepicker__current-month {
-  margin-bottom: 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #364a63;
-}
-
-.staff-board-datepicker .react-datepicker__navigation {
-  top: 0.25rem;
-}
-
-.staff-board-datepicker .react-datepicker__month {
-  margin: 0.35rem 0 0;
-}
-
-.staff-board-datepicker .react-datepicker__day-names,
-.staff-board-datepicker .react-datepicker__week {
-  display: flex;
-  justify-content: space-between;
-}
-
-.staff-board-datepicker .react-datepicker__day-name,
-.staff-board-datepicker .react-datepicker__day {
-  width: 2rem;
-  height: 2rem;
-  margin: 0.1rem 0;
-  line-height: 2rem;
-  border-radius: 50%;
-}
-
-.staff-board-datepicker .react-datepicker__day-name {
-  color: #8094ae;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.staff-board-datepicker .react-datepicker__day {
-  color: #526484;
-  transition: background 0.15s ease;
-}
-
-.staff-board-datepicker .react-datepicker__day:hover {
-  background: rgba(101, 118, 255, 0.12);
-}
-
-.staff-board-datepicker .react-datepicker__day--today {
-  font-weight: 700;
-  color: #6576ff;
-}
-
-.staff-board-datepicker .react-datepicker__day--selected,
-.staff-board-datepicker .react-datepicker__day--keyboard-selected {
-  background: #6576ff;
-  color: #fff;
-}
-
-.staff-board-datepicker .react-datepicker__day--outside-month {
-  opacity: 0.35;
-}
-
-.staff-board-datepicker .react-datepicker__day--weekend {
-  color: #b6c6e3;
-}
-
 // Theme stacks header at 1010, sidebar at 1021 and modal at 1051, while
 // Bootstrap's dropdown sits at 1000 - any menu portaled to <body> rendered
 // underneath them. Lift every overlay layer above the whole chrome.
@@ -557,6 +464,37 @@ body.dark-mode .nk-header {
   border: 1px solid var(--cart-line);
   border-radius: 0.75rem;
   padding: 0.875rem 1rem;
+}
+
+/* Customer meta strip: same tokens as the cart summary, laid out in one row */
+.cust-meta {
+  --cart-line: #e5e9f2;
+  --cart-panel: #f7f9fc;
+  --cart-ink: #1f2b4d;
+  --cart-accent: #5a6ff0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.cust-meta .cart-row {
+  padding: 0.25rem 0;
+  gap: 0.375rem;
+}
+
+.cust-meta .cart-row + .cart-row {
+  border-top: 0;
+}
+
+body.dark-mode .cust-meta {
+  --cart-line: rgba(255, 255, 255, 0.1);
+  --cart-panel: rgba(255, 255, 255, 0.03);
+  --cart-ink: #dbdfea;
+}
+
+body.dark-mode .cust-meta .cart-row > span:first-child {
+  color: #8094ae;
 }
 
 .cart-chip {
@@ -712,7 +650,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 }
 
 .svc-picker .modal-body {
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 1rem;
 }
 
 .svc-picker-head {
@@ -720,7 +658,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.5rem;
+  padding: 0.625rem 1rem;
   border-bottom: 1px solid var(--svc-line);
 }
 
@@ -733,7 +671,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.875rem 1.5rem;
+  padding: 0.625rem 1rem;
   border-top: 1px solid var(--svc-line);
   background: var(--svc-panel);
 }
@@ -759,47 +697,11 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
   min-width: 0;
 }
 
-.svc-chip {
-  flex-shrink: 0;
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(30, 224, 172, 0.16);
-  color: #0da884;
-  font-size: 0.625rem;
-  font-weight: 600;
-}
-
-.svc-avatar {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #dbe4ff;
-  color: var(--svc-accent);
-  font-weight: 700;
-  font-size: 0.8125rem;
-}
-
-.svc-staff-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1rem;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--svc-line);
-  border-radius: 0.75rem;
-  background: var(--svc-panel);
-  color: var(--svc-ink);
-}
-
 .svc-tabs {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin: 1rem 0 0.875rem;
+  margin: 0.75rem 0 0.625rem;
 }
 
 .svc-tabs-scroll {
@@ -812,7 +714,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 
 .svc-tab {
   flex-shrink: 0;
-  padding: 0.4375rem 0.875rem;
+  padding: 0.25rem 0.625rem;
   border: 1px solid var(--svc-line);
   border-radius: 999px;
   background: transparent;
@@ -838,7 +740,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 0.4375rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   border: 0;
   border-radius: 0.5rem;
   background: transparent;
@@ -852,7 +754,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 }
 
 .svc-scroll {
-  max-height: 380px;
+  max-height: 52vh;
   overflow-y: auto;
   margin: 0 -0.25rem;
   padding: 0 0.25rem;
@@ -860,8 +762,8 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 
 .svc-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 0.5rem;
 }
 
 .svc-grid.is-list {
@@ -871,10 +773,10 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 .svc-card {
   display: flex;
   align-items: flex-start;
-  gap: 0.625rem;
+  gap: 0.5rem;
   min-width: 0;
   margin: 0;
-  padding: 0.75rem;
+  padding: 0.5rem 0.625rem;
   border: 1px solid var(--svc-line);
   border-radius: 0.625rem;
   background: transparent;
@@ -904,7 +806,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
 .svc-card-body {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -921,7 +823,7 @@ body.dark-mode .cart-summary .cart-row > span:first-child {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  margin-top: 0.125rem;
 }
 
 .svc-card-price {
@@ -953,7 +855,6 @@ body.dark-mode .svc-picker {
   --svc-ink: #dbdfea;
 }
 
-body.dark-mode .svc-picker .svc-avatar,
 body.dark-mode .svc-picker .svc-card-add {
   background: rgba(90, 111, 240, 0.2);
 }
@@ -1222,8 +1123,8 @@ body.dark-mode .svc-picker .svc-card.is-added .svc-card-add {
 .cust-chip {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  padding: 0.4375rem 0.5rem 0.4375rem 0.5rem;
+  gap: 0.5rem;
+  padding: 0.25rem 0.375rem;
   border: 1px solid #e5e9f2;
   border-radius: 0.5rem;
   background: #fff;
@@ -1232,13 +1133,14 @@ body.dark-mode .svc-picker .svc-card.is-added .svc-card-add {
 
 .cust-avatar {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #dbe4ff;
+  font-size: 0.75rem;
   color: #5a6ff0;
   font-weight: 700;
 }
@@ -1348,37 +1250,20 @@ body.dark-mode .cust-field-clear:hover {
   padding: 0.625rem 1rem;
 }
 
-/* Create Job Cart: the whole form fits one viewport. The row is locked to the
-   visible height and each panel scrolls inside its own card, so the page
-   itself never scrolls. */
+/* Create Job Cart: the form grows with the services list and the page scrolls.
+   Only the summary column is pinned to the viewport. */
 .jobcart-fill {
   min-height: calc(100vh - 10.5rem);
 }
 
 @media (min-width: 992px) {
-  .jobcart-fill {
-    height: calc(100vh - 10.5rem);
-    min-height: 0;
+  .jobcart-fill > [class*="col-"] > .cart-summary {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
   }
 
-  .jobcart-fill > [class*="col-"] {
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  .jobcart-fill > [class*="col-"] > .card {
-    flex: 1 1 auto;
-    min-height: 0;
-  }
-
-  /* left column: one scroll region for the whole form */
-  .jobcart-main > .card-inner {
-    min-height: 0;
-    overflow-y: auto;
-  }
-
-  /* right column: header and the Create button stay put, panels scroll */
+  /* header and the Create button stay put, panels scroll */
   .cart-summary > .card-inner {
     display: flex;
     flex-direction: column;
@@ -1396,34 +1281,15 @@ body.dark-mode .cust-field-clear:hover {
   }
 }
 
-/* the services table is the tallest block; cap it so the rest stays reachable */
-.jobcart-main .table-responsive {
-  max-height: 45vh;
-  overflow-y: auto;
-}
-
-.jobcart-main .table-responsive > table > thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #f5f6fa;
-}
-
-/* thin scrollbars so the nested scroll areas stay unobtrusive */
-.jobcart-main > .card-inner,
-.jobcart-main .table-responsive,
+/* thin scrollbar so the summary's scroll area stays unobtrusive */
 .cart-scroll {
   scrollbar-width: thin;
 }
 
-.jobcart-main > .card-inner::-webkit-scrollbar,
-.jobcart-main .table-responsive::-webkit-scrollbar,
 .cart-scroll::-webkit-scrollbar {
   width: 6px;
 }
 
-.jobcart-main > .card-inner::-webkit-scrollbar-thumb,
-.jobcart-main .table-responsive::-webkit-scrollbar-thumb,
 .cart-scroll::-webkit-scrollbar-thumb {
   border-radius: 3px;
   background: #dbdfea;
@@ -1445,15 +1311,12 @@ body.dark-mode .cust-field-clear:hover {
   color: var(--jc-primary);
 }
 
-.jobcarts-page .btn-primary,
 .jobcarts-page .jc-btn-primary {
   background: var(--jc-primary);
   border-color: var(--jc-primary);
   color: #fff;
 }
 
-.jobcarts-page .btn-primary:hover,
-.jobcarts-page .btn-primary:focus-visible,
 .jobcarts-page .jc-btn-primary:hover,
 .jobcarts-page .jc-btn-primary:focus-visible {
   background: var(--jc-primary-dark);
@@ -1480,7 +1343,7 @@ body.dark-mode .cust-field-clear:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.875rem;
 }
 
 .jobcarts-page .jc-tab {
@@ -1504,6 +1367,22 @@ body.dark-mode .cust-field-clear:hover {
   border-color: var(--jc-primary);
   color: #fff;
   font-weight: 600;
+}
+
+/* the selected tab carries its status colour */
+.jobcarts-page .jc-tab-active.is-active {
+  background: #f4bd0e;
+  border-color: #f4bd0e;
+}
+
+.jobcarts-page .jc-tab-completed.is-active {
+  background: #1cc99a;
+  border-color: #1cc99a;
+}
+
+.jobcarts-page .jc-tab-cancelled.is-active {
+  background: #e85347;
+  border-color: #e85347;
 }
 
 /* Filter panel */
@@ -1701,8 +1580,8 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 0.5rem;
-  background: rgba(101, 118, 255, 0.12);
-  color: #6576ff;
+  background: rgba(33, 46, 107, 0.12);
+  color: #212e6b;
   font-size: 1.1rem;
 }
 
@@ -1724,7 +1603,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 .booking-section-title .icon {
-  color: #6576ff;
+  color: #212e6b;
   font-size: 0.95rem;
 }
 
@@ -1740,8 +1619,8 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   min-width: 1.35rem;
   padding: 0.1rem 0.4rem;
   border-radius: 999px;
-  background: rgba(101, 118, 255, 0.12);
-  color: #6576ff;
+  background: rgba(33, 46, 107, 0.12);
+  color: #212e6b;
   font-size: 0.7rem;
   text-align: center;
 }
@@ -1782,7 +1661,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 .booking-cart tbody tr:hover {
-  background: rgba(101, 118, 255, 0.03);
+  background: rgba(33, 46, 107, 0.03);
 }
 
 .booking-service-name {
@@ -1869,13 +1748,13 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   margin-top: 0.75rem;
   padding: 0.75rem 0.875rem;
   border-radius: 0.375rem;
-  background: rgba(101, 118, 255, 0.08);
+  background: rgba(33, 46, 107, 0.08);
   font-weight: 600;
   color: #364a63;
 }
 
 .booking-summary-total > strong {
-  color: #6576ff;
+  color: #212e6b;
   font-size: 1.125rem;
 }
 
@@ -1917,38 +1796,166 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   }
 }
 
+/* ---------- Appointments page header + filter bar ----------
+   One row, every control the same height and bottom-aligned, each label sitting
+   tight on top of its own field. */
+/* Tighter vertical rhythm, opted into per page with .page-tight: less dead
+   space above the title and one small gap between stacked cards. */
+.page-tight.nk-content {
+  padding-top: 1rem;
+}
+
+.page-tight .nk-block-head {
+  padding-bottom: 0.5rem;
+}
+
+.page-tight .nk-block-head .nk-block-des p {
+  margin-bottom: 0;
+}
+
+.page-tight .nk-block > .card {
+  margin-bottom: 0.75rem;
+}
+
+.page-tight .nk-block > .card:last-child {
+  margin-bottom: 0;
+}
+
+.appt-page .appt-filter-card .card-inner,
+.jobcarts-page .jc-panel .card-inner {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.appt-page .appointment-calendar {
+  padding-top: 1rem;
+}
+
+.appt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.appt-filter {
+  flex: 0 0 auto;
+  width: 11rem;
+}
+
+.appt-filter-date {
+  width: 13rem;
+}
+
+.appt-filter-search {
+  flex: 1 1 15rem;
+  width: auto;
+  min-width: 12rem;
+}
+
+.appt-filter-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  color: #526484;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.appt-filters .form-control,
+.appt-filters .form-select,
+.appt-filters select,
+.appt-filters .btn {
+  height: 2.5rem;
+}
+
+.appt-filters .btn {
+  flex: 0 0 auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ---------- Inline field icons ----------
+   The theme's markup (.form-control-wrap + .form-icon) ships with no rules in
+   this build, so every icon floated above its input instead of sitting in it.
+   Defined here once for every page that uses the pattern. */
+.form-control-wrap {
+  position: relative;
+}
+
+.form-control-wrap .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.form-icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  color: #8094ae;
+  pointer-events: none;
+}
+
+.form-icon-left {
+  left: 0;
+}
+
+.form-icon-right {
+  right: 0;
+}
+
+.form-icon-left ~ .form-control,
+.form-icon-left ~ .react-datepicker-wrapper .form-control {
+  padding-left: 2.25rem;
+}
+
+.form-icon-right ~ .form-control,
+.form-icon-right ~ .react-datepicker-wrapper .form-control {
+  padding-right: 2.25rem;
+}
+
 /* ---------- Appointment status palette ---------- */
 .appt-status-scheduled {
+  --appt-border: #ddc9fb;
   --appt-main: #7c3aed;
   --appt-bg: #f3e8ff;
   --appt-text: #6d28d9;
 }
 
 .appt-status-confirmed {
+  --appt-border: #a7e9cd;
   --appt-main: #10b981;
   --appt-bg: #d1fae5;
   --appt-text: #047857;
 }
 
 .appt-status-checked_in {
+  --appt-border: #fbdf9a;
   --appt-main: #f59e0b;
   --appt-bg: #fef3c7;
   --appt-text: #b45309;
 }
 
 .appt-status-completed {
+  --appt-border: #b6d2fb;
   --appt-main: #3b82f6;
   --appt-bg: #dbeafe;
   --appt-text: #1d4ed8;
 }
 
 .appt-status-cancelled {
+  --appt-border: #f9c3c3;
   --appt-main: #ef4444;
   --appt-bg: #fee2e2;
   --appt-text: #dc2626;
 }
 
 .appt-status-no_show {
+  --appt-border: #d8e0ea;
   --appt-main: #64748b;
   --appt-bg: #f1f5f9;
   --appt-text: #475569;
@@ -1959,6 +1966,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   --appt-main: #64748b;
   --appt-bg: #f1f5f9;
   --appt-text: #475569;
+  --appt-border: #d8e0ea;
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
@@ -1980,71 +1988,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   background: var(--appt-main, #64748b);
 }
 
-/* ---------- Calendar chrome ---------- */
-.appointment-calendar .fc-toolbar.fc-header-toolbar {
-  margin-bottom: 1rem;
-}
-
-.appointment-calendar .fc-toolbar-title {
-  font-size: 1.0625rem;
-  font-weight: 600;
-  color: #364a63;
-}
-
-.appointment-calendar .fc .fc-button {
-  border: 1px solid #dbdfea;
-  border-radius: 0.375rem;
-  padding: 0.35rem 0.9rem;
-  background: #fff;
-  color: #526484;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  box-shadow: none;
-}
-
-.appointment-calendar .fc .fc-button:hover:not(:disabled) {
-  background: #f5f6fa;
-  color: #364a63;
-}
-
-.appointment-calendar .fc .fc-button:disabled {
-  opacity: 0.45;
-}
-
-/* prev/next are compact squares */
-.appointment-calendar .fc .fc-prev-button,
-.appointment-calendar .fc .fc-next-button {
-  padding: 0.35rem 0.6rem;
-}
-
-/* the view switcher reads as one segmented control */
-.appointment-calendar .fc .fc-button-group {
-  gap: 0;
-}
-
-.appointment-calendar .fc .fc-button-group > .fc-button {
-  border-radius: 0;
-  margin-left: -1px;
-}
-
-.appointment-calendar .fc .fc-button-group > .fc-button:first-child {
-  border-radius: 0.375rem 0 0 0.375rem;
-  margin-left: 0;
-}
-
-.appointment-calendar .fc .fc-button-group > .fc-button:last-child {
-  border-radius: 0 0.375rem 0.375rem 0;
-}
-
-.appointment-calendar .fc .fc-button-active,
-.appointment-calendar .fc .fc-button-primary:not(:disabled).fc-button-active {
-  z-index: 1;
-  border-color: #2563eb;
-  background: #2563eb;
-  color: #fff;
-}
-
-/* grid */
+/* ---------- Calendar grid ---------- */
 .appointment-calendar .fc-theme-bootstrap5 .fc-scrollgrid,
 .appointment-calendar .fc-theme-bootstrap5 td,
 .appointment-calendar .fc-theme-bootstrap5 th {
@@ -2099,7 +2043,12 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 .appointment-calendar .fc .fc-timegrid-slot-minor {
-  border-top-style: dotted;
+  border-top-style: dashed;
+}
+
+/* dashed day separators, solid outer frame */
+.appointment-calendar .fc-timegrid .fc-day {
+  border-left-style: dashed;
 }
 
 /* the now line and its axis label are red, as in the design */
@@ -2121,9 +2070,8 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 
 /* ---------- Calendar events use the status palette ---------- */
 .appointment-calendar .fc-event {
-  border: 0;
-  border-left: 3px solid var(--appt-main, #64748b);
-  border-radius: 0.25rem;
+  border: 1px solid var(--appt-border, #d8e0ea);
+  border-radius: 0.375rem;
   margin-bottom: 2px;
   padding: 0;
   background: var(--appt-bg, #f1f5f9);
@@ -2143,65 +2091,59 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 
 .appointment-calendar .appt-ev {
   display: flex;
-  align-items: flex-start;
-  gap: 0.35rem;
+  flex-direction: column;
+  gap: 0.05rem;
   height: 100%;
-  padding: 0.25rem 0.4rem;
+  padding: 0.3rem 0.45rem;
   overflow: hidden;
+  line-height: 1.25;
 }
 
-.appointment-calendar .appt-ev-dot {
-  flex: 0 0 auto;
-  width: 0.45rem;
-  height: 0.45rem;
-  margin-top: 0.3rem;
-  border-radius: 50%;
-  background: var(--appt-main);
-}
-
-.appointment-calendar .appt-ev-body {
-  flex: 1 1 auto;
+.appointment-calendar .appt-ev > span {
   min-width: 0;
-  line-height: 1.3;
-}
-
-.appointment-calendar .appt-ev-body > span {
-  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.appointment-calendar .appt-ev-dot {
+  flex: 0 0 auto;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--appt-main);
+}
+
 .appointment-calendar .appt-ev-time {
-  font-size: 0.6875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #526484;
+  font-size: 0.625rem;
   font-weight: 600;
 }
 
 .appointment-calendar .appt-ev-title {
+  color: #364a63;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #364a63;
 }
 
 .appointment-calendar .appt-ev-service {
-  font-size: 0.6875rem;
   color: var(--appt-text);
+  font-size: 0.625rem;
 }
 
 .appointment-calendar .appt-ev-staff {
   display: flex;
   align-items: center;
   gap: 0.2rem;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: #8094ae;
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
 }
 
 .appointment-calendar .appt-ev-staff .icon {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
 }
 
 .appointment-calendar .appt-status-cancelled .appt-ev-title,
@@ -2209,29 +2151,10 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   text-decoration: line-through;
 }
 
-/* Month and week have no room for the service line, and the stylist reads
-   better stacked under the name than squeezed against the right edge. */
+/* Month and week chips are too short for the service line. */
 .appointment-calendar .fc-dayGridMonth-view .appt-ev-service,
 .appointment-calendar .fc-timeGridWeek-view .appt-ev-service {
   display: none;
-}
-
-.appointment-calendar .fc-dayGridMonth-view .appt-ev,
-.appointment-calendar .fc-timeGridWeek-view .appt-ev {
-  flex-wrap: wrap;
-}
-
-.appointment-calendar .fc-dayGridMonth-view .appt-ev-staff,
-.appointment-calendar .fc-timeGridWeek-view .appt-ev-staff {
-  width: 100%;
-  padding-left: 0.8rem;
-}
-
-/* Day view: the stylist sits on the right of the block. */
-.appointment-calendar .fc-timeGridDay-view .appt-ev-staff {
-  flex: 0 0 auto;
-  align-self: center;
-  max-width: 40%;
 }
 
 /* list view rows */
@@ -2259,75 +2182,108 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   border-top: 1px solid #e5e9f2;
 }
 
-/* ---------- Appointments toolbar (filters + view switcher in one card) ---------- */
-.appt-toolbar-head {
+/* ---------- Appointment calendar card header ---------- */
+.appt-calendar-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e5e9f2;
+  gap: 0.5rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
 }
 
-.appt-toolbar-split {
-  margin: 1rem 0;
-  border-top: 1px solid #e5e9f2;
-  opacity: 1;
+.appt-calendar-head .title {
+  margin-right: 0.5rem;
+  font-size: 0.9375rem;
+  white-space: nowrap;
 }
 
-@media (max-width: 575.98px) {
-  .appt-toolbar-head .btn-group {
-    width: 100%;
-  }
+/* nav, range and view switcher all sit on the title's row */
+.appt-calendar-head .btn-icon {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
 }
 
-/* ---------- Page view switcher inside the calendar toolbar ---------- */
-.appointment-calendar .fc .fc-pageCalendar-button,
-.appointment-calendar .fc .fc-pageStaff-button,
-.appointment-calendar .fc .fc-pageList-button {
+.appt-calendar-range {
+  color: #364a63;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.appt-calendar-views {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.appt-calendar-views .btn {
+  height: 2rem;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.appt-calendar-head-icon {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-}
-
-.appointment-calendar .fc .fc-pageCalendar-button::before,
-.appointment-calendar .fc .fc-pageStaff-button::before,
-.appointment-calendar .fc .fc-pageList-button::before {
-  font-family: "Nioicon";
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 0.5rem;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
   font-size: 1rem;
-  font-weight: normal;
-  line-height: 1;
 }
 
-.appointment-calendar .fc .fc-pageCalendar-button::before {
-  content: "\e98c";
+/* App buttons: navy primary. Only the button colour changes - links, checkboxes
+   and the rest of the theme keep the DashLite accent. */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #212e6b;
+  --bs-btn-border-color: #212e6b;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #18224f;
+  --bs-btn-hover-border-color: #18224f;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #18224f;
+  --bs-btn-active-border-color: #141c42;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #212e6b;
+  --bs-btn-disabled-border-color: #212e6b;
+  --bs-btn-focus-shadow-rgb: 33, 46, 107;
 }
 
-.appointment-calendar .fc .fc-pageStaff-button::before {
-  content: "\ec35";
+.btn-outline-primary {
+  --bs-btn-color: #212e6b;
+  --bs-btn-border-color: #212e6b;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #212e6b;
+  --bs-btn-hover-border-color: #212e6b;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #212e6b;
+  --bs-btn-active-border-color: #212e6b;
+  --bs-btn-disabled-color: #212e6b;
+  --bs-btn-disabled-border-color: #212e6b;
+  --bs-btn-focus-shadow-rgb: 33, 46, 107;
 }
 
-.appointment-calendar .fc .fc-pageList-button::before {
-  content: "\ecaa";
+/* .btn-dim sets colours directly, so the vars above do not reach it */
+.btn-dim.btn-primary {
+  color: #212e6b;
+  background-color: #e7e8ef;
 }
 
-/* Calendar is the view you are already in, so it reads as selected and does
-   nothing when clicked. */
-.appointment-calendar .fc .fc-pageCalendar-button {
-  border-color: #2563eb;
-  background: #2563eb;
+.btn-dim.btn-outline-primary {
+  color: #212e6b;
+  background-color: #e7e8ef;
+  border-color: #a6abc4;
+}
+
+.btn-dim.btn-primary:not(:disabled):not(.disabled):hover,
+.btn-dim.btn-outline-primary:not(:disabled):not(.disabled):hover {
   color: #fff;
-  cursor: default;
-}
-
-.appointment-calendar .fc .fc-pageCalendar-button:hover {
-  background: #2563eb;
-  color: #fff;
-}
-
-/* separate the page switcher from the calendar's own view buttons */
-.appointment-calendar .fc .fc-toolbar-chunk > .fc-button-group + .fc-button-group {
-  margin-left: 0.75rem;
+  background-color: #212e6b;
+  border-color: #212e6b;
 }

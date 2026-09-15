@@ -518,7 +518,7 @@ const styles = {
     height: 5,
     borderRadius: "50%",
     display: "inline-block",
-    background: "#6576ff",
+    background: "#212e6b",
   },
   quickWrap: {
     display: "grid",

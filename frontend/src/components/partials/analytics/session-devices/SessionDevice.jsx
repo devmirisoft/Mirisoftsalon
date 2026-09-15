@@ -63,7 +63,7 @@ const SessionDevice = () => {
         </div>
         <div className="device-status-group">
           <div className="device-status-data">
-            <Icon style={{ color: "#798bff" }} name="monitor"></Icon>
+            <Icon style={{ color: "#2c3d8e" }} name="monitor"></Icon>
             <div className="title">Desktop</div>
             <div className="amount"> {sessionDevice === "7" ? "50.5" : sessionDevice === "15" ? "70.5" : "84.5"}%</div>
             <div className="change up text-danger">

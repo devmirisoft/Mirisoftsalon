@@ -336,7 +336,7 @@ export const SessionDoughnut = ({ state, className }) => {
 export const Map = ({ set }) => {
   return (
     <div className="vector-map">
-      <WorldMap className="w-auto" size="sm" color="#798bff" borderColor="#979eb2" data={
+      <WorldMap className="w-auto" size="sm" color="#2c3d8e" borderColor="#979eb2" data={
         set === "30" ? worldMap.data2 : set === "7" ? worldMap.data3 : worldMap.data4
       } />
     </div>

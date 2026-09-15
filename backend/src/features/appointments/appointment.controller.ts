@@ -430,8 +430,24 @@ export const getAppointments = async (req: Request, res: Response) => {
             });
         }
 
+        const listFilters = {
+            ...(staffId ? { staffId: String(staffId) } : {}),
+            ...(customerId ? { customerId: String(customerId) } : {}),
+            ...(status ? { status: String(status) as AppointmentStatus } : {}),
+        };
+
+        const dateRangeIn = {
+            from: from ? String(from) : date ? String(date) : undefined,
+            to: to ? String(to) : date ? String(date) : undefined,
+        };
+
         if (req.user?.role === "SUPER_ADMIN") {
-            const appointments = await AppointmentModel.findAll();
+            const appointments = await AppointmentModel.findAll({
+                ...listFilters,
+                ...(branchId ? { branchId: String(branchId) } : {}),
+                // No single salon in scope, so fall back to the platform default zone.
+                ...getDateRange(dateRangeIn.from, dateRangeIn.to, "Asia/Kolkata"),
+            });
 
             return res.status(200).json({
                 success: true,
@@ -468,12 +484,10 @@ export const getAppointments = async (req: Request, res: Response) => {
                 : branchId
                   ? { branchId: String(branchId) }
                   : {}),
-            ...(staffId ? { staffId: String(staffId) } : {}),
-            ...(customerId ? { customerId: String(customerId) } : {}),
-            ...(status ? { status: String(status) as AppointmentStatus } : {}),
+            ...listFilters,
             ...getDateRange(
-                from ? String(from) : date ? String(date) : undefined,
-                to ? String(to) : date ? String(date) : undefined,
+                dateRangeIn.from,
+                dateRangeIn.to,
                 salon?.timezone ?? "Asia/Kolkata"
             ),
         });

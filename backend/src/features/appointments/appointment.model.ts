@@ -37,6 +37,32 @@ const soldProductsInclude = {
   },
 } satisfies Prisma.AppointmentInclude;
 
+export type AppointmentListFilters = {
+  branchId?: string;
+  staffId?: string;
+  customerId?: string;
+  status?: AppointmentStatus;
+  dateFrom?: Date;
+  dateTo?: Date;
+};
+
+export const appointmentListWhere = (
+  filters?: AppointmentListFilters
+): Prisma.AppointmentWhereInput => ({
+  ...(filters?.branchId ? { branchId: filters.branchId } : {}),
+  ...(filters?.staffId ? { staffId: filters.staffId } : {}),
+  ...(filters?.customerId ? { customerId: filters.customerId } : {}),
+  ...(filters?.status ? { status: filters.status } : {}),
+  ...(filters?.dateFrom || filters?.dateTo
+    ? {
+        startTime: {
+          ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+          ...(filters.dateTo ? { lt: filters.dateTo } : {}),
+        },
+      }
+    : {}),
+});
+
 export const AppointmentModel = {
   create: async (data: {
     appointmentCode: string;
@@ -153,8 +179,9 @@ export const AppointmentModel = {
     });
   },
 
-  findAll: async () => {
+  findAll: async (filters?: AppointmentListFilters) => {
     return prisma.appointment.findMany({
+      where: appointmentListWhere(filters),
       include: {
         salon: {
           select: {
@@ -199,33 +226,9 @@ export const AppointmentModel = {
     });
   },
 
-  findBySalon: async (
-    salonId: string,
-    filters?: {
-      branchId?: string;
-      staffId?: string;
-      customerId?: string;
-      status?: AppointmentStatus;
-      dateFrom?: Date;
-      dateTo?: Date;
-    }
-  ) => {
+  findBySalon: async (salonId: string, filters?: AppointmentListFilters) => {
     return prisma.appointment.findMany({
-      where: {
-        salonId,
-        ...(filters?.branchId ? { branchId: filters.branchId } : {}),
-        ...(filters?.staffId ? { staffId: filters.staffId } : {}),
-        ...(filters?.customerId ? { customerId: filters.customerId } : {}),
-        ...(filters?.status ? { status: filters.status } : {}),
-        ...(filters?.dateFrom && filters?.dateTo
-          ? {
-              startTime: {
-                gte: filters.dateFrom,
-                lt: filters.dateTo,
-              },
-            }
-          : {}),
-      },
+      where: { salonId, ...appointmentListWhere(filters) },
       include: {
         ...soldProductsInclude,
         branch: {

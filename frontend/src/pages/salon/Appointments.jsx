@@ -14,6 +14,7 @@ import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import AppointmentBookingModal from "@/components/salon/AppointmentBookingModal";
 import AppointmentCalendar from "@/components/salon/AppointmentCalendar";
+import AppointmentDayPanel from "@/components/salon/AppointmentDayPanel";
 import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal";
 import SchemaModal from "@/components/salon/SchemaModal";
 import { useAuth } from "@/auth/AuthContext";
@@ -88,6 +89,7 @@ const Appointments = () => {
   const [newCustomerContext, setNewCustomerContext] = useState(null);
   const [newCustomerId, setNewCustomerId] = useState("");
   const [selected, setSelected] = useState(null);
+  const [selectedDay, setSelectedDay] = useState("");
   const [details, setDetails] = useState(null);
   const [tracking, setTracking] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
@@ -151,6 +153,15 @@ const Appointments = () => {
     if (type === "create") setAppointmentDefaults(defaults);
     setSelected(row);
     setAction(type);
+  };
+
+  // Month cells pick a day for the side panel; the time grids book the slot.
+  const onCalendarDate = (dateInfo) => {
+    if (dateInfo.view.type === "dayGridMonth") {
+      setSelectedDay(toISODate(dateInfo.date));
+      return;
+    }
+    openCalendarBooking(dateInfo);
   };
 
   const openCalendarBooking = (dateInfo, staffId = "") => {
@@ -219,6 +230,26 @@ const Appointments = () => {
         .includes(term)
     );
   }, [appointments, filters.q]);
+
+  // The toolbar's staff filter doubles as the staff board's column picker.
+  const boardStaff = useMemo(
+    () =>
+      filters.staffId
+        ? availableStaff.filter((member) => member.id === filters.staffId)
+        : availableStaff,
+    [availableStaff, filters.staffId]
+  );
+
+  const dayAppointments = useMemo(
+    () =>
+      visible
+        .filter(
+          (appointment) =>
+            toISODate(new Date(appointment.startTime)) === selectedDay
+        )
+        .sort((a, b) => new Date(a.startTime) - new Date(b.startTime)),
+    [visible, selectedDay]
+  );
 
   const formConfig = useMemo(() => {
     if (action === "status") {
@@ -345,9 +376,9 @@ const Appointments = () => {
       {error && <Alert color="danger">{error}</Alert>}
       <div className="card card-bordered appt-filter-card">
         <div className="card-inner">
-          <div className="appt-filters">
-            <div className="appt-filter appt-filter-date">
-              <label className="appt-filter-label" htmlFor="appt-filter-date">
+          <div className="filter-bar">
+            <div className="filter-bar-item is-wide">
+              <label className="filter-bar-label" htmlFor="appt-filter-date">
                 Date
               </label>
               <div className="form-control-wrap">
@@ -372,26 +403,8 @@ const Appointments = () => {
                 />
               </div>
             </div>
-            <div className="appt-filter">
-              <label className="appt-filter-label" htmlFor="appt-filter-staff">
-                Staff
-              </label>
-              <Input
-                id="appt-filter-staff"
-                type="select"
-                value={draft.staffId}
-                onChange={(event) =>
-                  setDraft((current) => ({ ...current, staffId: event.target.value }))
-                }
-              >
-                <option value="">All staff</option>
-                {availableStaff.map((item) => (
-                  <option key={item.id} value={item.id}>{item.name}</option>
-                ))}
-              </Input>
-            </div>
-            <div className="appt-filter">
-              <label className="appt-filter-label" htmlFor="appt-filter-status">
+            <div className="filter-bar-item">
+              <label className="filter-bar-label" htmlFor="appt-filter-status">
                 Status
               </label>
               <Input
@@ -410,7 +423,25 @@ const Appointments = () => {
                 ))}
               </Input>
             </div>
-            <div className="appt-filter appt-filter-search">
+            <div className="filter-bar-item">
+              <label className="filter-bar-label" htmlFor="appt-filter-staff">
+                Staff
+              </label>
+              <Input
+                id="appt-filter-staff"
+                type="select"
+                value={draft.staffId}
+                onChange={(event) =>
+                  setDraft((current) => ({ ...current, staffId: event.target.value }))
+                }
+              >
+                <option value="">All staff</option>
+                {availableStaff.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </Input>
+            </div>
+            <div className="filter-bar-item is-grow">
               <div className="form-control-wrap">
                 <div className="form-icon form-icon-left">
                   <Icon name="search" />
@@ -453,11 +484,34 @@ const Appointments = () => {
           </div>
         </div>
       ) : (
-        <AppointmentCalendar
-          appointments={visible}
-          onAppointmentClick={viewDetails}
-          onDateSelect={openCalendarBooking}
-        />
+        <div className="appt-board">
+          <AppointmentCalendar
+            appointments={visible}
+            onAppointmentClick={viewDetails}
+            onDateSelect={onCalendarDate}
+            selectedDate={selectedDay}
+            onDateChange={setSelectedDay}
+            focusDate={filters.from}
+            staff={boardStaff}
+            onSlotClick={(slot, member) =>
+              openCalendarBooking({ date: slot, allDay: false }, member.id)
+            }
+          />
+          {selectedDay && (
+            <AppointmentDayPanel
+              date={selectedDay}
+              appointments={dayAppointments}
+              onClose={() => setSelectedDay("")}
+              onSelect={viewDetails}
+              onAdd={() =>
+                openCalendarBooking({
+                  date: new Date(`${selectedDay}T00:00`),
+                  allDay: true,
+                })
+              }
+            />
+          )}
+        </div>
       )}
 
       <AppointmentBookingModal

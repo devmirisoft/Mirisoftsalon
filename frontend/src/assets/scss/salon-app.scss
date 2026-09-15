@@ -22,7 +22,7 @@
 }
 
 .appointment-calendar .fc {
-  min-width: 720px;
+  min-width: 640px;
 }
 
 .appointment-calendar {
@@ -41,13 +41,10 @@
   background: rgba(33, 46, 107, 0.06);
 }
 
-.appointment-calendar .appointment-calendar-past-day {
-  cursor: not-allowed;
-  background: rgba(82, 100, 132, 0.07);
-}
-
-.appointment-calendar .appointment-calendar-past-day .fc-daygrid-day-number {
-  opacity: 0.45;
+.appointment-calendar .appointment-calendar-selected-day {
+  cursor: pointer;
+  background: rgba(33, 46, 107, 0.06);
+  box-shadow: inset 0 0 0 2px #212e6b;
 }
 
 .appointment-calendar .fc-timegrid-event .fc-event-main {
@@ -1338,12 +1335,17 @@ body.dark-mode .cust-field-clear:hover {
   color: var(--jc-primary-dark);
 }
 
-/* Status tabs */
+/* Status tabs: first item of the filter row, so no gap under them */
 .jobcarts-page .jc-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.875rem;
+}
+
+.jobcarts-page .filter-bar .jc-tab {
+  height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .jobcarts-page .jc-tab {
@@ -1391,6 +1393,8 @@ body.dark-mode .cust-field-clear:hover {
 }
 
 .jobcarts-page .jc-label {
+  /* inline labels drop vertical margin, so the gap below never applied */
+  display: block;
   margin-bottom: 0.375rem;
   color: #526484;
   font-size: 0.75rem;
@@ -1805,7 +1809,8 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   padding-top: 1rem;
 }
 
-.page-tight .nk-block-head {
+.page-tight .nk-content-body > .nk-block-head,
+.page-tight .nk-content-body > .nk-block-head-sm:first-child {
   padding-bottom: 0.5rem;
 }
 
@@ -1814,7 +1819,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 .page-tight .nk-block > .card {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .page-tight .nk-block > .card:last-child {
@@ -1828,32 +1833,35 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 .appt-page .appointment-calendar {
-  padding-top: 1rem;
+  padding-top: 0.75rem;
 }
 
-.appt-filters {
+/* ---------- Filter bar ----------
+   One row of fields plus its buttons: bottom-aligned, every control the same
+   height, each label sitting tight on its own field. */
+.filter-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 0.75rem;
 }
 
-.appt-filter {
+.filter-bar-item {
   flex: 0 0 auto;
   width: 11rem;
 }
 
-.appt-filter-date {
+.filter-bar-item.is-wide {
   width: 13rem;
 }
 
-.appt-filter-search {
+.filter-bar-item.is-grow {
   flex: 1 1 15rem;
   width: auto;
   min-width: 12rem;
 }
 
-.appt-filter-label {
+.filter-bar-label {
   display: block;
   margin-bottom: 0.375rem;
   color: #526484;
@@ -1862,14 +1870,14 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   line-height: 1.2;
 }
 
-.appt-filters .form-control,
-.appt-filters .form-select,
-.appt-filters select,
-.appt-filters .btn {
+.filter-bar .form-control,
+.filter-bar .form-select,
+.filter-bar select,
+.filter-bar .btn {
   height: 2.5rem;
 }
 
-.appt-filters .btn {
+.filter-bar .btn {
   flex: 0 0 auto;
   padding-top: 0;
   padding-bottom: 0;
@@ -2129,6 +2137,21 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   font-weight: 700;
 }
 
+/* service and staff share one line, staff pinned right */
+.appointment-calendar .appt-ev-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.appointment-calendar .appt-ev-meta > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .appointment-calendar .appt-ev-service {
   color: var(--appt-text);
   font-size: 0.625rem;
@@ -2136,6 +2159,7 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 
 .appointment-calendar .appt-ev-staff {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 0.2rem;
   color: #8094ae;
@@ -2151,10 +2175,62 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   text-decoration: line-through;
 }
 
-/* Month and week chips are too short for the service line. */
-.appointment-calendar .fc-dayGridMonth-view .appt-ev-service,
-.appointment-calendar .fc-timeGridWeek-view .appt-ev-service {
+/* Month chips are a single line, so the service/staff row is dropped there. */
+.appointment-calendar .fc-dayGridMonth-view .appt-ev-service {
   display: none;
+}
+
+/* Week columns carry the same card as the day view, so the slots need the
+   height of three text lines instead of FullCalendar's single-line default. */
+.appointment-calendar .fc-timeGridWeek-view .fc-timegrid-slot,
+.appointment-calendar .fc-timeGridDay-view .fc-timegrid-slot {
+  height: 1.75rem;
+}
+
+/* ---------- Month view ----------
+   Same design language as the week grid: roomy cells, the date as a pill
+   (blue for today) instead of a whole tinted cell, and one-line chips so
+   three of them plus the "+N more" link fit a cell. */
+.appointment-calendar .fc-dayGridMonth-view .fc-daygrid-day-frame {
+  min-height: 7rem;
+  padding: 0.25rem;
+}
+
+.appointment-calendar .fc-dayGridMonth-view .fc-daygrid-day-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 50%;
+  font-weight: 600;
+}
+
+.appointment-calendar .fc-dayGridMonth-view .fc-day-today {
+  background: transparent !important;
+}
+
+.appointment-calendar
+  .fc-dayGridMonth-view
+  .fc-day-today
+  .fc-daygrid-day-number {
+  background: #2563eb;
+  color: #fff;
+}
+
+.appointment-calendar
+  .fc-dayGridMonth-view
+  .fc-day-other
+  .fc-daygrid-day-number {
+  color: #b6c6e3;
+}
+
+.appointment-calendar .fc-dayGridMonth-view .appt-ev {
+  padding: 0.25rem 0.4rem;
+}
+
+.appointment-calendar .fc-dayGridMonth-view .appt-ev-title {
+  font-size: 0.6875rem;
 }
 
 /* list view rows */
@@ -2172,14 +2248,136 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   border-color: var(--appt-main);
 }
 
-/* ---------- Status legend ---------- */
-.appt-legend {
+/* ---------- Calendar + day panel board ---------- */
+.appt-board {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin-top: 1rem;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.appt-board > .card {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.appt-board > .appt-day-panel {
+  flex: 0 0 20rem;
+  align-self: stretch;
+}
+
+@media (max-width: 1279.98px) {
+  .appt-board {
+    flex-direction: column;
+  }
+
+  .appt-board > .appt-day-panel {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+/* ---------- Selected day panel ---------- */
+.appt-day-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding-top: 0.875rem;
-  border-top: 1px solid #e5e9f2;
+  padding-bottom: 0.875rem;
+}
+
+.appt-day-head .title {
+  font-size: 1rem;
+}
+
+.appt-day-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  max-height: 32rem;
+  overflow-y: auto;
+}
+
+.appt-day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--appt-border, #d8e0ea);
+  border-left-width: 3px;
+  border-radius: 0.5rem;
+  background: var(--appt-bg, #f1f5f9);
+  text-align: left;
+  cursor: pointer;
+}
+
+.appt-day-card:hover {
+  filter: brightness(0.97);
+}
+
+.appt-day-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.appt-day-time {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #364a63;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.appt-day-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--appt-main, #64748b);
+}
+
+.appt-day-name {
+  color: #364a63;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.appt-day-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 0.5rem;
+}
+
+.appt-day-meta-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 0.3rem;
+  min-width: 0;
+  color: #364a63;
+  font-size: 0.6875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.appt-day-meta-item.is-full {
+  grid-column: 1 / -1;
+}
+
+.appt-day-meta-item .icon {
+  grid-row: span 2;
+  align-self: center;
+  color: #8094ae;
+  font-size: 0.8125rem;
+}
+
+.appt-day-meta-item em {
+  color: #8094ae;
+  font-style: normal;
+  font-weight: 500;
 }
 
 /* ---------- Appointment calendar card header ---------- */
@@ -2237,6 +2435,42 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   font-size: 1rem;
 }
 
+/* ---------- Export buttons ----------
+   Neutral chip with only the file icon coloured, and the same box as the
+   primary button beside it (.4375rem*2 padding + 1.25rem line + 2px border). */
+.btn-export {
+  min-height: 2.25rem;
+  border-color: #dbdfea;
+  background: #fff;
+  color: #364a63;
+  font-weight: 500;
+}
+
+.btn-export:hover,
+.btn-export:focus-visible {
+  border-color: #cbd2e6;
+  background: #f5f6fa;
+  color: #1f2b3f;
+}
+
+.btn-export:disabled {
+  background: #fff;
+  color: #364a63;
+  opacity: 0.6;
+}
+
+.btn-export .icon {
+  font-size: 1.0625rem;
+}
+
+.btn-export-pdf .icon {
+  color: #e85347;
+}
+
+.btn-export-xls .icon {
+  color: #1a9f6c;
+}
+
 /* App buttons: navy primary. Only the button colour changes - links, checkboxes
    and the rest of the theme keep the DashLite accent. */
 .btn-primary {
@@ -2286,4 +2520,709 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   color: #fff;
   background-color: #212e6b;
   border-color: #212e6b;
+}
+
+/* Job cart payment detail (JobCartDetails) */
+.jcp {
+  --jcp-navy: #16336b;
+  --jcp-line: #e5e9f2;
+  --jcp-panel: #f7f9fc;
+  --jcp-ink: #1f2b4d;
+  --jcp-soft: #8094ae;
+  --jcp-accent: #5a6ff0;
+}
+
+.jcp-topbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  padding: 0.625rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--jcp-navy);
+  color: #fff;
+}
+
+.jcp-topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.jcp-topbar-meta .icon {
+  margin-right: 0.375rem;
+}
+
+.jcp-topbar-sep {
+  width: 1px;
+  height: 1rem;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.jcp-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.jcp-back:hover,
+.jcp-back:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.jcp-hero {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.25rem 0.25rem 0;
+}
+
+.jcp-hero-text h4 {
+  margin: 0;
+  color: var(--jcp-navy);
+  font-size: 1.375rem;
+}
+
+.jcp-hero-text p {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-hero-art {
+  margin-left: auto;
+  max-width: 14rem;
+  font-family: "Segoe Script", "Brush Script MT", cursive;
+  font-size: 1.125rem;
+  line-height: 1.2;
+  color: var(--jcp-accent);
+  opacity: 0.75;
+  text-align: right;
+}
+
+.jcp-card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.jcp-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.jcp-head-text h6 {
+  margin: 0;
+  color: var(--jcp-ink);
+  font-size: 1rem;
+}
+
+.jcp-head-text span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  background: #eef1fb;
+  color: var(--jcp-accent);
+  font-size: 1.125rem;
+}
+
+.jcp-tile-lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+}
+
+.jcp-tile-sm {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.5rem;
+}
+
+.jcp-tile-on-dark {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.jcp-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: #eef1fb;
+  color: var(--jcp-accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.jcp-field {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  height: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.625rem;
+  background: var(--jcp-panel);
+}
+
+.jcp-field-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: var(--jcp-accent);
+}
+
+.jcp-field-body {
+  min-width: 0;
+}
+
+.jcp-field-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--jcp-soft);
+}
+
+.jcp-field-value {
+  display: block;
+  font-weight: 600;
+  color: var(--jcp-ink);
+  overflow-wrap: anywhere;
+}
+
+.jcp-note {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--jcp-panel);
+  font-size: 0.8125rem;
+  color: var(--jcp-ink);
+}
+
+.jcp-subhead {
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--jcp-soft);
+}
+
+.jcp-panel {
+  padding: 0.75rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.625rem;
+  background: var(--jcp-panel);
+}
+
+.jcp-table {
+  margin-bottom: 0;
+}
+
+.jcp-table thead th {
+  border-bottom: 1px solid var(--jcp-line);
+  background: var(--jcp-panel);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--jcp-soft);
+  white-space: nowrap;
+}
+
+.jcp-table tbody td {
+  vertical-align: middle;
+  border-bottom: 1px solid var(--jcp-line);
+  color: var(--jcp-ink);
+}
+
+.jcp-item-name {
+  display: block;
+  font-weight: 600;
+}
+
+.jcp-item-sub {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-input-suffix {
+  position: relative;
+  flex-grow: 1;
+}
+
+.jcp-input-suffix .form-control {
+  padding-right: 2rem;
+}
+
+.jcp-input-suffix > span {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  color: var(--jcp-soft);
+  pointer-events: none;
+}
+
+.jcp-amount {
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  background: #eef1fb;
+}
+
+.jcp-amount strong {
+  display: block;
+  font-size: 1.375rem;
+  color: var(--jcp-navy);
+}
+
+.jcp-amount-note {
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-divider {
+  border-left: 1px solid var(--jcp-line);
+}
+
+.jcp-secure {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--jcp-line);
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-secure .icon {
+  color: #1ee0ac;
+  margin-right: 0.25rem;
+}
+
+.jcp-insight-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--jcp-navy);
+  color: #fff;
+}
+
+.jcp-insight-head .jcp-head-text h6,
+.jcp-insight-head .jcp-head-text span {
+  color: #fff;
+}
+
+.jcp-insight-head .jcp-head-text span {
+  opacity: 0.7;
+}
+
+.jcp-vip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.jcp-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.jcp-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.625rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.625rem;
+  background: var(--jcp-panel);
+}
+
+.jcp-stat-body {
+  min-width: 0;
+}
+
+.jcp-stat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-stat-value {
+  display: block;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--jcp-ink);
+  overflow-wrap: anywhere;
+}
+
+.jcp-stat-note {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-invoice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--jcp-line);
+  font-size: 0.8125rem;
+}
+
+.jcp-invoice:first-of-type {
+  border-top: 0;
+}
+
+.jcp-invoice-main {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.jcp-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  font-size: 0.8125rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-line + .jcp-line {
+  border-top: 1px solid var(--jcp-line);
+}
+
+.jcp-line strong {
+  color: var(--jcp-ink);
+}
+
+.jcp-line-total {
+  margin-top: 0.25rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: 0.5rem;
+  border-top: 0;
+  background: #eef1fb;
+  font-size: 0.9375rem;
+  color: var(--jcp-ink);
+}
+
+.jcp-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.jcp-cancel {
+  padding: 0.75rem 1.25rem;
+  border: 1px solid #e85347;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #e85347;
+  font-weight: 600;
+}
+
+.jcp-cancel:hover,
+.jcp-cancel:focus-visible {
+  background: #e85347;
+  color: #fff;
+}
+
+.jcp-pay {
+  display: inline-flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-color: var(--jcp-navy);
+  background: var(--jcp-navy);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.jcp-ghost {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-color: #dbdfea;
+  background: #fff;
+  color: #364a63;
+  font-weight: 500;
+}
+
+.btn.jcp-ghost:hover,
+.btn.jcp-ghost:focus-visible {
+  background: #f5f6fa;
+  border-color: #cbd2e6;
+  color: #1f2b3f;
+}
+
+.btn.jcp-pay:hover,
+.btn.jcp-pay:focus-visible,
+.btn.jcp-pay:not(:disabled):not(.disabled):active {
+  background: #fff;
+  border-color: var(--jcp-navy);
+  color: var(--jcp-navy);
+}
+
+@media (max-width: 575.98px) {
+  .jcp-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .jcp-hero-art {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .jcp-divider {
+    border-left: 0;
+  }
+}
+
+body.dark-mode .jcp {
+  --jcp-line: rgba(255, 255, 255, 0.1);
+  --jcp-panel: rgba(255, 255, 255, 0.03);
+  --jcp-ink: #dbdfea;
+}
+
+body.dark-mode .jcp-tile,
+body.dark-mode .jcp-chip,
+body.dark-mode .jcp-amount,
+body.dark-mode .jcp-line-total {
+  background: rgba(90, 111, 240, 0.16);
+}
+
+body.dark-mode .jcp-field-icon,
+body.dark-mode .jcp-cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: #dbdfea;
+}
+
+/* Order summary list in the job-cart sidebar. */
+.jcp-sum-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.jcp-sum-head h6 {
+  margin: 0;
+  color: var(--jcp-ink);
+}
+
+.jcp-sum-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--jcp-line);
+}
+
+.jcp-sum-item-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.jcp-sum-item strong {
+  font-size: 0.8125rem;
+  color: var(--jcp-ink);
+}
+
+.jcp-sum-item + .jcp-line {
+  margin-top: 0.5rem;
+}
+
+/* Make Payment modal. Rendered in a portal, so it repeats the palette. */
+.jcp-modal {
+  --jcp-navy: #16336b;
+  --jcp-line: #e5e9f2;
+  --jcp-panel: #f7f9fc;
+  --jcp-ink: #1f2b4d;
+  --jcp-soft: #8094ae;
+  --jcp-accent: #5a6ff0;
+  border: 0;
+  border-radius: 0.875rem;
+}
+
+.jcp-modal-body {
+  padding: 1.5rem;
+}
+
+.jcp-modal-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.jcp-modal-head h5 {
+  margin: 0;
+  color: var(--jcp-ink);
+}
+
+.jcp-modal-head .jcp-head-text span {
+  font-size: 0.8125rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-modal-close {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 1;
+  color: var(--jcp-soft);
+}
+
+.jcp-pay-amount {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 0.625rem;
+  background: var(--jcp-panel);
+}
+
+.jcp-pay-amount strong {
+  display: block;
+  font-size: 1.625rem;
+  color: var(--jcp-navy);
+}
+
+.jcp-pay-code {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #fff;
+  font-size: 0.75rem;
+  color: var(--jcp-soft);
+  text-align: right;
+}
+
+.jcp-pay-code strong {
+  display: block;
+  font-size: 0.8125rem;
+  color: var(--jcp-ink);
+}
+
+.jcp-pm-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.625rem;
+}
+
+.jcp-pm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.875rem 0.5rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.625rem;
+  background: #fff;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--jcp-ink);
+}
+
+.jcp-pm .icon {
+  font-size: 1.25rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-pm.is-on {
+  border-color: var(--jcp-accent);
+  background: rgba(90, 111, 240, 0.08);
+  color: var(--jcp-accent);
+}
+
+.jcp-pm.is-on .icon {
+  color: var(--jcp-accent);
+}
+
+.jcp-collect {
+  margin: 1rem 0 0.5rem;
+}
+
+.jcp-modal-row {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--jcp-line);
+}
+
+.jcp-modal-row-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.jcp-modal-foot {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--jcp-line);
+}
+
+.jcp-modal-foot .btn {
+  flex: 1 1 0;
+}
+
+@media (max-width: 575.98px) {
+  .jcp-pm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+body.dark-mode .jcp-modal {
+  --jcp-line: rgba(255, 255, 255, 0.1);
+  --jcp-panel: rgba(255, 255, 255, 0.03);
+  --jcp-ink: #dbdfea;
+}
+
+body.dark-mode .jcp-pm,
+body.dark-mode .jcp-pay-code {
+  background: rgba(255, 255, 255, 0.04);
+  color: #dbdfea;
 }

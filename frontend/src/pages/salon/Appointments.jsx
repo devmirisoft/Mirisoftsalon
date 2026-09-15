@@ -417,7 +417,7 @@ const Appointments = () => {
               </div>
             )}
           </div>
-          <Row className="g-3 align-items-end">
+          <Row className="g-1 align-items-end">
             <Col md="3">
               <Label>Date</Label>
               <Input

@@ -270,14 +270,14 @@ const JobCartDetails = () => {
   // Mirrors isMembershipDiscountable on the server: a membership never reduces
   // a product, and only reduces a package when the salon has opted in. Keeping
   // the rule in step here stops the page promising a discount the bill refuses.
+  const isDiscountableLine = (item) =>
+    item.itemType === "PRODUCT" || item.itemType === "MEMBERSHIP"
+      ? false
+      : item.itemType === "PACKAGE"
+        ? Boolean(cart?.salon?.membershipDiscountOnPackages)
+        : true;
   const membershipDiscountBase = (invoice?.items || [])
-    .filter((item) =>
-      item.itemType === "PRODUCT" || item.itemType === "MEMBERSHIP"
-        ? false
-        : item.itemType === "PACKAGE"
-          ? Boolean(cart?.salon?.membershipDiscountOnPackages)
-          : true
-    )
+    .filter(isDiscountableLine)
     .reduce(
       (total, item) =>
         total + Number(item.quantity || 0) * Number(item.unitPrice || 0),
@@ -321,8 +321,56 @@ const JobCartDetails = () => {
     );
   // One rate covers every taxed line in practice, so the column header names it
   // and a row only repeats a rate that differs from it.
+  // While the cart is open, preview how confirming will split the discount and
+  // tax across lines - same pro-rata split as calculateInvoiceGst on the server.
+  const round2 = (value) => Math.round(value * 100) / 100;
+  const previewTaxRate =
+    billingForm.invoiceType === "GST_INVOICE"
+      ? Number(billingForm.taxPercent || 0)
+      : 0;
+  const lineGross = (item) =>
+    Number(item.price || 0) * Number(item.quantity ?? 1);
+  const discountableGross = (cart?.items || [])
+    .filter(isDiscountableLine)
+    .reduce((total, item) => total + lineGross(item), 0);
+  const lineDiscountTotal = Math.min(
+    discountTotal + Number(invoice?.couponDiscountAmount || 0),
+    discountableGross
+  );
+  const lastDiscountableIndex = (cart?.items || [])
+    .map(isDiscountableLine)
+    .lastIndexOf(true);
+  const discountShares = (cart?.items || []).map((item, index) =>
+    !isDiscountableLine(item) ||
+    index === lastDiscountableIndex ||
+    !discountableGross
+      ? 0
+      : round2((lineGross(item) * lineDiscountTotal) / discountableGross)
+  );
+  if (lastDiscountableIndex >= 0) {
+    // The last line takes the rounding remainder so the shares add up exactly.
+    discountShares[lastDiscountableIndex] = round2(
+      lineDiscountTotal -
+        discountShares.reduce((total, share) => total + share, 0)
+    );
+  }
+  const tableItems = (cart?.items || []).map((item, index) => {
+    if (!active) return item;
+    const gross = lineGross(item);
+    const discountAmount = discountShares[index];
+    const taxAmount = round2(
+      (Math.max(gross - discountAmount, 0) * previewTaxRate) / 100
+    );
+    return {
+      ...item,
+      discountAmount,
+      gstPercent: previewTaxRate,
+      taxAmount,
+      lineTotal: round2(Math.max(gross - discountAmount, 0) + taxAmount),
+    };
+  });
   const headerTaxPercent = Number(
-    (cart?.items || []).find((item) => Number(item.gstPercent) > 0)
+    tableItems.find((item) => Number(item.gstPercent) > 0)
       ?.gstPercent || 0
   );
 
@@ -697,7 +745,7 @@ const JobCartDetails = () => {
                         </thead>
                         <tbody>
                           {cart.items.length ? (
-                            cart.items.map((item, index) => (
+                            tableItems.map((item, index) => (
                               <tr key={item.id}>
                                 <td className="text-soft">{index + 1}</td>
                                 <td>
@@ -896,7 +944,7 @@ const JobCartDetails = () => {
                       }
                     />
                     {active ? (
-                      <Row className="g-3">
+                      <Row className="g-3 jcp-billing-options">
                         <Col md="5">
                           <Label className="jcp-field-label">
                             Overall Discount{" "}
@@ -906,7 +954,7 @@ const JobCartDetails = () => {
                             <Input
                               type="select"
                               bsSize="sm"
-                              style={{ maxWidth: 150 }}
+                              style={{ flex: "0 0 150px" }}
                               value={discountMode}
                               onChange={(event) =>
                                 setDiscountMode(event.target.value)
@@ -1608,6 +1656,7 @@ const JobCartDetails = () => {
                   type="textarea"
                   rows="2"
                   maxLength={BILLING_NOTE_MAX}
+                  style={{ minHeight: 0 }}
                   value={billingForm.billingNote}
                   onChange={(event) =>
                     setBillingForm((current) => ({

@@ -2846,6 +2846,14 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   flex-grow: 1;
 }
 
+/* Billing Options: the theme sizes selects and number inputs differently, so
+   pin every control to one height. */
+.jcp-billing-options .form-control,
+.jcp-billing-options .form-select {
+  height: 2.5rem;
+  padding-block: 0;
+}
+
 .jcp-input-suffix .form-control {
   padding-right: 2rem;
 }

@@ -83,128 +83,137 @@ export const InvoiceModel = {
 
     items: CreateInvoiceItemInput[];
   }, tx?: Prisma.TransactionClient) => {
-    return (tx ?? prisma).invoice.create({
-      data: {
-        invoiceCode: data.invoiceCode,
+    // Prisma 7.8 nested `items: { create }` drops or rejects rows once there
+    // are 7+ of them, so the items are inserted separately.
+    const run = async (db: Prisma.TransactionClient) => {
+      const { id } = await db.invoice.create({
+        select: { id: true },
+        data: {
+          invoiceCode: data.invoiceCode,
 
-        salonId: data.salonId,
-        ...(data.branchId ? { branchId: data.branchId } : {}),
-        customerId: data.customerId,
-        ...(data.appointmentId ? { appointmentId: data.appointmentId } : {}),
+          salonId: data.salonId,
+          ...(data.branchId ? { branchId: data.branchId } : {}),
+          customerId: data.customerId,
+          ...(data.appointmentId ? { appointmentId: data.appointmentId } : {}),
 
-        invoiceType: data.invoiceType || "BILL_OF_SUPPLY",
+          invoiceType: data.invoiceType || "BILL_OF_SUPPLY",
 
-        salonName: data.salonName,
-        ...(data.salonPhone ? { salonPhone: data.salonPhone } : {}),
-        ...(data.salonEmail ? { salonEmail: data.salonEmail } : {}),
-        ...(data.salonAddress ? { salonAddress: data.salonAddress } : {}),
-        ...(data.salonGst ? { salonGst: data.salonGst } : {}),
-        serviceTaxableAmount: data.serviceTaxableAmount ?? 0,
-        productTaxableAmount: data.productTaxableAmount ?? 0,
-        serviceGstAmount: data.serviceGstAmount ?? 0,
-        productGstAmount: data.productGstAmount ?? 0,
-        totalGstAmount: data.totalGstAmount ?? data.taxAmount,
-        gstNumberSnapshot: data.gstNumberSnapshot ?? null,
-        gstLegalNameSnapshot: data.gstLegalNameSnapshot ?? null,
-        gstStateCodeSnapshot: data.gstStateCodeSnapshot ?? null,
-        gstEnabledSnapshot: data.gstEnabledSnapshot ?? false,
+          salonName: data.salonName,
+          ...(data.salonPhone ? { salonPhone: data.salonPhone } : {}),
+          ...(data.salonEmail ? { salonEmail: data.salonEmail } : {}),
+          ...(data.salonAddress ? { salonAddress: data.salonAddress } : {}),
+          ...(data.salonGst ? { salonGst: data.salonGst } : {}),
+          serviceTaxableAmount: data.serviceTaxableAmount ?? 0,
+          productTaxableAmount: data.productTaxableAmount ?? 0,
+          serviceGstAmount: data.serviceGstAmount ?? 0,
+          productGstAmount: data.productGstAmount ?? 0,
+          totalGstAmount: data.totalGstAmount ?? data.taxAmount,
+          gstNumberSnapshot: data.gstNumberSnapshot ?? null,
+          gstLegalNameSnapshot: data.gstLegalNameSnapshot ?? null,
+          gstStateCodeSnapshot: data.gstStateCodeSnapshot ?? null,
+          gstEnabledSnapshot: data.gstEnabledSnapshot ?? false,
 
-        customerName: data.customerName,
-        ...(data.customerPhone ? { customerPhone: data.customerPhone } : {}),
-        ...(data.customerEmail ? { customerEmail: data.customerEmail } : {}),
-        ...(data.customerAddress
-          ? { customerAddress: data.customerAddress }
-          : {}),
-        ...(data.customerGst ? { customerGst: data.customerGst } : {}),
+          customerName: data.customerName,
+          ...(data.customerPhone ? { customerPhone: data.customerPhone } : {}),
+          ...(data.customerEmail ? { customerEmail: data.customerEmail } : {}),
+          ...(data.customerAddress
+            ? { customerAddress: data.customerAddress }
+            : {}),
+          ...(data.customerGst ? { customerGst: data.customerGst } : {}),
 
-        subtotalAmount: data.subtotalAmount,
-        discountAmount: data.discountAmount,
-        processingFeeAmount: data.processingFeeAmount,
-        taxAmount: data.taxAmount,
-        roundOffAmount: data.roundOffAmount ?? 0,
-        totalAmount: data.totalAmount,
+          subtotalAmount: data.subtotalAmount,
+          discountAmount: data.discountAmount,
+          processingFeeAmount: data.processingFeeAmount,
+          taxAmount: data.taxAmount,
+          roundOffAmount: data.roundOffAmount ?? 0,
+          totalAmount: data.totalAmount,
 
-        paidAmount: data.paidAmount || 0,
-        balanceAmount: data.balanceAmount,
+          paidAmount: data.paidAmount || 0,
+          balanceAmount: data.balanceAmount,
 
-        status: data.status || "ISSUED",
-        paymentStatus: data.paymentStatus || "UNPAID",
+          status: data.status || "ISSUED",
+          paymentStatus: data.paymentStatus || "UNPAID",
 
-        ...(data.billingNote ? { billingNote: data.billingNote } : {}),
-        ...(data.footerNote ? { footerNote: data.footerNote } : {}),
-
-        items: {
-          create: data.items.map((item) => ({
-            ...(item.serviceId ? { serviceId: item.serviceId } : {}),
-            ...(item.productId ? { productId: item.productId } : {}),
-            ...(item.itemType ? { itemType: item.itemType } : {}),
-            ...(item.packageId ? { packageId: item.packageId } : {}),
-            ...(item.membershipId ? { membershipId: item.membershipId } : {}),
-            ...(item.soldByStaffId
-              ? { soldByStaffId: item.soldByStaffId }
-              : {}),
-            ...(item.itemCode ? { itemCode: item.itemCode } : {}),
-
-            description: item.description,
-            serviceName: item.serviceName,
-
-            quantity: item.quantity || 1,
-            unitPrice: item.unitPrice,
-
-            discountAmount: item.discountAmount || 0,
-            taxableAmount: item.taxableAmount ?? 0,
-            gstRateSnapshot: item.gstRateSnapshot ?? item.taxPercent ?? 0,
-            gstAmount: item.gstAmount ?? item.taxAmount ?? 0,
-            totalWithTax: item.totalWithTax ?? item.lineTotal,
-            taxPercent: item.taxPercent || 0,
-            taxAmount: item.taxAmount || 0,
-
-            lineTotal: item.lineTotal,
-          })),
+          ...(data.billingNote ? { billingNote: data.billingNote } : {}),
+          ...(data.footerNote ? { footerNote: data.footerNote } : {}),
         },
-      },
-      include: {
-        salon: {
-          select: {
-            id: true,
-            name: true,
+      });
+      await db.invoiceItem.createMany({
+        data: data.items.map((item) => ({
+          invoiceId: id,
+          ...(item.serviceId ? { serviceId: item.serviceId } : {}),
+          ...(item.productId ? { productId: item.productId } : {}),
+          ...(item.itemType ? { itemType: item.itemType } : {}),
+          ...(item.packageId ? { packageId: item.packageId } : {}),
+          ...(item.membershipId ? { membershipId: item.membershipId } : {}),
+          ...(item.soldByStaffId
+            ? { soldByStaffId: item.soldByStaffId }
+            : {}),
+          ...(item.itemCode ? { itemCode: item.itemCode } : {}),
+
+          description: item.description,
+          serviceName: item.serviceName,
+
+          quantity: item.quantity || 1,
+          unitPrice: item.unitPrice,
+
+          discountAmount: item.discountAmount || 0,
+          taxableAmount: item.taxableAmount ?? 0,
+          gstRateSnapshot: item.gstRateSnapshot ?? item.taxPercent ?? 0,
+          gstAmount: item.gstAmount ?? item.taxAmount ?? 0,
+          totalWithTax: item.totalWithTax ?? item.lineTotal,
+          taxPercent: item.taxPercent || 0,
+          taxAmount: item.taxAmount || 0,
+
+          lineTotal: item.lineTotal,
+        })),
+      });
+      return db.invoice.findUniqueOrThrow({
+        where: { id },
+        include: {
+          salon: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
-        },
-        branch: {
-          select: {
-            id: true,
-            name: true,
+          branch: {
+            select: {
+              id: true,
+              name: true,
+            },
           },
-        },
-        customer: {
-          select: {
-            id: true,
-            name: true,
-            phone: true,
-            customerCode: true,
-            loyaltyPoints: true,
-            membership: {
-              select: {
-                id: true,
-                name: true,
-                discountPercentage: true,
-                status: true,
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+              customerCode: true,
+              loyaltyPoints: true,
+              membership: {
+                select: {
+                  id: true,
+                  name: true,
+                  discountPercentage: true,
+                  status: true,
+                },
               },
             },
           },
-        },
-        appointment: {
-          select: {
-            id: true,
-            appointmentCode: true,
-            status: true,
+          appointment: {
+            select: {
+              id: true,
+              appointmentCode: true,
+              status: true,
+            },
           },
+          items: true,
+          payments: true,
+          coupon: true,
         },
-        items: true,
-        payments: true,
-        coupon: true,
-      },
-    });
+      });
+    };
+    return tx ? run(tx) : prisma.$transaction(run);
   },
 
   findAll: async () => {

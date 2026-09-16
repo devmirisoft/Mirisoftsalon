@@ -31,7 +31,7 @@ const ReportExportButtons = ({ reportType, filters = {} }) => {
   };
 
   return (
-    <div className="d-flex gap-2">
+    <div className="d-flex gap-2 flex-wrap">
       <Button
         color="light"
         outline

@@ -1288,7 +1288,7 @@ const JobCartDetails = () => {
               </div>
               <div className="jcp-pay-code">
                 <span>Job Cart</span>
-                <strong>{cart.jobCartId}</strong>
+                <strong>{cart?.jobCartId}</strong>
               </div>
             </div>
 

@@ -79,8 +79,8 @@ const Appointments = () => {
     staff: [],
     services: [],
   });
-  // `draft` is what the toolbar shows; `filters` is what has been searched.
-  const [draft, setDraft] = useState(EMPTY_FILTERS);
+  // The toolbar applies as you change it: dates/status/staff refetch, the
+  // name/phone box filters what is already loaded.
   const [filters, setFilters] = useState(EMPTY_FILTERS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -391,10 +391,10 @@ const Appointments = () => {
                   className="form-control"
                   dateFormat="dd-MM-yyyy"
                   placeholderText="All dates"
-                  startDate={fromISODate(draft.from)}
-                  endDate={fromISODate(draft.to)}
+                  startDate={fromISODate(filters.from)}
+                  endDate={fromISODate(filters.to)}
                   onChange={([start, end]) =>
-                    setDraft((current) => ({
+                    setFilters((current) => ({
                       ...current,
                       from: start ? toISODate(start) : "",
                       to: end ? toISODate(end) : "",
@@ -410,9 +410,9 @@ const Appointments = () => {
               <Input
                 id="appt-filter-status"
                 type="select"
-                value={draft.status}
+                value={filters.status}
                 onChange={(event) =>
-                  setDraft((current) => ({ ...current, status: event.target.value }))
+                  setFilters((current) => ({ ...current, status: event.target.value }))
                 }
               >
                 <option value="">All statuses</option>
@@ -430,9 +430,9 @@ const Appointments = () => {
               <Input
                 id="appt-filter-staff"
                 type="select"
-                value={draft.staffId}
+                value={filters.staffId}
                 onChange={(event) =>
-                  setDraft((current) => ({ ...current, staffId: event.target.value }))
+                  setFilters((current) => ({ ...current, staffId: event.target.value }))
                 }
               >
                 <option value="">All staff</option>
@@ -447,28 +447,15 @@ const Appointments = () => {
                   <Icon name="search" />
                 </div>
                 <Input
-                  value={draft.q}
+                  value={filters.q}
                   placeholder="Search by customer name or phone"
                   onChange={(event) =>
-                    setDraft((current) => ({ ...current, q: event.target.value }))
+                    setFilters((current) => ({ ...current, q: event.target.value }))
                   }
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") setFilters(draft);
-                  }}
                 />
               </div>
             </div>
-            <Button color="primary" onClick={() => setFilters(draft)}>
-              <Icon name="search" />
-              <span>Search</span>
-            </Button>
-            <Button
-              color="light"
-              onClick={() => {
-                setDraft(EMPTY_FILTERS);
-                setFilters(EMPTY_FILTERS);
-              }}
-            >
+            <Button color="light" onClick={() => setFilters(EMPTY_FILTERS)}>
               <Icon name="reload" />
               <span>Clear</span>
             </Button>

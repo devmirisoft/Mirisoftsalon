@@ -867,7 +867,7 @@ body.dark-mode .svc-picker .svc-card.is-added .svc-card-add {
   --side-head: #5c92d8;
   --side-accent: #4a90ff;
   --side-line: rgba(105, 167, 245, 0.22);
-  background: linear-gradient(180deg, #0f2a52 0%, #081a33 100%) !important;
+  background: #022C61 !important;
   border-color: transparent !important;
 }
 
@@ -2274,6 +2274,12 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
     flex: 1 1 auto;
     width: 100%;
   }
+
+  /* Stacked, the panel is just more page: let it scroll with everything else
+     instead of trapping a second scrollbar inside the card. */
+  .appt-day-list {
+    max-height: none;
+  }
 }
 
 /* ---------- Selected day panel ---------- */
@@ -2433,6 +2439,69 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   background: rgba(37, 99, 235, 0.12);
   color: #2563eb;
   font-size: 1rem;
+}
+
+/* ---------- Narrow screens ----------
+   The filter bar and the calendar header are the two rows that run out of
+   width first; below these breakpoints they stack instead of squeezing. */
+@media (max-width: 767.98px) {
+  /* The theme's page header is a no-wrap flex row, so the title and the action
+     buttons crush each other on a phone. Only page heads are touched. */
+  .nk-block-head .nk-block-between {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .filter-bar-item,
+  .filter-bar-item.is-wide,
+  .filter-bar-item.is-grow {
+    flex: 1 1 calc(50% - 0.375rem);
+    width: auto;
+    min-width: 0;
+  }
+
+  .filter-bar > .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .appt-calendar-head .title {
+    flex: 1 1 auto;
+  }
+
+  /* nav buttons stay on the title row; range and views take their own */
+  .appt-calendar-range {
+    flex: 1 1 100%;
+    order: 1;
+  }
+
+  .appt-calendar-views {
+    order: 2;
+    margin-left: 0;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .appt-calendar-views > .btn,
+  .appt-calendar-views .btn-group {
+    flex: 0 0 auto;
+  }
+
+  .appointment-calendar .fc-dayGridMonth-view .fc-daygrid-day-frame {
+    min-height: 5rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .filter-bar-item,
+  .filter-bar-item.is-wide,
+  .filter-bar-item.is-grow {
+    flex: 1 1 100%;
+  }
+
+  .appt-day-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* ---------- Export buttons ----------
@@ -3225,4 +3294,9 @@ body.dark-mode .jcp-pm,
 body.dark-mode .jcp-pay-code {
   background: rgba(255, 255, 255, 0.04);
   color: #dbdfea;
+}
+
+/* Image toggle: no hover disc behind the logo */
+.toggle-img:before {
+  display: none;
 }

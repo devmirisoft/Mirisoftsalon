@@ -1,6 +1,8 @@
 import "dotenv/config";
 
 import { prisma } from "../src/config/prisma.js";
+import { SalonModel } from "../src/features/salons/salon.model.js";
+import { buildSalonCode } from "../src/utils/business-id.js";
 import { hashPass } from "../src/utils/password.js";
 
 const accounts = [
@@ -36,14 +38,50 @@ const accounts = [
   },
 ];
 
+const salonDetails = {
+  name: "Test Salon",
+  email: "hello@testsalon.com",
+  phone: "9000000001",
+  addressLine1: "12 MG Road",
+  city: "Bengaluru",
+  state: "Karnataka",
+  postalCode: "560001",
+  timezone: "Asia/Kolkata",
+};
+
+const branchDetails = {
+  name: "Test Branch",
+  addressLine1: "12 MG Road",
+  city: "Bengaluru",
+  state: "Karnataka",
+  postalCode: "560001",
+  phone: "9000000002",
+  email: "branch@testsalon.com",
+  openingTime: "10:00",
+  closingTime: "20:00",
+};
+
 const main = async () => {
   let salon = await prisma.salon.findFirst({
     orderBy: { createdAt: "asc" },
   });
 
   if (!salon) {
-    salon = await prisma.salon.create({
-      data: { name: "Test Salon" },
+    salon = await SalonModel.create(salonDetails);
+  }
+
+  // Salons seeded before this filled in only `name`, so backfill the rest.
+  if (!salon.salonCode) {
+    salon = await prisma.salon.update({
+      where: { id: salon.id },
+      data: {
+        ...salonDetails,
+        name: salon.name,
+        salonCode: buildSalonCode({
+          salonName: salon.name,
+          timezone: salon.timezone,
+        }),
+      },
     });
   }
 
@@ -54,20 +92,25 @@ const main = async () => {
 
   if (!branch) {
     branch = await prisma.branch.create({
-      data: {
-        name: "Test Branch",
-        salonId: salon.id,
-      },
+      data: { ...branchDetails, salonId: salon.id },
+    });
+  }
+
+  if (!branch.phone) {
+    branch = await prisma.branch.update({
+      where: { id: branch.id },
+      data: { ...branchDetails, name: branch.name },
     });
   }
 
   for (const account of accounts) {
     const passwordHash = await hashPass(account.password);
     const needsSalon = account.role !== "SUPER_ADMIN";
-    const needsBranch =
-      account.role === "BRANCH_MANAGER" ||
-      account.role === "RECEPTIONIST" ||
-      account.role === "STAFF";
+    // Everything but SUPER_ADMIN gets a branch, matching what `register`
+    // gives a real salon admin. SALON_ADMIN stays branch-unrestricted (its
+    // scope comes from activeBranchId), but the branch profile screens read
+    // user.branchId and 400 without one.
+    const needsBranch = needsSalon;
 
     await prisma.user.upsert({
       where: { email: account.email },

@@ -43,7 +43,7 @@ const Header = ({ fixed, className, ...props }) => {
           <div className="nk-menu-trigger d-xl-none ms-n1">
             <Toggle
               className="nk-nav-toggle nk-quick-nav-icon d-xl-none ms-n1"
-              icon="menu"
+              img
               click={themeUpdate.sidebarVisibility}
             />
           </div>

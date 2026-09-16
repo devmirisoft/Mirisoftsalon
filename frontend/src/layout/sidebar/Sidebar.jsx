@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import SimpleBar from "simplebar-react";
-import Logo1 from "../../../public/logo1.png";
+import BrandText from "../../../public/Mirisoft-text.png";
 import Menu from "../menu/Menu";
 import Toggle from "./Toggle";
 
@@ -35,17 +35,22 @@ const Sidebar = ({ fixed, className, compact = false, menuData, ...props }) => {
       <div className={classes}>
         <div className="nk-sidebar-element nk-sidebar-head">
           <div className="nk-menu-trigger">
-            <Toggle className="nk-nav-toggle nk-quick-nav-icon d-xl-none me-n2" icon="arrow-left" click={themeUpdate.sidebarVisibility} />
+            <Toggle className="nk-nav-toggle nk-quick-nav-icon d-xl-none me-n2" img size={40} click={themeUpdate.sidebarVisibility} />
             <Toggle
               className={`nk-nav-compact nk-quick-nav-icon d-none d-xl-inline-flex ${
                 isCompact ? "compact-active" : ""
               }`}
               click={themeUpdate.sidebarCompact}
-              icon="menu"
+              img
+              size={40}
             />
           </div>
           <div className="nk-sidebar-brand">
-            <img src={Logo1} alt="Logo" className="" />
+            <img
+              src={BrandText}
+              alt="Mirisoft"
+              style={{ display: "block", width: "100%", maxHeight: "44px", objectFit: "contain", marginLeft: "-12px" }}
+            />
           </div>
         </div>
         <div className="nk-sidebar-content" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>

@@ -11,6 +11,7 @@
     "deploy:migrate": "prisma migrate deploy",
     "seed:roles": "tsx scripts/seed-role-users.ts",
     "seed:super-admin": "tsx scripts/seed-super-admin.ts",
+    "seed:demo": "tsx scripts/seed-demo-data.ts",
     "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit",
     "test:watch": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "dev": "tsx watch src/index.ts",

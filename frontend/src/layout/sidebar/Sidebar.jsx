@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import SimpleBar from "simplebar-react";
-import BrandText from "../../../public/Mirisoft-text.png";
 import Menu from "../menu/Menu";
 import Toggle from "./Toggle";
 
 import { useTheme, useThemeUpdate } from '@/layout/provider/Theme';
+
+const BrandText = "/Mirisoft text.png";
 
 const Sidebar = ({ fixed, className, compact = false, menuData, ...props }) => {
 

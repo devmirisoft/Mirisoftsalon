@@ -52,6 +52,7 @@ export const AppointmentModel = {
                         },
                         serviceName: service.serviceName,
                         price: service.price,
+                        ...(service.quantity ? { quantity: service.quantity } : {}),
                         ...(service.staffId
                             ? { staff: { connect: { id: service.staffId } } }
                             : {}),

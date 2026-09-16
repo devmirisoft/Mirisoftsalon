@@ -2,6 +2,27 @@ import { prisma } from "../../config/prisma.js";
 import { env } from "../../config/env.js";
 import { hashPass } from "../../utils/password.js";
 
+const RETRYABLE_PRISMA_CODES = new Set(["P1001", "P1002", "P1017"]);
+
+const isRetryableDatabaseError = (error: unknown) => {
+  if (!error || typeof error !== "object") return false;
+
+  const code = "code" in error ? error.code : undefined;
+  if (typeof code === "string" && RETRYABLE_PRISMA_CODES.has(code)) {
+    return true;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  return /connection\s*(closed|terminated|reset)|server has closed/i.test(
+    message
+  );
+};
+
+const wait = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 /**
  * Keeps the SUPER_ADMIN user row in sync with SUPER_ADMIN_EMAIL /
  * SUPER_ADMIN_PASSWORD on boot, so changing those env vars and restarting
@@ -16,6 +37,26 @@ import { hashPass } from "../../utils/password.js";
  * Revoke them explicitly if a single superadmin is meant to be an invariant.
  */
 export const syncSuperAdmin = async () => {
+  const maxAttempts = 3;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      await syncSuperAdminOnce();
+      return;
+    } catch (error) {
+      if (attempt === maxAttempts || !isRetryableDatabaseError(error)) {
+        throw error;
+      }
+
+      console.warn(
+        `Super admin sync database connection failed; retrying (${attempt}/${maxAttempts})...`
+      );
+      await wait(500 * attempt);
+    }
+  }
+};
+
+const syncSuperAdminOnce = async () => {
   const email = env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
   const password = env.SUPER_ADMIN_PASSWORD;
 

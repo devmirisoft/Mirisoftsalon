@@ -264,7 +264,13 @@ export const InvoiceModel = {
                         endTime: true,
                     },
                 },
-                items: true,
+                items: {
+                    include: {
+                        // A package-covered line is priced 0, so the value the package
+                        // actually paid only lives on the redemption item.
+                        customerPackageUsageItem: { select: { priceSnapshot: true } },
+                    },
+                },
                 payments: true,
                 coupon: true,
             },
@@ -313,7 +319,13 @@ export const InvoiceModel = {
                         endTime: true,
                     },
                 },
-                items: true,
+                items: {
+                    include: {
+                        // A package-covered line is priced 0, so the value the package
+                        // actually paid only lives on the redemption item.
+                        customerPackageUsageItem: { select: { priceSnapshot: true } },
+                    },
+                },
                 payments: true,
                 coupon: true,
             },

@@ -1,6 +1,7 @@
+import type { Prisma } from "../generated/prisma/client.js";
 import { getSalonLocalParts, salonLocalDateTimeToUtc } from "./timezone.js";
 
-type BusinessCodeType = "APT" | "INV" | "EXP" | "PUR" | "RET" | "JC";
+type BusinessCodeType = "APT" | "EXP" | "PUR" | "RET" | "JC";
 
 const DEFAULT_TIMEZONE = "Asia/Kolkata";
 
@@ -68,6 +69,50 @@ export const buildBusinessCode = ({
   const serialPart = serial === undefined ? "" : pad(serial, 3);
 
   return `${salonInitials(salonName)}${type}${timePart}${datePart}${serialPart}`;
+};
+
+// Invoices read as INITIALS/YYYY/MM/DD/HHMM: the customer can say the code out
+// loud and it still says which salon billed them, and when.
+export const buildInvoiceCode = ({
+  salonName,
+  date = new Date(),
+  timezone,
+}: {
+  salonName: string;
+  date?: Date | undefined;
+  timezone?: string | null | undefined;
+}) => {
+  const parts = getSalonLocalParts(date, timezone || DEFAULT_TIMEZONE);
+
+  return [
+    salonInitials(salonName),
+    parts.year,
+    pad(parts.month, 2),
+    pad(parts.day, 2),
+    `${pad(parts.hour, 2)}${pad(parts.minute, 2)}`,
+  ].join("/");
+};
+
+// Codes are minute-resolution and unique per salon, so a second bill inside the
+// same minute takes a -2, -3, ... suffix rather than failing the insert.
+// ponytail: count-then-insert, so two bills committed in the same minute at the
+// exact same instant can still collide on the unique index; retry the insert
+// with a fresh code if that ever shows up in the logs.
+export const nextInvoiceCode = async (
+  tx: Prisma.TransactionClient,
+  salon: { id: string; name: string; timezone?: string | null },
+  date: Date = new Date()
+) => {
+  const code = buildInvoiceCode({
+    salonName: salon.name,
+    date,
+    timezone: salon.timezone,
+  });
+  const taken = await tx.invoice.count({
+    where: { salonId: salon.id, invoiceCode: { startsWith: code } },
+  });
+
+  return taken ? `${code}-${taken + 1}` : code;
 };
 
 export const buildSalonCode = ({

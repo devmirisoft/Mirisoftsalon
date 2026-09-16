@@ -54,6 +54,7 @@ const AppointmentBill = () => {
   const [appointment, setAppointment] = useState(null);
   const [invoice, setInvoice] = useState(null);
   const [summary, setSummary] = useState(null);
+  const [pastInvoices, setPastInvoices] = useState([]);
   const [refs, setRefs] = useState({ products: [], packages: [], staff: [] });
   const [memberships, setMemberships] = useState([]);
   const [wallet, setWallet] = useState(null);
@@ -121,6 +122,17 @@ const AppointmentBill = () => {
 
       // Everything below is decoration: a role that cannot read it still bills.
       const customerId = loaded?.customer?.id;
+      // The same list already carries this customer's earlier bills, newest
+      // first, so no extra fetch is needed to show their history.
+      setPastInvoices(
+        customerId
+          ? (invoiceResponse.data || []).filter(
+              (item) =>
+                item.customerId === customerId &&
+                item.appointmentId !== appointmentId
+            )
+          : []
+      );
       const [summaryResult, refsResult, membershipResult] =
         await Promise.allSettled([
           customerId
@@ -237,7 +249,17 @@ const AppointmentBill = () => {
     // A membership is billed at its plan price and never discounted, but it
     // is taxed at the service rate like a package.
     const membershipSubtotal = num(selectedMembership?.price);
-    const discount = Math.min(num(bill.discountAmount), serviceSubtotal);
+    const manualDiscount = Math.min(num(bill.discountAmount), serviceSubtotal);
+    // The membership the customer already holds discounts the services on top
+    // of the typed amount, exactly as the server applies it on issue.
+    const membershipDiscount = Math.min(
+      (serviceSubtotal * num(summary?.membershipDiscountPercentage)) / 100,
+      serviceSubtotal - manualDiscount
+    );
+    const discount = Math.min(
+      manualDiscount + membershipDiscount,
+      serviceSubtotal
+    );
     const gst = bill.invoiceType === "GST_INVOICE";
     const serviceTax = gst
       ? ((serviceSubtotal - discount + packageSubtotal + membershipSubtotal) *
@@ -255,6 +277,8 @@ const AppointmentBill = () => {
       productSubtotal,
       membershipSubtotal,
       subtotal,
+      manualDiscount,
+      membershipDiscount,
       discount,
       serviceTax,
       productTax,
@@ -265,7 +289,14 @@ const AppointmentBill = () => {
         productTax +
         num(bill.processingFeeAmount),
     };
-  }, [bill, selectedMembership, selectedPackages, selectedProducts, services]);
+  }, [
+    bill,
+    selectedMembership,
+    selectedPackages,
+    selectedProducts,
+    services,
+    summary,
+  ]);
 
   const walletBalance = num(wallet?.spendableBalance);
   const balance = num(invoice?.balanceAmount);
@@ -960,6 +991,29 @@ const AppointmentBill = () => {
                         ))}
                       </div>
                     )}
+                    {pastInvoices.length > 0 && (
+                      <div className="mt-3">
+                        <div className="overline-title text-soft mb-1">
+                          Past invoices
+                        </div>
+                        {pastInvoices.map((item) => (
+                          <Link
+                            key={item.id}
+                            to={`/billing/invoices/${item.id}`}
+                            className="d-flex justify-content-between align-items-center py-1 border-bottom small"
+                          >
+                            <span className="text-soft">
+                              {formatDate(item.invoiceDate)} ·{" "}
+                              {item.invoiceCode}
+                            </span>
+                            <span>
+                              {formatMoney(item.totalAmount)}{" "}
+                              <StatusBadge value={item.paymentStatus} />
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -976,10 +1030,30 @@ const AppointmentBill = () => {
                       <SummaryRow
                         label="Discount"
                         value={`- ${formatMoney(
-                          num(invoice.discountAmount) +
-                            num(invoice.couponDiscountAmount)
+                          num(invoice.discountAmount) -
+                            num(invoice.membershipDiscountAmount)
                         )}`}
                       />
+                      {num(invoice.membershipDiscountAmount) > 0 && (
+                        <SummaryRow
+                          label="Membership discount"
+                          value={`- ${formatMoney(
+                            invoice.membershipDiscountAmount
+                          )}`}
+                        />
+                      )}
+                      {num(invoice.couponDiscountAmount) > 0 && (
+                        <SummaryRow
+                          label={`Coupon${
+                            invoice.couponCodeSnapshot
+                              ? ` (${invoice.couponCodeSnapshot})`
+                              : ""
+                          }`}
+                          value={`- ${formatMoney(
+                            invoice.couponDiscountAmount
+                          )}`}
+                        />
+                      )}
                       <SummaryRow
                         label="Service tax"
                         value={formatMoney(invoice.serviceGstAmount)}
@@ -1038,8 +1112,16 @@ const AppointmentBill = () => {
                       )}
                       <SummaryRow
                         label="Discount"
-                        value={`- ${formatMoney(preview.discount)}`}
+                        value={`- ${formatMoney(preview.manualDiscount)}`}
                       />
+                      {preview.membershipDiscount > 0 && (
+                        <SummaryRow
+                          label={`Membership discount (${num(
+                            summary.membershipDiscountPercentage
+                          )}%)`}
+                          value={`- ${formatMoney(preview.membershipDiscount)}`}
+                        />
+                      )}
                       <SummaryRow
                         label="Service tax"
                         value={formatMoney(preview.serviceTax)}
@@ -1057,8 +1139,8 @@ const AppointmentBill = () => {
                         <strong>{formatMoney(preview.total)}</strong>
                       </div>
                       <p className="text-soft small mt-2">
-                        Membership discount and the final GST rounding are
-                        applied by the server when the bill is issued.
+                        The final GST rounding is applied by the server when the
+                        bill is issued.
                       </p>
                     </>
                   )}

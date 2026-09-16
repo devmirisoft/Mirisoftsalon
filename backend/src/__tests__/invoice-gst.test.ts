@@ -155,6 +155,67 @@ describe("invoice GST calculator", () => {
     expect(down.roundOffAmount.toFixed(2)).toBe("-0.02");
   });
 
+  it("reports each line's share of the discount so the bill can show it", () => {
+    // 600 + 400 of service and a 500 product, 100 off. The service lines split
+    // the 100 by their share of the discountable 1000; the product gets none,
+    // and the shares add back up to the discount that was given.
+    const result = calculateInvoiceGst(
+      {
+        invoiceType: "GST_INVOICE",
+        discountAmount: decimal("100.00"),
+        couponDiscountAmount: decimal("0"),
+        processingFeeAmount: decimal("0"),
+        items: [
+          { itemType: "SERVICE", quantity: 1, unitPrice: decimal("600.00") },
+          { itemType: "SERVICE", quantity: 1, unitPrice: decimal("400.00") },
+          {
+            itemType: "PRODUCT",
+            quantity: 1,
+            unitPrice: decimal("500.00"),
+            discountable: false,
+          },
+        ],
+      },
+      settings
+    );
+
+    expect(result.lines[0]?.discountAmount.toFixed(2)).toBe("60.00");
+    expect(result.lines[1]?.discountAmount.toFixed(2)).toBe("40.00");
+    expect(result.lines[2]?.discountAmount.toFixed(2)).toBe("0.00");
+    // Each line's taxable value is its price less its own share.
+    expect(result.lines[0]?.taxableAmount.toFixed(2)).toBe("540.00");
+    expect(result.lines[1]?.taxableAmount.toFixed(2)).toBe("360.00");
+  });
+
+  it("gives the rounding remainder of a discount to the last discounted line", () => {
+    // 100 off three equal lines is 33.333... each. The last discountable line
+    // absorbs the remainder so the shares still sum to exactly 100.
+    const result = calculateInvoiceGst(
+      {
+        invoiceType: "BILL_OF_SUPPLY",
+        discountAmount: decimal("100.00"),
+        couponDiscountAmount: decimal("0"),
+        processingFeeAmount: decimal("0"),
+        items: [
+          { itemType: "SERVICE", quantity: 1, unitPrice: decimal("100.00") },
+          { itemType: "SERVICE", quantity: 1, unitPrice: decimal("100.00") },
+          { itemType: "SERVICE", quantity: 1, unitPrice: decimal("100.00") },
+        ],
+      },
+      settings
+    );
+
+    const shares = result.lines.map((line) => line.discountAmount);
+    expect(shares[0]?.toFixed(2)).toBe("33.33");
+    expect(shares[1]?.toFixed(2)).toBe("33.33");
+    expect(shares[2]?.toFixed(2)).toBe("33.34");
+    expect(
+      shares
+        .reduce((sum, value) => sum.plus(value), decimal("0"))
+        .toFixed(2)
+    ).toBe("100.00");
+  });
+
   it("never applies a discount to a product line", () => {
     // 1000 service + 500 product, 100 membership discount. The whole discount
     // belongs to the service; the product stays taxable at its full 500.

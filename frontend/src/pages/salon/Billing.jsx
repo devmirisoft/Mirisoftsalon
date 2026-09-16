@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Alert,
   Nav,
@@ -43,7 +43,12 @@ const Billing = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [invoiceSearch, setInvoiceSearch] = useState("");
+  // A "View more" link from a job cart lands here with ?q=<customer>, so the
+  // invoice list opens already narrowed to that customer.
+  const [searchParams] = useSearchParams();
+  const [invoiceSearch, setInvoiceSearch] = useState(
+    searchParams.get("q") || ""
+  );
   const [action, setAction] = useState(null);
   const [selected, setSelected] = useState(null);
   const [paymentDetails, setPaymentDetails] = useState(null);

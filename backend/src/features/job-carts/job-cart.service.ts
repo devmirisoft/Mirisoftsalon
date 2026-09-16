@@ -3,7 +3,7 @@ import { prisma } from "../../config/prisma.js";
 import { Prisma, type PaymentMethod } from "../../generated/prisma/client.js";
 import {
   buildBusinessCode,
-  businessCodeDayRange,
+  nextInvoiceCode,
 } from "../../utils/business-id.js";
 import { AppointmentModel } from "../appointments/appointment.model.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
@@ -282,6 +282,7 @@ const present = (cart: JobCartRecord) => ({
           ...item,
           itemType: "SERVICE" as const,
           gstPercent: line?.gstRateSnapshot ?? line?.taxPercent ?? null,
+          discountAmount: line?.discountAmount ?? null,
           taxAmount: line?.taxAmount ?? null,
           lineTotal: line?.lineTotal ?? null,
         };
@@ -296,6 +297,7 @@ const present = (cart: JobCartRecord) => ({
         price: item.unitPrice,
         quantity: item.quantity,
         gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        discountAmount: item.discountAmount,
         taxAmount: item.taxAmount,
         lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
@@ -313,6 +315,7 @@ const present = (cart: JobCartRecord) => ({
         price: item.unitPrice,
         quantity: item.quantity,
         gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        discountAmount: item.discountAmount,
         taxAmount: item.taxAmount,
         lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
@@ -330,6 +333,7 @@ const present = (cart: JobCartRecord) => ({
         price: item.unitPrice,
         quantity: item.quantity,
         gstPercent: item.gstRateSnapshot ?? item.taxPercent,
+        discountAmount: item.discountAmount,
         taxAmount: item.taxAmount,
         lineTotal: item.lineTotal,
         soldByStaffId: item.soldByStaffId,
@@ -803,9 +807,9 @@ const recalculateCart = async (
             serviceName: item.serviceName,
             quantity: item.quantity,
             unitPrice: item.price,
-            discountAmount: 0,
             ...(line
               ? {
+                  discountAmount: line.discountAmount,
                   taxableAmount: line.taxableAmount,
                   gstRateSnapshot: line.gstRateSnapshot,
                   gstAmount: line.gstAmount,
@@ -815,6 +819,7 @@ const recalculateCart = async (
                   lineTotal: line.lineTotal,
                 }
               : {
+                  discountAmount: 0,
                   taxPercent: 0,
                   taxAmount: 0,
                   lineTotal: new Prisma.Decimal(item.price).mul(item.quantity),
@@ -832,6 +837,7 @@ const recalculateCart = async (
     await tx.invoiceItem.update({
       where: { id: item.id },
       data: {
+        discountAmount: line.discountAmount,
         taxableAmount: line.taxableAmount,
         gstRateSnapshot: line.gstRateSnapshot,
         gstAmount: line.gstAmount,
@@ -1168,7 +1174,11 @@ export const getJobCartCustomerSummary = async (
       ...(actor.role === "SUPER_ADMIN"
         ? {}
         : { salonId: actor.salonId ?? "__unauthorized__" }),
-      ...branchWhere,
+      // A customer with no branch belongs to the whole salon, so a branch
+      // session must still be able to open one at the counter.
+      ...(summaryBranchId
+        ? { OR: [{ branchId: null }, { branchId: summaryBranchId }] }
+        : {}),
     },
     include: {
       membership: {
@@ -1353,6 +1363,10 @@ export const getJobCartCustomerSummary = async (
     membershipStatus:
       currentMembership?.status ?? latestMembership?.status ?? null,
     currentCustomerMembershipId: currentMembership?.id ?? null,
+    // Only the membership in force discounts a bill, so an expired one in the
+    // history contributes nothing here.
+    membershipDiscountPercentage:
+      currentMembership?.discountPercentageSnapshot ?? 0,
     // What the counter may put on the bill from membership wallets right now,
     // summed across every spendable membership the customer holds.
     membershipWalletBalance: spendableWallet.total,
@@ -1529,17 +1543,6 @@ export const createJobCart = async (
       phone: input.phone,
     });
     const codeDate = new Date();
-    const invoiceDayRange = businessCodeDayRange(codeDate, salon.timezone);
-    const invoiceSerial =
-      (await tx.invoice.count({
-        where: {
-          salonId,
-          invoiceDate: {
-            gte: invoiceDayRange.start,
-            lt: invoiceDayRange.end,
-          },
-        },
-      })) + 1;
     const appointment = await AppointmentModel.create(
       {
         appointmentCode: buildBusinessCode({
@@ -1625,13 +1628,11 @@ export const createJobCart = async (
     const total = calculation.totalAmount;
     const invoice = await InvoiceModel.create(
       {
-        invoiceCode: buildBusinessCode({
-          salonName: salon.name,
-          type: "INV",
-          date: codeDate,
-          timezone: salon.timezone,
-          serial: invoiceSerial,
-        }),
+        invoiceCode: await nextInvoiceCode(
+          tx,
+          { id: salonId, name: salon.name, timezone: salon.timezone },
+          codeDate
+        ),
         salonId,
         branchId,
         customerId: customer.id,
@@ -1687,7 +1688,7 @@ export const createJobCart = async (
             serviceName: service.name,
             quantity: 1,
             unitPrice: Number(service.price),
-            discountAmount: 0,
+            discountAmount: line.discountAmount,
             taxableAmount: line.taxableAmount,
             gstRateSnapshot: line.gstRateSnapshot,
             gstAmount: line.gstAmount,
@@ -2765,6 +2766,7 @@ export const confirmJobCart = async (
       await tx.invoiceItem.update({
         where: { id: item.id },
         data: {
+          discountAmount: line.discountAmount,
           taxableAmount: line.taxableAmount,
           gstRateSnapshot: line.gstRateSnapshot,
           gstAmount: line.gstAmount,

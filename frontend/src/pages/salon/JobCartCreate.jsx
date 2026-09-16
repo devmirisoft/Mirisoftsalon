@@ -235,11 +235,13 @@ const JobCartCreate = () => {
     [refs.customers]
   );
 
-  // Phone box suggestions: 3+ digits, matched against digits-only stored phones.
+  // Search box suggestions: 3+ characters, matched against the customer name
+  // or the digits-only stored phone.
   const [phoneFocused, setPhoneFocused] = useState(false);
   const phoneMatches = useMemo(() => {
+    const query = form.phone.trim().toLowerCase();
     const digits = form.phone.replace(/\D/g, "");
-    if (digits.length < 3) return [];
+    if (query.length < 3) return [];
     // Once a full number is typed, suffix-compare so a stored "+919876543210"
     // counts as resolved for "9876543210" and the list stops nagging.
     const exact =
@@ -253,7 +255,12 @@ const JobCartCreate = () => {
       });
     if (exact) return [];
     return customerOptions
-      .filter((option) => option.phone.replace(/\D/g, "").includes(digits))
+      .filter(
+        (option) =>
+          option.name.toLowerCase().includes(query) ||
+          (digits.length >= 3 &&
+            option.phone.replace(/\D/g, "").includes(digits))
+      )
       .slice(0, 8);
   }, [customerOptions, form.phone]);
 
@@ -611,6 +618,10 @@ const JobCartCreate = () => {
       if (serviceRows.some((row) => row.serviceId && !row.staffId)) {
         throw new Error("Assign staff to every service.");
       }
+      // A stored number may carry a country code, so only the length floor.
+      if (form.phone.replace(/\D/g, "").length < 10) {
+        throw new Error("Pick a customer or enter a 10-digit phone number.");
+      }
       if (customPackage.serviceIds.length && !customPackage.name.trim()) {
         throw new Error("Enter a custom package name");
       }
@@ -730,9 +741,8 @@ const JobCartCreate = () => {
                             required
                             autoComplete="off"
                             className="cust-input"
-                            placeholder="Search or enter phone"
-                            inputMode="numeric"
-                            maxLength={10}
+                            placeholder="Search name or phone"
+                            maxLength={40}
                             value={form.phone}
                             onFocus={() => setPhoneFocused(true)}
                             onBlur={() =>
@@ -745,9 +755,13 @@ const JobCartCreate = () => {
                               setCustomerSummary(null);
                               setForm((current) => ({
                                 ...current,
-                                phone: event.target.value
-                                  .replace(/\D/g, "")
-                                  .slice(0, 10),
+                                // Letters mean a name search; a numeric entry
+                                // is still kept as a 10-digit phone.
+                                phone: /[^\d\s]/.test(event.target.value)
+                                  ? event.target.value
+                                  : event.target.value
+                                      .replace(/\D/g, "")
+                                      .slice(0, 10),
                                 // A matched customer filled the name; changing
                                 // the phone breaks the match, so the name goes
                                 // too.
@@ -789,7 +803,7 @@ const JobCartCreate = () => {
                               >
                                 <button
                                   type="button"
-                                  className="btn btn-link text-start text-decoration-none w-100 px-3 py-2"
+                                  className="btn btn-link text-start text-decoration-none w-100 px-3 py-2 d-flex justify-content-between align-items-center gap-2"
                                   onMouseDown={(event) =>
                                     event.preventDefault()
                                   }
@@ -806,7 +820,10 @@ const JobCartCreate = () => {
                                     });
                                   }}
                                 >
-                                  {option.name}
+                                  <span>{option.name}</span>
+                                  <span className="text-muted text-nowrap">
+                                    {option.phone}
+                                  </span>
                                 </button>
                               </li>
                             ))}

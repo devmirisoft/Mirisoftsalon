@@ -341,9 +341,20 @@ const JobCartDetails = () => {
   }, [membershipWalletBalance]);
 
   const collecting = billingForm.status !== "DRAFT" && paymentForm.collect;
-  const activeTenders = collecting
-    ? tenders.filter((tender) => tender.method)
-    : [];
+  // Once a split row exists the first tender silently takes whatever the split
+  // rows leave, so its amount field is hidden and only the splits are typed.
+  const splitting = tenders.length > 1;
+  const splitRowsTotal = tenders
+    .slice(1)
+    .reduce((sum, tender) => sum + Number(tender.amount || 0), 0);
+  const firstTenderAmount = Math.max(payableAmount - splitRowsTotal, 0);
+  const activeTenders = (
+    collecting ? tenders.filter((tender) => tender.method) : []
+  ).map((tender, index) =>
+    splitting && index === 0
+      ? { ...tender, amount: firstTenderAmount.toFixed(2) }
+      : tender
+  );
   // A blank amount on a lone tender means "the whole bill", which the server
   // settles against its own rounded total so a stale estimate cannot underpay.
   // The wallet is the exception: it can only ever settle what it holds, so a
@@ -599,6 +610,62 @@ const JobCartDetails = () => {
                   </div>
                 </div>
 
+                {customerSummary?.recentInvoices?.length ? (
+                  <div className="card card-bordered jcp-card mb-4">
+                    <div className="card-inner">
+                      <SectionHead
+                        icon="file-docs"
+                        title="Invoices"
+                        subtitle="Earlier bills for this customer."
+                      >
+                        {customerSummary.recentInvoices.length > 4 && (
+                          <Button
+                            type="button"
+                            color="primary"
+                            outline
+                            size="sm"
+                            onClick={() =>
+                              navigate(
+                                `/billing?q=${encodeURIComponent(
+                                  form.phone || form.customerName
+                                )}`
+                              )
+                            }
+                          >
+                            <span>View more</span>
+                            <Icon name="arrow-long-right" />
+                          </Button>
+                        )}
+                      </SectionHead>
+                      <Row className="g-2">
+                        {customerSummary.recentInvoices
+                          .slice(0, 4)
+                          .map((recent) => (
+                            <Col sm="12" xl="6" key={recent.invoiceId}>
+                              <Link
+                                to={`/billing/invoices/${recent.invoiceId}`}
+                                className="jcp-invoice-tile"
+                              >
+                                <span className="jcp-item-name">
+                                  {recent.invoiceCode}
+                                </span>
+                                <span className="jcp-item-sub">
+                                  {formatDate(
+                                    recent.issuedAt || recent.createdAt
+                                  )}
+                                </span>
+                                <strong>
+                                  {formatMoney(recent.totalAmount)}
+                                </strong>
+                                <StatusBadge value={recent.paymentStatus} />
+                              </Link>
+                            </Col>
+                          ))}
+                      </Row>
+                    </div>
+                  </div>
+                ) : null}
+
                 <div className="card card-bordered jcp-card mb-4">
                   <div className="card-inner">
                     <SectionHead
@@ -620,6 +687,7 @@ const JobCartDetails = () => {
                             <th>Duration</th>
                             <th className="text-end">Qty</th>
                             <th className="text-end">Price</th>
+                            <th className="text-end">Discount</th>
                             <th className="text-end">
                               Tax
                               {headerTaxPercent ? ` (${headerTaxPercent}%)` : ""}
@@ -697,6 +765,15 @@ const JobCartDetails = () => {
                                   ) : null}
                                 </td>
                                 <td className="text-end">
+                                  {Number(item.discountAmount || 0) > 0 ? (
+                                    <span className="text-success">
+                                      - {formatMoney(item.discountAmount)}
+                                    </span>
+                                  ) : (
+                                    "—"
+                                  )}
+                                </td>
+                                <td className="text-end">
                                   {item.taxAmount === null ||
                                   item.taxAmount === undefined ? (
                                     "—"
@@ -724,7 +801,7 @@ const JobCartDetails = () => {
                           ) : (
                             <tr>
                               <td
-                                colSpan={7}
+                                colSpan={8}
                                 className="text-center text-soft py-4"
                               >
                                 No services or packages on this job cart.
@@ -828,6 +905,7 @@ const JobCartDetails = () => {
                           <div className="d-flex gap-2">
                             <Input
                               type="select"
+                              bsSize="sm"
                               style={{ maxWidth: 150 }}
                               value={discountMode}
                               onChange={(event) =>
@@ -840,6 +918,7 @@ const JobCartDetails = () => {
                             <div className="jcp-input-suffix">
                               <Input
                                 type="number"
+                                bsSize="sm"
                                 min="0"
                                 max={
                                   discountMode === "PERCENT" ? "100" : undefined
@@ -977,10 +1056,6 @@ const JobCartDetails = () => {
                         </Col>
                       </Row>
                     )}
-                    <div className="jcp-secure">
-                      <Icon name="shield-check" /> Your payment information is
-                      secure and encrypted.
-                    </div>
                   </div>
                 </div>
               </Col>
@@ -1096,32 +1171,6 @@ const JobCartDetails = () => {
                   </div>
                 )}
 
-                {customerSummary?.recentInvoices?.length ? (
-                  <div className="card card-bordered jcp-card mb-4">
-                    <div className="card-inner">
-                      <SectionHead icon="file-docs" title="Recent Invoices">
-                        <Link to="/billing" className="small">
-                          View All
-                        </Link>
-                      </SectionHead>
-                      {customerSummary.recentInvoices.slice(0, 5).map((recent) => (
-                        <div key={recent.invoiceId} className="jcp-invoice">
-                          <div className="jcp-invoice-main">
-                            <Link to={`/billing/invoices/${recent.invoiceId}`}>
-                              {recent.invoiceCode}
-                            </Link>
-                            <span className="jcp-item-sub">
-                              {formatDate(recent.issuedAt || recent.createdAt)}
-                            </span>
-                          </div>
-                          <strong>{formatMoney(recent.totalAmount)}</strong>
-                          <StatusBadge value={recent.paymentStatus} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
                 <div className="card card-bordered jcp-card jcp-actions">
                   <div className="card-inner">
                     <div className="jcp-sum-head">
@@ -1131,34 +1180,6 @@ const JobCartDetails = () => {
                         {cart.items.length === 1 ? "" : "s"}
                       </span>
                     </div>
-                    {cart.items.map((item) => (
-                      <div key={item.id} className="jcp-sum-item">
-                        <span className="jcp-tile jcp-tile-sm">
-                          <Icon
-                            name={
-                              item.itemType === "PRODUCT"
-                                ? "box"
-                                : item.itemType === "PACKAGE"
-                                  ? "package"
-                                  : "scissor"
-                            }
-                          />
-                        </span>
-                        <div className="jcp-sum-item-body">
-                          <span className="jcp-item-name">
-                            {item.serviceName}
-                          </span>
-                          {item.staff?.name || item.soldByStaff?.name ? (
-                            <span className="jcp-item-sub">
-                              {item.staff?.name || item.soldByStaff?.name}
-                            </span>
-                          ) : null}
-                        </div>
-                        <strong>
-                          {formatMoney(item.lineTotal ?? item.price)}
-                        </strong>
-                      </div>
-                    ))}
                     <div className="jcp-line">
                       <span>Paid services / packages</span>
                       <strong>{formatMoney(subtotalAmount)}</strong>
@@ -1258,7 +1279,8 @@ const JobCartDetails = () => {
         <Modal
           isOpen={confirmOpen}
           toggle={() => setConfirmOpen(false)}
-          size="md"
+          size="lg"
+          centered
           contentClassName="jcp-modal"
         >
           <ModalBody className="jcp-modal-body">
@@ -1355,27 +1377,28 @@ const JobCartDetails = () => {
                   </Input>
                 )}
 
-                <Row className="g-2 mt-2">
-                  <Col sm="6">
-                    <Label className="jcp-field-label">Amount</Label>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      placeholder={
-                        tenders.length === 1
-                          ? formatMoney(collectedAmount)
-                          : "0.00"
-                      }
-                      value={tenders[0].amount}
-                      onChange={(event) =>
-                        setTenderValue(0, "amount", event.target.value)
-                      }
-                    />
-                  </Col>
-                  <Col sm="6">
+                <Row className="g-2 mt-2 align-items-end">
+                  {!splitting && (
+                    <Col sm="5">
+                      <Label className="jcp-field-label">Amount</Label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder={formatMoney(collectedAmount)}
+                        value={tenders[0].amount}
+                        onChange={(event) =>
+                          setTenderValue(0, "amount", event.target.value)
+                        }
+                      />
+                    </Col>
+                  )}
+                  <Col sm={splitting ? "8" : "4"}>
                     <Label className="jcp-field-label">
                       Reference <span className="text-soft">(Optional)</span>
+                      {splitting
+                        ? " — takes " + formatMoney(firstTenderAmount)
+                        : ""}
                     </Label>
                     <Input
                       placeholder="Enter reference (e.g. txn id)"
@@ -1384,6 +1407,25 @@ const JobCartDetails = () => {
                         setTenderValue(0, "referenceNo", event.target.value)
                       }
                     />
+                  </Col>
+                  <Col sm={splitting ? "4" : "3"}>
+                    {tenders.length < 5 && (
+                      <Button
+                        type="button"
+                        color="primary"
+                        outline
+                        className="w-100 jcp-split-add"
+                        onClick={() =>
+                          setTenders((current) => [
+                            ...current,
+                            { method: "CASH", amount: "", referenceNo: "" },
+                          ])
+                        }
+                      >
+                        <Icon name="plus" />
+                        <span>Split payment</span>
+                      </Button>
+                    )}
                   </Col>
                 </Row>
 
@@ -1426,9 +1468,10 @@ const JobCartDetails = () => {
                       />
                     </Col>
                     <Col sm="5">
-                      <div className="d-flex gap-1">
+                      <div className="d-flex gap-1 align-items-center">
                         <Input
                           bsSize="sm"
+                          className="jcp-tender-ref"
                           placeholder="Reference"
                           value={tender.referenceNo}
                           onChange={(event) =>
@@ -1439,10 +1482,10 @@ const JobCartDetails = () => {
                             )
                           }
                         />
-                        <Button
-                          color="danger"
-                          outline
-                          size="sm"
+                        <button
+                          type="button"
+                          className="jcp-tender-remove"
+                          aria-label="Remove payment method"
                           onClick={() =>
                             setTenders((current) =>
                               current.filter(
@@ -1452,34 +1495,11 @@ const JobCartDetails = () => {
                           }
                         >
                           <Icon name="cross" />
-                        </Button>
+                        </button>
                       </div>
                     </Col>
                   </Row>
                 ))}
-
-                {tenders.length < 5 && (
-                  <Button
-                    color="primary"
-                    outline
-                    size="sm"
-                    className="mt-2"
-                    onClick={() =>
-                      setTenders((current) => [
-                        ...current,
-                        {
-                          method: "CASH",
-                          amount: outstandingAfter
-                            ? outstandingAfter.toFixed(2)
-                            : "",
-                          referenceNo: "",
-                        },
-                      ])
-                    }
-                  >
-                    <Icon name="plus" /> Split payment
-                  </Button>
-                )}
               </>
             )}
 
@@ -1530,6 +1550,7 @@ const JobCartDetails = () => {
               </small>
             )}
 
+            <div className="jcp-modal-cols">
             {canApplyCoupon && (
               <div className="jcp-modal-row">
                 <span className="jcp-field-icon">
@@ -1599,6 +1620,7 @@ const JobCartDetails = () => {
                   {billingForm.billingNote.length}/{BILLING_NOTE_MAX}
                 </div>
               </div>
+            </div>
             </div>
 
             <div className="jcp-modal-foot">

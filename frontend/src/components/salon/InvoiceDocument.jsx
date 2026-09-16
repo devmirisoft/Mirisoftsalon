@@ -21,6 +21,9 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
           Number(item.quantity || 0),
       0
     );
+  // discountAmount already carries the membership share; the bill lists the
+  // two apart so the customer sees what the membership saved them.
+  const membershipDiscount = Number(invoice.membershipDiscountAmount || 0);
   const serviceGstRate = Number(
     (invoice.items || []).find(
       (item) => item.itemType !== "PRODUCT" && Number(item.gstRateSnapshot || 0) > 0
@@ -115,6 +118,7 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
                 <th className="w-60">Description</th>
                 <th>Price</th>
                 <th>Qty</th>
+                <th>Discount</th>
                 <th>Taxable</th>
                 <th>GST</th>
                 <th>Amount</th>
@@ -132,6 +136,11 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
                   </td>
                   <td>{formatMoney(item.unitPrice)}</td>
                   <td>{item.quantity}</td>
+                  <td>
+                    {Number(item.discountAmount || 0) > 0
+                      ? `- ${formatMoney(item.discountAmount)}`
+                      : "—"}
+                  </td>
                   <td>{formatMoney(item.taxableAmount ?? item.unitPrice)}</td>
                   <td>
                     {Number(item.gstRateSnapshot ?? item.taxPercent ?? 0)}%
@@ -145,18 +154,30 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Subtotal</td>
                 <td>{formatMoney(invoice.subtotalAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Discount</td>
-                <td>- {formatMoney(invoice.discountAmount)}</td>
+                <td>
+                  -{" "}
+                  {formatMoney(
+                    Number(invoice.discountAmount || 0) - membershipDiscount
+                  )}
+                </td>
               </tr>
+              {membershipDiscount > 0 && (
+                <tr>
+                  <td colSpan="5" />
+                  <td colSpan="2">Membership discount</td>
+                  <td>- {formatMoney(membershipDiscount)}</td>
+                </tr>
+              )}
               {Number(invoice.couponDiscountAmount || 0) > 0 && (
                 <tr>
-                  <td colSpan="4" />
+                  <td colSpan="5" />
                   <td colSpan="2">
                     Coupon {invoice.couponCodeSnapshot
                       ? `(${invoice.couponCodeSnapshot})`
@@ -166,42 +187,42 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
                 </tr>
               )}
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Service taxable amount</td>
                 <td>{formatMoney(invoice.serviceTaxableAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">CGST @ {halfRate(serviceGstRate)}%</td>
                 <td>{formatMoney(splitGst(invoice.serviceGstAmount).cgst)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">SGST @ {halfRate(serviceGstRate)}%</td>
                 <td>{formatMoney(splitGst(invoice.serviceGstAmount).sgst)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Product taxable amount</td>
                 <td>{formatMoney(invoice.productTaxableAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Product GST</td>
                 <td>{formatMoney(invoice.productGstAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Processing fee</td>
                 <td>{formatMoney(invoice.processingFeeAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Total GST</td>
                 <td>{formatMoney(invoice.totalGstAmount ?? invoice.taxAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">
                   <strong>Grand Total</strong>
                 </td>
@@ -210,18 +231,18 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
                 </td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Paid</td>
                 <td className="text-success">{formatMoney(invoice.paidAmount)}</td>
               </tr>
               <tr>
-                <td colSpan="4" />
+                <td colSpan="5" />
                 <td colSpan="2">Balance</td>
                 <td className="text-danger">{formatMoney(invoice.balanceAmount)}</td>
               </tr>
               {packageCovered > 0 && (
                 <tr>
-                  <td colSpan="4" />
+                  <td colSpan="5" />
                   <td colSpan="2">Covered by package</td>
                   <td>{formatMoney(packageCovered)}</td>
                 </tr>
@@ -229,14 +250,14 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
               {paidByMethod.length ? (
                 paidByMethod.map((row) => (
                   <tr key={row.method}>
-                    <td colSpan="4" />
+                    <td colSpan="5" />
                     <td colSpan="2">Paid via {row.label}</td>
                     <td>{formatMoney(row.amount)}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" />
+                  <td colSpan="5" />
                   <td colSpan="2">Payment method</td>
                   <td>—</td>
                 </tr>

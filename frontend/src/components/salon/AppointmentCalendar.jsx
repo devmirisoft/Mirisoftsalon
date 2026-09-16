@@ -49,7 +49,10 @@ const AppointmentCalendar = ({
   // The staff board replaces FullCalendar for one day, so it borrows the same
   // header: prev/next/Today step that day instead of the calendar's range.
   const isStaffView = view === "staff";
-  const boardDate = selectedDate ? new Date(`${selectedDate}T00:00`) : new Date();
+  const boardDate = useMemo(
+    () => (selectedDate ? new Date(`${selectedDate}T00:00`) : new Date()),
+    [selectedDate]
+  );
 
   const shiftDay = (days) => {
     const next = new Date(boardDate);
@@ -212,7 +215,7 @@ const AppointmentCalendar = ({
                     })}
                   </span>
                 </div>
-              ) : undefined
+              ) : true
             }
             themeSystem="bootstrap5"
             height="auto"

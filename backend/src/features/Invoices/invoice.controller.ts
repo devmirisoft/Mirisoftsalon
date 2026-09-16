@@ -13,10 +13,7 @@ import {
 } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
-import {
-  buildBusinessCode,
-  businessCodeDayRange,
-} from "../../utils/business-id.js";
+import { nextInvoiceCode } from "../../utils/business-id.js";
 import {
   CouponServiceError,
   applyCouponToInvoice,
@@ -58,32 +55,6 @@ const isValidInvoiceStatus = (value: string): value is InvoiceStatus => {
 
 const isValidPaymentStatus = (value: string): value is PaymentStatus => {
   return PAYMENT_STATUSES.includes(value as PaymentStatus);
-};
-
-const generateInvoiceCode = async (
-  tx: Prisma.TransactionClient,
-  salon: { id: string; name: string; timezone?: string | null },
-  date: Date = new Date()
-) => {
-  const range = businessCodeDayRange(date, salon.timezone);
-  const serial =
-    (await tx.invoice.count({
-      where: {
-        salonId: salon.id,
-        invoiceDate: {
-          gte: range.start,
-          lt: range.end,
-        },
-      },
-    })) + 1;
-
-  return buildBusinessCode({
-    salonName: salon.name,
-    type: "INV",
-    date,
-    timezone: salon.timezone,
-    serial,
-  });
 };
 
 const getInvoiceIdParam = (req: Request) => {
@@ -526,7 +497,7 @@ export const createInvoiceFromAppointment = async (
         const invoiceDate = new Date();
         const created = await InvoiceModel.create(
           {
-            invoiceCode: await generateInvoiceCode(
+            invoiceCode: await nextInvoiceCode(
               tx,
               appointment.salon,
               invoiceDate
@@ -603,7 +574,7 @@ export const createInvoiceFromAppointment = async (
               serviceName: line.serviceName,
               quantity: line.quantity,
               unitPrice: line.unitPrice,
-              discountAmount: 0,
+              discountAmount: calculation.lines[index]?.discountAmount ?? 0,
               taxableAmount: calculation.lines[index]?.taxableAmount ?? 0,
               gstRateSnapshot: calculation.lines[index]?.gstRateSnapshot ?? 0,
               gstAmount: calculation.lines[index]?.gstAmount ?? 0,
@@ -1005,6 +976,7 @@ export const updateInvoice = async (req: Request, res: Response) => {
           await tx.invoiceItem.update({
             where: { id: item.id },
             data: {
+              discountAmount: line.discountAmount,
               taxableAmount: line.taxableAmount,
               gstRateSnapshot: line.gstRateSnapshot,
               gstAmount: line.gstAmount,

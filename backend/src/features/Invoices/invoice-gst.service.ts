@@ -31,6 +31,8 @@ export type GstInvoiceInput = {
 };
 
 export type GstLineSnapshot = {
+  /** This line's share of the invoice discount, so the bill can show it. */
+  discountAmount: Prisma.Decimal;
   taxableAmount: Prisma.Decimal;
   gstRateSnapshot: Prisma.Decimal;
   gstAmount: Prisma.Decimal;
@@ -122,6 +124,7 @@ export const calculateInvoiceGst = (
     const totalWithTax = taxableAmount.plus(gstAmount).toDecimalPlaces(2);
 
     return {
+      discountAmount: discountShare,
       taxableAmount,
       gstRateSnapshot,
       gstAmount,

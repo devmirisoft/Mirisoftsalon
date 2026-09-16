@@ -411,6 +411,7 @@ const recalculateDraftGst = async (
     await tx.invoiceItem.update({
       where: { id: item.id },
       data: {
+        discountAmount: line.discountAmount,
         taxableAmount: line.taxableAmount,
         gstRateSnapshot: line.gstRateSnapshot,
         gstAmount: line.gstAmount,

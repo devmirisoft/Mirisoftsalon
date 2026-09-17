@@ -1,8 +1,10 @@
+import { jest } from "@jest/globals";
 import {
   buildBusinessCode,
   buildInvoiceCode,
   buildSalonCode,
   nextInvoiceCode,
+  nextJobCartCode,
   salonInitials,
 } from "../utils/business-id.js";
 
@@ -55,6 +57,27 @@ describe("business ID formatting", () => {
     await expect(
       nextInvoiceCode(tx as never, salon, createdAt)
     ).resolves.toBe("GL/2026/07/04/1430-2");
+  });
+
+  it("numbers job carts per prefix, adding the branch for multi-branch salons", async () => {
+    const salon = { id: "salon-1", name: "The Salon" };
+    const tx = {
+      branch: { count: jest.fn() },
+      $executeRaw: jest.fn(),
+      $queryRaw: jest.fn(),
+    };
+
+    tx.branch.count.mockResolvedValueOnce(1);
+    tx.$queryRaw.mockResolvedValueOnce([{ last: null }]);
+    await expect(
+      nextJobCartCode(tx as never, salon, { name: "Main Branch" })
+    ).resolves.toBe("TSJC-0001");
+
+    tx.branch.count.mockResolvedValueOnce(2);
+    tx.$queryRaw.mockResolvedValueOnce([{ last: 1 }]);
+    await expect(
+      nextJobCartCode(tx as never, salon, { name: "Main Branch" })
+    ).resolves.toBe("TSJC-MB-0002");
   });
 
   it("formats salon codes and single-word initials", () => {

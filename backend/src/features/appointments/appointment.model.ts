@@ -90,93 +90,96 @@ export const AppointmentModel = {
       durationUnit?: DurationUnit;
     }[];
   }, tx?: TransactionClient) => {
-    return (tx ?? prisma).appointment.create({
-      data: {
-        appointmentCode: data.appointmentCode,
-        salonId: data.salonId,
-        customerId: data.customerId,
-        ...(data.staffId ? { staffId: data.staffId } : {}),
-        ...(data.createdById ? { createdById: data.createdById } : {}),
-        startTime: data.startTime,
-        endTime: data.endTime,
-        totalDurationMinutes: data.totalDurationMinutes,
-        estimatedAmount: data.estimatedAmount,
-        status: data.status || "SCHEDULED",
-        source: data.source || "INTERNAL",
-        walkInJobCart: data.walkInJobCart ?? false,
-        ...(data.branchId ? { branchId: data.branchId } : {}),
-        ...(data.bookingNote ? { bookingNote: data.bookingNote } : {}),
-        ...(data.internalNote ? { internalNote: data.internalNote } : {}),
-
-        services: {
-          create: data.services.map((service) => ({
-            service: {
-              connect: {
-                id: service.serviceId,
-              },
-            },
-            serviceName: service.serviceName,
-            price: service.price,
-            ...(service.quantity ? { quantity: service.quantity } : {}),
-            ...(service.staffId
-              ? { staff: { connect: { id: service.staffId } } }
-              : {}),
-            ...(service.durationValue !== undefined
-              ? { durationValue: service.durationValue }
-              : {}),
-            ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
-          })),
+    // Prisma 7.8 nested `services: { create }` drops rows at 7-8 services and
+    // throws a bogus appointmentId FK error at 9+, so insert them separately.
+    const run = async (db: TransactionClient) => {
+      const { id } = await db.appointment.create({
+        select: { id: true },
+        data: {
+          appointmentCode: data.appointmentCode,
+          salonId: data.salonId,
+          customerId: data.customerId,
+          ...(data.staffId ? { staffId: data.staffId } : {}),
+          ...(data.createdById ? { createdById: data.createdById } : {}),
+          startTime: data.startTime,
+          endTime: data.endTime,
+          totalDurationMinutes: data.totalDurationMinutes,
+          estimatedAmount: data.estimatedAmount,
+          status: data.status || "SCHEDULED",
+          source: data.source || "INTERNAL",
+          walkInJobCart: data.walkInJobCart ?? false,
+          ...(data.branchId ? { branchId: data.branchId } : {}),
+          ...(data.bookingNote ? { bookingNote: data.bookingNote } : {}),
+          ...(data.internalNote ? { internalNote: data.internalNote } : {}),
         },
-      },
-      include: {
-        customer: {
-          select: {
-            id: true,
-            name: true,
-            phone: true,
-            customerCode: true,
-          },
-        },
-        staff: {
-          select: {
-            id: true,
-            name: true,
-            jobRole: true,
-          },
-        },
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-          },
-        },
-        branch: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        services: {
-          include: {
-            service: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            staff: {
-              select: {
-                id: true,
-                name: true,
-                jobRole: true,
-              },
+      });
+      await db.appointmentService.createMany({
+        data: data.services.map((service) => ({
+          appointmentId: id,
+          serviceId: service.serviceId,
+          serviceName: service.serviceName,
+          price: service.price,
+          ...(service.quantity ? { quantity: service.quantity } : {}),
+          ...(service.staffId ? { staffId: service.staffId } : {}),
+          ...(service.durationValue !== undefined
+            ? { durationValue: service.durationValue }
+            : {}),
+          ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
+        })),
+      });
+      return db.appointment.findUniqueOrThrow({
+        where: { id },
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+              customerCode: true,
             },
           },
+          staff: {
+            select: {
+              id: true,
+              name: true,
+              jobRole: true,
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              role: true,
+            },
+          },
+          branch: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          services: {
+            include: {
+              service: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              staff: {
+                select: {
+                  id: true,
+                  name: true,
+                  jobRole: true,
+                },
+              },
+            },
+          },
         },
-      },
-    });
+      });
+    };
+    return tx ? run(tx) : prisma.$transaction(run);
   },
 
   findAll: async (filters?: AppointmentListFilters) => {

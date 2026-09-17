@@ -34,7 +34,13 @@ if (process.env.VERCEL && !globalDatabase.vercelPoolAttached) {
 const adapter = new PrismaPg(pool);
 
 export const prisma =
-  globalDatabase.prisma || new PrismaClient({ adapter });
+  globalDatabase.prisma ||
+  new PrismaClient({
+    adapter,
+    // Job cart create/confirm run ~65 queries in one transaction; against a
+    // remote DB (~280ms/query from a dev machine) the 5s default times out.
+    transactionOptions: { timeout: 30_000, maxWait: 10_000 },
+  });
 
 globalDatabase.pgPool = pool;
 globalDatabase.prisma = prisma;

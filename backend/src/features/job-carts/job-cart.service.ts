@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { prisma } from "../../config/prisma.js";
 import { Prisma, type PaymentMethod } from "../../generated/prisma/client.js";
 import {
-  buildBusinessCode,
+  nextJobCartCode,
   nextInvoiceCode,
 } from "../../utils/business-id.js";
 import { AppointmentModel } from "../appointments/appointment.model.js";
@@ -1545,12 +1545,7 @@ export const createJobCart = async (
     const codeDate = new Date();
     const appointment = await AppointmentModel.create(
       {
-        appointmentCode: buildBusinessCode({
-          salonName: salon.name,
-          type: "JC",
-          date: codeDate,
-          timezone: salon.timezone,
-        }),
+        appointmentCode: await nextJobCartCode(tx, salon, branch),
         salonId,
         branchId,
         customerId: customer.id,

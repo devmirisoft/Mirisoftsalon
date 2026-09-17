@@ -101,7 +101,7 @@ const Menu = ({data}) => {
             ) : (
               <li className={classNames({'nk-menu-item': true, 'has-sub' : item.subMenu})}>
                 {!item.subMenu ? (
-                  <NavLink to={item.link} className="nk-menu-link" target={item.newTab && '_blank'}>
+                  <NavLink to={item.link} end className="nk-menu-link" target={item.newTab && '_blank'}>
                     {item.icon  && <span className="nk-menu-icon">
                       <Icon name={item.icon} />
                     </span>}
@@ -122,7 +122,7 @@ const Menu = ({data}) => {
                         {item.subMenu.map((sItem, sIndex) =>
                           <li className={classNames({'nk-menu-item': true, 'has-sub' : sItem.subMenu})} key={sIndex}>
                               {!sItem.subMenu ? (
-                                <NavLink to={sItem.link} className="nk-menu-link" target={sItem.newTab && '_blank'}>
+                                <NavLink to={sItem.link} end className="nk-menu-link" target={sItem.newTab && '_blank'}>
                                   <span className="nk-menu-text">{sItem.text}</span>
                                   {sItem.badge && <span className="nk-menu-badge">{sItem.badge}</span>}
                                 </NavLink>
@@ -137,7 +137,7 @@ const Menu = ({data}) => {
                                       {sItem.subMenu.map((s2Item, s2Index) =>
                                         <li className={classNames({'nk-menu-item': true, 'has-sub' : s2Item.subMenu})} key={s2Index}>
                                             {!s2Item.subMenu ? (
-                                              <NavLink to={s2Item.link} className="nk-menu-link" target={s2Item.newTab && '_blank'}>
+                                              <NavLink to={s2Item.link} end className="nk-menu-link" target={s2Item.newTab && '_blank'}>
                                                 <span className="nk-menu-text">{s2Item.text}</span>
                                                 {s2Item.badge && <span className="nk-menu-badge">{s2Item.badge}</span>}
                                               </NavLink>
@@ -151,7 +151,7 @@ const Menu = ({data}) => {
                                                   <ul className="nk-menu-sub">
                                                     {s2Item.subMenu.map((s3Item, s3Index) =>
                                                       <li className="nk-menu-item" key={s3Index}>
-                                                          <NavLink to={s3Item.link} className="nk-menu-link" target={s3Item.newTab && '_blank'}>
+                                                          <NavLink to={s3Item.link} end className="nk-menu-link" target={s3Item.newTab && '_blank'}>
                                                             <span className="nk-menu-text">{s3Item.text}</span>
                                                             {s3Item.badge && <span className="nk-menu-badge">{s3Item.badge}</span>}
                                                           </NavLink>

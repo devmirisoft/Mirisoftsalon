@@ -49,10 +49,17 @@ const qtyOf = (qty) => Math.max(1, Math.floor(Number(qty) || 1));
 // The discount comes off the base unit price, as a flat amount ("AMT") or a
 // percentage of it ("PCT"), and never takes the price below 0.
 const pctOf = (discount) => Math.min(100, Math.max(0, Number(discount || 0)));
+const cappedDiscount = (price, discount, type) => {
+  if (discount === "") return "";
+  const value = Number(discount);
+  const numeric = Number.isFinite(value) ? Math.max(0, value) : 0;
+  const max = type === "PCT" ? 100 : Math.max(0, Number(price || 0));
+  return String(round2(Math.min(numeric, max)));
+};
 const discountAmountOf = (price, discount, type) =>
   type === "PCT"
     ? (Number(price || 0) * pctOf(discount)) / 100
-    : Number(discount || 0);
+    : Number(cappedDiscount(price, discount, type) || 0);
 const netPrice = (price, discount, type) =>
   Math.max(
     0,
@@ -709,7 +716,7 @@ const JobCartCreate = () => {
       {error && <Alert color="danger">{error}</Alert>}
       <Form onSubmit={submit}>
         <Row className="g-4 jobcart-fill">
-          <Col lg="8">
+          <Col lg="9">
             <div className="card card-bordered jobcart-main">
               <div className="card-inner">
                 {user?.role === "SUPER_ADMIN" && (
@@ -846,9 +853,11 @@ const JobCartCreate = () => {
                               "?"}
                           </span>
                           <div className="flex-grow-1" style={{ minWidth: 0 }}>
-                            <div className="fw-bold text-truncate">
-                                 <div className="cust-chip-sub">{form.customerName} {form.phone}</div>
-
+                            <div className="cust-chip-name text-truncate">
+                              {form.customerName}
+                            </div>
+                            <div className="cust-chip-sub text-truncate">
+                              {form.phone}
                             </div>
                           </div>
                           {/* <span className="cust-tag">
@@ -1070,19 +1079,21 @@ const JobCartCreate = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="table-responsive">
-                    <table className="table table-sm table-bordered mb-2">
+                  <div className="table-responsive jobcart-services-table-wrap">
+                    <table
+                      className="table table-sm table-bordered mb-2 jobcart-services-table"
+                    >
                       <thead>
                         <tr>
                           {/* <th>Main Service</th> */}
-                          <th style={{ width: 160 }}>Service</th>
-                          <th style={{ width: 190 }}>Staff</th>
-                          <th style={{ width: 70 }}>Qty</th>
-                          <th style={{ width: 160 }}>Price</th>
-                          <th style={{ width: 120 }}>Discount</th>
-                          <th style={{ width: 50 }}>GST %</th>
-                          <th style={{ width: 110 }}>Total</th>
-                          <th style={{ width: 70 }}></th>
+                          <th style={{ width: "18%" }}>Service</th>
+                          <th style={{ width: "22%" }}>Staff</th>
+                          <th style={{ width: "7%" }}>Qty</th>
+                          <th style={{ width: "18%" }}>Price</th>
+                          <th style={{ width: "13%" }}>Discount</th>
+                          <th style={{ width: "7%" }}>GST %</th>
+                          <th style={{ width: "11%" }}>Total</th>
+                          <th style={{ width: "4%" }}></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1253,7 +1264,7 @@ const JobCartCreate = () => {
                                 />
                               </td>
                               <td>
-                                <div className="position-relative">
+                                <div className="jobcart-price-field">
                                   <Input
                                     type="number"
                                     min="0"
@@ -1263,31 +1274,32 @@ const JobCartCreate = () => {
                                     style={
                                       discountedPrice === null
                                         ? undefined
-                                        : { paddingRight: 96 }
+                                        : { paddingRight: 92 }
                                     }
                                     onChange={(event) =>
-                                      updateServiceRow(row.rowId, {
-                                        price: event.target.value,
-                                        total: priceToTotal(
+                                      {
+                                        const discount = cappedDiscount(
                                           event.target.value,
-                                          row.qty,
-                                          serviceGstPercent,
                                           row.discount,
                                           row.discountType
-                                        ),
-                                      })
+                                        );
+                                        updateServiceRow(row.rowId, {
+                                          price: event.target.value,
+                                          discount,
+                                          total: priceToTotal(
+                                            event.target.value,
+                                            row.qty,
+                                            serviceGstPercent,
+                                            discount,
+                                            row.discountType
+                                          ),
+                                        });
+                                      }
                                     }
                                   />
                                   {discountedPrice !== null && (
                                     <span
-                                      className="position-absolute top-50 translate-middle-y"
-                                      // Clears the number input spinners, and
-                                      // stays click-through to the input.
-                                      style={{
-                                        right: 28,
-                                        opacity: 0.55,
-                                        pointerEvents: "none",
-                                      }}
+                                      className="jobcart-net-price"
                                       title="Price after discount"
                                     >
                                       {formatMoney(discountedPrice)}
@@ -1296,7 +1308,7 @@ const JobCartCreate = () => {
                                 </div>
                               </td>
                               <td>
-                                <InputGroup>
+                                <InputGroup className="flex-nowrap">
                                   <Input
                                     type="number"
                                     min="0"
@@ -1304,44 +1316,57 @@ const JobCartCreate = () => {
                                     max={
                                       row.discountType === "PCT"
                                         ? "100"
-                                        : undefined
+                                        : String(Math.max(0, Number(row.price || 0)))
                                     }
                                     value={row.discount}
                                     disabled={!selectedService || saving}
-                                    onChange={(event) =>
+                                    style={{ minWidth: 0 }}
+                                    onChange={(event) => {
+                                      const discount = cappedDiscount(
+                                        row.price,
+                                        event.target.value,
+                                        row.discountType
+                                      );
                                       updateServiceRow(row.rowId, {
-                                        discount: event.target.value,
+                                        discount,
                                         total: priceToTotal(
                                           row.price,
                                           row.qty,
                                           serviceGstPercent,
-                                          event.target.value,
+                                          discount,
                                           row.discountType
                                         ),
-                                      })
-                                    }
+                                      });
+                                    }}
                                   />
-                                  <Input
-                                    type="select"
-                                    style={{ maxWidth: 62 }}
-                                    value={row.discountType}
+                                  <button
+                                    type="button"
+                                    className="input-group-text jobcart-discount-unit"
                                     disabled={!selectedService || saving}
-                                    onChange={(event) =>
+                                    title="Switch discount type"
+                                    onClick={() => {
+                                      const nextType =
+                                        row.discountType === "PCT" ? "AMT" : "PCT";
+                                      const discount = cappedDiscount(
+                                        row.price,
+                                        row.discount,
+                                        nextType
+                                      );
                                       updateServiceRow(row.rowId, {
-                                        discountType: event.target.value,
+                                        discountType: nextType,
+                                        discount,
                                         total: priceToTotal(
                                           row.price,
                                           row.qty,
                                           serviceGstPercent,
-                                          row.discount,
-                                          event.target.value
+                                          discount,
+                                          nextType
                                         ),
-                                      })
-                                    }
+                                      });
+                                    }}
                                   >
-                                    <option value="AMT">&#8377;</option>
-                                    <option value="PCT">%</option>
-                                  </Input>
+                                    {row.discountType === "PCT" ? "%" : <>&#8377;</>}
+                                  </button>
                                 </InputGroup>
                               </td>
                               <td>
@@ -1543,7 +1568,7 @@ const JobCartCreate = () => {
               </div>
             </div>
           </Col>
-          <Col lg="4">
+          <Col lg="3">
             <div className="card card-bordered cart-summary">
               <div className="card-inner">
                 <div className="d-flex align-items-center justify-content-between mb-3">
@@ -1701,11 +1726,6 @@ const JobCartCreate = () => {
                   </div>
                 </div>
                 </div>
-                <p className="text-soft small">
-                  Membership discount is calculated when the draft invoice is
-                  created. Coupon and loyalty actions remain in the invoice
-                  flow.
-                </p>
                 <Button
                   type="submit"
                   color="primary"

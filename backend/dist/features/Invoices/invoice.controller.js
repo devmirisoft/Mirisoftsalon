@@ -6,7 +6,7 @@ import { InvoiceRetentionError, redeemInvoiceLoyalty, } from "./invoice-retentio
 import { createAuditLog, requestAuditContext, } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
-import { buildBusinessCode, businessCodeDayRange, } from "../../utils/business-id.js";
+import { nextInvoiceCode } from "../../utils/business-id.js";
 import { CouponServiceError, applyCouponToInvoice, issueInvoice as issueDraftInvoice, removeCouponFromInvoice, } from "../coupons/coupon.service.js";
 import { applyCouponSchema } from "../coupons/coupon.validation.js";
 import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
@@ -15,7 +15,7 @@ import { createStockMovement } from "../stock/stockMovement.service.js";
 import { sendInventoryError } from "../products/inventory-access.js";
 import { assignCustomerMembershipInTransaction, resolveCurrentCustomerMembership, } from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
-import { isBranchLockedRole, } from "../../utils/branch-scope.js";
+import { branchFilterFor, pinnedBranchId, isBranchLockedRole, } from "../../utils/branch-scope.js";
 const INVOICE_TYPES = ["GST_INVOICE", "BILL_OF_SUPPLY"];
 const INVOICE_STATUSES = ["DRAFT", "ISSUED", "CANCELLED"];
 const PAYMENT_STATUSES = ["UNPAID", "PARTIALLY_PAID", "PAID"];
@@ -27,25 +27,6 @@ const isValidInvoiceStatus = (value) => {
 };
 const isValidPaymentStatus = (value) => {
     return PAYMENT_STATUSES.includes(value);
-};
-const generateInvoiceCode = async (tx, salon, date = new Date()) => {
-    const range = businessCodeDayRange(date, salon.timezone);
-    const serial = (await tx.invoice.count({
-        where: {
-            salonId: salon.id,
-            invoiceDate: {
-                gte: range.start,
-                lt: range.end,
-            },
-        },
-    })) + 1;
-    return buildBusinessCode({
-        salonName: salon.name,
-        type: "INV",
-        date,
-        timezone: salon.timezone,
-        serial,
-    });
 };
 const getInvoiceIdParam = (req) => {
     const { id } = req.params;
@@ -75,10 +56,8 @@ const getExistingInvoiceByAccess = async (req, invoiceId) => {
         return null;
     }
     const invoice = await InvoiceModel.findByIdAndSalon(invoiceId, salonId);
-    if (invoice &&
-        isBranchLockedRole(req.user?.role) &&
-        req.user?.branchId &&
-        invoice.branchId !== req.user?.branchId) {
+    const pinnedBranch = pinnedBranchId(req.user);
+    if (invoice && pinnedBranch && invoice.branchId !== pinnedBranch) {
         return null;
     }
     return invoice;
@@ -328,6 +307,9 @@ export const createInvoiceFromAppointment = async (req, res) => {
             role: req.user.role,
             ...(req.user?.salonId ? { salonId: req.user.salonId } : {}),
             ...(req.user?.branchId ? { branchId: req.user.branchId } : {}),
+            ...(req.user?.activeBranchId
+                ? { activeBranchId: req.user.activeBranchId }
+                : {}),
         };
         const { invoice, membershipDiscountAmount } = await prisma.$transaction(async (tx) => {
             const currentMembership = await resolveCurrentCustomerMembership(tx, {
@@ -359,7 +341,7 @@ export const createInvoiceFromAppointment = async (req, res) => {
             }, gstSettings);
             const invoiceDate = new Date();
             const created = await InvoiceModel.create({
-                invoiceCode: await generateInvoiceCode(tx, appointment.salon, invoiceDate),
+                invoiceCode: await nextInvoiceCode(tx, appointment.salon, invoiceDate),
                 salonId: appointment.salonId,
                 ...(appointment.branchId
                     ? { branchId: appointment.branchId }
@@ -432,7 +414,7 @@ export const createInvoiceFromAppointment = async (req, res) => {
                     serviceName: line.serviceName,
                     quantity: line.quantity,
                     unitPrice: line.unitPrice,
-                    discountAmount: 0,
+                    discountAmount: calculation.lines[index]?.discountAmount ?? 0,
                     taxableAmount: calculation.lines[index]?.taxableAmount ?? 0,
                     gstRateSnapshot: calculation.lines[index]?.gstRateSnapshot ?? 0,
                     gstAmount: calculation.lines[index]?.gstAmount ?? 0,
@@ -623,8 +605,8 @@ export const getInvoices = async (req, res) => {
             });
         }
         const invoices = await InvoiceModel.findBySalon(req.user.salonId, {
-            ...(isBranchLockedRole(req.user.role) && req.user.branchId
-                ? { branchId: req.user.branchId }
+            ...(branchFilterFor(req)
+                ? { branchId: branchFilterFor(req) }
                 : branchId
                     ? { branchId: String(branchId) }
                     : {}),
@@ -788,6 +770,7 @@ export const updateInvoice = async (req, res) => {
                     await tx.invoiceItem.update({
                         where: { id: item.id },
                         data: {
+                            discountAmount: line.discountAmount,
                             taxableAmount: line.taxableAmount,
                             gstRateSnapshot: line.gstRateSnapshot,
                             gstAmount: line.gstAmount,
@@ -1005,8 +988,8 @@ const invoiceCouponAccess = (req) => ({
     ...(req.user?.role === "SUPER_ADMIN"
         ? {}
         : { salonId: req.user?.salonId ?? "__missing__" }),
-    ...(isBranchLockedRole(req.user?.role) && req.user?.branchId
-        ? { actorBranchId: req.user?.branchId }
+    ...(pinnedBranchId(req.user)
+        ? { actorBranchId: pinnedBranchId(req.user) }
         : {}),
 });
 const sendCouponError = (res, error) => {

@@ -24,6 +24,20 @@ const soldProductsInclude = {
         },
     },
 };
+export const appointmentListWhere = (filters) => ({
+    ...(filters?.branchId ? { branchId: filters.branchId } : {}),
+    ...(filters?.staffId ? { staffId: filters.staffId } : {}),
+    ...(filters?.customerId ? { customerId: filters.customerId } : {}),
+    ...(filters?.status ? { status: filters.status } : {}),
+    ...(filters?.dateFrom || filters?.dateTo
+        ? {
+            startTime: {
+                ...(filters.dateFrom ? { gte: filters.dateFrom } : {}),
+                ...(filters.dateTo ? { lt: filters.dateTo } : {}),
+            },
+        }
+        : {}),
+});
 export const AppointmentModel = {
     create: async (data, tx) => {
         return (tx ?? prisma).appointment.create({
@@ -113,8 +127,9 @@ export const AppointmentModel = {
             },
         });
     },
-    findAll: async () => {
+    findAll: async (filters) => {
         return prisma.appointment.findMany({
+            where: appointmentListWhere(filters),
             include: {
                 salon: {
                     select: {
@@ -160,21 +175,7 @@ export const AppointmentModel = {
     },
     findBySalon: async (salonId, filters) => {
         return prisma.appointment.findMany({
-            where: {
-                salonId,
-                ...(filters?.branchId ? { branchId: filters.branchId } : {}),
-                ...(filters?.staffId ? { staffId: filters.staffId } : {}),
-                ...(filters?.customerId ? { customerId: filters.customerId } : {}),
-                ...(filters?.status ? { status: filters.status } : {}),
-                ...(filters?.dateFrom && filters?.dateTo
-                    ? {
-                        startTime: {
-                            gte: filters.dateFrom,
-                            lt: filters.dateTo,
-                        },
-                    }
-                    : {}),
-            },
+            where: { salonId, ...appointmentListWhere(filters) },
             include: {
                 ...soldProductsInclude,
                 branch: {

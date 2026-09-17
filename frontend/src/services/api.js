@@ -55,7 +55,7 @@ export const request = async (path, options = {}, retrying = false) => {
       ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     });
   } catch {
-    throw new ApiError("Cannot connect to the backend on port 5000.");
+    throw new ApiError(`Cannot connect to the backend at ${API_URL}.`);
   }
 
   const contentType = response.headers.get("content-type") || "";

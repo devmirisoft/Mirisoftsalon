@@ -55,6 +55,28 @@ export const authenticate = async (req, res, next) => {
             ...(currentUser.salonId ? { salonId: currentUser.salonId } : {}),
             ...(currentUser.branchId ? { branchId: currentUser.branchId } : {}),
         };
+        // A salon-wide role can open a session on one branch by sending its id.
+        // The branch is verified against the caller's salon, so the header can only
+        // narrow what the caller already reaches, never widen it.
+        const requestedBranchId = req.headers["x-branch-id"];
+        if (typeof requestedBranchId === "string" &&
+            requestedBranchId &&
+            !isBranchLockedRole(currentUser.role)) {
+            const branch = await prisma.branch.findFirst({
+                where: {
+                    id: requestedBranchId,
+                    ...(currentUser.salonId ? { salonId: currentUser.salonId } : {}),
+                },
+                select: { id: true },
+            });
+            if (!branch) {
+                return res.status(403).json({
+                    success: false,
+                    message: "You do not have access to this branch",
+                });
+            }
+            user.activeBranchId = branch.id;
+        }
         req.user = user;
         next();
     }

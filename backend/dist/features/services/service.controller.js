@@ -4,7 +4,7 @@ import { BranchModel } from "../branches/branch.model.js";
 import { MainServiceModel } from "../main-services/mainService.model.js";
 import { prisma } from "../../config/prisma.js";
 import { defaultSalonServices } from "./defaultServices.js";
-import { branchFilterFor, isBranchLockedRole, resolveWritableBranchId, } from "../../utils/branch-scope.js";
+import { branchFilterFor, isBranchPinned, pinnedBranchId, isBranchLockedRole, resolveWritableBranchId, } from "../../utils/branch-scope.js";
 const DURATION_UNITS = ["MINUTES", "HOURS"];
 const isValidDurationUnit = (unit) => {
     return DURATION_UNITS.includes(unit);
@@ -165,8 +165,8 @@ export const getServiceById = async (req, res) => {
                 message: "Service ID is required",
             });
         }
-        const service = isBranchLockedRole(req.user?.role) && req.user?.salonId
-            ? await ServiceModel.findByIdAndSalon(id, req.user?.salonId, req.user?.branchId)
+        const service = pinnedBranchId(req.user) && req.user?.salonId
+            ? await ServiceModel.findByIdAndSalon(id, req.user.salonId, pinnedBranchId(req.user))
             : await getExistingServiceByAccess(req, id);
         if (!service) {
             return res.status(404).json({
@@ -329,8 +329,8 @@ export const updateService = async (req, res) => {
                 message: "Invalid duration unit",
             });
         }
-        if (isBranchLockedRole(req.user?.role) && "branchId" in req.body &&
-            branchId !== req.user?.branchId) {
+        if (isBranchPinned(req.user) && "branchId" in req.body &&
+            branchId !== pinnedBranchId(req.user)) {
             return res.status(403).json({
                 success: false,
                 message: "You do not have access to this branch",

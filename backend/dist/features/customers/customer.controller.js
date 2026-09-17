@@ -5,7 +5,7 @@ import { isUuid } from "../../middlewares/uuid.middleware.js";
 import { prisma } from "../../config/prisma.js";
 import { createAuditLog, requestAuditContext } from "../audit-logs/audit-log.service.js";
 import { assignCustomerMembershipHistory, CustomerMembershipError, endCustomerMembership, getCustomerMembershipHistory, synchronizeCustomerMembershipExpiry, } from "../customer-memberships/customer-membership.service.js";
-import { branchFilterFor, isBranchLockedRole, } from "../../utils/branch-scope.js";
+import { branchFilterFor, isBranchLockedRole, isBranchPinned, pinnedBranchId, } from "../../utils/branch-scope.js";
 const CUSTOMER_STATUSES = ["REGULAR", "PREMIUM", "IRREGULAR"];
 const isValidCustomerStatus = (status) => {
     return CUSTOMER_STATUSES.includes(status);
@@ -48,6 +48,9 @@ const membershipActorFrom = (req) => req.user?.userId
         role: req.user.role,
         ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
         ...(req.user.branchId ? { branchId: req.user.branchId } : {}),
+        ...(req.user.activeBranchId
+            ? { activeBranchId: req.user.activeBranchId }
+            : {}),
     }
     : null;
 const presentCustomerMembership = (customer) => {
@@ -121,14 +124,15 @@ export const createCustomer = async (req, res) => {
             });
         }
         let finalBranchId = branchId;
-        if (isBranchLockedRole(req.user?.role) && req.user?.branchId) {
-            if (branchId && branchId !== req.user?.branchId) {
+        const pinnedBranch = pinnedBranchId(req.user);
+        if (pinnedBranch) {
+            if (branchId && branchId !== pinnedBranch && !req.user?.activeBranchId) {
                 return res.status(403).json({
                     success: false,
                     message: "You do not have access to this branch",
                 });
             }
-            finalBranchId = req.user?.branchId;
+            finalBranchId = pinnedBranch;
         }
         if (finalBranchId) {
             const branch = await BranchModel.findByIdAndSalon(finalBranchId, finalSalonId);
@@ -297,7 +301,11 @@ export const updateCustomer = async (req, res) => {
             ...("customNotes" in req.body
                 ? { customNotes: req.body.customNotes ?? null }
                 : {}),
-            ...("branchId" in req.body ? { branchId: req.body.branchId ?? null } : {}),
+            // A pinned caller (branch-locked role, or an admin inside a branch
+            // session) cannot move a customer to another branch.
+            ...("branchId" in req.body && !isBranchPinned(req.user)
+                ? { branchId: req.body.branchId ?? null }
+                : {}),
             ...("dateOfBirth" in req.body
                 ? {
                     dob: dateOfBirth ? new Date(dateOfBirth) : null,

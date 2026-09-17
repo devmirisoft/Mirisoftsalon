@@ -13,6 +13,7 @@ import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type TransactionClient = Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
+const MEMBERSHIP_TRANSACTION_OPTIONS = { timeout: 20_000 };
 
 export type CustomerMembershipActor = {
   userId: string;
@@ -531,8 +532,10 @@ export const assignCustomerMembershipHistory = async (
   input: AssignCustomerMembershipInput,
   audit: AuditContext
 ) =>
-  prisma.$transaction((tx) =>
-    assignCustomerMembershipInTransaction(tx, actor, customerId, input, audit)
+  prisma.$transaction(
+    (tx) =>
+      assignCustomerMembershipInTransaction(tx, actor, customerId, input, audit),
+    MEMBERSHIP_TRANSACTION_OPTIONS
   );
 
 export const endCustomerMembership = async (
@@ -612,7 +615,7 @@ export const endCustomerMembership = async (
       ...audit,
     });
     return updated;
-  });
+  }, MEMBERSHIP_TRANSACTION_OPTIONS);
 
 export const listCustomerMembershipHistory = async (
   actor: CustomerMembershipActor,
@@ -690,7 +693,7 @@ export const listCustomerMembershipHistory = async (
       pageSize: filters.limit,
       totalPages: Math.ceil(count / filters.limit),
     };
-  });
+  }, MEMBERSHIP_TRANSACTION_OPTIONS);
 
 export const getCustomerMembershipHistory = async (
   actor: CustomerMembershipActor,
@@ -731,19 +734,21 @@ export const getCustomerMembershipById = async (
       throw new CustomerMembershipError(404, "Customer membership not found");
     }
     return data;
-  });
+  }, MEMBERSHIP_TRANSACTION_OPTIONS);
 
 export const getCurrentMembershipForCustomer = async (
   actor: CustomerMembershipActor,
   customerId: string,
   audit: AuditContext
 ) =>
-  prisma.$transaction((tx) =>
-    resolveCurrentCustomerMembership(tx, {
-      customerId,
-      actor,
-      audit,
-    })
+  prisma.$transaction(
+    (tx) =>
+      resolveCurrentCustomerMembership(tx, {
+        customerId,
+        actor,
+        audit,
+      }),
+    MEMBERSHIP_TRANSACTION_OPTIONS
   );
 
 export const synchronizeCustomerMembershipExpiry = async (
@@ -751,13 +756,15 @@ export const synchronizeCustomerMembershipExpiry = async (
   audit: AuditContext,
   customerId?: string
 ) =>
-  prisma.$transaction((tx) =>
-    expireMembershipRows(tx, {
-      where: {
-        ...historyScope(actor),
-        ...(customerId ? { customerId } : {}),
-      },
-      actor,
-      audit,
-    })
+  prisma.$transaction(
+    (tx) =>
+      expireMembershipRows(tx, {
+        where: {
+          ...historyScope(actor),
+          ...(customerId ? { customerId } : {}),
+        },
+        actor,
+        audit,
+      }),
+    MEMBERSHIP_TRANSACTION_OPTIONS
   );

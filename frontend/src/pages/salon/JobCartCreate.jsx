@@ -238,6 +238,7 @@ const JobCartCreate = () => {
   // Search box suggestions: 3+ characters, matched against the customer name
   // or the digits-only stored phone.
   const [phoneFocused, setPhoneFocused] = useState(false);
+  const [customerNameFocused, setCustomerNameFocused] = useState(false);
   const phoneMatches = useMemo(() => {
     const query = form.phone.trim().toLowerCase();
     const digits = form.phone.replace(/\D/g, "");
@@ -263,6 +264,15 @@ const JobCartCreate = () => {
       )
       .slice(0, 8);
   }, [customerOptions, form.phone]);
+
+  const customerNameMatches = useMemo(() => {
+    const query = form.customerName.trim().toLowerCase();
+    if (query.length < 3) return [];
+
+    return customerOptions
+      .filter((option) => option.name.toLowerCase().includes(query))
+      .slice(0, 8);
+  }, [customerOptions, form.customerName]);
 
   // A 10-digit phone that already belongs to a customer: no "add" allowed.
   const existingPhoneCustomer = useMemo(() => {
@@ -788,22 +798,12 @@ const JobCartCreate = () => {
                           )}
                         </div>
                         {phoneFocused && phoneMatches.length > 0 && (
-                          <ul
-                            className="list-group position-absolute w-100 shadow-sm"
-                            style={{
-                              zIndex: 1060,
-                              maxHeight: 240,
-                              overflowY: "auto",
-                            }}
-                          >
+                          <ul className="customer-phone-menu">
                             {phoneMatches.map((option) => (
-                              <li
-                                key={option.value}
-                                className="list-group-item p-0"
-                              >
+                              <li key={option.value}>
                                 <button
                                   type="button"
-                                  className="btn btn-link text-start text-decoration-none w-100 px-3 py-2 d-flex justify-content-between align-items-center gap-2"
+                                  className="customer-phone-option"
                                   onMouseDown={(event) =>
                                     event.preventDefault()
                                   }
@@ -820,8 +820,10 @@ const JobCartCreate = () => {
                                     });
                                   }}
                                 >
-                                  <span>{option.name}</span>
-                                  <span className="text-muted text-nowrap">
+                                  <span className="customer-phone-name">
+                                    {option.name}
+                                  </span>
+                                  <span className="customer-phone-number">
                                     {option.phone}
                                   </span>
                                 </button>
@@ -856,18 +858,63 @@ const JobCartCreate = () => {
                           <CustomerProfileLink customerId={savedCustomerId} />
                         </div>
                       ) : (
-                        <Input
-                          required
-                          autoComplete="off"
-                          placeholder="Customer name"
-                          value={form.customerName}
-                          onChange={(event) =>
-                            setForm((current) => ({
-                              ...current,
-                              customerName: event.target.value,
-                            }))
-                          }
-                        />
+                        <div className="position-relative">
+                          <Input
+                            required
+                            autoComplete="off"
+                            placeholder="Customer name"
+                            value={form.customerName}
+                            onFocus={() => setCustomerNameFocused(true)}
+                            onBlur={() =>
+                              window.setTimeout(
+                                () => setCustomerNameFocused(false),
+                                150
+                              )
+                            }
+                            onChange={(event) => {
+                              setCustomerSummary(null);
+                              setForm((current) => ({
+                                ...current,
+                                customerName: event.target.value,
+                              }));
+                            }}
+                          />
+                          {customerNameFocused &&
+                            customerNameMatches.length > 0 && (
+                              <ul className="customer-phone-menu">
+                                {customerNameMatches.map((option) => (
+                                  <li key={option.value}>
+                                    <button
+                                      type="button"
+                                      className="customer-phone-option"
+                                      onMouseDown={(event) =>
+                                        event.preventDefault()
+                                      }
+                                      onClick={() => {
+                                        setCustomerNameFocused(false);
+                                        setCustomerSummary(null);
+                                        setForm((current) => ({
+                                          ...current,
+                                          customerName: option.name,
+                                          phone: option.phone,
+                                        }));
+                                        loadCustomerSummary({
+                                          customerId: option.value,
+                                        });
+                                      }}
+                                    >
+                                      <span className="customer-phone-name">
+                                        {option.name}
+                                      </span>
+                                      <span className="customer-phone-number">
+                                        {option.phone || "No mobile"}
+                                      </span>
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                        </div>
                       )}
                     </FormGroup>
                   </Col>

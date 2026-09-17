@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Icon from "@/components/icon/Icon";
-import Favicon from "../../../public/favicon.png";
+
+const Favicon = "/favicon.png";
 
 const Toggle = ({ className, click, icon, img, size = 56 }) => {
   const [spins, setSpins] = useState(0);

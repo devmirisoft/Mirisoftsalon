@@ -16,6 +16,11 @@ const pool = globalDatabase.pgPool ||
         connectionTimeoutMillis: 10_000,
         allowExitOnIdle: process.env.NODE_ENV === "test",
     });
+if (!globalDatabase.pgPool) {
+    pool.on("error", (error) => {
+        console.error("Unexpected idle PostgreSQL client error:", error);
+    });
+}
 if (process.env.VERCEL && !globalDatabase.vercelPoolAttached) {
     attachDatabasePool(pool);
     globalDatabase.vercelPoolAttached = true;

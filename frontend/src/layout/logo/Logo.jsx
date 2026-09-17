@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 
-const MirisoftLogo = "/mirisoftlogo.png";
+const MirisoftLogo = "/Mirisoft text.png";
 
 const Logo = () => {
   return (

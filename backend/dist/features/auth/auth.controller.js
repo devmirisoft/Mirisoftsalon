@@ -330,17 +330,24 @@ export const login = async (req, res) => {
     }
 };
 export const me = async (req, res) => {
-    const branch = req.user?.branchId
-        ? await prisma.branch.findUnique({
-            where: { id: req.user.branchId },
+    const findBranch = (id) => id
+        ? prisma.branch.findUnique({
+            where: { id },
             select: { id: true, name: true },
         })
-        : null;
+        : Promise.resolve(null);
+    // `branch` is the user's home branch; `activeBranch` is the branch a
+    // salon-wide role is currently working in, and is what the app shows on top.
+    const [branch, activeBranch] = await Promise.all([
+        findBranch(req.user?.branchId),
+        findBranch(req.user?.activeBranchId),
+    ]);
     return res.status(200).json({
         success: true,
         message: "Authenticated user",
         user: req.user,
         branch,
+        activeBranch,
     });
 };
 export const refresh = async (req, res) => {

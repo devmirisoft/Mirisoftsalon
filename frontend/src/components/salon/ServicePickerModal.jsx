@@ -97,7 +97,7 @@ const ServicePickerModal = ({
       </div>
       <ModalBody>
         <Row className="g-2">
-          <Col md="6">
+          <Col md="4">
             <Label className="svc-picker-label">
               <Icon name="user" />
               Assign next to{requireStaff ? " *" : ""}
@@ -119,7 +119,26 @@ const ServicePickerModal = ({
               ))}
             </Input>
           </Col>
-          <Col md="6">
+          <Col md="4">
+            <Label className="svc-picker-label">
+              <Icon name="grid" />
+              Category
+            </Label>
+            <Input
+              type="select"
+              value={categoryId}
+              disabled={disabled}
+              onChange={(event) => setCategoryId(event.target.value)}
+            >
+              <option value="">All Services</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Input>
+          </Col>
+          <Col md="4">
             <Label className="svc-picker-label">
               <Icon name="search" />
               Search
@@ -134,27 +153,7 @@ const ServicePickerModal = ({
         </Row>
 
         <div className="svc-tabs">
-          <div className="svc-tabs-scroll">
-            <button
-              type="button"
-              className={`svc-tab${categoryId ? "" : " is-active"}`}
-              onClick={() => setCategoryId("")}
-            >
-              All Services
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                type="button"
-                className={`svc-tab${
-                  categoryId === category.id ? " is-active" : ""
-                }`}
-                onClick={() => setCategoryId(category.id)}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+          <div />
           <button
             type="button"
             className="svc-view"

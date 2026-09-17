@@ -1085,14 +1085,13 @@ const JobCartCreate = () => {
                     >
                       <thead>
                         <tr>
-                          {/* <th>Main Service</th> */}
                           <th style={{ width: "18%" }}>Service</th>
                           <th style={{ width: "22%" }}>Staff</th>
-                          <th style={{ width: "7%" }}>Qty</th>
+                          <th style={{ width: "6%" }}>Qty</th>
                           <th style={{ width: "18%" }}>Price</th>
                           <th style={{ width: "13%" }}>Discount</th>
-                          <th style={{ width: "7%" }}>GST %</th>
-                          <th style={{ width: "11%" }}>Total</th>
+                          <th style={{ width: "6%" }}>GST %</th>
+                          <th style={{ width: "13%" }}>Total</th>
                           <th style={{ width: "4%" }}></th>
                         </tr>
                       </thead>
@@ -1131,28 +1130,6 @@ const JobCartCreate = () => {
                               : null;
                           return (
                             <tr key={row.rowId}>
-                              {/* <td>
-                                <Input
-                                  type="select"
-                                  value={row.mainServiceId}
-                                  disabled={!form.branchId || saving}
-                                  onChange={(event) =>
-                                    updateServiceRow(row.rowId, {
-                                      mainServiceId: event.target.value,
-                                    })
-                                  }
-                                >
-                                  <option value="">Select main service</option>
-                                  {mainServices.map((mainService) => (
-                                    <option
-                                      key={mainService.id}
-                                      value={mainService.id}
-                                    >
-                                      {mainService.name}
-                                    </option>
-                                  ))}
-                                </Input>
-                              </td> */}
                               <td>
   <Select
     className="react-select-container"

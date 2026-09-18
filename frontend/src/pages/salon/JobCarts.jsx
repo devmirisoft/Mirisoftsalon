@@ -119,6 +119,16 @@ const JobCarts = () => {
       endDate: "",
     });
 
+  const cancelJob = async (row) => {
+    if (!window.confirm(`Cancel job cart ${row.jobCartId}?`)) return;
+    try {
+      await salonApi.jobCarts.cancel(row.id);
+      load(pagination.page || 1);
+    } catch (cancelError) {
+      setError(cancelError.message);
+    }
+  };
+
   const firstOnPage = ((pagination.page || 1) - 1) * (pagination.limit || limit);
 
   return (
@@ -313,28 +323,37 @@ const JobCarts = () => {
             label: "Status",
             render: (value) => <StatusBadge value={value} />,
           },
+          {
+            key: "actions",
+            label: <span className="d-block text-end">Actions</span>,
+            render: (_value, row) => {
+              const active = row.status === "ACTIVE";
+              const icons = [
+                ["edit", "Edit details", () => navigate(`/job-carts/${row.id}`)],
+                ["file-text", "View job cart", () => navigate(`/job-carts/${row.id}/view`)],
+                ["file-plus", "Make bill", () => navigate(`/job-carts/${row.id}?bill=1`), !active],
+                ["cross-circle", "Cancel job", () => cancelJob(row), !active, "text-danger"],
+              ];
+              return (
+                <div className="d-flex justify-content-end gap-1 text-nowrap">
+                  {icons.map(([icon, label, onClick, disabled, tone]) => (
+                    <button
+                      key={icon}
+                      type="button"
+                      className={`btn btn-sm btn-icon btn-trigger ${tone || ""}`}
+                      title={label}
+                      aria-label={label}
+                      disabled={disabled}
+                      onClick={onClick}
+                    >
+                      <Icon name={icon} />
+                    </button>
+                  ))}
+                </div>
+              );
+            },
+          },
         ]}
-        onView={(row) => navigate(`/job-carts/${row.id}`)}
-        renderActions={(row) => (
-          <>
-            <Button
-              size="sm"
-              color="light"
-              onClick={() => navigate(`/job-carts/${row.id}/view`)}
-            >
-              <Icon name="file-text" /> View job cart
-            </Button>
-            {row.status === "ACTIVE" && (
-              <Button
-                size="sm"
-                color="success"
-                onClick={() => navigate(`/job-carts/${row.id}?bill=1`)}
-              >
-                <Icon name="file-plus" /> Make bill
-              </Button>
-            )}
-          </>
-        )}
       />
 
       <ServerPagination

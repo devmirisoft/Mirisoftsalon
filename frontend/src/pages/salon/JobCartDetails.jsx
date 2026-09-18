@@ -142,6 +142,11 @@ const JobCartDetails = () => {
     { method: "CASH", amount: "", referenceNo: "" },
   ]);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  // "+ Product / Membership / Package" picker: which kind is open, the picked
+  // id and quantity. Reference lists load once, on the first open.
+  const [adding, setAdding] = useState(null);
+  const [addForm, setAddForm] = useState({ id: "", quantity: 1 });
+  const [addRefs, setAddRefs] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
   const [loading, setLoading] = useState(true);
@@ -247,6 +252,54 @@ const JobCartDetails = () => {
   const cancel = () => {
     if (!window.confirm("Cancel this active job cart?")) return;
     run(() => salonApi.jobCarts.cancel(id));
+  };
+
+  const openAdd = async (kind) => {
+    setAddForm({ id: "", quantity: 1 });
+    setAdding(kind);
+    if (addRefs) return;
+    try {
+      const response = await salonApi.jobCarts.references({
+        salonId: cart.salonId,
+        branchId: cart.branchId,
+      });
+      setAddRefs(response.data);
+    } catch (refError) {
+      setAdding(null);
+      setError(refError.message);
+    }
+  };
+
+  const addOptions = !addRefs
+    ? []
+    : adding === "PRODUCT"
+      ? (addRefs.products || []).map((product) => ({
+          id: product.id,
+          label: `${product.name} - ${formatMoney(product.sellingPrice)} (${Number(product.currentStock || 0)} in stock)`,
+        }))
+      : adding === "MEMBERSHIP"
+        ? (addRefs.memberships || []).map((membership) => ({
+            id: membership.id,
+            label: `${membership.name} - ${formatMoney(membership.price)}`,
+          }))
+        : (addRefs.packages || []).map((pkg) => ({
+            id: pkg.id,
+            label: `${pkg.name} - ${formatMoney(pkg.specialPrice)}`,
+          }));
+
+  const submitAdd = () => {
+    const idKey = {
+      PRODUCT: "productId",
+      MEMBERSHIP: "membershipId",
+      PACKAGE: "packageId",
+    }[adding];
+    const body = {
+      itemType: adding,
+      [idKey]: addForm.id,
+      ...(adding === "PRODUCT" ? { quantity: Number(addForm.quantity) || 1 } : {}),
+    };
+    setAdding(null);
+    run(() => salonApi.jobCarts.addItem(id, body));
   };
 
   const canApplyCoupon = ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"].includes(
@@ -721,10 +774,30 @@ const JobCartDetails = () => {
                       title="Services & Package"
                       subtitle="Review the selected services for this job cart."
                     >
-                      <span className="jcp-chip">
-                        {cart.items.length} Item
-                        {cart.items.length === 1 ? "" : "s"}
-                      </span>
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        {active &&
+                          [
+                            ["PRODUCT", "Product"],
+                            ["MEMBERSHIP", "Membership"],
+                            ["PACKAGE", "Package"],
+                          ].map(([kind, label]) => (
+                            <Button
+                              key={kind}
+                              color="primary"
+                              outline
+                              size="sm"
+                              disabled={working}
+                              onClick={() => openAdd(kind)}
+                            >
+                              <Icon name="plus" />
+                              <span>{label}</span>
+                            </Button>
+                          ))}
+                        <span className="jcp-chip">
+                          {cart.items.length} Item
+                          {cart.items.length === 1 ? "" : "s"}
+                        </span>
+                      </div>
                     </SectionHead>
                     <div className="table-responsive">
                       <table className="table jcp-table">
@@ -1323,6 +1396,67 @@ const JobCartDetails = () => {
             </Row>
           </>
         )}
+
+        <Modal isOpen={Boolean(adding)} toggle={() => setAdding(null)} centered>
+          <ModalBody>
+            <h5 className="mb-3">
+              Add {adding ? adding.charAt(0) + adding.slice(1).toLowerCase() : ""}
+            </h5>
+            {!addRefs ? (
+              <div className="text-center py-3">
+                <Spinner size="sm" color="primary" />
+              </div>
+            ) : (
+              <>
+                <Input
+                  type="select"
+                  value={addForm.id}
+                  onChange={(event) =>
+                    setAddForm((current) => ({ ...current, id: event.target.value }))
+                  }
+                >
+                  <option value="">
+                    {addOptions.length ? "Select..." : "Nothing available"}
+                  </option>
+                  {addOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Input>
+                {adding === "PRODUCT" && (
+                  <FormGroup className="mt-2" noMargin>
+                    <Label className="jcp-field-label">Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="999"
+                      value={addForm.quantity}
+                      onChange={(event) =>
+                        setAddForm((current) => ({
+                          ...current,
+                          quantity: event.target.value,
+                        }))
+                      }
+                    />
+                  </FormGroup>
+                )}
+              </>
+            )}
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <Button color="light" onClick={() => setAdding(null)}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                disabled={!addForm.id || working}
+                onClick={submitAdd}
+              >
+                Add
+              </Button>
+            </div>
+          </ModalBody>
+        </Modal>
 
         <Modal
           isOpen={confirmOpen}

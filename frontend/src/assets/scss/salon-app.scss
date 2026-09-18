@@ -3498,3 +3498,210 @@ body.dark-mode .jcp-pay-code {
 .toggle-img:before {
   display: none;
 }
+
+/* Job cart view (JobCartView) */
+.jcv-top {
+  margin-bottom: 1rem;
+}
+
+.jcv-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--jcp-soft);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.jcv-back:hover {
+  color: var(--jcp-ink);
+}
+
+.jcv-title {
+  margin: 0 0 0.375rem;
+  color: var(--jcp-ink);
+  font-weight: 700;
+}
+
+.jcv-btn-light,
+.jcv-btn-dark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.jcv-btn-light,
+.jcv-btn-light:hover {
+  border: 1px solid var(--jcp-line) !important;
+  background: #fff !important;
+  color: var(--jcp-ink) !important;
+}
+
+.jcv-btn-dark,
+.jcv-btn-dark:hover {
+  border: 0 !important;
+  background: var(--jcp-navy) !important;
+  color: #fff !important;
+}
+
+.jcv-card {
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(31, 43, 77, 0.05);
+}
+
+.jcv-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--jcp-panel);
+}
+
+.jcv-card-head h6 {
+  margin: 0;
+  color: var(--jcp-ink);
+  font-size: 1rem;
+}
+
+.jcv-fields {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem 1.25rem;
+}
+
+.jcv-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1 1 11rem;
+  padding: 0.25rem 1rem;
+}
+
+.jcv-field + .jcv-field {
+  border-left: 1px solid var(--jcp-line);
+}
+
+.jcv-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--jcp-soft);
+}
+
+.jcv-field strong {
+  color: var(--jcp-ink);
+}
+
+.jcv-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: #eef1fb;
+  color: var(--jcp-navy);
+}
+
+.jcv-avatar-sm {
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: 0.875rem;
+}
+
+.jcv-table thead th {
+  border: 0;
+  background: var(--jcp-panel);
+  color: var(--jcp-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.jcv-table thead th:first-child {
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.jcv-table thead th:last-child {
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.jcv-table td {
+  vertical-align: middle;
+  color: var(--jcp-ink);
+  border-color: var(--jcp-line);
+}
+
+.jcv-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+// Job slip: print-only, receipt-width copy of the job cart view.
+.jc-slip {
+  max-width: 72mm;
+  font-size: 11px;
+  color: #1c2b46;
+
+  &-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #c4c9d4;
+
+    strong {
+      font-size: 15px;
+    }
+
+    span {
+      font-size: 12px;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  &-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 2px 0;
+
+    > :last-child {
+      text-align: right;
+    }
+  }
+
+  &-head {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #526484;
+  }
+
+  &-sep {
+    border-top: 1px dashed #c4c9d4;
+    margin: 8px 0;
+  }
+
+  &-foot {
+    text-align: center;
+    font-size: 12px;
+    color: #526484;
+  }
+}
+
+@media print {
+  .jc-slip {
+    color: #000;
+  }
+}

@@ -1866,6 +1866,7 @@ model Product {
   description         String?
   sku                 String?
   barcode             String?
+  hsnCode             String?
   category            String?
   unit                ProductUnit @default(PCS)
   costPrice           Decimal     @default(0) @db.Decimal(10, 2)

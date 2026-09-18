@@ -6,6 +6,7 @@ import {
   deleteProduct,
   getLowStockProducts,
   getProduct,
+  getProductActivityHandler,
   getProducts,
   setProductStatus,
   updateProduct,
@@ -20,6 +21,7 @@ router.post("/", requireRole("SUPER_ADMIN", "SALON_ADMIN"), createProduct);
 router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"), getProducts);
 router.get("/low-stock", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"), getLowStockProducts);
 router.patch("/:id/status", requireRole("SUPER_ADMIN", "SALON_ADMIN"), setProductStatus);
+router.get("/:id/activity", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"), getProductActivityHandler);
 router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"), getProduct);
 router.put("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), updateProduct);
 router.delete("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), deleteProduct);

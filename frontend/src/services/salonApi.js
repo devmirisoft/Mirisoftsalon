@@ -379,6 +379,7 @@ export const salonApi = {
     list: (query) => request("/api/products", { query }),
     lowStock: () => request("/api/products/low-stock"),
     get: (id) => request(`/api/products/${id}`),
+    activity: (id) => request(`/api/products/${id}/activity`),
     create: (body) => request("/api/products", { method: "POST", body }),
     update: (id, body) => request(`/api/products/${id}`, { method: "PUT", body }),
     setStatus: (id, status) => request(`/api/products/${id}/status`, { method: "PATCH", body: { status } }),

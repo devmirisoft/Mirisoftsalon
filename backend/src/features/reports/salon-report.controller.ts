@@ -937,6 +937,64 @@ export const getSalesDashboard = async (req: Request, res: Response) => {
       customerRank.add(row.customerId, row.customer?.name ?? "Customer", num(row.totalAmount));
     }
 
+    // One row per issued invoice that sold services. Invoices carry no author
+    // columns, so created/edited by come from the audit log: billing logs the
+    // invoice itself, a job cart logs the appointment behind it.
+    const serviceInvoices = await prisma.invoice.findMany({
+      where: {
+        ...common,
+        status: "ISSUED",
+        ...(range ? { invoiceDate: range } : {}),
+        items: { some: { itemType: "SERVICE" } },
+      },
+      orderBy: { invoiceDate: "desc" },
+      take: 500, // ponytail: capped list, paginate if a range ever exceeds it
+      select: {
+        id: true,
+        invoiceCode: true,
+        invoiceDate: true,
+        appointmentId: true,
+        customerName: true,
+        items: { where: { itemType: "SERVICE" }, select: { lineTotal: true } },
+        payments: { select: { method: true } },
+      },
+    });
+    const logs = await prisma.auditLog.findMany({
+      where: {
+        entityId: {
+          in: serviceInvoices.flatMap((row) =>
+            row.appointmentId ? [row.id, row.appointmentId] : [row.id]
+          ),
+        },
+        OR: [
+          { module: "INVOICE", action: { in: ["CREATE", "UPDATE"] } },
+          { module: "JOB_CART", action: "CREATE" },
+        ],
+      },
+      orderBy: { createdAt: "asc" },
+      select: { entityId: true, action: true, userName: true },
+    });
+    const createdBy = new Map<string, string | null>();
+    const editedBy = new Map<string, string | null>();
+    for (const log of logs) {
+      if (!log.entityId) continue;
+      if (log.action === "UPDATE") editedBy.set(log.entityId, log.userName);
+      else if (!createdBy.has(log.entityId)) createdBy.set(log.entityId, log.userName);
+    }
+    const serviceSales = serviceInvoices.map((row) => ({
+      id: row.id,
+      invoiceCode: row.invoiceCode,
+      invoiceDate: row.invoiceDate,
+      customerName: row.customerName,
+      amount: row.items.reduce((sum, item) => sum + num(item.lineTotal), 0),
+      paymentMethods: [...new Set(row.payments.map((payment) => payment.method))],
+      createdBy:
+        createdBy.get(row.id) ??
+        (row.appointmentId ? createdBy.get(row.appointmentId) : null) ??
+        null,
+      editedBy: editedBy.get(row.id) ?? null,
+    }));
+
     return res.json({
       success: true,
       data: {
@@ -962,6 +1020,7 @@ export const getSalesDashboard = async (req: Request, res: Response) => {
         topMemberships: rankRows(membershipRank.topByCount(10)),
         topCustomers: rankRows(customerRank.top(10)),
         paymentMethods: methodRows(methods.top(20)),
+        serviceSales,
       },
     });
   } catch (error) {

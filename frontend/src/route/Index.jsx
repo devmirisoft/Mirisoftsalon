@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import Homepage from "@/pages/Homepage";
 import Appointments from "@/pages/salon/Appointments";
@@ -14,14 +14,11 @@ import ServiceCatalog from "@/pages/salon/ServiceCatalog";
 import Support from "@/pages/salon/Support";
 import ProductBrands from "@/pages/salon/ProductBrands";
 import Products from "@/pages/salon/Products";
-import ProductPurchases from "@/pages/salon/ProductPurchases";
+import ProductDetail from "@/pages/salon/ProductDetail";
+import Inventory from "@/pages/salon/Inventory";
 import RetailProducts from "@/pages/salon/RetailProducts";
-import StockMovements from "@/pages/salon/StockMovements";
 import Vendors from "@/pages/salon/Vendors";
-import VendorPayments from "@/pages/salon/VendorPayments";
-import LowStock from "@/pages/salon/LowStock";
-import StockAlerts from "@/pages/salon/StockAlerts";
-import ReorderSuggestions from "@/pages/salon/ReorderSuggestions";
+import VendorDetail from "@/pages/salon/VendorDetail";
 import AuditTrails from "@/pages/salon/AuditTrails";
 import Memberships from "@/pages/salon/Memberships";
 import ManageMemberships from "@/pages/salon/ManageMemberships";
@@ -31,6 +28,7 @@ import Coupons from "@/pages/salon/Coupons";
 import Expenses from "@/pages/salon/Expenses";
 import ExpenseReports from "@/pages/salon/ExpenseReports";
 import InventoryReport from "@/pages/salon/InventoryReport";
+import ProductReport from "@/pages/salon/ProductReport";
 import SalonReport from "@/pages/salon/SalonReport";
 import SalesReport from "@/pages/salon/SalesReport";
 import ExpenseCategories from "@/pages/salon/ExpenseCategories";
@@ -151,12 +149,21 @@ const Router = () => (
               >
                 <Route path="admin/product-brands" element={<ProductBrands />} />
                 <Route path="admin/products" element={<Products />} />
+                <Route path="admin/products/new" element={<Products />} />
+                <Route path="admin/products/:id/:tab?" element={<ProductDetail />} />
+                <Route path="admin/inventory/:tab?" element={<Inventory />} />
                 <Route path="admin/vendors" element={<Vendors />} />
-                <Route path="admin/stock-movements" element={<StockMovements />} />
-                <Route path="admin/low-stock" element={<LowStock />} />
-                <Route path="inventory/stock-alerts" element={<StockAlerts />} />
-                <Route path="inventory/reorder-suggestions" element={<ReorderSuggestions />} />
+                <Route path="admin/vendors/new" element={<Vendors />} />
+                <Route path="admin/vendors/:vendorId/:tab?" element={<VendorDetail />} />
+                {/* Old inventory URLs now live as tabs inside Inventory / Vendors. */}
+                <Route path="admin/stock-movements" element={<Navigate to="/admin/inventory/activity" replace />} />
+                <Route path="admin/low-stock" element={<Navigate to="/admin/inventory/low-stock" replace />} />
+                <Route path="inventory/stock-alerts" element={<Navigate to="/admin/inventory/low-stock" replace />} />
+                <Route path="inventory/reorder-suggestions" element={<Navigate to="/admin/inventory/low-stock" replace />} />
+                <Route path="admin/product-purchases" element={<Navigate to="/admin/inventory/receive" replace />} />
+                <Route path="admin/vendor-payments" element={<Navigate to="/admin/vendors" replace />} />
                 <Route path="reports/inventory" element={<InventoryReport />} />
+                <Route path="reports/products" element={<ProductReport />} />
               </Route>
 
               <Route
@@ -190,8 +197,6 @@ const Router = () => (
                 <Route path="admin/retail-products" element={<RetailProducts />} />
               </Route>
               <Route element={<RoleRoute roles={["SUPER_ADMIN", "SALON_ADMIN"]} />}>
-                <Route path="admin/product-purchases" element={<ProductPurchases />} />
-                <Route path="admin/vendor-payments" element={<VendorPayments />} />
                 <Route path="admin/expenses" element={<Expenses />} />
                 <Route path="admin/expenses/add" element={<Expenses />} />
                 <Route path="admin/expense-categories" element={<ExpenseCategories />} />

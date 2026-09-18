@@ -124,51 +124,11 @@ const getMenu = (role) => {
     : []),
   ...(hasRole(role, inventoryRoles)
     ? [
-        { heading: "Products" },
-        {
-          icon: "package-fill",
-          text: "Product",
-          subMenu: [
-            { text: "Product Brand", link: "/admin/product-brands" },
-            ...(hasRole(role, ["SALON_ADMIN"])
-              ? [{ text: "Purchase Products", link: "/admin/product-purchases" }]
-              : []),
-            ...(hasRole(role, ["SALON_ADMIN", "RECEPTIONIST"])
-              ? [{ text: "Retail Products", link: "/admin/retail-products" }]
-              : []),
-          ],
-        },
-      ]
-    : []),
-  ...(hasRole(role, inventoryRoles)
-    ? [
-        { heading: "Vendors & Stock" },
-        {
-          icon: "truck",
-          text: "Vendors & Stock",
-          subMenu: [
-            { text: "Products", link: "/admin/products" },
-            { text: "Vendors", link: "/admin/vendors" },
-            ...(hasRole(role, ["SALON_ADMIN"])
-              ? [
-                  {
-                    text: "Vendor Payments",
-                    link: "/admin/vendor-payments",
-                  },
-                ]
-              : []),
-            {
-              text: "Stock Movements",
-              link: "/admin/stock-movements",
-            },
-            { text: "Low Stock", link: "/admin/low-stock" },
-            { text: "Stock Alerts", link: "/inventory/stock-alerts" },
-            {
-              text: "Reorder Suggestions",
-              link: "/inventory/reorder-suggestions",
-            },
-          ],
-        },
+        { heading: "Products & Inventory" },
+        // Everything else (low stock, receive, activity, payments, history) is a tab inside these three.
+        { icon: "package-fill", text: "Products", link: "/admin/products" },
+        { icon: "layers-fill", text: "Inventory", link: "/admin/inventory" },
+        { icon: "truck", text: "Vendors", link: "/admin/vendors" },
       ]
     : []),
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
@@ -209,6 +169,7 @@ const getMenu = (role) => {
               ? [{ icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" }]
               : []),
             { text: "Inventory Report", link: "/reports/inventory" },
+            { text: "Product Report", link: "/reports/products" },
             ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
               ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]
               : []),

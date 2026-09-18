@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import { ProductModel } from "./product.model.js";
+import { ProductModel, productActivity, productSalesStats } from "./product.model.js";
 import { prisma } from "../../config/prisma.js";
 import {
   branchScope,
@@ -62,6 +62,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const description = cleanText(req.body.description);
     const sku = cleanText(req.body.sku);
     const barcode = cleanText(req.body.barcode);
+    const hsnCode = cleanText(req.body.hsnCode);
     const category = cleanText(req.body.category);
     if (!name || !salonId) return res.status(400).json({ success: false, message: "Product name and salon are required" });
     if (![costPrice, sellingPrice, lowStockAlert].every((value) => Number.isFinite(value) && value >= 0)) {
@@ -90,6 +91,7 @@ export const createProduct = async (req: Request, res: Response) => {
       ...(description ? { description } : {}),
       ...(sku ? { sku } : {}),
       ...(barcode ? { barcode } : {}),
+      ...(hsnCode ? { hsnCode } : {}),
       ...(category ? { category } : {}),
       ...(req.body.unit ? { unit: req.body.unit as ProductUnit } : {}),
       ...(typeof req.body.isRetailProduct === "boolean" ? { isRetailProduct: req.body.isRetailProduct } : {}),
@@ -121,7 +123,12 @@ export const getProducts = async (req: Request, res: Response) => {
         ? { isServiceConsumable: req.query.serviceConsumable === "true" }
         : {}),
     };
-    const data = await ProductModel.list(where);
+    const products = await ProductModel.list(where);
+    const stats = await productSalesStats(products.map((product) => product.id));
+    const data = products.map((product) => ({
+      ...product,
+      ...(stats.get(product.id) ?? { soldQty: 0, revenue: 0, saleCount: 0, lastPurchaseAt: null }),
+    }));
     return res.json({ success: true, data });
   } catch (error) {
     return sendInventoryError(res, error);
@@ -159,6 +166,20 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductActivityHandler = async (req: Request, res: Response) => {
+  try {
+    const product = await ProductModel.find(accessWhere(req, idParam(req)));
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    const [activity, salon] = await Promise.all([
+      productActivity(product.id),
+      prisma.salon.findUnique({ where: { id: product.salonId }, select: { productGstRate: true } }),
+    ]);
+    return res.json({ success: true, data: { ...activity, productGstRate: Number(salon?.productGstRate ?? 0) } });
+  } catch (error) {
+    return sendInventoryError(res, error);
+  }
+};
+
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const existing = await ProductModel.find(accessWhere(req, idParam(req)));
@@ -189,6 +210,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       ...("description" in req.body ? { description: cleanText(req.body.description) ?? null } : {}),
       ...("sku" in req.body ? { sku: cleanText(req.body.sku) ?? null } : {}),
       ...("barcode" in req.body ? { barcode: cleanText(req.body.barcode) ?? null } : {}),
+      ...("hsnCode" in req.body ? { hsnCode: cleanText(req.body.hsnCode) ?? null } : {}),
       ...("category" in req.body ? { category: cleanText(req.body.category) ?? null } : {}),
       ...(req.body.unit ? { unit: req.body.unit as ProductUnit } : {}),
       ...(req.body.costPrice !== undefined ? { costPrice: Number(req.body.costPrice) } : {}),

@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { Alert, Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Link } from "react-router-dom";
 import { Pie } from "react-chartjs-2";
 import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import { RankTable } from "@/pages/salon/SalonReport";
+import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
-import { formatMoney, labelize } from "@/utils/salonFormat";
+import { allowsRole, formatDate, formatMoney, labelize } from "@/utils/salonFormat";
 
 Chart.register(ArcElement, Legend, Tooltip);
 
@@ -44,6 +46,9 @@ const StatCard = ({ label, icon, color, row }) => (
 );
 
 const SalesReport = () => {
+  const { user } = useAuth();
+  // Invoice cancel is admin-only on the backend.
+  const canDelete = allowsRole(["SUPER_ADMIN", "SALON_ADMIN"], user?.role);
   const [period, setPeriod] = useState("month");
   const [dates, setDates] = useState({ from: "", to: "" });
   const [data, setData] = useState(null);
@@ -72,6 +77,18 @@ const SalesReport = () => {
     if (period !== "custom") load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
+
+  // "Delete" cancels the invoice: that reverses stock, packages and balances,
+  // and keeps the invoice number on record for GST.
+  const deleteSale = async (sale) => {
+    if (!window.confirm(`Delete invoice ${sale.invoiceCode}? This cancels the invoice.`)) return;
+    try {
+      await salonApi.invoices.cancel(sale.id);
+      await load();
+    } catch (deleteError) {
+      setError(deleteError.message);
+    }
+  };
 
   const services = data?.services ?? {};
   const paymentMethods = data?.paymentMethods ?? [];
@@ -151,6 +168,59 @@ const SalesReport = () => {
                 <StatCard label="Counter bills" icon="file-docs" color="gray" row={services.counter} />
               )}
             </Row>
+            <h6 className="overline-title text-soft mb-2">Service sales</h6>
+            <div className="card card-bordered mb-4">
+              <div className="table-responsive">
+                <table className="table table-hover mb-0">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Invoice</th>
+                      <th className="text-end">Cost</th>
+                      <th>Payment mode</th>
+                      <th>Created by</th>
+                      <th>Edited by</th>
+                      <th className="text-end">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(data.serviceSales ?? []).map((sale) => (
+                      <tr key={sale.id}>
+                        <td>{formatDate(sale.invoiceDate, true)}</td>
+                        <td>
+                          <Link to={`/billing/invoices/${sale.id}`}>{sale.invoiceCode}</Link>
+                          <div className="fs-12px text-soft">{sale.customerName}</div>
+                        </td>
+                        <td className="text-end">{formatMoney(sale.amount)}</td>
+                        <td>
+                          {sale.paymentMethods.length
+                            ? sale.paymentMethods.map(labelize).join(", ")
+                            : "Unpaid"}
+                        </td>
+                        <td>{sale.createdBy ?? "-"}</td>
+                        <td>{sale.editedBy ?? "-"}</td>
+                        <td className="text-end">
+                          {canDelete && (
+                            <Button size="sm" color="danger" outline onClick={() => deleteSale(sale)}>
+                              <Icon name="trash" />
+                              <span>Delete</span>
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {!data.serviceSales?.length && (
+                      <tr>
+                        <td colSpan={7} className="text-center text-soft">
+                          No service sales for this period
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             <h6 className="overline-title text-soft mb-2">Other sales</h6>
             <Row className="g-gs">
               <StatCard label="Products" icon="bag" color="warning" row={data.products} />

@@ -1,10 +1,11 @@
 import { type Request, type Response } from "express";
 import {
   cleanText,
+  exactBranchScope,
   getSalonId,
   sendInventoryError,
 } from "../products/inventory-access.js";
-import { VendorModel } from "./vendor.model.js";
+import { VendorModel, vendorStats } from "./vendor.model.js";
 
 const idParam = (req: Request) =>
   typeof req.params.id === "string" ? req.params.id : "";
@@ -63,12 +64,14 @@ export const createVendor = async (req: Request, res: Response) => {
 
 export const getVendors = async (req: Request, res: Response) => {
   try {
-    const data = await VendorModel.list({
+    const vendors = await VendorModel.list({
       ...accessWhere(req),
       ...(req.query.status === "true" || req.query.status === "false"
         ? { status: req.query.status === "true" }
         : {}),
     });
+    const stats = await vendorStats(vendors.map((v) => v.id), exactBranchScope(req));
+    const data = vendors.map((v) => ({ ...v, ...stats.get(v.id) }));
     return res.json({ success: true, data });
   } catch (error) {
     return sendInventoryError(res, error);
@@ -77,13 +80,14 @@ export const getVendors = async (req: Request, res: Response) => {
 
 export const getVendor = async (req: Request, res: Response) => {
   try {
-    const data = await VendorModel.find(accessWhere(req, idParam(req)));
-    if (!data) {
+    const vendor = await VendorModel.find(accessWhere(req, idParam(req)));
+    if (!vendor) {
       return res
         .status(404)
         .json({ success: false, message: "Vendor not found" });
     }
-    return res.json({ success: true, data });
+    const stats = await vendorStats([vendor.id], exactBranchScope(req));
+    return res.json({ success: true, data: { ...vendor, ...stats.get(vendor.id) } });
   } catch (error) {
     return sendInventoryError(res, error);
   }

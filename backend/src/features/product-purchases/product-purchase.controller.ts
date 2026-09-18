@@ -9,6 +9,7 @@ import {
 } from "../products/inventory-access.js";
 import { ProductPurchaseModel } from "./product-purchase.model.js";
 import { createReceivedProductPurchase } from "./product-purchase.service.js";
+import { PAYMENT_METHODS, type PaymentMethod } from "../vendor-payments/vendor-payment.controller.js";
 
 type PurchaseItem = { productId: string; quantity: number; unitCost: number };
 const idParam = (req: Request) => typeof req.params.id === "string" ? req.params.id : "";
@@ -50,6 +51,16 @@ export const createProductPurchase = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: "Each product may appear only once per purchase" });
     }
 
+    const taxAmount = Number(req.body.taxAmount ?? 0);
+    const paidAmount = Number(req.body.paidAmount ?? 0);
+    if (!Number.isFinite(taxAmount) || taxAmount < 0 || !Number.isFinite(paidAmount) || paidAmount < 0) {
+      return res.status(400).json({ success: false, message: "Tax and paid amount must be non-negative numbers" });
+    }
+    const paymentMethod = req.body.paymentMethod as PaymentMethod;
+    if (paidAmount > 0 && !PAYMENT_METHODS.includes(paymentMethod)) {
+      return res.status(400).json({ success: false, message: "A valid payment method is required when recording a payment" });
+    }
+
     const data = await prisma.$transaction((tx) =>
       createReceivedProductPurchase({
         tx,
@@ -82,6 +93,9 @@ export const createProductPurchase = async (req: Request, res: Response) => {
           : {}),
         ...(req.user?.userId ? { createdById: req.user.userId } : {}),
         items,
+        taxAmount,
+        paidAmount,
+        ...(paidAmount > 0 ? { paymentMethod } : {}),
       })
     );
     const purchase = await ProductPurchaseModel.find({ id: data.id, salonId });

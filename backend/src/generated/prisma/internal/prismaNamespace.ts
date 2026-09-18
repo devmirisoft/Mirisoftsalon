@@ -5675,6 +5675,7 @@ export const ProductScalarFieldEnum = {
   description: 'description',
   sku: 'sku',
   barcode: 'barcode',
+  hsnCode: 'hsnCode',
   category: 'category',
   unit: 'unit',
   costPrice: 'costPrice',

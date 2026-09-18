@@ -32,6 +32,7 @@ import Expenses from "@/pages/salon/Expenses";
 import ExpenseReports from "@/pages/salon/ExpenseReports";
 import InventoryReport from "@/pages/salon/InventoryReport";
 import SalonReport from "@/pages/salon/SalonReport";
+import SalesReport from "@/pages/salon/SalesReport";
 import ExpenseCategories from "@/pages/salon/ExpenseCategories";
 import Attendance from "@/pages/salon/Attendance";
 import Leaves from "@/pages/salon/Leaves";
@@ -202,6 +203,7 @@ const Router = () => (
                 <Route path="customer-retention/manage-memberships" element={<ManageMemberships />} />
                 <Route path="customer-retention/loyalty-rules" element={<LoyaltyRules />} />
                 <Route path="reports/staff-performance" element={<StaffPerformance />} />
+                <Route path="reports/sales" element={<SalesReport />} />
                 <Route path="reports/audit-trails" element={<AuditTrails />} />
                 <Route path="customer-retention/loyalty-transactions" element={<LoyaltyTransactions />} />
                 <Route path="customer-retention/coupons" element={<Coupons />} />

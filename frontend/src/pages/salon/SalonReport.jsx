@@ -36,8 +36,18 @@ const PERIODS = [
   ["day", "Today"],
   ["week", "This week"],
   ["month", "This month"],
+  ["quarter", "Quarter (3 months)"],
+  ["halfyear", "Half year (6 months)"],
+  ["year", "Year (12 months)"],
   ["custom", "Custom range"],
 ];
+
+// The backend groups the trend by day, week or month to fit the period.
+const GRAIN = {
+  day: { label: "Daily", per: "day" },
+  week: { label: "Weekly", per: "week" },
+  month: { label: "Monthly", per: "month" },
+};
 
 const CUSTOMER_TYPES = [
   ["all", "All"],
@@ -114,7 +124,7 @@ const StatCard = ({ label, value, tone }) => (
   </Col>
 );
 
-const RankTable = ({ title, rows, countLabel = "Qty" }) => (
+export const RankTable = ({ title, rows, countLabel = "Qty" }) => (
   <div className="card card-bordered h-100">
     <div className="card-inner">
       <h6 className="title mb-2">{title}</h6>
@@ -194,6 +204,18 @@ const SalonReport = () => {
   const [period, setPeriod] = useState("month");
   const [customerType, setCustomerType] = useState("all");
   const [dates, setDates] = useState({ from: "", to: "" });
+  const [filters, setFilters] = useState({
+    branchId: "",
+    staffId: "",
+    serviceId: "",
+    productId: "",
+  });
+  const [options, setOptions] = useState({
+    branches: [],
+    staff: [],
+    services: [],
+    products: [],
+  });
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -203,7 +225,48 @@ const SalonReport = () => {
     customerType,
     ...(period === "custom" && dates.from ? { from: dates.from } : {}),
     ...(period === "custom" && dates.to ? { to: dates.to } : {}),
+    ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value)),
   };
+
+  // Dropdown choices. A list the role cannot read just stays empty.
+  useEffect(() => {
+    const lists = [
+      ["branches", salonApi.branches.list],
+      ["staff", salonApi.staff.list],
+      ["services", salonApi.services.list],
+      ["products", salonApi.products.list],
+    ];
+    Promise.allSettled(lists.map(([, call]) => call())).then((results) => {
+      const next = {};
+      results.forEach((result, index) => {
+        next[lists[index][0]] =
+          result.status === "fulfilled" && Array.isArray(result.value.data)
+            ? result.value.data
+            : [];
+      });
+      setOptions(next);
+    });
+  }, []);
+
+  const filterSelect = (key, label, rows, allLabel) => (
+    <Col md="3">
+      <Label>{label}</Label>
+      <Input
+        type="select"
+        value={filters[key]}
+        onChange={(event) =>
+          setFilters((current) => ({ ...current, [key]: event.target.value }))
+        }
+      >
+        <option value="">{allLabel}</option>
+        {rows.map((row) => (
+          <option key={row.id} value={row.id}>
+            {row.name}
+          </option>
+        ))}
+      </Input>
+    </Col>
+  );
 
   const load = async () => {
     setLoading(true);
@@ -222,10 +285,13 @@ const SalonReport = () => {
   useEffect(() => {
     if (period !== "custom") load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period, customerType]);
+  }, [period, customerType, filters]);
 
   const totals = data?.totals;
   const trend = data?.trend ?? [];
+  const grain = GRAIN[data?.trendGranularity] ?? GRAIN.day;
+  const trendLabel = (date) =>
+    data?.trendGranularity === "week" ? `Week of ${date}` : date;
   const rankings = data?.rankings ?? {};
 
   return (
@@ -267,6 +333,10 @@ const SalonReport = () => {
                 ))}
               </Input>
             </Col>
+            {filterSelect("branchId", "Branch", options.branches, "All branches")}
+            {filterSelect("staffId", "Staff", options.staff, "All staff")}
+            {filterSelect("serviceId", "Service", options.services, "All services")}
+            {filterSelect("productId", "Product", options.products, "All products")}
             {period === "custom" && (
               <>
                 <Col md="2">
@@ -302,6 +372,13 @@ const SalonReport = () => {
               Showing {data.range.from} to {data.range.to} ({data.range.timezone})
             </div>
           )}
+          {(filters.staffId || filters.serviceId || filters.productId) && (
+            <div className="text-soft fs-12px mt-1">
+              Staff, service and product filters narrow sales, bookings and
+              rankings. Payments, purchases and expenses are not tied to them
+              and stay whole.
+            </div>
+          )}
         </div>
       </div>
 
@@ -331,11 +408,11 @@ const SalonReport = () => {
 
             <Row className="g-4 mb-4">
               <Col lg="8">
-                <Panel title="Revenue and expenses" subtitle="Daily totals over the period">
+                <Panel title="Revenue and expenses" subtitle={`${grain.label} totals over the period`}>
                   {trend.length ? (
                     <Line
                       data={{
-                        labels: trend.map((row) => row.date),
+                        labels: trend.map((row) => trendLabel(row.date)),
                         datasets: [
                           {
                             label: "Revenue",
@@ -388,11 +465,11 @@ const SalonReport = () => {
 
             <Row className="g-4 mb-4">
               <Col lg="6">
-                <Panel title="Customers and visits" subtitle="New sign-ups and bookings per day">
+                <Panel title="Customers and visits" subtitle={`New sign-ups and bookings per ${grain.per}`}>
                   {trend.length ? (
                     <Bar
                       data={{
-                        labels: trend.map((row) => row.date),
+                        labels: trend.map((row) => trendLabel(row.date)),
                         datasets: [
                           {
                             label: "Bookings",
@@ -482,6 +559,34 @@ const SalonReport = () => {
                 <Panel title="Expenses by category" subtitle="Where the money went">
                   <RankChart rows={rankings.expenseCategories} />
                 </Panel>
+              </Col>
+            </Row>
+
+            <h6 className="overline-title text-soft mb-2">Staff</h6>
+            <Row className="g-4 mb-4">
+              <Col lg="6">
+                <RankTable
+                  title="Most preferred staff"
+                  rows={rankings.preferredStaff}
+                  countLabel="Bookings"
+                />
+              </Col>
+              <Col lg="6">
+                <RankTable title="Top staff selling services" rows={rankings.topServiceStaff} />
+              </Col>
+              <Col lg="6">
+                <RankTable
+                  title="Top staff selling packages"
+                  rows={rankings.topPackageStaff}
+                  countLabel="Sold"
+                />
+              </Col>
+              <Col lg="6">
+                <RankTable
+                  title="Top staff selling memberships"
+                  rows={rankings.topMembershipStaff}
+                  countLabel="Sold"
+                />
               </Col>
             </Row>
 

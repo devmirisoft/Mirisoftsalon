@@ -123,6 +123,7 @@ const Menu = ({data}) => {
                           <li className={classNames({'nk-menu-item': true, 'has-sub' : sItem.subMenu})} key={sIndex}>
                               {!sItem.subMenu ? (
                                 <NavLink to={sItem.link} end className="nk-menu-link" target={sItem.newTab && '_blank'}>
+                                  {sItem.icon && <Icon name={sItem.icon} className="me-1" />}
                                   <span className="nk-menu-text">{sItem.text}</span>
                                   {sItem.badge && <span className="nk-menu-badge">{sItem.badge}</span>}
                                 </NavLink>

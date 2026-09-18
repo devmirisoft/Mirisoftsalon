@@ -1,0 +1,226 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useState } from "react";
+import { Alert, Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Pie } from "react-chartjs-2";
+import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
+import { Button, Icon } from "@/components/Component";
+import PageShell from "@/components/salon/PageShell";
+import { RankTable } from "@/pages/salon/SalonReport";
+import { salonApi } from "@/services/salonApi";
+import { formatMoney, labelize } from "@/utils/salonFormat";
+
+Chart.register(ArcElement, Legend, Tooltip);
+
+const PALETTE = [
+  "#212e6b", "#1ee0ac", "#f4bd0e", "#e85347", "#816bff",
+  "#09c2de", "#ff63a5", "#8091a7", "#20c997", "#c4cefe",
+];
+
+const PERIODS = [
+  ["day", "Today"],
+  ["week", "This week"],
+  ["month", "This month"],
+  ["quarter", "Quarter (3 months)"],
+  ["halfyear", "Half year (6 months)"],
+  ["year", "Year (12 months)"],
+  ["custom", "Custom range"],
+];
+
+const StatCard = ({ label, icon, color, row }) => (
+  <Col sm="6" xl="4">
+    <div className="card card-bordered h-100">
+      <div className="card-inner d-flex align-items-center gap-3">
+        <div className={`user-avatar bg-${color}-dim text-${color}`}>
+          <Icon name={icon} />
+        </div>
+        <div>
+          <div className="fs-2 fw-bold">{row?.count ?? 0}</div>
+          <div className="text-soft">{label}</div>
+          <div className="fs-12px text-soft">{formatMoney(row?.amount ?? 0)}</div>
+        </div>
+      </div>
+    </div>
+  </Col>
+);
+
+const SalesReport = () => {
+  const [period, setPeriod] = useState("month");
+  const [dates, setDates] = useState({ from: "", to: "" });
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await salonApi.reports.salesDashboard({
+        period,
+        ...(period === "custom" && dates.from ? { from: dates.from } : {}),
+        ...(period === "custom" && dates.to ? { to: dates.to } : {}),
+      });
+      setData(response.data);
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Presets reload themselves; a custom range waits for the Apply button.
+  useEffect(() => {
+    if (period !== "custom") load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [period]);
+
+  const services = data?.services ?? {};
+  const paymentMethods = data?.paymentMethods ?? [];
+
+  return (
+    <PageShell
+      title="Sales report"
+      description="How many services, products, packages and memberships were sold."
+    >
+      {error && <Alert color="danger">{error}</Alert>}
+
+      <div className="card card-bordered mb-4">
+        <div className="card-inner">
+          <Row className="g-3 align-items-end">
+            <Col md="3">
+              <Label>Period</Label>
+              <Input
+                type="select"
+                value={period}
+                onChange={(event) => setPeriod(event.target.value)}
+              >
+                {PERIODS.map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+            {period === "custom" && (
+              <>
+                <Col md="2">
+                  <Label>From</Label>
+                  <Input
+                    type="date"
+                    value={dates.from}
+                    onChange={(event) =>
+                      setDates((current) => ({ ...current, from: event.target.value }))
+                    }
+                  />
+                </Col>
+                <Col md="2">
+                  <Label>To</Label>
+                  <Input
+                    type="date"
+                    value={dates.to}
+                    onChange={(event) =>
+                      setDates((current) => ({ ...current, to: event.target.value }))
+                    }
+                  />
+                </Col>
+              </>
+            )}
+            <Col md="2">
+              <Button color="primary" outline onClick={load}>
+                Apply
+              </Button>
+            </Col>
+          </Row>
+          {data?.range?.from && (
+            <div className="text-soft fs-12px mt-2">
+              Showing {data.range.from} to {data.range.to} ({data.range.timezone})
+            </div>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <Spinner color="primary" />
+      ) : (
+        data && (
+          <>
+            <h6 className="overline-title text-soft mb-2">Services sold</h6>
+            <Row className="g-gs mb-4">
+              <StatCard label="In appointments" icon="calender-date" color="purple" row={services.appointments} />
+              <StatCard label="In job carts" icon="cart" color="info" row={services.jobCarts} />
+              {services.counter?.count > 0 && (
+                <StatCard label="Counter bills" icon="file-docs" color="gray" row={services.counter} />
+              )}
+            </Row>
+            <h6 className="overline-title text-soft mb-2">Other sales</h6>
+            <Row className="g-gs">
+              <StatCard label="Products" icon="bag" color="warning" row={data.products} />
+              <StatCard label="Packages" icon="package" color="success" row={data.packages} />
+              <StatCard label="Memberships" icon="heart" color="danger" row={data.memberships} />
+            </Row>
+
+            <h6 className="overline-title text-soft mt-4 mb-2">Top sellers</h6>
+            <Row className="g-4 mb-4">
+              <Col lg="6">
+                <RankTable title="Top services" rows={data.topServices} />
+              </Col>
+              <Col lg="6">
+                <RankTable title="Top products" rows={data.topProducts} />
+              </Col>
+              <Col lg="6">
+                <RankTable title="Top packages" rows={data.topPackages} countLabel="Sold" />
+              </Col>
+              <Col lg="6">
+                <RankTable title="Top memberships" rows={data.topMemberships} countLabel="Sold" />
+              </Col>
+            </Row>
+
+            <Row className="g-4">
+              <Col lg="5">
+                <div className="card card-bordered h-100">
+                  <div className="card-inner">
+                    <h6 className="title mb-2">Payment methods</h6>
+                    {paymentMethods.length ? (
+                      <div style={{ height: 280 }}>
+                        <Pie
+                          data={{
+                            labels: paymentMethods.map((row) => labelize(row.method)),
+                            datasets: [
+                              {
+                                data: paymentMethods.map((row) => row.amount),
+                                backgroundColor: paymentMethods.map(
+                                  (_, index) => PALETTE[index % PALETTE.length]
+                                ),
+                              },
+                            ],
+                          }}
+                          options={{
+                            maintainAspectRatio: false,
+                            plugins: {
+                              legend: { labels: { boxWidth: 12, padding: 16 } },
+                              tooltip: {
+                                callbacks: {
+                                  label: (item) => `${item.label}: ${formatMoney(item.raw)}`,
+                                },
+                              },
+                            },
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="text-soft">No payments for this period</div>
+                    )}
+                  </div>
+                </div>
+              </Col>
+              <Col lg="7">
+                <RankTable title="Top customers" rows={data.topCustomers} countLabel="Payments" />
+              </Col>
+            </Row>
+          </>
+        )
+      )}
+    </PageShell>
+  );
+};
+
+export default SalesReport;

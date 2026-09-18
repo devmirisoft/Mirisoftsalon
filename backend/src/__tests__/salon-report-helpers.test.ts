@@ -1,4 +1,9 @@
-import { localDay, periodBounds, ranker } from "../features/reports/salon-report.controller.js";
+import {
+  localDay,
+  periodBounds,
+  ranker,
+  trendBucket,
+} from "../features/reports/salon-report.controller.js";
 
 describe("salon report helpers", () => {
   describe("periodBounds", () => {
@@ -27,6 +32,12 @@ describe("salon report helpers", () => {
       });
     });
 
+    it("spans 90, 182 and 365 days for quarter, half year and year", () => {
+      expect(periodBounds("quarter", "UTC", undefined, undefined, now).start).toBe("2025-10-04");
+      expect(periodBounds("halfyear", "UTC", undefined, undefined, now).start).toBe("2025-07-04");
+      expect(periodBounds("year", "UTC", undefined, undefined, now).start).toBe("2025-01-02");
+    });
+
     it("passes custom dates straight through", () => {
       expect(
         periodBounds("custom", "UTC", "2025-06-01", "2025-06-30", now)
@@ -51,6 +62,17 @@ describe("salon report helpers", () => {
       expect(rank.top(5).map((row) => row.label)).toEqual(["Haircut", "Shave"]);
       expect(rank.topByCount(5).map((row) => row.label)).toEqual(["Shave", "Haircut"]);
       expect(rank.top(1)).toEqual([{ label: "Haircut", value: 150, count: 3 }]);
+    });
+  });
+
+  describe("trendBucket", () => {
+    it("buckets by day, then Monday-start week, then month as the span grows", () => {
+      // 2026-01-01 is a Thursday; its week starts Monday 2025-12-29.
+      expect(trendBucket("2026-01-01", 30)).toBe("2026-01-01");
+      expect(trendBucket("2026-01-01", 90)).toBe("2025-12-29");
+      expect(trendBucket("2025-12-29", 90)).toBe("2025-12-29");
+      expect(trendBucket("2026-01-04", 90)).toBe("2025-12-29");
+      expect(trendBucket("2026-01-01", 365)).toBe("2026-01");
     });
   });
 

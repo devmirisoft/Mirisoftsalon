@@ -50,10 +50,14 @@ const resolveScope = async (req: Request) => {
     req.user.branchId
       ? req.user.branchId
       : undefined;
+  // An explicit report filter beats the header's session branch; validateBranch
+  // below still pins it to the caller's salon.
   const branchId =
     restrictedBranch ??
-    req.user?.activeBranchId ??
-    (typeof req.query.branchId === "string" ? req.query.branchId : undefined);
+    (typeof req.query.branchId === "string" && req.query.branchId
+      ? req.query.branchId
+      : undefined) ??
+    req.user?.activeBranchId;
   if (req.user?.role !== "SUPER_ADMIN" && !salonId) {
     throw transactionError("Salon is required");
   }
@@ -99,8 +103,26 @@ export const periodBounds = (
   if (period === "day") return { start: today, end: today };
   if (period === "week") return { start: daysBack(6), end: today };
   if (period === "month") return { start: daysBack(29), end: today };
+  if (period === "quarter") return { start: daysBack(89), end: today };
+  if (period === "halfyear") return { start: daysBack(181), end: today };
+  if (period === "year") return { start: daysBack(364), end: today };
   return { start: from, end: to };
 };
+
+/**
+ * Chart bucket for a local YYYY-MM-DD day: daily up to a month, weekly
+ * (keyed by the Monday) up to half a year, monthly (YYYY-MM) beyond that.
+ */
+export const trendBucket = (day: string, spanDays: number) => {
+  if (spanDays <= 31) return day;
+  if (spanDays > 186) return day.slice(0, 7);
+  const date = new Date(`${day}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+  return date.toISOString().slice(0, 10);
+};
+
+export const trendGranularity = (spanDays: number) =>
+  spanDays <= 31 ? "day" : spanDays > 186 ? "month" : "week";
 
 /**
  * Resolve the reporting window. `period` is day | week | month | custom;
@@ -237,6 +259,15 @@ export const getSalonReport = async (req: Request, res: Response) => {
       ...(salonId ? { salonId } : {}),
       ...(branchId ? { branchId } : {}),
     };
+    const param = (key: string) =>
+      typeof req.query[key] === "string" && req.query[key]
+        ? (req.query[key] as string)
+        : undefined;
+    // Line-level filters. They narrow sales lines, bookings and the rankings;
+    // payments and expenses are not tied to a staff member or item.
+    const staffId = param("staffId");
+    const serviceId = param("serviceId");
+    const productId = param("productId");
 
     // Only the all-salons view needs the breakdown; a selected salon is already
     // the whole report.
@@ -254,6 +285,7 @@ export const getSalonReport = async (req: Request, res: Response) => {
       retailItems,
       memberships,
       newCustomers,
+      packages,
     ] = await Promise.all([
       // Invoice payments: the service/billing side of the till.
       prisma.payment.findMany({
@@ -294,12 +326,21 @@ export const getSalonReport = async (req: Request, res: Response) => {
           ...(range ? { startTime: range } : {}),
           ...(customerType === "appointment" ? { walkInJobCart: false } : {}),
           ...(customerType === "jobcard" ? { walkInJobCart: true } : {}),
+          ...(staffId
+            ? { OR: [{ staffId }, { services: { some: { staffId } } }] }
+            : {}),
+          ...(serviceId ? { services: { some: { serviceId } } } : {}),
+          // A product is never booked, so a product filter leaves no bookings.
+          ...(productId ? { id: { in: [] } } : {}),
         },
         select: {
           status: true,
           walkInJobCart: true,
           startTime: true,
           customerId: true,
+          estimatedAmount: true,
+          staffId: true,
+          staff: { select: { name: true } },
           customer: { select: { createdAt: true } },
         },
       }),
@@ -313,6 +354,18 @@ export const getSalonReport = async (req: Request, res: Response) => {
               ...(range ? { invoiceDate: range } : {}),
             },
           },
+          ...(serviceId ? { serviceId } : {}),
+          ...(productId ? { productId } : {}),
+          // Same credit rule as the staff ranks below: appointment staff for
+          // services, whoever billed it otherwise.
+          ...(staffId
+            ? {
+                OR: [
+                  { soldByStaffId: staffId },
+                  { invoice: { is: { appointment: { is: { staffId } } } } },
+                ],
+              }
+            : {}),
         },
         select: {
           itemType: true,
@@ -341,7 +394,16 @@ export const getSalonReport = async (req: Request, res: Response) => {
       }),
       prisma.retailSaleItem.findMany({
         where: {
-          sale: { is: { ...common, ...(range ? { saleDate: range } : {}) } },
+          sale: {
+            is: {
+              ...common,
+              ...(range ? { saleDate: range } : {}),
+              ...(staffId ? { staffId } : {}),
+            },
+          },
+          ...(productId ? { productId } : {}),
+          // Retail sales hold only products, so a service filter excludes them.
+          ...(serviceId ? { id: { in: [] } } : {}),
         },
         select: {
           quantity: true,
@@ -358,7 +420,12 @@ export const getSalonReport = async (req: Request, res: Response) => {
         },
       }),
       prisma.customerMembership.findMany({
-        where: { ...common, ...(range ? { startsAt: range } : {}) },
+        where: {
+          ...common,
+          ...(range ? { startsAt: range } : {}),
+          ...(staffId ? { soldByStaffId: staffId } : {}),
+          ...(serviceId || productId ? { id: { in: [] } } : {}),
+        },
         select: {
           membershipId: true,
           membershipNameSnapshot: true,
@@ -366,11 +433,30 @@ export const getSalonReport = async (req: Request, res: Response) => {
           paymentMethod: true,
           durationMonthsSnapshot: true,
           status: true,
+          soldByStaffId: true,
+          soldByStaff: { select: { name: true } },
         },
       }),
       prisma.customer.findMany({
         where: { ...common, ...(range ? { createdAt: range } : {}) },
         select: { createdAt: true },
+      }),
+      prisma.customerPackage.findMany({
+        where: {
+          ...common,
+          status: { not: "CANCELLED" },
+          ...(range ? { purchasedAt: range } : {}),
+          ...(staffId ? { soldByStaffId: staffId } : {}),
+          ...(productId ? { id: { in: [] } } : {}),
+          ...(serviceId
+            ? { package: { is: { items: { some: { serviceId } } } } }
+            : {}),
+        },
+        select: {
+          specialPriceSnapshot: true,
+          soldByStaffId: true,
+          soldByStaff: { select: { name: true } },
+        },
       }),
     ]);
 
@@ -430,8 +516,13 @@ export const getSalonReport = async (req: Request, res: Response) => {
         customers: number;
       }
     >();
+    // An open-ended custom range has no span, so it charts by month.
+    const spanDays =
+      start && end
+        ? (end.getTime() - start.getTime()) / 86_400_000
+        : Number.POSITIVE_INFINITY;
     const bucket = (date: Date) => {
-      const key = localDay(date, timezone);
+      const key = trendBucket(localDay(date, timezone), spanDays);
       const row = trend.get(key) ?? {
         date: key,
         revenue: 0,
@@ -569,6 +660,30 @@ export const getSalonReport = async (req: Request, res: Response) => {
       expenseCategories.add(row.category, row.category, num(row.amount));
     }
 
+    // "Preferred" = most bookings made with that stylist, ignoring bookings
+    // that never happened. Amount is what those bookings were quoted at.
+    const preferredStaff = ranker();
+    for (const row of appointments) {
+      if (row.status === "CANCELLED" || row.status === "NO_SHOW") continue;
+      preferredStaff.add(row.staffId, row.staff?.name ?? "Unassigned", num(row.estimatedAmount));
+    }
+    const packageStaff = ranker();
+    for (const row of packages) {
+      packageStaff.add(
+        row.soldByStaffId,
+        row.soldByStaff?.name ?? "Unassigned",
+        num(row.specialPriceSnapshot)
+      );
+    }
+    const membershipStaff = ranker();
+    for (const row of memberships) {
+      membershipStaff.add(
+        row.soldByStaffId,
+        row.soldByStaff?.name ?? "Unassigned",
+        num(row.amountPaid)
+      );
+    }
+
     // Longest-lasting plan = highest average validity across its sales.
     const longestMembership =
       membershipDuration
@@ -600,6 +715,7 @@ export const getSalonReport = async (req: Request, res: Response) => {
           netEarnings,
         },
         paymentMethods: methodRows(methods.top(20)),
+        trendGranularity: trendGranularity(spanDays),
         trend: Array.from(trend.values()).sort((a, b) =>
           a.date.localeCompare(b.date)
         ),
@@ -632,7 +748,220 @@ export const getSalonReport = async (req: Request, res: Response) => {
           topProductStaff: rankRows(productStaffRank.top(10)),
           productPaymentMethods: methodRows(productMethods.top(10)),
           expenseCategories: rankRows(expenseCategories.top(10)),
+          preferredStaff: rankRows(preferredStaff.topByCount(10)),
+          topPackageStaff: rankRows(packageStaff.top(10)),
+          topMembershipStaff: rankRows(membershipStaff.top(10)),
         },
+      },
+    });
+  } catch (error) {
+    return sendInventoryError(res, error);
+  }
+};
+
+/**
+ * Sales dashboard: how many of each thing was sold in the window. Services
+ * come from issued invoice lines, split by whether the bill came from an
+ * appointment, a walk-in job cart, or neither (counter bill).
+ */
+export const getSalesDashboard = async (req: Request, res: Response) => {
+  try {
+    const { salonId, branchId } = await resolveScope(req);
+    const { range, timezone, start, end } = await resolveRange(req, salonId);
+    const common = {
+      ...(salonId ? { salonId } : {}),
+      ...(branchId ? { branchId } : {}),
+    };
+
+    const [
+      invoiceItems,
+      retailItems,
+      packages,
+      memberships,
+      payments,
+      salePayments,
+      retailSales,
+    ] = await Promise.all([
+        prisma.invoiceItem.findMany({
+          where: {
+            itemType: { in: ["SERVICE", "PRODUCT"] },
+            invoice: {
+              is: {
+                ...common,
+                status: "ISSUED",
+                ...(range ? { invoiceDate: range } : {}),
+              },
+            },
+          },
+          select: {
+            itemType: true,
+            quantity: true,
+            lineTotal: true,
+            serviceId: true,
+            serviceName: true,
+            productId: true,
+            product: { select: { name: true } },
+            invoice: { select: { appointment: { select: { walkInJobCart: true } } } },
+          },
+        }),
+        prisma.retailSaleItem.findMany({
+          where: {
+            sale: { is: { ...common, ...(range ? { saleDate: range } : {}) } },
+          },
+          select: {
+            quantity: true,
+            totalPrice: true,
+            productId: true,
+            product: { select: { name: true } },
+          },
+        }),
+        prisma.customerPackage.findMany({
+          where: {
+            ...common,
+            status: { not: "CANCELLED" },
+            ...(range ? { purchasedAt: range } : {}),
+          },
+          select: {
+            specialPriceSnapshot: true,
+            packageId: true,
+            packageNameSnapshot: true,
+          },
+        }),
+        prisma.customerMembership.findMany({
+          where: {
+            ...common,
+            status: { notIn: ["CANCELLED", "REMOVED"] },
+            ...(range ? { startsAt: range } : {}),
+          },
+          select: {
+            amountPaid: true,
+            membershipId: true,
+            membershipNameSnapshot: true,
+          },
+        }),
+        // The till, same three sources as the salon report's payment mix.
+        prisma.payment.findMany({
+          where: { ...common, ...(range ? { paidAt: range } : {}) },
+          select: {
+            amount: true,
+            method: true,
+            customerId: true,
+            customer: { select: { name: true } },
+          },
+        }),
+        prisma.salePayment.findMany({
+          where: {
+            ...(range ? { paidAt: range } : {}),
+            sale: { is: { ...common, status: "ACTIVE" } },
+          },
+          select: {
+            amount: true,
+            method: true,
+            sale: { select: { customerId: true, customerName: true } },
+          },
+        }),
+        prisma.retailSale.findMany({
+          where: { ...common, ...(range ? { saleDate: range } : {}) },
+          select: {
+            totalAmount: true,
+            paymentMethod: true,
+            customerId: true,
+            customer: { select: { name: true } },
+          },
+        }),
+      ]);
+
+    const tally = () => ({ count: 0, amount: 0 });
+    const services = { appointments: tally(), jobCarts: tally(), counter: tally() };
+    const products = tally();
+    const serviceRank = ranker();
+    const productRank = ranker();
+    const packageRank = ranker();
+    const membershipRank = ranker();
+    const methods = ranker();
+    const customerRank = ranker();
+
+    for (const item of invoiceItems) {
+      const quantity = item.quantity ?? 1;
+      const amount = num(item.lineTotal);
+      const appointment = item.invoice?.appointment;
+      if (item.itemType === "PRODUCT") {
+        productRank.add(
+          item.productId ?? item.serviceName,
+          item.product?.name ?? item.serviceName,
+          amount,
+          quantity
+        );
+      } else {
+        serviceRank.add(item.serviceId ?? item.serviceName, item.serviceName, amount, quantity);
+      }
+      const bucket =
+        item.itemType === "PRODUCT"
+          ? products
+          : !appointment
+            ? services.counter
+            : appointment.walkInJobCart
+              ? services.jobCarts
+              : services.appointments;
+      bucket.count += quantity;
+      bucket.amount += amount;
+    }
+    for (const item of retailItems) {
+      products.count += num(item.quantity);
+      products.amount += num(item.totalPrice);
+      productRank.add(
+        item.productId,
+        item.product?.name ?? "Product",
+        num(item.totalPrice),
+        num(item.quantity)
+      );
+    }
+    for (const row of packages) {
+      packageRank.add(row.packageId, row.packageNameSnapshot, num(row.specialPriceSnapshot));
+    }
+    for (const row of memberships) {
+      membershipRank.add(row.membershipId, row.membershipNameSnapshot, num(row.amountPaid));
+    }
+
+    for (const row of payments) {
+      methods.add(row.method, row.method, num(row.amount));
+      customerRank.add(row.customerId, row.customer?.name ?? "Customer", num(row.amount));
+    }
+    for (const row of salePayments) {
+      methods.add(row.method, row.method, num(row.amount));
+      customerRank.add(row.sale?.customerId, row.sale?.customerName ?? "Customer", num(row.amount));
+    }
+    for (const row of retailSales) {
+      const method = row.paymentMethod ?? "OTHER";
+      methods.add(method, method, num(row.totalAmount));
+      customerRank.add(row.customerId, row.customer?.name ?? "Customer", num(row.totalAmount));
+    }
+
+    return res.json({
+      success: true,
+      data: {
+        range: {
+          from: start ? localDay(start, timezone) : null,
+          to: end ? localDay(new Date(end.getTime() - 1), timezone) : null,
+          timezone,
+        },
+        services,
+        products,
+        packages: {
+          count: packages.length,
+          amount: packages.reduce((sum, row) => sum + num(row.specialPriceSnapshot), 0),
+        },
+        memberships: {
+          count: memberships.length,
+          amount: memberships.reduce((sum, row) => sum + num(row.amountPaid), 0),
+        },
+        // Top lists rank by how many were sold; customers rank by what they paid.
+        topServices: rankRows(serviceRank.topByCount(10)),
+        topProducts: rankRows(productRank.topByCount(10)),
+        topPackages: rankRows(packageRank.topByCount(10)),
+        topMemberships: rankRows(membershipRank.topByCount(10)),
+        topCustomers: rankRows(customerRank.top(10)),
+        paymentMethods: methodRows(methods.top(20)),
       },
     });
   } catch (error) {

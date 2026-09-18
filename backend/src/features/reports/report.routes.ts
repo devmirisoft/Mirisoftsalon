@@ -6,7 +6,7 @@ import {
   getInventoryReport,
   getStaffPerformance,
 } from "./report.controller.js";
-import { getSalonReport } from "./salon-report.controller.js";
+import { getSalesDashboard, getSalonReport } from "./salon-report.controller.js";
 import { exportReport } from "./report-export.controller.js";
 
 const router = Router();
@@ -36,6 +36,11 @@ router.get(
   "/salon-report",
   requireRole("SUPER_ADMIN", "SALON_ADMIN"),
   getSalonReport
+);
+router.get(
+  "/sales-dashboard",
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"),
+  getSalesDashboard
 );
 router.get(
   "/:reportType/export",

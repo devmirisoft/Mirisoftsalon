@@ -2,13 +2,15 @@ import { allowsRole } from "@/utils/salonFormat";
 
 const hasRole = (role, roles) => allowsRole(roles, role);
 
+const dashboardMenu = { icon: "dashboard-fill", text: "Dashboard", link: "/" };
+
 
 // SUPER_ADMIN is a platform role: it has no salonId, so every salon-scoped page
 // below either 400s or mixes tenants for it. It gets its own menu of the four
 // things the backend actually lets it do (salons, user accounts, GST, support)
 // plus the two reports that take an explicit salonId.
 const superAdminMenu = [
-  { icon: "dashboard-fill", text: "Dashboard", link: "/" },
+  dashboardMenu,
   { heading: "Platform" },
   // /management already tabs Salons / Branches / Staff / GST / User accounts.
   { icon: "building", text: "Salon Management", link: "/management" },
@@ -17,6 +19,7 @@ const superAdminMenu = [
     icon: "reports",
     text: "Reports",
     subMenu: [
+      { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
       { text: "Salon Report", link: "/reports/salon-report" },
       { text: "Audit Trails", link: "/reports/audit-trails" },
     ],
@@ -34,11 +37,7 @@ const getMenu = (role) => {
   const inventoryRoles = [...operationalRoles, "BRANCH_MANAGER"];
 
   return [
-  {
-    icon: "dashboard-fill",
-    text: "Dashboard",
-    link: "/",
-  },
+  dashboardMenu,
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
         { heading: "Staff Operations" },
@@ -206,6 +205,9 @@ const getMenu = (role) => {
           icon: "reports",
           text: "Reports",
           subMenu: [
+            ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
+              ? [{ icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" }]
+              : []),
             { text: "Inventory Report", link: "/reports/inventory" },
             ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
               ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]

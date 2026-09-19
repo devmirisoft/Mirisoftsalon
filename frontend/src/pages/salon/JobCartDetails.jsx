@@ -484,6 +484,31 @@ const JobCartDetails = () => {
     walletTender &&
     (singleFullTender ? singleFullAmount : Number(walletTender.amount || 0)) >
       membershipWalletBalance + 0.004;
+  // Membership / package split for the pay modal: the wallet settles services
+  // and packages first; whatever it leaves rides on the products' payment.
+  const walletPaid = walletTender
+    ? singleFullTender
+      ? singleFullAmount
+      : Number(walletTender.amount || 0)
+    : 0;
+  const serviceLinesTotal = tableItems
+    .filter((item) => item.itemType !== "PRODUCT")
+    .reduce((total, item) => total + Number(item.lineTotal || 0), 0);
+  const walletOnServices = Math.min(walletPaid, serviceLinesTotal);
+  const serviceShortfall = serviceLinesTotal - walletOnServices;
+  const restAmount = Math.max(payableAmount - walletOnServices, 0);
+  const hasProducts = tableItems.some((item) => item.itemType === "PRODUCT");
+  const restMethods = activeTenders
+    .filter(
+      (tender) =>
+        tender.method !== "MEMBERSHIP_WALLET" || walletPaid > walletOnServices
+    )
+    .map(
+      (tender) =>
+        PAYMENT_METHODS.find((option) => option.value === tender.method)
+          ?.label || tender.method
+    )
+    .join(" + ");
 
   const buildConfirmBody = () => ({
     ...billingForm,
@@ -814,6 +839,7 @@ const JobCartDetails = () => {
                               {headerTaxPercent ? ` (${headerTaxPercent}%)` : ""}
                             </th>
                             <th className="text-end">Total</th>
+                            {active && <th style={{ width: 44 }} />}
                           </tr>
                         </thead>
                         <tbody>
@@ -917,12 +943,34 @@ const JobCartDetails = () => {
                                     ? "—"
                                     : formatMoney(item.lineTotal)}
                                 </td>
+                                {active && (
+                                  <td className="text-end">
+                                    {item.itemType !== "SERVICE" && (
+                                      <button
+                                        type="button"
+                                        className="jcp-tender-remove"
+                                        aria-label={`Remove ${item.serviceName}`}
+                                        disabled={working}
+                                        onClick={() =>
+                                          run(() =>
+                                            salonApi.jobCarts.removeItem(
+                                              id,
+                                              item.id
+                                            )
+                                          )
+                                        }
+                                      >
+                                        <Icon name="cross" />
+                                      </button>
+                                    )}
+                                  </td>
+                                )}
                               </tr>
                             ))
                           ) : (
                             <tr>
                               <td
-                                colSpan={8}
+                                colSpan={active ? 9 : 8}
                                 className="text-center text-soft py-4"
                               >
                                 No services or packages on this job cart.
@@ -1575,12 +1623,17 @@ const JobCartDetails = () => {
                       />
                     </Col>
                   )}
-                  <Col sm={splitting ? "8" : "4"}>
+                  {splitting && (
+                    <Col sm="3">
+                      <Label className="jcp-field-label">Remaining</Label>
+                      <div className="jcp-tender-fixed">
+                        {formatMoney(firstTenderAmount)}
+                      </div>
+                    </Col>
+                  )}
+                  <Col sm={splitting ? "5" : "4"}>
                     <Label className="jcp-field-label">
                       Reference <span className="text-soft">(Optional)</span>
-                      {splitting
-                        ? " — takes " + formatMoney(firstTenderAmount)
-                        : ""}
                     </Label>
                     <Input
                       placeholder="Enter reference (e.g. txn id)"
@@ -1597,12 +1650,22 @@ const JobCartDetails = () => {
                         color="primary"
                         outline
                         className="w-100 jcp-split-add"
-                        onClick={() =>
+                        // First split opens empty (only a wallet shortfall is
+                        // carried over). Each later row takes the balance the
+                        // first method still holds, so rows chain down.
+                        onClick={() => {
+                          const carry = splitting
+                            ? firstTenderAmount
+                            : outstandingAfter;
                           setTenders((current) => [
                             ...current,
-                            { method: "CASH", amount: "", referenceNo: "" },
-                          ])
-                        }
+                            {
+                              method: "CASH",
+                              amount: carry > 0.004 ? carry.toFixed(2) : "",
+                              referenceNo: "",
+                            },
+                          ]);
+                        }}
                       >
                         <Icon name="plus" />
                         <span>Split payment</span>
@@ -1612,11 +1675,13 @@ const JobCartDetails = () => {
                 </Row>
 
                 {tenders.slice(1).map((tender, offset) => (
-                  <Row className="g-2 mt-1" key={offset + 1}>
+                  <Row className="g-2 jcp-tender-row" key={offset + 1}>
                     <Col sm="4">
+                      <Label className="jcp-field-label">
+                        Payment {offset + 2}
+                      </Label>
                       <Input
                         type="select"
-                        bsSize="sm"
                         value={tender.method}
                         onChange={(event) =>
                           setTenderValue(offset + 1, "method", event.target.value)
@@ -1637,9 +1702,9 @@ const JobCartDetails = () => {
                       </Input>
                     </Col>
                     <Col sm="3">
+                      <Label className="jcp-field-label">Amount</Label>
                       <Input
                         type="number"
-                        bsSize="sm"
                         min="0"
                         step="0.01"
                         placeholder="0.00"
@@ -1650,9 +1715,11 @@ const JobCartDetails = () => {
                       />
                     </Col>
                     <Col sm="5">
-                      <div className="d-flex gap-1 align-items-center">
+                      <Label className="jcp-field-label">
+                        Reference <span className="text-soft">(Optional)</span>
+                      </Label>
+                      <div className="d-flex gap-2 align-items-center">
                         <Input
-                          bsSize="sm"
                           className="jcp-tender-ref"
                           placeholder="Reference"
                           value={tender.referenceNo}
@@ -1730,6 +1797,53 @@ const JobCartDetails = () => {
                       formatMoney(outstandingAfter) +
                       " stays outstanding and the bill is marked partially paid."}
               </small>
+            )}
+
+            {collecting && (walletTender || packageCoveredAmount > 0) && (
+              <div className="jcp-panel mt-2">
+                <div className="jcp-line">
+                  <span>
+                    Services &amp; Packages
+                    <span className="d-block small text-soft">
+                      Mode of payment:{" "}
+                      {[
+                        packageCoveredAmount > 0 && "Package",
+                        walletTender && "Membership",
+                      ]
+                        .filter(Boolean)
+                        .join(" + ")}
+                      {walletTender && serviceShortfall > 0.004
+                        ? ` (covers ${formatMoney(walletOnServices)}, ${formatMoney(
+                            serviceShortfall
+                          )} added to ${hasProducts ? "products" : "the balance"})`
+                        : ""}
+                    </span>
+                  </span>
+                  <strong>
+                    {formatMoney(serviceLinesTotal + packageCoveredAmount)}
+                  </strong>
+                </div>
+                {restAmount > 0.004 && (
+                  <div className="jcp-line">
+                    <span>
+                      {hasProducts ? "Products" : "Remaining"}
+                      {hasProducts && serviceShortfall > 0.004
+                        ? " + remaining services"
+                        : ""}
+                      <span className="d-block small text-soft">
+                        Mode of payment: {restMethods || "Outstanding"}
+                      </span>
+                    </span>
+                    <strong>{formatMoney(restAmount)}</strong>
+                  </div>
+                )}
+                <div className="jcp-line">
+                  <span>Total</span>
+                  <strong>
+                    {formatMoney(payableAmount + packageCoveredAmount)}
+                  </strong>
+                </div>
+              </div>
             )}
 
             <div className="jcp-modal-cols">

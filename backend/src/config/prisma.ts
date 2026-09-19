@@ -21,8 +21,11 @@ const pool =
   new Pool({
     connectionString: databaseUrl,
     max: process.env.VERCEL ? 5 : 10,
-    idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 10_000,
+    // Opening a connection to the remote DB takes ~4s from a dev machine and a
+    // cold pool of 10 ~8s, so keep idle connections warm and let a queued
+    // request wait instead of failing at 10s.
+    idleTimeoutMillis: process.env.VERCEL ? 30_000 : 600_000,
+    connectionTimeoutMillis: 30_000,
     allowExitOnIdle: process.env.NODE_ENV === "test",
   });
 

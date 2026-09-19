@@ -3418,10 +3418,30 @@ body.dark-mode .jcp-cancel {
   min-width: 0;
 }
 
+/* Each extra tender is its own card, same input size as the first row. */
+.jcp-tender-row {
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0.25rem 0.625rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.5rem;
+}
+
+/* The first tender's share once split: read-only, looks like an input. */
+.jcp-tender-fixed {
+  display: flex;
+  align-items: center;
+  height: calc(1.5em + 1rem + 2px);
+  padding: 0 0.75rem;
+  border: 1px solid var(--jcp-line);
+  border-radius: 0.375rem;
+  background: #f5f6fa;
+  font-weight: 600;
+}
+
 .jcp-tender-remove {
   flex: 0 0 auto;
-  width: 1.875rem;
-  height: 1.875rem;
+  width: calc(1.5em + 1rem + 2px);
+  height: calc(1.5em + 1rem + 2px);
   display: flex;
   align-items: center;
   justify-content: center;

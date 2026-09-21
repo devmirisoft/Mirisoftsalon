@@ -1170,15 +1170,35 @@ export const getJobCartReferences = async (
     },
     orderBy: { name: "asc" },
   });
+  // How often each plan / package has been billed, so the quick sell can lead
+  // with the best sellers.
+  const sold = await prisma.invoiceItem.groupBy({
+    by: ["membershipId", "packageId"],
+    where: {
+      itemType: { in: ["MEMBERSHIP", "PACKAGE"] },
+      invoice: { salonId, status: "ISSUED" },
+    },
+    _count: { _all: true },
+  });
+  const soldCount = (key: "membershipId" | "packageId", id: string) =>
+    sold
+      .filter((row) => row[key] === id)
+      .reduce((total, row) => total + row._count._all, 0);
   return {
     salons,
     salon,
     branches,
     staff,
     services,
-    packages,
+    packages: packages.map((item) => ({
+      ...item,
+      soldCount: soldCount("packageId", item.id),
+    })),
     products,
-    memberships,
+    memberships: memberships.map((item) => ({
+      ...item,
+      soldCount: soldCount("membershipId", item.id),
+    })),
   };
 };
 

@@ -69,7 +69,6 @@ const QuickSell = ({ kind, onClose }) => {
   const [name, setName] = useState("");
   const [focused, setFocused] = useState("");
   const [staffId, setStaffId] = useState("");
-  const [search, setSearch] = useState("");
   // The plan being billed. Nothing is written until it is paid, so a new
   // customer only exists once the sale goes through.
   const [picked, setPicked] = useState(null);
@@ -160,13 +159,31 @@ const QuickSell = ({ kind, onClose }) => {
     [refs.staff]
   );
 
-  const visible = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    const list = isPackage ? refs.packages : refs.memberships;
-    return list.filter(
-      (item) => !term || item.name.toLowerCase().includes(term)
-    );
-  }, [isPackage, refs.packages, refs.memberships, search]);
+  // Every plan is in the search dropdown; the cards only show the best sellers.
+  const plans = isPackage ? refs.packages : refs.memberships;
+  const planOptions = useMemo(
+    () => plans.map((item) => ({ value: item.id, label: item.name, item })),
+    [plans]
+  );
+  const topSold = useMemo(
+    () =>
+      plans
+        .filter((item) => item.soldCount > 0)
+        .sort((a, b) => b.soldCount - a.soldCount)
+        .slice(0, 4),
+    [plans]
+  );
+  const planMeta = (item) =>
+    isPackage
+      ? `${formatMoney(item.specialPrice)} - ${
+          item.validityDays || 0
+        } days validity`
+      : [
+          formatMoney(item.price),
+          `${Number(item.discountPercentage || 0)}% off`,
+          `${formatMoney(item.walletCreditAmount || 0)} wallet`,
+          item.durationMonths ? `${item.durationMonths} months` : "no expiry",
+        ].join(" - ");
 
   // An estimate for the till; the server settles against its own total.
   const subtotal = Number(
@@ -505,31 +522,39 @@ const QuickSell = ({ kind, onClose }) => {
               </Col>
               <Col md="6">
                 <Label className="quick-sell-label">
-                  <Icon name="search" /> Search
+                  <Icon name="search" /> {isPackage ? "Package" : "Plan"}
                 </Label>
-                <div className="form-control-wrap">
-                  <div className="form-icon form-icon-left">
-                    <Icon name="search" />
-                  </div>
-                  <Input
-                    type="search"
-                    placeholder={
-                      isPackage ? "Search packages..." : "Search plans..."
-                    }
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                </div>
+                <Select
+                  isDisabled={working}
+                  isLoading={loading}
+                  placeholder={
+                    isPackage ? "Search packages..." : "Search plans..."
+                  }
+                  noOptionsMessage={() =>
+                    isPackage ? "No packages match" : "No plans match"
+                  }
+                  options={planOptions}
+                  value={null}
+                  onChange={(option) => option && start(option.item)}
+                  formatOptionLabel={({ item }) => (
+                    <div>
+                      <div className="fw-medium">{item.name}</div>
+                      <small className="text-soft">{planMeta(item)}</small>
+                    </div>
+                  )}
+                />
               </Col>
             </Row>
 
             <div className="quick-sell-section">
               <Icon name={isPackage ? "package-fill" : "award-fill"} />
               <div>
-                <h6>{isPackage ? "Packages" : "Membership Plans"}</h6>
+                <h6>
+                  {isPackage ? "Most sold packages" : "Most sold plans"}
+                </h6>
                 <span>
-                  Select a {isPackage ? "package" : "plan"} to continue with the
-                  sale
+                  Pick one here, or search above for any{" "}
+                  {isPackage ? "package" : "plan"}
                 </span>
               </div>
             </div>
@@ -538,15 +563,19 @@ const QuickSell = ({ kind, onClose }) => {
               <div className="text-center py-4">
                 <Spinner size="sm" />
               </div>
-            ) : visible.length === 0 ? (
+            ) : plans.length === 0 ? (
               <div className="quick-sell-empty">
                 {isPackage
-                  ? "No packages match - create one from the Packages page"
-                  : "No plans match - add one under Customer Retention > Manage Memberships"}
+                  ? "No packages yet - create one from the Packages page"
+                  : "No plans yet - add one under Customer Retention > Manage Memberships"}
+              </div>
+            ) : topSold.length === 0 ? (
+              <div className="quick-sell-empty">
+                Nothing sold yet - search above to pick one
               </div>
             ) : (
               <div className="quick-sell-plans">
-                {visible.map((item) => {
+                {topSold.map((item) => {
                   const tier = isPackage
                     ? { icon: "package-fill", tone: "blue" }
                     : tierOf(item.name);
@@ -566,17 +595,7 @@ const QuickSell = ({ kind, onClose }) => {
                           {item.name}
                         </span>
                         <span className="quick-sell-plan-meta">
-                          {isPackage
-                            ? `${formatMoney(item.specialPrice)} - ${
-                                item.validityDays || 0
-                              } days validity`
-                            : `${formatMoney(item.price)} - ${Number(
-                                item.discountPercentage || 0
-                              )}% off${
-                                item.durationMonths
-                                  ? ` - ${item.durationMonths} months`
-                                  : " - no expiry"
-                              }`}
+                          {planMeta(item)}
                         </span>
                       </span>
                       <span className="quick-sell-plan-add">

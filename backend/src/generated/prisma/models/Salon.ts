@@ -51,6 +51,7 @@ export type SalonMinAggregateOutputType = {
   productGstRate: runtime.Decimal | null
   gstVerifiedAt: Date | null
   membershipDiscountOnPackages: boolean | null
+  stackMembershipDiscount: boolean | null
   addressLine1: string | null
   addressLine2: string | null
   city: string | null
@@ -78,6 +79,7 @@ export type SalonMaxAggregateOutputType = {
   productGstRate: runtime.Decimal | null
   gstVerifiedAt: Date | null
   membershipDiscountOnPackages: boolean | null
+  stackMembershipDiscount: boolean | null
   addressLine1: string | null
   addressLine2: string | null
   city: string | null
@@ -105,6 +107,7 @@ export type SalonCountAggregateOutputType = {
   productGstRate: number
   gstVerifiedAt: number
   membershipDiscountOnPackages: number
+  stackMembershipDiscount: number
   addressLine1: number
   addressLine2: number
   city: number
@@ -144,6 +147,7 @@ export type SalonMinAggregateInputType = {
   productGstRate?: true
   gstVerifiedAt?: true
   membershipDiscountOnPackages?: true
+  stackMembershipDiscount?: true
   addressLine1?: true
   addressLine2?: true
   city?: true
@@ -171,6 +175,7 @@ export type SalonMaxAggregateInputType = {
   productGstRate?: true
   gstVerifiedAt?: true
   membershipDiscountOnPackages?: true
+  stackMembershipDiscount?: true
   addressLine1?: true
   addressLine2?: true
   city?: true
@@ -198,6 +203,7 @@ export type SalonCountAggregateInputType = {
   productGstRate?: true
   gstVerifiedAt?: true
   membershipDiscountOnPackages?: true
+  stackMembershipDiscount?: true
   addressLine1?: true
   addressLine2?: true
   city?: true
@@ -312,6 +318,7 @@ export type SalonGroupByOutputType = {
   productGstRate: runtime.Decimal
   gstVerifiedAt: Date | null
   membershipDiscountOnPackages: boolean
+  stackMembershipDiscount: boolean
   addressLine1: string | null
   addressLine2: string | null
   city: string | null
@@ -362,6 +369,7 @@ export type SalonWhereInput = {
   productGstRate?: Prisma.DecimalFilter<"Salon"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.DateTimeNullableFilter<"Salon"> | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFilter<"Salon"> | boolean
+  stackMembershipDiscount?: Prisma.BoolFilter<"Salon"> | boolean
   addressLine1?: Prisma.StringNullableFilter<"Salon"> | string | null
   addressLine2?: Prisma.StringNullableFilter<"Salon"> | string | null
   city?: Prisma.StringNullableFilter<"Salon"> | string | null
@@ -435,6 +443,7 @@ export type SalonOrderByWithRelationInput = {
   productGstRate?: Prisma.SortOrder
   gstVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   membershipDiscountOnPackages?: Prisma.SortOrder
+  stackMembershipDiscount?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
   addressLine2?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -511,6 +520,7 @@ export type SalonWhereUniqueInput = Prisma.AtLeast<{
   productGstRate?: Prisma.DecimalFilter<"Salon"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.DateTimeNullableFilter<"Salon"> | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFilter<"Salon"> | boolean
+  stackMembershipDiscount?: Prisma.BoolFilter<"Salon"> | boolean
   addressLine1?: Prisma.StringNullableFilter<"Salon"> | string | null
   addressLine2?: Prisma.StringNullableFilter<"Salon"> | string | null
   city?: Prisma.StringNullableFilter<"Salon"> | string | null
@@ -584,6 +594,7 @@ export type SalonOrderByWithAggregationInput = {
   productGstRate?: Prisma.SortOrder
   gstVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   membershipDiscountOnPackages?: Prisma.SortOrder
+  stackMembershipDiscount?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrderInput | Prisma.SortOrder
   addressLine2?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -619,6 +630,7 @@ export type SalonScalarWhereWithAggregatesInput = {
   productGstRate?: Prisma.DecimalWithAggregatesFilter<"Salon"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Salon"> | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolWithAggregatesFilter<"Salon"> | boolean
+  stackMembershipDiscount?: Prisma.BoolWithAggregatesFilter<"Salon"> | boolean
   addressLine1?: Prisma.StringNullableWithAggregatesFilter<"Salon"> | string | null
   addressLine2?: Prisma.StringNullableWithAggregatesFilter<"Salon"> | string | null
   city?: Prisma.StringNullableWithAggregatesFilter<"Salon"> | string | null
@@ -646,6 +658,7 @@ export type SalonCreateInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -719,6 +732,7 @@ export type SalonUncheckedCreateInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -792,6 +806,7 @@ export type SalonUpdateInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -865,6 +880,7 @@ export type SalonUncheckedUpdateInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -938,6 +954,7 @@ export type SalonCreateManyInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -965,6 +982,7 @@ export type SalonUpdateManyMutationInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -992,6 +1010,7 @@ export type SalonUncheckedUpdateManyInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1019,6 +1038,7 @@ export type SalonCountOrderByAggregateInput = {
   productGstRate?: Prisma.SortOrder
   gstVerifiedAt?: Prisma.SortOrder
   membershipDiscountOnPackages?: Prisma.SortOrder
+  stackMembershipDiscount?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
   addressLine2?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -1051,6 +1071,7 @@ export type SalonMaxOrderByAggregateInput = {
   productGstRate?: Prisma.SortOrder
   gstVerifiedAt?: Prisma.SortOrder
   membershipDiscountOnPackages?: Prisma.SortOrder
+  stackMembershipDiscount?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
   addressLine2?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -1078,6 +1099,7 @@ export type SalonMinOrderByAggregateInput = {
   productGstRate?: Prisma.SortOrder
   gstVerifiedAt?: Prisma.SortOrder
   membershipDiscountOnPackages?: Prisma.SortOrder
+  stackMembershipDiscount?: Prisma.SortOrder
   addressLine1?: Prisma.SortOrder
   addressLine2?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -1798,6 +1820,7 @@ export type SalonCreateWithoutUsersInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -1870,6 +1893,7 @@ export type SalonUncheckedCreateWithoutUsersInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -1958,6 +1982,7 @@ export type SalonUpdateWithoutUsersInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2030,6 +2055,7 @@ export type SalonUncheckedUpdateWithoutUsersInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2102,6 +2128,7 @@ export type SalonCreateWithoutCustomersInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2174,6 +2201,7 @@ export type SalonUncheckedCreateWithoutCustomersInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2262,6 +2290,7 @@ export type SalonUpdateWithoutCustomersInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2334,6 +2363,7 @@ export type SalonUncheckedUpdateWithoutCustomersInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2406,6 +2436,7 @@ export type SalonCreateWithoutMembershipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2478,6 +2509,7 @@ export type SalonUncheckedCreateWithoutMembershipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2566,6 +2598,7 @@ export type SalonUpdateWithoutMembershipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2638,6 +2671,7 @@ export type SalonUncheckedUpdateWithoutMembershipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2710,6 +2744,7 @@ export type SalonCreateWithoutCustomerMembershipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2782,6 +2817,7 @@ export type SalonUncheckedCreateWithoutCustomerMembershipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -2870,6 +2906,7 @@ export type SalonUpdateWithoutCustomerMembershipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2942,6 +2979,7 @@ export type SalonUncheckedUpdateWithoutCustomerMembershipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3014,6 +3052,7 @@ export type SalonCreateWithoutMembershipWalletTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3086,6 +3125,7 @@ export type SalonUncheckedCreateWithoutMembershipWalletTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3174,6 +3214,7 @@ export type SalonUpdateWithoutMembershipWalletTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3246,6 +3287,7 @@ export type SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3318,6 +3360,7 @@ export type SalonCreateWithoutCustomerTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3390,6 +3433,7 @@ export type SalonUncheckedCreateWithoutCustomerTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3478,6 +3522,7 @@ export type SalonUpdateWithoutCustomerTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3550,6 +3595,7 @@ export type SalonUncheckedUpdateWithoutCustomerTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3622,6 +3668,7 @@ export type SalonCreateWithoutLoyaltyRulesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3694,6 +3741,7 @@ export type SalonUncheckedCreateWithoutLoyaltyRulesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3782,6 +3830,7 @@ export type SalonUpdateWithoutLoyaltyRulesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3854,6 +3903,7 @@ export type SalonUncheckedUpdateWithoutLoyaltyRulesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3926,6 +3976,7 @@ export type SalonCreateWithoutLoyaltyTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -3998,6 +4049,7 @@ export type SalonUncheckedCreateWithoutLoyaltyTransactionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4086,6 +4138,7 @@ export type SalonUpdateWithoutLoyaltyTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4158,6 +4211,7 @@ export type SalonUncheckedUpdateWithoutLoyaltyTransactionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4230,6 +4284,7 @@ export type SalonCreateWithoutCouponsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4302,6 +4357,7 @@ export type SalonUncheckedCreateWithoutCouponsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4390,6 +4446,7 @@ export type SalonUpdateWithoutCouponsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4462,6 +4519,7 @@ export type SalonUncheckedUpdateWithoutCouponsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4534,6 +4592,7 @@ export type SalonCreateWithoutBranchesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4606,6 +4665,7 @@ export type SalonUncheckedCreateWithoutBranchesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4694,6 +4754,7 @@ export type SalonUpdateWithoutBranchesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4766,6 +4827,7 @@ export type SalonUncheckedUpdateWithoutBranchesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -4838,6 +4900,7 @@ export type SalonCreateWithoutStaffInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4910,6 +4973,7 @@ export type SalonUncheckedCreateWithoutStaffInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -4998,6 +5062,7 @@ export type SalonUpdateWithoutStaffInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5070,6 +5135,7 @@ export type SalonUncheckedUpdateWithoutStaffInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5142,6 +5208,7 @@ export type SalonCreateWithoutStaffAttendancesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5214,6 +5281,7 @@ export type SalonUncheckedCreateWithoutStaffAttendancesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5302,6 +5370,7 @@ export type SalonUpdateWithoutStaffAttendancesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5374,6 +5443,7 @@ export type SalonUncheckedUpdateWithoutStaffAttendancesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5446,6 +5516,7 @@ export type SalonCreateWithoutStaffLeavesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5518,6 +5589,7 @@ export type SalonUncheckedCreateWithoutStaffLeavesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5606,6 +5678,7 @@ export type SalonUpdateWithoutStaffLeavesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5678,6 +5751,7 @@ export type SalonUncheckedUpdateWithoutStaffLeavesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5750,6 +5824,7 @@ export type SalonCreateWithoutStaffAvailabilityRulesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5822,6 +5897,7 @@ export type SalonUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -5910,6 +5986,7 @@ export type SalonUpdateWithoutStaffAvailabilityRulesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -5982,6 +6059,7 @@ export type SalonUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6054,6 +6132,7 @@ export type SalonCreateWithoutStaffTimeBlocksInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6126,6 +6205,7 @@ export type SalonUncheckedCreateWithoutStaffTimeBlocksInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6214,6 +6294,7 @@ export type SalonUpdateWithoutStaffTimeBlocksInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6286,6 +6367,7 @@ export type SalonUncheckedUpdateWithoutStaffTimeBlocksInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6358,6 +6440,7 @@ export type SalonCreateWithoutStaffSalaryConfigsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6430,6 +6513,7 @@ export type SalonUncheckedCreateWithoutStaffSalaryConfigsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6518,6 +6602,7 @@ export type SalonUpdateWithoutStaffSalaryConfigsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6590,6 +6675,7 @@ export type SalonUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6662,6 +6748,7 @@ export type SalonCreateWithoutSalarySlipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6734,6 +6821,7 @@ export type SalonUncheckedCreateWithoutSalarySlipsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -6822,6 +6910,7 @@ export type SalonUpdateWithoutSalarySlipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6894,6 +6983,7 @@ export type SalonUncheckedUpdateWithoutSalarySlipsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -6966,6 +7056,7 @@ export type SalonCreateWithoutMainServicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7038,6 +7129,7 @@ export type SalonUncheckedCreateWithoutMainServicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7126,6 +7218,7 @@ export type SalonUpdateWithoutMainServicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7198,6 +7291,7 @@ export type SalonUncheckedUpdateWithoutMainServicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7270,6 +7364,7 @@ export type SalonCreateWithoutServicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7342,6 +7437,7 @@ export type SalonUncheckedCreateWithoutServicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7430,6 +7526,7 @@ export type SalonUpdateWithoutServicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7502,6 +7599,7 @@ export type SalonUncheckedUpdateWithoutServicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7574,6 +7672,7 @@ export type SalonCreateWithoutServiceConsumablesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7646,6 +7745,7 @@ export type SalonUncheckedCreateWithoutServiceConsumablesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7734,6 +7834,7 @@ export type SalonUpdateWithoutServiceConsumablesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7806,6 +7907,7 @@ export type SalonUncheckedUpdateWithoutServiceConsumablesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -7878,6 +7980,7 @@ export type SalonCreateWithoutPackageCategoriesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -7950,6 +8053,7 @@ export type SalonUncheckedCreateWithoutPackageCategoriesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8038,6 +8142,7 @@ export type SalonUpdateWithoutPackageCategoriesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8110,6 +8215,7 @@ export type SalonUncheckedUpdateWithoutPackageCategoriesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8182,6 +8288,7 @@ export type SalonCreateWithoutServicePackagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8254,6 +8361,7 @@ export type SalonUncheckedCreateWithoutServicePackagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8342,6 +8450,7 @@ export type SalonUpdateWithoutServicePackagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8414,6 +8523,7 @@ export type SalonUncheckedUpdateWithoutServicePackagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8486,6 +8596,7 @@ export type SalonCreateWithoutServicePackageItemsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8558,6 +8669,7 @@ export type SalonUncheckedCreateWithoutServicePackageItemsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8646,6 +8758,7 @@ export type SalonUpdateWithoutServicePackageItemsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8718,6 +8831,7 @@ export type SalonUncheckedUpdateWithoutServicePackageItemsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -8790,6 +8904,7 @@ export type SalonCreateWithoutAppointmentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8862,6 +8977,7 @@ export type SalonUncheckedCreateWithoutAppointmentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -8950,6 +9066,7 @@ export type SalonUpdateWithoutAppointmentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9022,6 +9139,7 @@ export type SalonUncheckedUpdateWithoutAppointmentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9094,6 +9212,7 @@ export type SalonCreateWithoutPublicBookingSettingsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9166,6 +9285,7 @@ export type SalonUncheckedCreateWithoutPublicBookingSettingsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9254,6 +9374,7 @@ export type SalonUpdateWithoutPublicBookingSettingsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9326,6 +9447,7 @@ export type SalonUncheckedUpdateWithoutPublicBookingSettingsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9398,6 +9520,7 @@ export type SalonCreateWithoutSalesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9470,6 +9593,7 @@ export type SalonUncheckedCreateWithoutSalesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9558,6 +9682,7 @@ export type SalonUpdateWithoutSalesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9630,6 +9755,7 @@ export type SalonUncheckedUpdateWithoutSalesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9702,6 +9828,7 @@ export type SalonCreateWithoutInvoicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9774,6 +9901,7 @@ export type SalonUncheckedCreateWithoutInvoicesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -9862,6 +9990,7 @@ export type SalonUpdateWithoutInvoicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -9934,6 +10063,7 @@ export type SalonUncheckedUpdateWithoutInvoicesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10006,6 +10136,7 @@ export type SalonCreateWithoutCustomerPackagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10078,6 +10209,7 @@ export type SalonUncheckedCreateWithoutCustomerPackagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10166,6 +10298,7 @@ export type SalonUpdateWithoutCustomerPackagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10238,6 +10371,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10310,6 +10444,7 @@ export type SalonCreateWithoutCustomerPackageServiceBalancesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10382,6 +10517,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageServiceBalancesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10470,6 +10606,7 @@ export type SalonUpdateWithoutCustomerPackageServiceBalancesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10542,6 +10679,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageServiceBalancesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10614,6 +10752,7 @@ export type SalonCreateWithoutCustomerPackageUsagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10686,6 +10825,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsagesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10774,6 +10914,7 @@ export type SalonUpdateWithoutCustomerPackageUsagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10846,6 +10987,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsagesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -10918,6 +11060,7 @@ export type SalonCreateWithoutCustomerPackageUsageItemsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -10990,6 +11133,7 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsageItemsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11078,6 +11222,7 @@ export type SalonUpdateWithoutCustomerPackageUsageItemsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11150,6 +11295,7 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsageItemsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11222,6 +11368,7 @@ export type SalonCreateWithoutPaymentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11294,6 +11441,7 @@ export type SalonUncheckedCreateWithoutPaymentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11382,6 +11530,7 @@ export type SalonUpdateWithoutPaymentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11454,6 +11603,7 @@ export type SalonUncheckedUpdateWithoutPaymentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11526,6 +11676,7 @@ export type SalonCreateWithoutProductBrandsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11598,6 +11749,7 @@ export type SalonUncheckedCreateWithoutProductBrandsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11686,6 +11838,7 @@ export type SalonUpdateWithoutProductBrandsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11758,6 +11911,7 @@ export type SalonUncheckedUpdateWithoutProductBrandsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -11830,6 +11984,7 @@ export type SalonCreateWithoutProductsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11902,6 +12057,7 @@ export type SalonUncheckedCreateWithoutProductsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -11990,6 +12146,7 @@ export type SalonUpdateWithoutProductsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12062,6 +12219,7 @@ export type SalonUncheckedUpdateWithoutProductsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12134,6 +12292,7 @@ export type SalonCreateWithoutProductStockMovementsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12206,6 +12365,7 @@ export type SalonUncheckedCreateWithoutProductStockMovementsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12294,6 +12454,7 @@ export type SalonUpdateWithoutProductStockMovementsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12366,6 +12527,7 @@ export type SalonUncheckedUpdateWithoutProductStockMovementsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12438,6 +12600,7 @@ export type SalonCreateWithoutProductPurchasesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12510,6 +12673,7 @@ export type SalonUncheckedCreateWithoutProductPurchasesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12598,6 +12762,7 @@ export type SalonUpdateWithoutProductPurchasesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12670,6 +12835,7 @@ export type SalonUncheckedUpdateWithoutProductPurchasesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12742,6 +12908,7 @@ export type SalonCreateWithoutVendorsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12814,6 +12981,7 @@ export type SalonUncheckedCreateWithoutVendorsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -12902,6 +13070,7 @@ export type SalonUpdateWithoutVendorsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -12974,6 +13143,7 @@ export type SalonUncheckedUpdateWithoutVendorsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13046,6 +13216,7 @@ export type SalonCreateWithoutVendorPaymentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13118,6 +13289,7 @@ export type SalonUncheckedCreateWithoutVendorPaymentsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13206,6 +13378,7 @@ export type SalonUpdateWithoutVendorPaymentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13278,6 +13451,7 @@ export type SalonUncheckedUpdateWithoutVendorPaymentsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13350,6 +13524,7 @@ export type SalonCreateWithoutStockAlertsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13422,6 +13597,7 @@ export type SalonUncheckedCreateWithoutStockAlertsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13510,6 +13686,7 @@ export type SalonUpdateWithoutStockAlertsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13582,6 +13759,7 @@ export type SalonUncheckedUpdateWithoutStockAlertsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13654,6 +13832,7 @@ export type SalonCreateWithoutReorderSuggestionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13726,6 +13905,7 @@ export type SalonUncheckedCreateWithoutReorderSuggestionsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -13814,6 +13994,7 @@ export type SalonUpdateWithoutReorderSuggestionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13886,6 +14067,7 @@ export type SalonUncheckedUpdateWithoutReorderSuggestionsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -13958,6 +14140,7 @@ export type SalonCreateWithoutAuditLogsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14030,6 +14213,7 @@ export type SalonUncheckedCreateWithoutAuditLogsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14118,6 +14302,7 @@ export type SalonUpdateWithoutAuditLogsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14190,6 +14375,7 @@ export type SalonUncheckedUpdateWithoutAuditLogsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14262,6 +14448,7 @@ export type SalonCreateWithoutRetailSalesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14334,6 +14521,7 @@ export type SalonUncheckedCreateWithoutRetailSalesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14422,6 +14610,7 @@ export type SalonUpdateWithoutRetailSalesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14494,6 +14683,7 @@ export type SalonUncheckedUpdateWithoutRetailSalesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14566,6 +14756,7 @@ export type SalonCreateWithoutExpensesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14638,6 +14829,7 @@ export type SalonUncheckedCreateWithoutExpensesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14726,6 +14918,7 @@ export type SalonUpdateWithoutExpensesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14798,6 +14991,7 @@ export type SalonUncheckedUpdateWithoutExpensesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -14870,6 +15064,7 @@ export type SalonCreateWithoutExpenseCategoriesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -14942,6 +15137,7 @@ export type SalonUncheckedCreateWithoutExpenseCategoriesInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -15030,6 +15226,7 @@ export type SalonUpdateWithoutExpenseCategoriesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -15102,6 +15299,7 @@ export type SalonUncheckedUpdateWithoutExpenseCategoriesInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -15174,6 +15372,7 @@ export type SalonCreateWithoutSupportTicketsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -15246,6 +15445,7 @@ export type SalonUncheckedCreateWithoutSupportTicketsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -15334,6 +15534,7 @@ export type SalonUpdateWithoutSupportTicketsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -15406,6 +15607,7 @@ export type SalonUncheckedUpdateWithoutSupportTicketsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -15478,6 +15680,7 @@ export type SalonCreateWithoutSalonAssistantConversationsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -15550,6 +15753,7 @@ export type SalonUncheckedCreateWithoutSalonAssistantConversationsInput = {
   productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Date | string | null
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: string | null
   addressLine2?: string | null
   city?: string | null
@@ -15638,6 +15842,7 @@ export type SalonUpdateWithoutSalonAssistantConversationsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -15710,6 +15915,7 @@ export type SalonUncheckedUpdateWithoutSalonAssistantConversationsInput = {
   productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
   addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -16218,6 +16424,7 @@ export type SalonSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   productGstRate?: boolean
   gstVerifiedAt?: boolean
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: boolean
   addressLine2?: boolean
   city?: boolean
@@ -16292,6 +16499,7 @@ export type SalonSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   productGstRate?: boolean
   gstVerifiedAt?: boolean
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: boolean
   addressLine2?: boolean
   city?: boolean
@@ -16319,6 +16527,7 @@ export type SalonSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   productGstRate?: boolean
   gstVerifiedAt?: boolean
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: boolean
   addressLine2?: boolean
   city?: boolean
@@ -16346,6 +16555,7 @@ export type SalonSelectScalar = {
   productGstRate?: boolean
   gstVerifiedAt?: boolean
   membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
   addressLine1?: boolean
   addressLine2?: boolean
   city?: boolean
@@ -16358,7 +16568,7 @@ export type SalonSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SalonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "salonCode" | "timezone" | "status" | "gstEnabled" | "gstNumber" | "gstLegalName" | "gstStateCode" | "serviceGstRate" | "productGstRate" | "gstVerifiedAt" | "membershipDiscountOnPackages" | "addressLine1" | "addressLine2" | "city" | "state" | "country" | "postalCode" | "phone" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["salon"]>
+export type SalonOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "legalName" | "salonCode" | "timezone" | "status" | "gstEnabled" | "gstNumber" | "gstLegalName" | "gstStateCode" | "serviceGstRate" | "productGstRate" | "gstVerifiedAt" | "membershipDiscountOnPackages" | "stackMembershipDiscount" | "addressLine1" | "addressLine2" | "city" | "state" | "country" | "postalCode" | "phone" | "email" | "createdAt" | "updatedAt", ExtArgs["result"]["salon"]>
 export type SalonInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   branches?: boolean | Prisma.Salon$branchesArgs<ExtArgs>
   publicBookingSettings?: boolean | Prisma.Salon$publicBookingSettingsArgs<ExtArgs>
@@ -16480,6 +16690,12 @@ export type $SalonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
      * Off by default: packages are already sold at a discounted price.
      */
     membershipDiscountOnPackages: boolean
+    /**
+     * When false (default) a customer whose membership carries a discount gets
+     * that discount only: no service below catalogue price and no overall
+     * discount on the same bill. When true both stack.
+     */
+    stackMembershipDiscount: boolean
     addressLine1: string | null
     addressLine2: string | null
     city: string | null
@@ -16973,6 +17189,7 @@ export interface SalonFieldRefs {
   readonly productGstRate: Prisma.FieldRef<"Salon", 'Decimal'>
   readonly gstVerifiedAt: Prisma.FieldRef<"Salon", 'DateTime'>
   readonly membershipDiscountOnPackages: Prisma.FieldRef<"Salon", 'Boolean'>
+  readonly stackMembershipDiscount: Prisma.FieldRef<"Salon", 'Boolean'>
   readonly addressLine1: Prisma.FieldRef<"Salon", 'String'>
   readonly addressLine2: Prisma.FieldRef<"Salon", 'String'>
   readonly city: Prisma.FieldRef<"Salon", 'String'>

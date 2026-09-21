@@ -30,6 +30,11 @@ model Salon {
   /// Off by default: packages are already sold at a discounted price.
   membershipDiscountOnPackages Boolean @default(false)
 
+  /// When false (default) a customer whose membership carries a discount gets
+  /// that discount only: no service below catalogue price and no overall
+  /// discount on the same bill. When true both stack.
+  stackMembershipDiscount Boolean @default(false)
+
   branches              Branch[]
   publicBookingSettings PublicBookingSetting[]
 

@@ -121,6 +121,7 @@ const jobCartInclude = {
       serviceGstRate: true,
       productGstRate: true,
       membershipDiscountOnPackages: true,
+      stackMembershipDiscount: true,
     },
   },
   branch: { select: { id: true, name: true } },
@@ -153,6 +154,7 @@ const jobCartInclude = {
           id: true,
           name: true,
           status: true,
+          price: true,
           durationValue: true,
           durationUnit: true,
         },
@@ -628,6 +630,41 @@ const isMembershipDiscountable = (
   return true;
 };
 
+/**
+ * Stacking off (the salon default): a member whose plan carries a discount
+ * gets that discount and nothing else - no service priced below its catalogue
+ * rate, no overall discount typed in at billing. Checked when the cart is
+ * created and again at confirm, which also catches a membership bought after
+ * the cart was discounted.
+ */
+const assertNoStackedDiscount = (
+  salon: { stackMembershipDiscount: boolean },
+  membershipPercent: Prisma.Decimal | null | undefined,
+  lines: Array<{
+    name: string;
+    price: Prisma.Decimal | number;
+    catalogue: Prisma.Decimal | number;
+  }>,
+  manualDiscount: Prisma.Decimal = new Prisma.Decimal(0)
+) => {
+  if (salon.stackMembershipDiscount || !membershipPercent?.gt(0)) return;
+  // ponytail: compares against today's catalogue price, so a price rise between
+  // create and confirm reads as a discount; snapshot the rate on the line if
+  // that ever bites.
+  const discounted = lines.find((line) =>
+    new Prisma.Decimal(line.price).lt(line.catalogue)
+  );
+  if (!discounted && !manualDiscount.gt(0)) return;
+  throw new JobCartError(
+    400,
+    `${
+      discounted
+        ? `${discounted.name} is priced below its catalogue rate`
+        : "An extra discount was added"
+    }, but this customer's membership discount already applies. Stacking discounts is turned off in Settings.`
+  );
+};
+
 const recalculateCart = async (
   tx: TransactionClient,
   appointmentId: string,
@@ -1046,6 +1083,7 @@ export const getJobCartReferences = async (
       name: true,
       gstEnabled: true,
       serviceGstRate: true,
+      stackMembershipDiscount: true,
     },
   });
   const branchId = scopedBranchId(actor) ?? requestedBranchId;
@@ -1593,6 +1631,15 @@ export const createJobCart = async (
       actor,
       audit,
     });
+    assertNoStackedDiscount(
+      salon,
+      membership?.discountPercentageSnapshot,
+      services.map((service) => ({
+        name: service.name,
+        price: lineOf(service).price,
+        catalogue: service.price,
+      }))
+    );
     const subtotal = services.reduce(
       (sum, service) => sum.add(lineOf(service).lineTotal),
       new Prisma.Decimal(0)
@@ -1681,6 +1728,10 @@ export const createJobCart = async (
         items: services.map((service, index) => {
           const serviceStaffId = staffByServiceId.get(service.id);
           const line = calculation.lines[index]!;
+          // Same override the cart line and subtotal use. Confirm re-prices the
+          // bill from these rows, so the catalogue price here overcharged any
+          // service whose price was changed on the form.
+          const priced = lineOf(service);
           return {
             itemType: "SERVICE" as const,
             serviceId: service.id,
@@ -1688,8 +1739,8 @@ export const createJobCart = async (
             itemCode: service.id.slice(0, 8),
             description: service.name,
             serviceName: service.name,
-            quantity: 1,
-            unitPrice: Number(service.price),
+            quantity: priced.quantity,
+            unitPrice: priced.price,
             discountAmount: line.discountAmount,
             taxableAmount: line.taxableAmount,
             gstRateSnapshot: line.gstRateSnapshot,
@@ -2722,6 +2773,18 @@ export const confirmJobCart = async (
       actor,
       audit,
     });
+    assertNoStackedDiscount(
+      existing.salon,
+      currentMembership?.discountPercentageSnapshot,
+      existing.services
+        .filter((item) => !item.customerPackageUsageItemId)
+        .map((item) => ({
+          name: item.serviceName,
+          price: item.price,
+          catalogue: item.service.price,
+        })),
+      manualDiscount
+    );
     // Only the lines a membership may touch form the base, so products (and
     // packages, unless the salon opted in) are billed at full price.
     const membershipDiscountableSubtotal = existing.invoice.items.reduce(

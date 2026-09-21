@@ -95,6 +95,7 @@ const Management = () => {
   const [gstError, setGstError] = useState("");
   const [gstMessage, setGstMessage] = useState("");
   const [gstSaving, setGstSaving] = useState(false);
+  const [stackDiscount, setStackDiscount] = useState(false);
 
   const loadRefs = useCallback(async () => {
     const calls = [
@@ -130,7 +131,7 @@ const Management = () => {
     ...(isSuper ? [{ id: "salons", label: "Salons" }] : []),
     { id: "branches", label: "Branches" },
     { id: "staff", label: "Staff" },
-    ...(isSalonWide ? [{ id: "gst", label: "GST" }] : []),
+    ...(isSalonWide ? [{ id: "settings", label: "Settings" }] : []),
     ...(isManager ? [{ id: "accounts", label: "User accounts" }] : []),
   ];
 
@@ -150,9 +151,32 @@ const Management = () => {
         serviceGstRate: String(data.serviceGstRate ?? "5.00"),
         productGstRate: String(data.productGstRate ?? "18.00"),
       });
+      setStackDiscount(Boolean(data.stackMembershipDiscount));
     },
     [gstSalonId, isSuper]
   );
+
+  // Saved on its own the moment it flips: sending only this key leaves the GST
+  // fields (and their verification) untouched on the server.
+  const saveStackDiscount = async (value) => {
+    setStackDiscount(value);
+    setGstError("");
+    setGstMessage("");
+    try {
+      await salonApi.salons.updateGstSettings(
+        { stackMembershipDiscount: value },
+        isSuper ? gstSalonId : undefined
+      );
+      setGstMessage(
+        value
+          ? "Members can now get extra discounts on top of their membership."
+          : "Members now get their membership discount only."
+      );
+    } catch (error) {
+      setStackDiscount(!value);
+      setGstError(error.message);
+    }
+  };
 
   useEffect(() => {
     if (!isManager) return;
@@ -427,12 +451,12 @@ const Management = () => {
             }
           />
         </TabPane>
-        <TabPane tabId="gst">
+        <TabPane tabId="settings">
+          {gstError && <Alert color="danger">{gstError}</Alert>}
+          {gstMessage && <Alert color="success">{gstMessage}</Alert>}
           <div className="card card-bordered">
             <div className="card-inner">
               <h5 className="title">GST configuration</h5>
-              {gstError && <Alert color="danger">{gstError}</Alert>}
-              {gstMessage && <Alert color="success">{gstMessage}</Alert>}
               <form onSubmit={saveGstSettings}>
                 {isSuper && (
                   <FormGroup>
@@ -552,6 +576,32 @@ const Management = () => {
                   <Icon name="save" /> {gstSaving ? "Saving" : "Save GST"}
                 </Button>
               </form>
+            </div>
+          </div>
+          <div className="card card-bordered mt-4">
+            <div className="card-inner">
+              <h5 className="title">Discounts</h5>
+              <div className="custom-control custom-switch">
+                <input
+                  type="checkbox"
+                  className="custom-control-input"
+                  id="stack-membership-discount"
+                  checked={stackDiscount}
+                  disabled={isSuper && !gstSalonId}
+                  onChange={(event) => saveStackDiscount(event.target.checked)}
+                />
+                <label
+                  className="custom-control-label"
+                  htmlFor="stack-membership-discount"
+                >
+                  Allow extra discounts on top of a membership discount
+                </label>
+              </div>
+              <p className="text-soft small mt-2 mb-0">
+                {stackDiscount
+                  ? "On: a member gets their membership discount plus any discount given on the job cart."
+                  : "Off: a member gets their membership discount only. Per-service and overall discounts are blocked for them."}
+              </p>
             </div>
           </div>
         </TabPane>

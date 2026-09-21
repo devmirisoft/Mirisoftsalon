@@ -5,6 +5,7 @@ import { awardInvoiceLoyaltyInTransaction } from "../Invoices/invoice-retention.
 import {
   getSpendableWalletForCustomer,
   spendFromMembershipWallet,
+  walletPayableFor,
 } from "../membership-wallets/membership-wallet.service.js";
 import type { CustomerMembershipActor } from "../customer-memberships/customer-membership.service.js";
 
@@ -91,17 +92,34 @@ export const settleInvoiceInTransaction = async (
   }
 
   const now = input.paidAt ?? new Date();
+  const walletCap =
+    input.method === "MEMBERSHIP_WALLET"
+      ? await walletPayableFor(tx, invoice)
+      : null;
   const requested =
     input.amount === undefined
-      ? invoice.balanceAmount
+      ? walletCap
+        ? Prisma.Decimal.min(invoice.balanceAmount, walletCap)
+        : invoice.balanceAmount
       : new Prisma.Decimal(input.amount).toDecimalPlaces(2);
   if (requested.lte(zero)) {
-    throw new SettleInvoiceError(400, "Amount must be greater than 0");
+    throw new SettleInvoiceError(
+      400,
+      walletCap?.lte(zero)
+        ? "Membership wallet pays for services only, and this bill has none left to pay"
+        : "Amount must be greater than 0"
+    );
   }
   if (requested.gt(invoice.balanceAmount)) {
     throw new SettleInvoiceError(
       400,
       "Payment amount cannot be greater than invoice balance"
+    );
+  }
+  if (walletCap && requested.gt(walletCap)) {
+    throw new SettleInvoiceError(
+      400,
+      `Membership wallet pays for services only: at most ${walletCap} on this bill`
     );
   }
 

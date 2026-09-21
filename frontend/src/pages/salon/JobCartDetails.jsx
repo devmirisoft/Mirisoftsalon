@@ -312,7 +312,12 @@ const JobCartDetails = () => {
   const invoice = cart?.invoice;
   const subtotalAmount = Number(invoice?.subtotalAmount || 0);
   const discountInput = Number(billingForm.discountAmount || 0);
-  const manualDiscount = !active
+  // Stacking off (Settings): a member gets their membership discount only, so
+  // the overall discount is locked at zero. The server refuses it too.
+  const discountsLocked =
+    Number(customerSummary?.membershipDiscountPercentage || 0) > 0 &&
+    !cart?.salon?.stackMembershipDiscount;
+  const manualDiscount = !active || discountsLocked
     ? 0
     : discountMode === "PERCENT"
       ? (subtotalAmount * Math.min(Math.max(discountInput, 0), 100)) / 100
@@ -466,10 +471,16 @@ const JobCartDetails = () => {
   );
   const singleFullTender =
     activeTenders.length === 1 && !activeTenders[0].amount;
+  // The wallet pays for services only (walletPayableFor on the server): the
+  // payable less every product, package and membership line.
+  const nonServiceTotal = tableItems
+    .filter((item) => ["PRODUCT", "PACKAGE", "MEMBERSHIP"].includes(item.itemType))
+    .reduce((total, item) => total + Number(item.lineTotal || 0), 0);
+  const walletCap = Math.max(payableAmount - nonServiceTotal, 0);
   const singleFullAmount = !singleFullTender
     ? 0
     : activeTenders[0].method === "MEMBERSHIP_WALLET"
-      ? Math.min(membershipWalletBalance, payableAmount)
+      ? Math.min(membershipWalletBalance, walletCap)
       : payableAmount;
   const collectedAmount = singleFullTender ? singleFullAmount : tenderTotal;
   const outstandingAfter = Math.max(payableAmount - collectedAmount, 0);
@@ -484,20 +495,19 @@ const JobCartDetails = () => {
     walletTender &&
     (singleFullTender ? singleFullAmount : Number(walletTender.amount || 0)) >
       membershipWalletBalance + 0.004;
-  // Membership / package split for the pay modal: the wallet settles services
-  // and packages first; whatever it leaves rides on the products' payment.
+  // Split for the pay modal: the wallet settles services; products, packages
+  // and memberships ride on another payment.
   const walletPaid = walletTender
     ? singleFullTender
       ? singleFullAmount
       : Number(walletTender.amount || 0)
     : 0;
-  const serviceLinesTotal = tableItems
-    .filter((item) => item.itemType !== "PRODUCT")
-    .reduce((total, item) => total + Number(item.lineTotal || 0), 0);
+  const walletOverCap = Boolean(walletTender) && walletPaid > walletCap + 0.004;
+  const serviceLinesTotal = walletCap;
   const walletOnServices = Math.min(walletPaid, serviceLinesTotal);
   const serviceShortfall = serviceLinesTotal - walletOnServices;
   const restAmount = Math.max(payableAmount - walletOnServices, 0);
-  const hasProducts = tableItems.some((item) => item.itemType === "PRODUCT");
+  const hasProducts = nonServiceTotal > 0.004;
   const restMethods = activeTenders
     .filter(
       (tender) =>
@@ -1077,6 +1087,7 @@ const JobCartDetails = () => {
                               bsSize="sm"
                               style={{ flex: "0 0 150px" }}
                               value={discountMode}
+                              disabled={discountsLocked}
                               onChange={(event) =>
                                 setDiscountMode(event.target.value)
                               }
@@ -1093,7 +1104,8 @@ const JobCartDetails = () => {
                                   discountMode === "PERCENT" ? "100" : undefined
                                 }
                                 step="0.01"
-                                value={billingForm.discountAmount}
+                                value={discountsLocked ? "" : billingForm.discountAmount}
+                                disabled={discountsLocked}
                                 onChange={(event) =>
                                   setBillingForm((current) => ({
                                     ...current,
@@ -1110,6 +1122,9 @@ const JobCartDetails = () => {
                             <small className="text-soft d-block mt-1">
                               Membership discount included:{" "}
                               {formatMoney(membershipDiscount)}
+                              {discountsLocked
+                                ? ". Extra discounts are off in Settings."
+                                : ""}
                             </small>
                           )}
                         </Col>
@@ -1777,6 +1792,12 @@ const JobCartDetails = () => {
                 Wallet has {formatMoney(membershipWalletBalance)}. Reduce this
                 tender and add another method for the rest.
               </Alert>
+            ) : walletOverCap ? (
+              <Alert color="warning" className="py-2">
+                The membership wallet pays for services only, up to{" "}
+                {formatMoney(walletCap)} on this bill. Pay products, packages
+                and memberships with another method.
+              </Alert>
             ) : overpaying ? (
               <Alert color="danger" className="py-2">
                 Collecting {formatMoney(collectedAmount)} exceeds the{" "}
@@ -1802,7 +1823,7 @@ const JobCartDetails = () => {
               <div className="jcp-panel mt-2">
                 <div className="jcp-line">
                   <span>
-                    Services &amp; Packages
+                    Services
                     <span className="d-block small text-soft">
                       Mode of payment:{" "}
                       {[
@@ -1814,7 +1835,7 @@ const JobCartDetails = () => {
                       {walletTender && serviceShortfall > 0.004
                         ? ` (covers ${formatMoney(walletOnServices)}, ${formatMoney(
                             serviceShortfall
-                          )} added to ${hasProducts ? "products" : "the balance"})`
+                          )} added to ${hasProducts ? "the other items" : "the balance"})`
                         : ""}
                     </span>
                   </span>
@@ -1825,7 +1846,7 @@ const JobCartDetails = () => {
                 {restAmount > 0.004 && (
                   <div className="jcp-line">
                     <span>
-                      {hasProducts ? "Products" : "Remaining"}
+                      {hasProducts ? "Products, packages & memberships" : "Remaining"}
                       {hasProducts && serviceShortfall > 0.004
                         ? " + remaining services"
                         : ""}
@@ -1931,7 +1952,7 @@ const JobCartDetails = () => {
               <Button
                 className="jcp-pay"
                 onClick={confirm}
-                disabled={working || overpaying || walletShort}
+                disabled={working || overpaying || walletShort || walletOverCap}
               >
                 {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
                 <span>

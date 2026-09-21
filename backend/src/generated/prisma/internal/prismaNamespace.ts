@@ -4807,6 +4807,7 @@ export const SalonScalarFieldEnum = {
   productGstRate: 'productGstRate',
   gstVerifiedAt: 'gstVerifiedAt',
   membershipDiscountOnPackages: 'membershipDiscountOnPackages',
+  stackMembershipDiscount: 'stackMembershipDiscount',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',

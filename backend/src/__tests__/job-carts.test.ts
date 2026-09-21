@@ -364,6 +364,33 @@ describe("Walk-in job carts", () => {
     ).toBe(1);
   });
 
+  it("bills the price and quantity set on the create form, not the catalogue", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      serviceItems: [
+        { serviceId: f.service.id, price: 100 },
+        { serviceId: f.secondService.id, quantity: 2 },
+      ],
+    });
+    expect(created.status).toBe(201);
+
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .expect(200);
+
+    // 100 x1 + 300 x2. The catalogue (500 x1 + 300 x1) would bill 800.
+    const invoice = confirmed.body.data.invoice;
+    expect(Number(invoice.subtotalAmount)).toBe(700);
+    expect(Number(invoice.totalAmount)).toBe(700);
+    const lines = new Map(
+      invoice.items.map((item: { serviceId: string }) => [item.serviceId, item])
+    );
+    expect(lines.get(f.service.id)).toMatchObject({ quantity: 1 });
+    expect(Number((lines.get(f.service.id) as { unitPrice: string }).unitPrice)).toBe(100);
+    expect(lines.get(f.secondService.id)).toMatchObject({ quantity: 2 });
+  });
+
   it("issues the invoice and marks it paid when payment is collected on confirm", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {
@@ -538,6 +565,147 @@ describe("Walk-in job carts", () => {
         ).walletBalance
       )
     ).toBe(0);
+  });
+
+  it("lets the membership wallet pay for services only", async () => {
+    const f = await fixture();
+    const membership = await prisma.membership.create({
+      data: {
+        name: `Services Wallet ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 0,
+        durationMonths: 12,
+      },
+    });
+    const product = await prisma.product.create({
+      data: {
+        name: `Retail Shampoo ${randomUUID()}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        currentStock: 5,
+        sellingPrice: 200,
+      },
+    });
+    const cart = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    const id = cart.body.data.id as string;
+    await request(app)
+      .post(`/api/job-carts/${id}/items`)
+      .set(auth(f.adminToken))
+      .send({ itemType: "PRODUCT", productId: product.id, quantity: 1 })
+      .expect(200);
+    await prisma.customerMembership.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: cart.body.data.customerId,
+        membershipId: membership.id,
+        membershipNameSnapshot: membership.name,
+        discountPercentageSnapshot: 0,
+        durationMonthsSnapshot: 12,
+        startsAt: new Date("2020-01-01T00:00:00.000Z"),
+        expiresAt: new Date("2040-01-01T00:00:00.000Z"),
+        status: "ACTIVE",
+        walletCredited: 2000,
+        walletBalance: 2000,
+      },
+    });
+
+    // 500 service + 200 product: the wallet may not touch the product.
+    const all = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "MEMBERSHIP_WALLET", amount: 700 } });
+    expect(all.status).toBe(400);
+    expect(all.body.message).toMatch(/services only/);
+
+    const split = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({
+        payments: [
+          { method: "MEMBERSHIP_WALLET", amount: 500 },
+          { method: "CASH", amount: 200 },
+        ],
+      });
+    expect(split.status).toBe(200);
+    expect(split.body.data.invoice.paymentStatus).toBe("PAID");
+    expect(
+      Number(
+        (
+          await prisma.customerMembership.findFirstOrThrow({
+            where: { customerId: cart.body.data.customerId },
+          })
+        ).walletBalance
+      )
+    ).toBe(1500);
+  });
+
+  it("gives a member only the membership discount unless the salon allows stacking", async () => {
+    const f = await fixture();
+    const customer = await prisma.customer.create({
+      data: {
+        customerCode: `JC-${randomUUID()}`,
+        name: "Walk-in Customer",
+        phone: "+91 98765 43210",
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+      },
+    });
+    const plan = await prisma.membership.create({
+      data: {
+        name: `Stack Plan ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 15,
+        durationMonths: 12,
+      },
+    });
+    await prisma.customerMembership.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: customer.id,
+        membershipId: plan.id,
+        membershipNameSnapshot: plan.name,
+        discountPercentageSnapshot: 15,
+        durationMonthsSnapshot: 12,
+        startsAt: new Date("2020-01-01T00:00:00.000Z"),
+        expiresAt: new Date("2040-01-01T00:00:00.000Z"),
+        status: "ACTIVE",
+      },
+    });
+    const member = { phone: "+91 98765 43210" };
+    // 50% off the 500 catalogue haircut.
+    const discounted = {
+      ...member,
+      serviceItems: [{ serviceId: f.service.id, price: 250 }],
+    };
+
+    const refused = await createCart(f, f.adminToken, discounted);
+    expect(refused.status).toBe(400);
+    expect(refused.body.message).toMatch(/Stacking discounts is turned off/);
+
+    const plain = await createCart(f, f.adminToken, member);
+    expect(plain.status).toBe(201);
+    const extra = await request(app)
+      .post(`/api/job-carts/${plain.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ discountAmount: 50 });
+    expect(extra.status).toBe(400);
+
+    await prisma.salon.update({
+      where: { id: f.salon.id },
+      data: { stackMembershipDiscount: true },
+    });
+    const stacked = await createCart(f, f.adminToken, discounted);
+    expect(stacked.status).toBe(201);
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${stacked.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .expect(200);
+    // 250 less 15% = 212.50, billed in whole rupees.
+    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(213);
   });
 
   it("cancels an active cart and blocks edits to cancelled or completed carts", async () => {

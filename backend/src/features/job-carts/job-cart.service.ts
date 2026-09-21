@@ -1084,6 +1084,7 @@ export const getJobCartReferences = async (
       gstEnabled: true,
       serviceGstRate: true,
       stackMembershipDiscount: true,
+      membershipDiscountOnPackages: true,
     },
   });
   const branchId = scopedBranchId(actor) ?? requestedBranchId;

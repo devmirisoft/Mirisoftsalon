@@ -11,6 +11,7 @@ import {
   Spinner,
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
+import { Select } from "@/components/select/PortalSelect";
 import { salonApi } from "@/services/salonApi";
 import { formatMoney } from "@/utils/salonFormat";
 import { PAYMENT_METHODS } from "@/utils/paymentMethods";
@@ -152,6 +153,12 @@ const QuickSell = ({ kind, onClose }) => {
   };
 
   const customerName = existing ? existing.name : name.trim();
+
+  const staffOptions = useMemo(
+    () =>
+      refs.staff.map((member) => ({ value: member.id, label: member.name })),
+    [refs.staff]
+  );
 
   const visible = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -484,18 +491,17 @@ const QuickSell = ({ kind, onClose }) => {
                 <Label className="quick-sell-label">
                   <Icon name="tag" /> Sold by
                 </Label>
-                <Input
-                  type="select"
-                  value={staffId}
-                  onChange={(event) => setStaffId(event.target.value)}
-                >
-                  <option value="">Not recorded</option>
-                  {refs.staff.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.name}
-                    </option>
-                  ))}
-                </Input>
+                <Select
+                  isClearable
+                  placeholder="Not recorded"
+                  isDisabled={working}
+                  options={staffOptions}
+                  value={
+                    staffOptions.find((option) => option.value === staffId) ||
+                    null
+                  }
+                  onChange={(option) => setStaffId(option?.value || "")}
+                />
               </Col>
               <Col md="6">
                 <Label className="quick-sell-label">

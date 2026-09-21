@@ -662,7 +662,7 @@ export type $ExpenseCategoryDefinitionPayload<ExtArgs extends runtime.Types.Exte
 export type ExpenseCategoryDefinitionGetPayload<S extends boolean | null | undefined | ExpenseCategoryDefinitionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ExpenseCategoryDefinitionPayload, S>
 
 export type ExpenseCategoryDefinitionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ExpenseCategoryDefinitionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ExpenseCategoryDefinitionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ExpenseCategoryDefinitionCountAggregateInputType | true
   }
 
@@ -1110,6 +1110,7 @@ export type ExpenseCategoryDefinitionFindUniqueArgs<ExtArgs extends runtime.Type
    * Filter, which ExpenseCategoryDefinition to fetch.
    */
   where: Prisma.ExpenseCategoryDefinitionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1132,6 +1133,7 @@ export type ExpenseCategoryDefinitionFindUniqueOrThrowArgs<ExtArgs extends runti
    * Filter, which ExpenseCategoryDefinition to fetch.
    */
   where: Prisma.ExpenseCategoryDefinitionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1184,6 +1186,7 @@ export type ExpenseCategoryDefinitionFindFirstArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of ExpenseCategoryDefinitions.
    */
   distinct?: Prisma.ExpenseCategoryDefinitionScalarFieldEnum | Prisma.ExpenseCategoryDefinitionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1236,6 +1239,7 @@ export type ExpenseCategoryDefinitionFindFirstOrThrowArgs<ExtArgs extends runtim
    * Filter by unique combinations of ExpenseCategoryDefinitions.
    */
   distinct?: Prisma.ExpenseCategoryDefinitionScalarFieldEnum | Prisma.ExpenseCategoryDefinitionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1288,6 +1292,7 @@ export type ExpenseCategoryDefinitionFindManyArgs<ExtArgs extends runtime.Types.
    * Filter by unique combinations of ExpenseCategoryDefinitions.
    */
   distinct?: Prisma.ExpenseCategoryDefinitionScalarFieldEnum | Prisma.ExpenseCategoryDefinitionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1310,6 +1315,7 @@ export type ExpenseCategoryDefinitionCreateArgs<ExtArgs extends runtime.Types.Ex
    * The data needed to create a ExpenseCategoryDefinition.
    */
   data: Prisma.XOR<Prisma.ExpenseCategoryDefinitionCreateInput, Prisma.ExpenseCategoryDefinitionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1370,6 +1376,7 @@ export type ExpenseCategoryDefinitionUpdateArgs<ExtArgs extends runtime.Types.Ex
    * Choose, which ExpenseCategoryDefinition to update.
    */
   where: Prisma.ExpenseCategoryDefinitionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1448,6 +1455,7 @@ export type ExpenseCategoryDefinitionUpsertArgs<ExtArgs extends runtime.Types.Ex
    * In case the ExpenseCategoryDefinition was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ExpenseCategoryDefinitionUpdateInput, Prisma.ExpenseCategoryDefinitionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1470,6 +1478,7 @@ export type ExpenseCategoryDefinitionDeleteArgs<ExtArgs extends runtime.Types.Ex
    * Filter which ExpenseCategoryDefinition to delete.
    */
   where: Prisma.ExpenseCategoryDefinitionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

@@ -16497,7 +16497,7 @@ export type $SalonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type SalonGetPayload<S extends boolean | null | undefined | SalonDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SalonPayload, S>
 
 export type SalonCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SalonFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SalonFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SalonCountAggregateInputType | true
   }
 
@@ -17007,6 +17007,7 @@ export type SalonFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Filter, which Salon to fetch.
    */
   where: Prisma.SalonWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17029,6 +17030,7 @@ export type SalonFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter, which Salon to fetch.
    */
   where: Prisma.SalonWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17081,6 +17083,7 @@ export type SalonFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter by unique combinations of Salons.
    */
   distinct?: Prisma.SalonScalarFieldEnum | Prisma.SalonScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17133,6 +17136,7 @@ export type SalonFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter by unique combinations of Salons.
    */
   distinct?: Prisma.SalonScalarFieldEnum | Prisma.SalonScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17185,6 +17189,7 @@ export type SalonFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Filter by unique combinations of Salons.
    */
   distinct?: Prisma.SalonScalarFieldEnum | Prisma.SalonScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17207,6 +17212,7 @@ export type SalonCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * The data needed to create a Salon.
    */
   data: Prisma.XOR<Prisma.SalonCreateInput, Prisma.SalonUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17263,6 +17269,7 @@ export type SalonUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Choose, which Salon to update.
    */
   where: Prisma.SalonWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17337,6 +17344,7 @@ export type SalonUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * In case the Salon was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SalonUpdateInput, Prisma.SalonUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -17359,6 +17367,7 @@ export type SalonDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Filter which Salon to delete.
    */
   where: Prisma.SalonWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

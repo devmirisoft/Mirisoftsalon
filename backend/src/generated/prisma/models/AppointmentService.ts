@@ -1233,7 +1233,7 @@ export type $AppointmentServicePayload<ExtArgs extends runtime.Types.Extensions.
 export type AppointmentServiceGetPayload<S extends boolean | null | undefined | AppointmentServiceDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AppointmentServicePayload, S>
 
 export type AppointmentServiceCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<AppointmentServiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<AppointmentServiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: AppointmentServiceCountAggregateInputType | true
   }
 
@@ -1688,6 +1688,7 @@ export type AppointmentServiceFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which AppointmentService to fetch.
    */
   where: Prisma.AppointmentServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1710,6 +1711,7 @@ export type AppointmentServiceFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    * Filter, which AppointmentService to fetch.
    */
   where: Prisma.AppointmentServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1762,6 +1764,7 @@ export type AppointmentServiceFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of AppointmentServices.
    */
   distinct?: Prisma.AppointmentServiceScalarFieldEnum | Prisma.AppointmentServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1814,6 +1817,7 @@ export type AppointmentServiceFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of AppointmentServices.
    */
   distinct?: Prisma.AppointmentServiceScalarFieldEnum | Prisma.AppointmentServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1866,6 +1870,7 @@ export type AppointmentServiceFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of AppointmentServices.
    */
   distinct?: Prisma.AppointmentServiceScalarFieldEnum | Prisma.AppointmentServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1888,6 +1893,7 @@ export type AppointmentServiceCreateArgs<ExtArgs extends runtime.Types.Extension
    * The data needed to create a AppointmentService.
    */
   data: Prisma.XOR<Prisma.AppointmentServiceCreateInput, Prisma.AppointmentServiceUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1948,6 +1954,7 @@ export type AppointmentServiceUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Choose, which AppointmentService to update.
    */
   where: Prisma.AppointmentServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2026,6 +2033,7 @@ export type AppointmentServiceUpsertArgs<ExtArgs extends runtime.Types.Extension
    * In case the AppointmentService was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.AppointmentServiceUpdateInput, Prisma.AppointmentServiceUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2048,6 +2056,7 @@ export type AppointmentServiceDeleteArgs<ExtArgs extends runtime.Types.Extension
    * Filter which AppointmentService to delete.
    */
   where: Prisma.AppointmentServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

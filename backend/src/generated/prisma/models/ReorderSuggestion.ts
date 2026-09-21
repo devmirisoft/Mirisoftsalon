@@ -1376,7 +1376,7 @@ export type $ReorderSuggestionPayload<ExtArgs extends runtime.Types.Extensions.I
 export type ReorderSuggestionGetPayload<S extends boolean | null | undefined | ReorderSuggestionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ReorderSuggestionPayload, S>
 
 export type ReorderSuggestionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ReorderSuggestionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ReorderSuggestionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ReorderSuggestionCountAggregateInputType | true
   }
 
@@ -1832,6 +1832,7 @@ export type ReorderSuggestionFindUniqueArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which ReorderSuggestion to fetch.
    */
   where: Prisma.ReorderSuggestionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1854,6 +1855,7 @@ export type ReorderSuggestionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types
    * Filter, which ReorderSuggestion to fetch.
    */
   where: Prisma.ReorderSuggestionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1906,6 +1908,7 @@ export type ReorderSuggestionFindFirstArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of ReorderSuggestions.
    */
   distinct?: Prisma.ReorderSuggestionScalarFieldEnum | Prisma.ReorderSuggestionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1958,6 +1961,7 @@ export type ReorderSuggestionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.
    * Filter by unique combinations of ReorderSuggestions.
    */
   distinct?: Prisma.ReorderSuggestionScalarFieldEnum | Prisma.ReorderSuggestionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2010,6 +2014,7 @@ export type ReorderSuggestionFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Filter by unique combinations of ReorderSuggestions.
    */
   distinct?: Prisma.ReorderSuggestionScalarFieldEnum | Prisma.ReorderSuggestionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2032,6 +2037,7 @@ export type ReorderSuggestionCreateArgs<ExtArgs extends runtime.Types.Extensions
    * The data needed to create a ReorderSuggestion.
    */
   data: Prisma.XOR<Prisma.ReorderSuggestionCreateInput, Prisma.ReorderSuggestionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2092,6 +2098,7 @@ export type ReorderSuggestionUpdateArgs<ExtArgs extends runtime.Types.Extensions
    * Choose, which ReorderSuggestion to update.
    */
   where: Prisma.ReorderSuggestionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2170,6 +2177,7 @@ export type ReorderSuggestionUpsertArgs<ExtArgs extends runtime.Types.Extensions
    * In case the ReorderSuggestion was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ReorderSuggestionUpdateInput, Prisma.ReorderSuggestionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2192,6 +2200,7 @@ export type ReorderSuggestionDeleteArgs<ExtArgs extends runtime.Types.Extensions
    * Filter which ReorderSuggestion to delete.
    */
   where: Prisma.ReorderSuggestionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

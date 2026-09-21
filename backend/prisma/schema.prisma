@@ -1,6 +1,9 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
+  // A job cart include is 15 separate SELECTs without this; against a remote DB
+  // at ~300ms a round trip that is 5s per cart load. Joined, it is one query.
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {

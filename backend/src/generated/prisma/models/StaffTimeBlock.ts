@@ -1229,7 +1229,7 @@ export type $StaffTimeBlockPayload<ExtArgs extends runtime.Types.Extensions.Inte
 export type StaffTimeBlockGetPayload<S extends boolean | null | undefined | StaffTimeBlockDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffTimeBlockPayload, S>
 
 export type StaffTimeBlockCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffTimeBlockFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffTimeBlockFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffTimeBlockCountAggregateInputType | true
   }
 
@@ -1685,6 +1685,7 @@ export type StaffTimeBlockFindUniqueArgs<ExtArgs extends runtime.Types.Extension
    * Filter, which StaffTimeBlock to fetch.
    */
   where: Prisma.StaffTimeBlockWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1707,6 +1708,7 @@ export type StaffTimeBlockFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ex
    * Filter, which StaffTimeBlock to fetch.
    */
   where: Prisma.StaffTimeBlockWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1759,6 +1761,7 @@ export type StaffTimeBlockFindFirstArgs<ExtArgs extends runtime.Types.Extensions
    * Filter by unique combinations of StaffTimeBlocks.
    */
   distinct?: Prisma.StaffTimeBlockScalarFieldEnum | Prisma.StaffTimeBlockScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1811,6 +1814,7 @@ export type StaffTimeBlockFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ext
    * Filter by unique combinations of StaffTimeBlocks.
    */
   distinct?: Prisma.StaffTimeBlockScalarFieldEnum | Prisma.StaffTimeBlockScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1863,6 +1867,7 @@ export type StaffTimeBlockFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter by unique combinations of StaffTimeBlocks.
    */
   distinct?: Prisma.StaffTimeBlockScalarFieldEnum | Prisma.StaffTimeBlockScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1885,6 +1890,7 @@ export type StaffTimeBlockCreateArgs<ExtArgs extends runtime.Types.Extensions.In
    * The data needed to create a StaffTimeBlock.
    */
   data: Prisma.XOR<Prisma.StaffTimeBlockCreateInput, Prisma.StaffTimeBlockUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1945,6 +1951,7 @@ export type StaffTimeBlockUpdateArgs<ExtArgs extends runtime.Types.Extensions.In
    * Choose, which StaffTimeBlock to update.
    */
   where: Prisma.StaffTimeBlockWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2023,6 +2030,7 @@ export type StaffTimeBlockUpsertArgs<ExtArgs extends runtime.Types.Extensions.In
    * In case the StaffTimeBlock was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffTimeBlockUpdateInput, Prisma.StaffTimeBlockUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2045,6 +2053,7 @@ export type StaffTimeBlockDeleteArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter which StaffTimeBlock to delete.
    */
   where: Prisma.StaffTimeBlockWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

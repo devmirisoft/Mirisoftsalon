@@ -980,7 +980,7 @@ export type $StockAlertPayload<ExtArgs extends runtime.Types.Extensions.Internal
 export type StockAlertGetPayload<S extends boolean | null | undefined | StockAlertDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StockAlertPayload, S>
 
 export type StockAlertCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StockAlertFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StockAlertFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StockAlertCountAggregateInputType | true
   }
 
@@ -1432,6 +1432,7 @@ export type StockAlertFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter, which StockAlert to fetch.
    */
   where: Prisma.StockAlertWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1454,6 +1455,7 @@ export type StockAlertFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which StockAlert to fetch.
    */
   where: Prisma.StockAlertWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1506,6 +1508,7 @@ export type StockAlertFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of StockAlerts.
    */
   distinct?: Prisma.StockAlertScalarFieldEnum | Prisma.StockAlertScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1558,6 +1561,7 @@ export type StockAlertFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of StockAlerts.
    */
   distinct?: Prisma.StockAlertScalarFieldEnum | Prisma.StockAlertScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1610,6 +1614,7 @@ export type StockAlertFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter by unique combinations of StockAlerts.
    */
   distinct?: Prisma.StockAlertScalarFieldEnum | Prisma.StockAlertScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1632,6 +1637,7 @@ export type StockAlertCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data needed to create a StockAlert.
    */
   data: Prisma.XOR<Prisma.StockAlertCreateInput, Prisma.StockAlertUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1692,6 +1698,7 @@ export type StockAlertUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Choose, which StockAlert to update.
    */
   where: Prisma.StockAlertWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1770,6 +1777,7 @@ export type StockAlertUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * In case the StockAlert was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StockAlertUpdateInput, Prisma.StockAlertUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1792,6 +1800,7 @@ export type StockAlertDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter which StockAlert to delete.
    */
   where: Prisma.StockAlertWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

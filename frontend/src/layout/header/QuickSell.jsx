@@ -7,7 +7,6 @@ import {
   Label,
   Modal,
   ModalBody,
-  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -16,6 +15,20 @@ import { Select } from "@/components/select/PortalSelect";
 import { salonApi } from "@/services/salonApi";
 import { formatMoney } from "@/utils/salonFormat";
 import { PAYMENT_METHODS } from "@/utils/paymentMethods";
+
+// Plans in this trade are named by tier, so a card takes its icon and tint from
+// its own name; anything else falls back to the house blue.
+const TIERS = [
+  { match: /platinum|diamond/, icon: "diamond-fill", tone: "violet" },
+  { match: /gold/, icon: "award-fill", tone: "amber" },
+  { match: /silver|basic/, icon: "star-fill", tone: "slate" },
+];
+
+const tierOf = (name) =>
+  TIERS.find((tier) => tier.match.test(String(name).toLowerCase())) || {
+    icon: "award-fill",
+    tone: "blue",
+  };
 
 // Quick sell from the header: pick who it is for, pick the plan, take the
 // money. Same picker as the job cart page, but the cart it opens underneath is
@@ -209,15 +222,29 @@ const QuickSell = ({ kind, onClose }) => {
   const soldItem = cart?.items?.[0];
 
   return (
-    <Modal
-      isOpen
-      toggle={close}
-      centered
-      size="lg"
-      contentClassName="border-0"
-    >
-      <ModalHeader toggle={close}>{paid ? "Sold" : title}</ModalHeader>
-      <ModalBody>
+    <Modal isOpen toggle={close} centered size="lg" className="quick-sell-modal">
+      <div className="quick-sell-head">
+        <span className="quick-sell-head-icon">
+          <Icon name={isPackage ? "box-view" : "users"} />
+        </span>
+        <div className="quick-sell-head-text">
+          <h5>{paid ? "Sold" : title}</h5>
+          <span>
+            {paid
+              ? `Invoice issued for ${customer?.name || "your customer"}`
+              : `Add a new ${
+                  isPackage ? "package" : "membership"
+                } for your customer`}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={close}
+        />
+      </div>
+      <ModalBody className="quick-sell-body">
         {error && <Alert color="danger">{error}</Alert>}
 
         {paid ? (
@@ -348,9 +375,11 @@ const QuickSell = ({ kind, onClose }) => {
           </>
         ) : (
           <>
-            <Row className="g-3 mb-3">
+            <Row className="g-3">
               <Col md="6">
-                <Label className="mb-1">Sell to</Label>
+                <Label className="quick-sell-label">
+                  <Icon name="user" /> Sell to
+                </Label>
                 <Select
                   options={customerOptions}
                   value={customer}
@@ -361,7 +390,9 @@ const QuickSell = ({ kind, onClose }) => {
               </Col>
               {refs.branches.length > 1 && (
                 <Col md="6">
-                  <Label className="mb-1">Branch</Label>
+                  <Label className="quick-sell-label">
+                    <Icon name="map-pin" /> Branch
+                  </Label>
                   <Input
                     type="select"
                     value={branchId}
@@ -377,7 +408,9 @@ const QuickSell = ({ kind, onClose }) => {
                 </Col>
               )}
               <Col md="6">
-                <Label className="mb-1">Sold by</Label>
+                <Label className="quick-sell-label">
+                  <Icon name="tag" /> Sold by
+                </Label>
                 <Input
                   type="select"
                   value={staffId}
@@ -392,73 +425,89 @@ const QuickSell = ({ kind, onClose }) => {
                 </Input>
               </Col>
               <Col md="6">
-                <Label className="mb-1">Search</Label>
-                <Input
-                  type="search"
-                  placeholder={isPackage ? "Search packages" : "Search plans"}
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
+                <Label className="quick-sell-label">
+                  <Icon name="search" /> Search
+                </Label>
+                <div className="form-control-wrap">
+                  <div className="form-icon form-icon-left">
+                    <Icon name="search" />
+                  </div>
+                  <Input
+                    type="search"
+                    placeholder={
+                      isPackage ? "Search packages..." : "Search plans..."
+                    }
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </div>
               </Col>
             </Row>
-            <div
-              className="border rounded"
-              style={{ maxHeight: 380, overflowY: "auto" }}
-            >
-              {loading || working ? (
-                <div className="text-center py-4">
-                  <Spinner size="sm" />
-                </div>
-              ) : visible.length === 0 ? (
-                <div className="text-soft text-center py-4">
-                  {isPackage
-                    ? "No packages match - create one from the Packages page"
-                    : "No plans match - add one under Customer Retention > Manage Memberships"}
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                  }}
-                >
-                  {visible.map((item) => (
-                    <div key={item.id} style={{ minWidth: 0 }}>
-                      <button
-                        type="button"
-                        className="btn d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom mb-0 h-100 w-100 text-start bg-transparent"
-                        style={{ cursor: "pointer", minWidth: 0 }}
-                        disabled={working}
-                        onClick={() => start(item)}
-                      >
-                        <span className="text-truncate" style={{ minWidth: 0 }}>
-                          <span className="d-block text-truncate">
-                            {item.name}
-                          </span>
-                          <small className="text-soft">
-                            {isPackage
-                              ? `${formatMoney(item.specialPrice)} - ${
-                                  item.validityDays || 0
-                                } days validity`
-                              : `${formatMoney(item.price)} - ${Number(
-                                  item.discountPercentage || 0
-                                )}% off${
-                                  item.durationMonths
-                                    ? ` - ${item.durationMonths} months`
-                                    : " - no expiry"
-                                }`}
-                          </small>
-                        </span>
-                        <Icon
-                          name="plus-circle"
-                          className="text-primary flex-shrink-0"
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+
+            <div className="quick-sell-section">
+              <Icon name={isPackage ? "package-fill" : "award-fill"} />
+              <div>
+                <h6>{isPackage ? "Packages" : "Membership Plans"}</h6>
+                <span>
+                  Select a {isPackage ? "package" : "plan"} to continue with the
+                  sale
+                </span>
+              </div>
             </div>
+
+            {loading || working ? (
+              <div className="text-center py-4">
+                <Spinner size="sm" />
+              </div>
+            ) : visible.length === 0 ? (
+              <div className="quick-sell-empty">
+                {isPackage
+                  ? "No packages match - create one from the Packages page"
+                  : "No plans match - add one under Customer Retention > Manage Memberships"}
+              </div>
+            ) : (
+              <div className="quick-sell-plans">
+                {visible.map((item) => {
+                  const tier = isPackage
+                    ? { icon: "package-fill", tone: "blue" }
+                    : tierOf(item.name);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`quick-sell-plan quick-sell-plan-${tier.tone}`}
+                      disabled={working}
+                      onClick={() => start(item)}
+                    >
+                      <span className="quick-sell-plan-icon">
+                        <Icon name={tier.icon} />
+                      </span>
+                      <span className="quick-sell-plan-body">
+                        <span className="quick-sell-plan-name">
+                          {item.name}
+                        </span>
+                        <span className="quick-sell-plan-meta">
+                          {isPackage
+                            ? `${formatMoney(item.specialPrice)} - ${
+                                item.validityDays || 0
+                              } days validity`
+                            : `${formatMoney(item.price)} - ${Number(
+                                item.discountPercentage || 0
+                              )}% off${
+                                item.durationMonths
+                                  ? ` - ${item.durationMonths} months`
+                                  : " - no expiry"
+                              }`}
+                        </span>
+                      </span>
+                      <span className="quick-sell-plan-add">
+                        <Icon name="plus" />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </ModalBody>

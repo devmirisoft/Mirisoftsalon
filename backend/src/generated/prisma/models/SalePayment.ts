@@ -911,7 +911,7 @@ export type $SalePaymentPayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type SalePaymentGetPayload<S extends boolean | null | undefined | SalePaymentDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SalePaymentPayload, S>
 
 export type SalePaymentCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SalePaymentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SalePaymentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SalePaymentCountAggregateInputType | true
   }
 
@@ -1364,6 +1364,7 @@ export type SalePaymentFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which SalePayment to fetch.
    */
   where: Prisma.SalePaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1386,6 +1387,7 @@ export type SalePaymentFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which SalePayment to fetch.
    */
   where: Prisma.SalePaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1438,6 +1440,7 @@ export type SalePaymentFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of SalePayments.
    */
   distinct?: Prisma.SalePaymentScalarFieldEnum | Prisma.SalePaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1490,6 +1493,7 @@ export type SalePaymentFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of SalePayments.
    */
   distinct?: Prisma.SalePaymentScalarFieldEnum | Prisma.SalePaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1542,6 +1546,7 @@ export type SalePaymentFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of SalePayments.
    */
   distinct?: Prisma.SalePaymentScalarFieldEnum | Prisma.SalePaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1564,6 +1569,7 @@ export type SalePaymentCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a SalePayment.
    */
   data: Prisma.XOR<Prisma.SalePaymentCreateInput, Prisma.SalePaymentUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1624,6 +1630,7 @@ export type SalePaymentUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which SalePayment to update.
    */
   where: Prisma.SalePaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1702,6 +1709,7 @@ export type SalePaymentUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the SalePayment was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SalePaymentUpdateInput, Prisma.SalePaymentUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1724,6 +1732,7 @@ export type SalePaymentDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which SalePayment to delete.
    */
   where: Prisma.SalePaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

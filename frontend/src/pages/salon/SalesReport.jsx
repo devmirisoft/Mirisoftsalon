@@ -45,6 +45,84 @@ const StatCard = ({ label, icon, color, row }) => (
   </Col>
 );
 
+/**
+ * Totals for the service-wise record. Mirrored by
+ * frontend/src/pages/salon/__checks__/serviceWiseTotals.check.mjs.
+ */
+const serviceWiseTotals = (rows) =>
+  rows.reduce(
+    (totals, row) => ({
+      units: totals.units + (row.count ?? 0),
+      amount: totals.amount + (row.amount ?? 0),
+    }),
+    { units: 0, amount: 0 }
+  );
+
+/** What one service averaged per unit, and its share of service revenue. */
+const serviceWiseRow = (row, totalAmount) => ({
+  average: row.count ? row.amount / row.count : 0,
+  share: totalAmount ? (row.amount / totalAmount) * 100 : 0,
+});
+
+/**
+ * Every service billed in the window, ranked by revenue. "Top services" below
+ * is the ten-row highlight; this is the full record the counter reconciles
+ * against.
+ */
+const ServiceWiseRecord = ({ rows }) => {
+  const totals = serviceWiseTotals(rows);
+  return (
+    <div className="card card-bordered mb-4">
+      <div className="table-responsive" style={{ maxHeight: 440, overflowY: "auto" }}>
+        <table className="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Service</th>
+              <th className="text-end">Qty sold</th>
+              <th className="text-end">Revenue</th>
+              <th className="text-end">Avg price</th>
+              <th className="text-end">Share</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const { average, share } = serviceWiseRow(row, totals.amount);
+              return (
+                <tr key={`${row.name}-${index}`}>
+                  <td>{index + 1}</td>
+                  <td>{row.name}</td>
+                  <td className="text-end">{row.count}</td>
+                  <td className="text-end">{formatMoney(row.amount)}</td>
+                  <td className="text-end">{formatMoney(average)}</td>
+                  <td className="text-end">{share.toFixed(1)}%</td>
+                </tr>
+              );
+            })}
+            {!rows.length && (
+              <tr>
+                <td colSpan={6} className="text-center text-soft">
+                  No services billed for this period
+                </td>
+              </tr>
+            )}
+          </tbody>
+          {rows.length > 0 && (
+            <tfoot>
+              <tr className="fw-bold">
+                <td colSpan={2}>{rows.length} services</td>
+                <td className="text-end">{totals.units}</td>
+                <td className="text-end">{formatMoney(totals.amount)}</td>
+                <td colSpan={2} />
+              </tr>
+            </tfoot>
+          )}
+        </table>
+      </div>
+    </div>
+  );
+};
+
 const SalesReport = () => {
   const { user } = useAuth();
   // Invoice cancel is admin-only on the backend.
@@ -220,6 +298,9 @@ const SalesReport = () => {
                 </table>
               </div>
             </div>
+
+            <h6 className="overline-title text-soft mb-2">Service wise record</h6>
+            <ServiceWiseRecord rows={data.serviceWise ?? []} />
 
             <h6 className="overline-title text-soft mb-2">Other sales</h6>
             <Row className="g-gs">

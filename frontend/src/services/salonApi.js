@@ -476,6 +476,7 @@ export const salonApi = {
     expenses: (query) => request("/api/reports/expenses", { query }),
     salonReport: (query) => request("/api/reports/salon-report", { query }),
     salesDashboard: (query) => request("/api/reports/sales-dashboard", { query }),
+    eod: (query) => request("/api/reports/eod", { query }),
     staffPerformance: (query) => request("/api/reports/staff-performance", { query }),
     exportFile: (reportType, format, query = {}) =>
       downloadFile(`/api/reports/${reportType}/export`, {

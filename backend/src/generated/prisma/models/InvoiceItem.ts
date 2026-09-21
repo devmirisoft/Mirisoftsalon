@@ -2515,7 +2515,7 @@ export type $InvoiceItemPayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type InvoiceItemGetPayload<S extends boolean | null | undefined | InvoiceItemDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload, S>
 
 export type InvoiceItemCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<InvoiceItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<InvoiceItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: InvoiceItemCountAggregateInputType | true
   }
 
@@ -2985,6 +2985,7 @@ export type InvoiceItemFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which InvoiceItem to fetch.
    */
   where: Prisma.InvoiceItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3007,6 +3008,7 @@ export type InvoiceItemFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which InvoiceItem to fetch.
    */
   where: Prisma.InvoiceItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3059,6 +3061,7 @@ export type InvoiceItemFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of InvoiceItems.
    */
   distinct?: Prisma.InvoiceItemScalarFieldEnum | Prisma.InvoiceItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3111,6 +3114,7 @@ export type InvoiceItemFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of InvoiceItems.
    */
   distinct?: Prisma.InvoiceItemScalarFieldEnum | Prisma.InvoiceItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3163,6 +3167,7 @@ export type InvoiceItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of InvoiceItems.
    */
   distinct?: Prisma.InvoiceItemScalarFieldEnum | Prisma.InvoiceItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3185,6 +3190,7 @@ export type InvoiceItemCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a InvoiceItem.
    */
   data: Prisma.XOR<Prisma.InvoiceItemCreateInput, Prisma.InvoiceItemUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3245,6 +3251,7 @@ export type InvoiceItemUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which InvoiceItem to update.
    */
   where: Prisma.InvoiceItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3323,6 +3330,7 @@ export type InvoiceItemUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the InvoiceItem was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.InvoiceItemUpdateInput, Prisma.InvoiceItemUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3345,6 +3353,7 @@ export type InvoiceItemDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which InvoiceItem to delete.
    */
   where: Prisma.InvoiceItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

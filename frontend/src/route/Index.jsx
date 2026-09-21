@@ -31,6 +31,7 @@ import InventoryReport from "@/pages/salon/InventoryReport";
 import ProductReport from "@/pages/salon/ProductReport";
 import SalonReport from "@/pages/salon/SalonReport";
 import SalesReport from "@/pages/salon/SalesReport";
+import EodReport from "@/pages/salon/EodReport";
 import ExpenseCategories from "@/pages/salon/ExpenseCategories";
 import Attendance from "@/pages/salon/Attendance";
 import Leaves from "@/pages/salon/Leaves";
@@ -159,7 +160,7 @@ const Router = () => (
                 <Route path="admin/stock-movements" element={<Navigate to="/admin/inventory/activity" replace />} />
                 <Route path="admin/low-stock" element={<Navigate to="/admin/inventory/low-stock" replace />} />
                 <Route path="inventory/stock-alerts" element={<Navigate to="/admin/inventory/low-stock" replace />} />
-                <Route path="inventory/reorder-suggestions" element={<Navigate to="/admin/inventory/low-stock" replace />} />
+                <Route path="inventory/reorder-suggestions" element={<Navigate to="/admin/inventory/reorder" replace />} />
                 <Route path="admin/product-purchases" element={<Navigate to="/admin/inventory/receive" replace />} />
                 <Route path="admin/vendor-payments" element={<Navigate to="/admin/vendors" replace />} />
                 <Route path="reports/inventory" element={<InventoryReport />} />
@@ -209,6 +210,7 @@ const Router = () => (
                 <Route path="customer-retention/loyalty-rules" element={<LoyaltyRules />} />
                 <Route path="reports/staff-performance" element={<StaffPerformance />} />
                 <Route path="reports/sales" element={<SalesReport />} />
+                <Route path="reports/eod" element={<EodReport />} />
                 <Route path="reports/audit-trails" element={<AuditTrails />} />
                 <Route path="customer-retention/loyalty-transactions" element={<LoyaltyTransactions />} />
                 <Route path="customer-retention/coupons" element={<Coupons />} />

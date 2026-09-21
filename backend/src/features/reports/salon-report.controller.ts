@@ -37,6 +37,79 @@ export const ranker = () => {
   };
 };
 
+/**
+ * Invoices carry no author columns, so created/edited by come from the audit
+ * log: billing logs the invoice itself, a job cart logs the appointment behind
+ * it. One query for the whole page, then `of(row)` reads the maps.
+ */
+const invoiceAuthors = async (
+  invoices: { id: string; appointmentId?: string | null }[]
+) => {
+  const logs = await prisma.auditLog.findMany({
+    where: {
+      entityId: {
+        in: invoices.flatMap((row) =>
+          row.appointmentId ? [row.id, row.appointmentId] : [row.id]
+        ),
+      },
+      OR: [
+        { module: "INVOICE", action: { in: ["CREATE", "UPDATE"] } },
+        { module: "JOB_CART", action: "CREATE" },
+      ],
+    },
+    orderBy: { createdAt: "asc" },
+    select: { entityId: true, action: true, userName: true },
+  });
+  const createdBy = new Map<string, string | null>();
+  const editedBy = new Map<string, string | null>();
+  for (const log of logs) {
+    if (!log.entityId) continue;
+    if (log.action === "UPDATE") editedBy.set(log.entityId, log.userName);
+    else if (!createdBy.has(log.entityId)) createdBy.set(log.entityId, log.userName);
+  }
+  return {
+    of: (row: { id: string; appointmentId?: string | null }) => ({
+      createdBy:
+        createdBy.get(row.id) ??
+        (row.appointmentId ? createdBy.get(row.appointmentId) : null) ??
+        null,
+      editedBy: editedBy.get(row.id) ?? null,
+    }),
+  };
+};
+
+const PAYMENT_METHODS = [
+  "CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD",
+  "BANK_TRANSFER", "CHEQUE", "MEMBERSHIP_WALLET", "OTHER",
+] as const;
+
+/**
+ * Search filters shared by the EOD page and its export, so a download matches
+ * what is on screen. Text is matched case-insensitively on a substring; an
+ * unknown payment method is dropped rather than erroring the whole report.
+ */
+export const eodInvoiceFilters = (query: Request["query"]) => {
+  const text = (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : undefined;
+  const name = text(query.name);
+  const phone = text(query.phone);
+  const invoiceNo = text(query.invoiceNo);
+  const methods = String(query.methods ?? "")
+    .split(",")
+    .map((value) => value.trim().toUpperCase())
+    .filter((value): value is (typeof PAYMENT_METHODS)[number] =>
+      PAYMENT_METHODS.includes(value as (typeof PAYMENT_METHODS)[number])
+    );
+  return {
+    ...(name ? { customerName: { contains: name, mode: "insensitive" as const } } : {}),
+    ...(phone ? { customerPhone: { contains: phone } } : {}),
+    ...(invoiceNo
+      ? { invoiceCode: { contains: invoiceNo, mode: "insensitive" as const } }
+      : {}),
+    ...(methods.length ? { payments: { some: { method: { in: methods } } } } : {}),
+  };
+};
+
 const rankRows = (rows: { label: string; value: number; count: number }[]) =>
   rows.map((row) => ({ name: row.label, amount: row.value, count: row.count }));
 
@@ -129,7 +202,11 @@ export const trendGranularity = (spanDays: number) =>
  * custom uses the supplied from/to. Everything is anchored to the salon
  * timezone so "today" means the salon own day, not the server day.
  */
-const resolveRange = async (req: Request, salonId?: string) => {
+const resolveRange = async (
+  req: Request,
+  salonId?: string,
+  defaultPeriod = "month"
+) => {
   const salon = salonId
     ? await prisma.salon.findUnique({
         where: { id: salonId },
@@ -137,8 +214,13 @@ const resolveRange = async (req: Request, salonId?: string) => {
       })
     : null;
   const timezone = salon?.timezone ?? "Asia/Kolkata";
+  // A blank period is an absent one. Without this it falls through to the
+  // custom branch with no from/to, which drops the date filter entirely and
+  // scans every invoice ever billed.
   const period =
-    typeof req.query.period === "string" ? req.query.period : "month";
+    typeof req.query.period === "string" && req.query.period.trim()
+      ? req.query.period.trim()
+      : defaultPeriod;
   const from = typeof req.query.from === "string" ? req.query.from : undefined;
   const to = typeof req.query.to === "string" ? req.query.to : undefined;
 
@@ -959,28 +1041,7 @@ export const getSalesDashboard = async (req: Request, res: Response) => {
         payments: { select: { method: true } },
       },
     });
-    const logs = await prisma.auditLog.findMany({
-      where: {
-        entityId: {
-          in: serviceInvoices.flatMap((row) =>
-            row.appointmentId ? [row.id, row.appointmentId] : [row.id]
-          ),
-        },
-        OR: [
-          { module: "INVOICE", action: { in: ["CREATE", "UPDATE"] } },
-          { module: "JOB_CART", action: "CREATE" },
-        ],
-      },
-      orderBy: { createdAt: "asc" },
-      select: { entityId: true, action: true, userName: true },
-    });
-    const createdBy = new Map<string, string | null>();
-    const editedBy = new Map<string, string | null>();
-    for (const log of logs) {
-      if (!log.entityId) continue;
-      if (log.action === "UPDATE") editedBy.set(log.entityId, log.userName);
-      else if (!createdBy.has(log.entityId)) createdBy.set(log.entityId, log.userName);
-    }
+    const authors = await invoiceAuthors(serviceInvoices);
     const serviceSales = serviceInvoices.map((row) => ({
       id: row.id,
       invoiceCode: row.invoiceCode,
@@ -988,11 +1049,7 @@ export const getSalesDashboard = async (req: Request, res: Response) => {
       customerName: row.customerName,
       amount: row.items.reduce((sum, item) => sum + num(item.lineTotal), 0),
       paymentMethods: [...new Set(row.payments.map((payment) => payment.method))],
-      createdBy:
-        createdBy.get(row.id) ??
-        (row.appointmentId ? createdBy.get(row.appointmentId) : null) ??
-        null,
-      editedBy: editedBy.get(row.id) ?? null,
+      ...authors.of(row),
     }));
 
     return res.json({
@@ -1015,12 +1072,206 @@ export const getSalesDashboard = async (req: Request, res: Response) => {
         },
         // Top lists rank by how many were sold; customers rank by what they paid.
         topServices: rankRows(serviceRank.topByCount(10)),
+        // The service-wise record: every service billed in the window, ranked
+        // by revenue, not just the top ten.
+        // ponytail: capped list, paginate if a salon ever bills more than this
+        serviceWise: rankRows(serviceRank.top(500)),
         topProducts: rankRows(productRank.topByCount(10)),
         topPackages: rankRows(packageRank.topByCount(10)),
         topMemberships: rankRows(membershipRank.topByCount(10)),
         topCustomers: rankRows(customerRank.top(10)),
         paymentMethods: methodRows(methods.top(20)),
         serviceSales,
+      },
+    });
+  } catch (error) {
+    return sendInventoryError(res, error);
+  }
+};
+
+/** The seven local days ending on `endDay`, oldest first. */
+export const trendDays = (endDay: string, days = 7) =>
+  Array.from({ length: days }, (_, index) => {
+    const date = new Date(`${endDay}T00:00:00Z`);
+    date.setUTCDate(date.getUTCDate() - (days - 1 - index));
+    return date.toISOString().slice(0, 10);
+  });
+
+/**
+ * Billed total per local day for the week ending on `endDay`. Days with no
+ * bills still appear, so the line has no gaps and the sparklines stay aligned.
+ */
+const trendSeries = async (
+  scope: { salonId: string | undefined; branchId: string | undefined },
+  endDay: string,
+  timezone: string
+) => {
+  const days = trendDays(endDay);
+  const bounds = parseSalonDateRange(days[0], endDay, timezone);
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      ...(scope.salonId ? { salonId: scope.salonId } : {}),
+      ...(scope.branchId ? { branchId: scope.branchId } : {}),
+      status: "ISSUED",
+      ...(bounds.start ? { invoiceDate: { gte: bounds.start, ...(bounds.end ? { lt: bounds.end } : {}) } } : {}),
+    },
+    select: { invoiceDate: true, totalAmount: true },
+  });
+  const totals = new Map(days.map((day) => [day, { amount: 0, count: 0 }]));
+  for (const invoice of invoices) {
+    const bucket = totals.get(localDay(invoice.invoiceDate, timezone));
+    if (!bucket) continue;
+    bucket.amount += num(invoice.totalAmount);
+    bucket.count += 1;
+  }
+  return days.map((day) => ({ day, ...totals.get(day)! }));
+};
+
+/**
+ * Totals for the equally long window ending where this one starts, which is
+ * what the "vs" figures on the tiles are measured against.
+ */
+const previousWindow = async (
+  scope: { salonId: string | undefined; branchId: string | undefined },
+  start: Date | null,
+  end: Date | null
+) => {
+  if (!start || !end) return null;
+  const span = end.getTime() - start.getTime();
+  const totals = await prisma.invoice.aggregate({
+    where: {
+      ...(scope.salonId ? { salonId: scope.salonId } : {}),
+      ...(scope.branchId ? { branchId: scope.branchId } : {}),
+      status: "ISSUED",
+      invoiceDate: { gte: new Date(start.getTime() - span), lt: start },
+    },
+    _sum: { totalAmount: true },
+    _count: true,
+  });
+  return {
+    totalBillingCost: num(totals._sum.totalAmount),
+    totalSales: totals._count,
+  };
+};
+
+/**
+ * End-of-day cash-up: one row per issued invoice in the window, with the
+ * service and product split the counter reconciles against. Defaults to the
+ * salon's own today when no period is supplied.
+ */
+export const getEodReport = async (req: Request, res: Response) => {
+  try {
+    const { salonId, branchId } = await resolveScope(req);
+    // An EOD report with no period means today, not the dashboard's month.
+    const { range, timezone, start, end } = await resolveRange(req, salonId, "day");
+
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        ...(salonId ? { salonId } : {}),
+        ...(branchId ? { branchId } : {}),
+        status: "ISSUED",
+        ...(range ? { invoiceDate: range } : {}),
+        ...eodInvoiceFilters(req.query),
+      },
+      orderBy: { invoiceDate: "desc" },
+      take: 500, // ponytail: capped list, paginate if a day ever exceeds it
+      select: {
+        id: true,
+        invoiceCode: true,
+        invoiceDate: true,
+        appointmentId: true,
+        customerName: true,
+        customerPhone: true,
+        totalAmount: true,
+        billingNote: true,
+        items: {
+          select: { itemType: true, serviceName: true, lineTotal: true, quantity: true },
+        },
+        payments: { select: { method: true, amount: true } },
+      },
+    });
+    const authors = await invoiceAuthors(invoices);
+
+    const names = (items: typeof invoices[number]["items"], type: string) =>
+      items.filter((item) => item.itemType === type).map((item) => item.serviceName);
+    const cost = (items: typeof invoices[number]["items"], type: string) =>
+      items
+        .filter((item) => item.itemType === type)
+        .reduce((sum, item) => sum + num(item.lineTotal), 0);
+
+    const rows = invoices.map((row) => ({
+      id: row.id,
+      invoiceCode: row.invoiceCode,
+      invoiceDate: row.invoiceDate,
+      customerName: row.customerName,
+      customerPhone: row.customerPhone,
+      services: names(row.items, "SERVICE"),
+      serviceCost: cost(row.items, "SERVICE"),
+      products: names(row.items, "PRODUCT"),
+      productCost: cost(row.items, "PRODUCT"),
+      salesCost: num(row.totalAmount),
+      paymentMethods: [...new Set(row.payments.map((payment) => payment.method))],
+      comment: row.billingNote,
+      ...authors.of(row),
+    }));
+
+    // Payments are split by how the money arrived: cash in the drawer versus
+    // everything that lands in a bank or wallet, which is what gets counted
+    // against the till at close.
+    const modes = ranker();
+    for (const invoice of invoices) {
+      for (const payment of invoice.payments) {
+        modes.add(payment.method, payment.method, num(payment.amount));
+      }
+    }
+    const paymentModes = methodRows(modes.top(10));
+    const cashReceived = paymentModes
+      .filter((mode) => mode.method === "CASH")
+      .reduce((sum, mode) => sum + mode.amount, 0);
+    const onlineReceived = paymentModes
+      .filter((mode) => mode.method !== "CASH")
+      .reduce((sum, mode) => sum + mode.amount, 0);
+
+    // Top sellers come out of the bills already in hand, so this costs no
+    // extra query.
+    const serviceRank = ranker();
+    const productRank = ranker();
+    for (const invoice of invoices) {
+      for (const item of invoice.items) {
+        const into = item.itemType === "SERVICE" ? serviceRank : item.itemType === "PRODUCT" ? productRank : null;
+        into?.add(item.serviceName, item.serviceName, num(item.lineTotal), item.quantity);
+      }
+    }
+
+    const endDay = end ? localDay(new Date(end.getTime() - 1), timezone) : localDay(new Date(), timezone);
+    const [trend, previous] = await Promise.all([
+      trendSeries({ salonId, branchId }, endDay, timezone),
+      // Same-length window immediately before this one, so a one-day report
+      // compares against yesterday and a range against the range before it.
+      previousWindow({ salonId, branchId }, start, end),
+    ]);
+
+    const totalBillingCost = rows.reduce((sum, row) => sum + row.salesCost, 0);
+
+    return res.json({
+      success: true,
+      data: {
+        range: {
+          from: start ? localDay(start, timezone) : null,
+          to: end ? localDay(new Date(end.getTime() - 1), timezone) : null,
+          timezone,
+        },
+        // The headline tiles: what was billed, how it was paid, how many bills.
+        totalBillingCost,
+        totalSales: rows.length,
+        cashReceived,
+        onlineReceived,
+        paymentModes,
+        topServices: rankRows(serviceRank.topByCount(5)),
+        topProducts: rankRows(productRank.topByCount(5)),
+        trend,
+        previous,
+        rows,
       },
     });
   } catch (error) {

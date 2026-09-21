@@ -1337,7 +1337,7 @@ export type $StaffAvailabilityRulePayload<ExtArgs extends runtime.Types.Extensio
 export type StaffAvailabilityRuleGetPayload<S extends boolean | null | undefined | StaffAvailabilityRuleDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffAvailabilityRulePayload, S>
 
 export type StaffAvailabilityRuleCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffAvailabilityRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffAvailabilityRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffAvailabilityRuleCountAggregateInputType | true
   }
 
@@ -1794,6 +1794,7 @@ export type StaffAvailabilityRuleFindUniqueArgs<ExtArgs extends runtime.Types.Ex
    * Filter, which StaffAvailabilityRule to fetch.
    */
   where: Prisma.StaffAvailabilityRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1816,6 +1817,7 @@ export type StaffAvailabilityRuleFindUniqueOrThrowArgs<ExtArgs extends runtime.T
    * Filter, which StaffAvailabilityRule to fetch.
    */
   where: Prisma.StaffAvailabilityRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1868,6 +1870,7 @@ export type StaffAvailabilityRuleFindFirstArgs<ExtArgs extends runtime.Types.Ext
    * Filter by unique combinations of StaffAvailabilityRules.
    */
   distinct?: Prisma.StaffAvailabilityRuleScalarFieldEnum | Prisma.StaffAvailabilityRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1920,6 +1923,7 @@ export type StaffAvailabilityRuleFindFirstOrThrowArgs<ExtArgs extends runtime.Ty
    * Filter by unique combinations of StaffAvailabilityRules.
    */
   distinct?: Prisma.StaffAvailabilityRuleScalarFieldEnum | Prisma.StaffAvailabilityRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1972,6 +1976,7 @@ export type StaffAvailabilityRuleFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of StaffAvailabilityRules.
    */
   distinct?: Prisma.StaffAvailabilityRuleScalarFieldEnum | Prisma.StaffAvailabilityRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1994,6 +1999,7 @@ export type StaffAvailabilityRuleCreateArgs<ExtArgs extends runtime.Types.Extens
    * The data needed to create a StaffAvailabilityRule.
    */
   data: Prisma.XOR<Prisma.StaffAvailabilityRuleCreateInput, Prisma.StaffAvailabilityRuleUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2054,6 +2060,7 @@ export type StaffAvailabilityRuleUpdateArgs<ExtArgs extends runtime.Types.Extens
    * Choose, which StaffAvailabilityRule to update.
    */
   where: Prisma.StaffAvailabilityRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2132,6 +2139,7 @@ export type StaffAvailabilityRuleUpsertArgs<ExtArgs extends runtime.Types.Extens
    * In case the StaffAvailabilityRule was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffAvailabilityRuleUpdateInput, Prisma.StaffAvailabilityRuleUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2154,6 +2162,7 @@ export type StaffAvailabilityRuleDeleteArgs<ExtArgs extends runtime.Types.Extens
    * Filter which StaffAvailabilityRule to delete.
    */
   where: Prisma.StaffAvailabilityRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

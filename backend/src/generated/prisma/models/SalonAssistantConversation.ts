@@ -909,7 +909,7 @@ export type $SalonAssistantConversationPayload<ExtArgs extends runtime.Types.Ext
 export type SalonAssistantConversationGetPayload<S extends boolean | null | undefined | SalonAssistantConversationDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SalonAssistantConversationPayload, S>
 
 export type SalonAssistantConversationCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SalonAssistantConversationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SalonAssistantConversationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SalonAssistantConversationCountAggregateInputType | true
   }
 
@@ -1360,6 +1360,7 @@ export type SalonAssistantConversationFindUniqueArgs<ExtArgs extends runtime.Typ
    * Filter, which SalonAssistantConversation to fetch.
    */
   where: Prisma.SalonAssistantConversationWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1382,6 +1383,7 @@ export type SalonAssistantConversationFindUniqueOrThrowArgs<ExtArgs extends runt
    * Filter, which SalonAssistantConversation to fetch.
    */
   where: Prisma.SalonAssistantConversationWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1434,6 +1436,7 @@ export type SalonAssistantConversationFindFirstArgs<ExtArgs extends runtime.Type
    * Filter by unique combinations of SalonAssistantConversations.
    */
   distinct?: Prisma.SalonAssistantConversationScalarFieldEnum | Prisma.SalonAssistantConversationScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1486,6 +1489,7 @@ export type SalonAssistantConversationFindFirstOrThrowArgs<ExtArgs extends runti
    * Filter by unique combinations of SalonAssistantConversations.
    */
   distinct?: Prisma.SalonAssistantConversationScalarFieldEnum | Prisma.SalonAssistantConversationScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1538,6 +1542,7 @@ export type SalonAssistantConversationFindManyArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of SalonAssistantConversations.
    */
   distinct?: Prisma.SalonAssistantConversationScalarFieldEnum | Prisma.SalonAssistantConversationScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1560,6 +1565,7 @@ export type SalonAssistantConversationCreateArgs<ExtArgs extends runtime.Types.E
    * The data needed to create a SalonAssistantConversation.
    */
   data: Prisma.XOR<Prisma.SalonAssistantConversationCreateInput, Prisma.SalonAssistantConversationUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1620,6 +1626,7 @@ export type SalonAssistantConversationUpdateArgs<ExtArgs extends runtime.Types.E
    * Choose, which SalonAssistantConversation to update.
    */
   where: Prisma.SalonAssistantConversationWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1698,6 +1705,7 @@ export type SalonAssistantConversationUpsertArgs<ExtArgs extends runtime.Types.E
    * In case the SalonAssistantConversation was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SalonAssistantConversationUpdateInput, Prisma.SalonAssistantConversationUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1720,6 +1728,7 @@ export type SalonAssistantConversationDeleteArgs<ExtArgs extends runtime.Types.E
    * Filter which SalonAssistantConversation to delete.
    */
   where: Prisma.SalonAssistantConversationWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

@@ -707,7 +707,7 @@ export type $SupportTicketStatusHistoryPayload<ExtArgs extends runtime.Types.Ext
 export type SupportTicketStatusHistoryGetPayload<S extends boolean | null | undefined | SupportTicketStatusHistoryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SupportTicketStatusHistoryPayload, S>
 
 export type SupportTicketStatusHistoryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SupportTicketStatusHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SupportTicketStatusHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SupportTicketStatusHistoryCountAggregateInputType | true
   }
 
@@ -1156,6 +1156,7 @@ export type SupportTicketStatusHistoryFindUniqueArgs<ExtArgs extends runtime.Typ
    * Filter, which SupportTicketStatusHistory to fetch.
    */
   where: Prisma.SupportTicketStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1178,6 +1179,7 @@ export type SupportTicketStatusHistoryFindUniqueOrThrowArgs<ExtArgs extends runt
    * Filter, which SupportTicketStatusHistory to fetch.
    */
   where: Prisma.SupportTicketStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1230,6 +1232,7 @@ export type SupportTicketStatusHistoryFindFirstArgs<ExtArgs extends runtime.Type
    * Filter by unique combinations of SupportTicketStatusHistories.
    */
   distinct?: Prisma.SupportTicketStatusHistoryScalarFieldEnum | Prisma.SupportTicketStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1282,6 +1285,7 @@ export type SupportTicketStatusHistoryFindFirstOrThrowArgs<ExtArgs extends runti
    * Filter by unique combinations of SupportTicketStatusHistories.
    */
   distinct?: Prisma.SupportTicketStatusHistoryScalarFieldEnum | Prisma.SupportTicketStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1334,6 +1338,7 @@ export type SupportTicketStatusHistoryFindManyArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of SupportTicketStatusHistories.
    */
   distinct?: Prisma.SupportTicketStatusHistoryScalarFieldEnum | Prisma.SupportTicketStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1356,6 +1361,7 @@ export type SupportTicketStatusHistoryCreateArgs<ExtArgs extends runtime.Types.E
    * The data needed to create a SupportTicketStatusHistory.
    */
   data: Prisma.XOR<Prisma.SupportTicketStatusHistoryCreateInput, Prisma.SupportTicketStatusHistoryUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1416,6 +1422,7 @@ export type SupportTicketStatusHistoryUpdateArgs<ExtArgs extends runtime.Types.E
    * Choose, which SupportTicketStatusHistory to update.
    */
   where: Prisma.SupportTicketStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1494,6 +1501,7 @@ export type SupportTicketStatusHistoryUpsertArgs<ExtArgs extends runtime.Types.E
    * In case the SupportTicketStatusHistory was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SupportTicketStatusHistoryUpdateInput, Prisma.SupportTicketStatusHistoryUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1516,6 +1524,7 @@ export type SupportTicketStatusHistoryDeleteArgs<ExtArgs extends runtime.Types.E
    * Filter which SupportTicketStatusHistory to delete.
    */
   where: Prisma.SupportTicketStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

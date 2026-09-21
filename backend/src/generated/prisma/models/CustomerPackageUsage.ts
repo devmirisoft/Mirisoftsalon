@@ -2201,7 +2201,7 @@ export type $CustomerPackageUsagePayload<ExtArgs extends runtime.Types.Extension
 export type CustomerPackageUsageGetPayload<S extends boolean | null | undefined | CustomerPackageUsageDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsagePayload, S>
 
 export type CustomerPackageUsageCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerPackageUsageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerPackageUsageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerPackageUsageCountAggregateInputType | true
   }
 
@@ -2664,6 +2664,7 @@ export type CustomerPackageUsageFindUniqueArgs<ExtArgs extends runtime.Types.Ext
    * Filter, which CustomerPackageUsage to fetch.
    */
   where: Prisma.CustomerPackageUsageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2686,6 +2687,7 @@ export type CustomerPackageUsageFindUniqueOrThrowArgs<ExtArgs extends runtime.Ty
    * Filter, which CustomerPackageUsage to fetch.
    */
   where: Prisma.CustomerPackageUsageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2738,6 +2740,7 @@ export type CustomerPackageUsageFindFirstArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of CustomerPackageUsages.
    */
   distinct?: Prisma.CustomerPackageUsageScalarFieldEnum | Prisma.CustomerPackageUsageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2790,6 +2793,7 @@ export type CustomerPackageUsageFindFirstOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter by unique combinations of CustomerPackageUsages.
    */
   distinct?: Prisma.CustomerPackageUsageScalarFieldEnum | Prisma.CustomerPackageUsageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2842,6 +2846,7 @@ export type CustomerPackageUsageFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of CustomerPackageUsages.
    */
   distinct?: Prisma.CustomerPackageUsageScalarFieldEnum | Prisma.CustomerPackageUsageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2864,6 +2869,7 @@ export type CustomerPackageUsageCreateArgs<ExtArgs extends runtime.Types.Extensi
    * The data needed to create a CustomerPackageUsage.
    */
   data: Prisma.XOR<Prisma.CustomerPackageUsageCreateInput, Prisma.CustomerPackageUsageUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2924,6 +2930,7 @@ export type CustomerPackageUsageUpdateArgs<ExtArgs extends runtime.Types.Extensi
    * Choose, which CustomerPackageUsage to update.
    */
   where: Prisma.CustomerPackageUsageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3002,6 +3009,7 @@ export type CustomerPackageUsageUpsertArgs<ExtArgs extends runtime.Types.Extensi
    * In case the CustomerPackageUsage was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerPackageUsageUpdateInput, Prisma.CustomerPackageUsageUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3024,6 +3032,7 @@ export type CustomerPackageUsageDeleteArgs<ExtArgs extends runtime.Types.Extensi
    * Filter which CustomerPackageUsage to delete.
    */
   where: Prisma.CustomerPackageUsageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

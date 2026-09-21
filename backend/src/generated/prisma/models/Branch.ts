@@ -9293,7 +9293,7 @@ export type $BranchPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type BranchGetPayload<S extends boolean | null | undefined | BranchDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$BranchPayload, S>
 
 export type BranchCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<BranchFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<BranchFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: BranchCountAggregateInputType | true
   }
 
@@ -9782,6 +9782,7 @@ export type BranchFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter, which Branch to fetch.
    */
   where: Prisma.BranchWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -9804,6 +9805,7 @@ export type BranchFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    * Filter, which Branch to fetch.
    */
   where: Prisma.BranchWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -9856,6 +9858,7 @@ export type BranchFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Filter by unique combinations of Branches.
    */
   distinct?: Prisma.BranchScalarFieldEnum | Prisma.BranchScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -9908,6 +9911,7 @@ export type BranchFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter by unique combinations of Branches.
    */
   distinct?: Prisma.BranchScalarFieldEnum | Prisma.BranchScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -9960,6 +9964,7 @@ export type BranchFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter by unique combinations of Branches.
    */
   distinct?: Prisma.BranchScalarFieldEnum | Prisma.BranchScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -9982,6 +9987,7 @@ export type BranchCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * The data needed to create a Branch.
    */
   data: Prisma.XOR<Prisma.BranchCreateInput, Prisma.BranchUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -10042,6 +10048,7 @@ export type BranchUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Choose, which Branch to update.
    */
   where: Prisma.BranchWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -10120,6 +10127,7 @@ export type BranchUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * In case the Branch was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.BranchUpdateInput, Prisma.BranchUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -10142,6 +10150,7 @@ export type BranchDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Filter which Branch to delete.
    */
   where: Prisma.BranchWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

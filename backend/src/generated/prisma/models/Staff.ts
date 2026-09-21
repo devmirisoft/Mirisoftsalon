@@ -4504,7 +4504,7 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type StaffGetPayload<S extends boolean | null | undefined | StaffDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffPayload, S>
 
 export type StaffCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffCountAggregateInputType | true
   }
 
@@ -4980,6 +4980,7 @@ export type StaffFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Filter, which Staff to fetch.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5002,6 +5003,7 @@ export type StaffFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter, which Staff to fetch.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5054,6 +5056,7 @@ export type StaffFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5106,6 +5109,7 @@ export type StaffFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5158,6 +5162,7 @@ export type StaffFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5180,6 +5185,7 @@ export type StaffCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * The data needed to create a Staff.
    */
   data: Prisma.XOR<Prisma.StaffCreateInput, Prisma.StaffUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5240,6 +5246,7 @@ export type StaffUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Choose, which Staff to update.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5318,6 +5325,7 @@ export type StaffUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * In case the Staff was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffUpdateInput, Prisma.StaffUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5340,6 +5348,7 @@ export type StaffDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Filter which Staff to delete.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

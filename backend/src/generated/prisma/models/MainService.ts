@@ -660,7 +660,7 @@ export type $MainServicePayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type MainServiceGetPayload<S extends boolean | null | undefined | MainServiceDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MainServicePayload, S>
 
 export type MainServiceCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<MainServiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<MainServiceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: MainServiceCountAggregateInputType | true
   }
 
@@ -1108,6 +1108,7 @@ export type MainServiceFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which MainService to fetch.
    */
   where: Prisma.MainServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1130,6 +1131,7 @@ export type MainServiceFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which MainService to fetch.
    */
   where: Prisma.MainServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1182,6 +1184,7 @@ export type MainServiceFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of MainServices.
    */
   distinct?: Prisma.MainServiceScalarFieldEnum | Prisma.MainServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1234,6 +1237,7 @@ export type MainServiceFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of MainServices.
    */
   distinct?: Prisma.MainServiceScalarFieldEnum | Prisma.MainServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1286,6 +1290,7 @@ export type MainServiceFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of MainServices.
    */
   distinct?: Prisma.MainServiceScalarFieldEnum | Prisma.MainServiceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1308,6 +1313,7 @@ export type MainServiceCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a MainService.
    */
   data: Prisma.XOR<Prisma.MainServiceCreateInput, Prisma.MainServiceUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1368,6 +1374,7 @@ export type MainServiceUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which MainService to update.
    */
   where: Prisma.MainServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1446,6 +1453,7 @@ export type MainServiceUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the MainService was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.MainServiceUpdateInput, Prisma.MainServiceUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1468,6 +1476,7 @@ export type MainServiceDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which MainService to delete.
    */
   where: Prisma.MainServiceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

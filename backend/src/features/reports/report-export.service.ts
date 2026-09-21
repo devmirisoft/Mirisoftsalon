@@ -6,6 +6,7 @@ import {
 } from "../../utils/export/reportExportTypes.js";
 import { getSalonMonthRange, parseSalonDateRange } from "../../utils/timezone.js";
 import { transactionError, validateBranch } from "../products/inventory-access.js";
+import { eodInvoiceFilters } from "./salon-report.controller.js";
 
 export const EXPORT_REPORT_TYPES = [
   "revenue",
@@ -17,6 +18,7 @@ export const EXPORT_REPORT_TYPES = [
   "payroll",
   "customer-outstanding",
   "appointments",
+  "eod",
 ] as const;
 export type ExportReportType = (typeof EXPORT_REPORT_TYPES)[number];
 
@@ -30,6 +32,7 @@ const allowedRoles: Record<ExportReportType, string[]> = {
   payroll: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "STAFF"],
   "customer-outstanding": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   appointments: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
+  eod: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"],
 };
 
 const clean = (value: unknown) =>
@@ -298,6 +301,33 @@ const buildRows = async (
       { key: "status", label: "Status" },
     ], rows: appointments.map((a) => ({ code: a.appointmentCode, start: a.startTime, customer: a.customer.name, phone: a.customer.phone, staff: a.staff?.name ?? "Unassigned", services: a.services.map((s) => s.serviceName).join(", "), branch: a.branch?.name ?? "All branches", amount: Number(a.estimatedAmount), status: a.status })),
     totals: { code: "TOTAL", amount: appointments.reduce((s, a) => s + Number(a.estimatedAmount), 0) } };
+  }
+  if (reportType === "eod") {
+    const invoices = limited(await prisma.invoice.findMany({
+      where: { ...common, status: "ISSUED", ...(context.range ? { invoiceDate: context.range } : {}), ...eodInvoiceFilters(req.query) },
+      select: { invoiceCode: true, invoiceDate: true, customerName: true, customerPhone: true, totalAmount: true, billingNote: true, items: { select: { itemType: true, serviceName: true, lineTotal: true } }, payments: { select: { method: true } } },
+      orderBy: { invoiceDate: "desc" }, take: MAX_EXPORT_ROWS + 1,
+    }));
+    const pick = (items: { itemType: string; serviceName: string; lineTotal: unknown }[], type: string) => items.filter((i) => i.itemType === type);
+    const sum = (items: { lineTotal: unknown }[]) => items.reduce((s, i) => s + numberValue(i.lineTotal), 0);
+    return { title: "End of Day Report", columns: [
+      { key: "code", label: "Invoice No", width: 16 }, { key: "customer", label: "Name", width: 20 },
+      { key: "phone", label: "Phone Number", width: 16 }, { key: "services", label: "Services", width: 30 },
+      { key: "serviceCost", label: "Service Cost", type: "currency" }, { key: "products", label: "Products", width: 24 },
+      { key: "productCost", label: "Products Cost", type: "currency" }, { key: "date", label: "Date of Sales", type: "date", width: 17 },
+      { key: "salesCost", label: "Sales Cost", type: "currency" }, { key: "method", label: "Mode of Payment", width: 18 },
+      { key: "comment", label: "Comment", width: 24 },
+    ], rows: invoices.map((row) => ({
+      code: row.invoiceCode, customer: row.customerName, phone: row.customerPhone ?? "",
+      services: pick(row.items, "SERVICE").map((i) => i.serviceName).join(", "),
+      serviceCost: sum(pick(row.items, "SERVICE")),
+      products: pick(row.items, "PRODUCT").map((i) => i.serviceName).join(", "),
+      productCost: sum(pick(row.items, "PRODUCT")),
+      date: row.invoiceDate, salesCost: numberValue(row.totalAmount),
+      method: [...new Set(row.payments.map((p) => p.method))].join(", ") || "Unpaid",
+      comment: row.billingNote ?? "",
+    })),
+    totals: { code: "TOTAL", serviceCost: invoices.reduce((s, r) => s + sum(pick(r.items, "SERVICE")), 0), productCost: invoices.reduce((s, r) => s + sum(pick(r.items, "PRODUCT")), 0), salesCost: invoices.reduce((s, r) => s + numberValue(r.totalAmount), 0) } };
   }
 
   const month = Number(req.query.month);

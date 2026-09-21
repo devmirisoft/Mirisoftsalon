@@ -3665,7 +3665,7 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type SaleGetPayload<S extends boolean | null | undefined | SaleDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SalePayload, S>
 
 export type SaleCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SaleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SaleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SaleCountAggregateInputType | true
   }
 
@@ -4146,6 +4146,7 @@ export type SaleFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter, which Sale to fetch.
    */
   where: Prisma.SaleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4168,6 +4169,7 @@ export type SaleFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which Sale to fetch.
    */
   where: Prisma.SaleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4220,6 +4222,7 @@ export type SaleFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Filter by unique combinations of Sales.
    */
   distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4272,6 +4275,7 @@ export type SaleFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of Sales.
    */
   distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4324,6 +4328,7 @@ export type SaleFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Filter by unique combinations of Sales.
    */
   distinct?: Prisma.SaleScalarFieldEnum | Prisma.SaleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4346,6 +4351,7 @@ export type SaleCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * The data needed to create a Sale.
    */
   data: Prisma.XOR<Prisma.SaleCreateInput, Prisma.SaleUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4406,6 +4412,7 @@ export type SaleUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Choose, which Sale to update.
    */
   where: Prisma.SaleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4484,6 +4491,7 @@ export type SaleUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * In case the Sale was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SaleUpdateInput, Prisma.SaleUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4506,6 +4514,7 @@ export type SaleDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Filter which Sale to delete.
    */
   where: Prisma.SaleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

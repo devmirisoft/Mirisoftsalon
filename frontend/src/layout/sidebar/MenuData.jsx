@@ -20,8 +20,9 @@ const superAdminMenu = [
     text: "Reports",
     subMenu: [
       { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
-      { text: "Salon Report", link: "/reports/salon-report" },
-      { text: "Audit Trails", link: "/reports/audit-trails" },
+      { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+      { icon: "building-fill", text: "Salon Report", link: "/reports/salon-report" },
+      { icon: "shield-check-fill", text: "Audit Trails", link: "/reports/audit-trails" },
     ],
   },
 ];
@@ -166,15 +167,18 @@ const getMenu = (role) => {
           text: "Reports",
           subMenu: [
             ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
-              ? [{ icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" }]
+              ? [
+                  { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
+                  { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+                ]
               : []),
-            { text: "Inventory Report", link: "/reports/inventory" },
-            { text: "Product Report", link: "/reports/products" },
+            { icon: "archive-fill", text: "Inventory Report", link: "/reports/inventory" },
+            { icon: "package-fill", text: "Product Report", link: "/reports/products" },
             ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
-              ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]
+              ? [{ icon: "shield-check-fill", text: "Audit Trails", link: "/reports/audit-trails" }]
               : []),
             ...(hasRole(role, ["SALON_ADMIN"])
-              ? [{ text: "Salon Report", link: "/reports/salon-report" }]
+              ? [{ icon: "building-fill", text: "Salon Report", link: "/reports/salon-report" }]
               : []),
           ],
         },

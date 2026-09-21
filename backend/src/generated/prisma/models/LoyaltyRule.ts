@@ -742,7 +742,7 @@ export type $LoyaltyRulePayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type LoyaltyRuleGetPayload<S extends boolean | null | undefined | LoyaltyRuleDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$LoyaltyRulePayload, S>
 
 export type LoyaltyRuleCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<LoyaltyRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<LoyaltyRuleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: LoyaltyRuleCountAggregateInputType | true
   }
 
@@ -1193,6 +1193,7 @@ export type LoyaltyRuleFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which LoyaltyRule to fetch.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1215,6 +1216,7 @@ export type LoyaltyRuleFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which LoyaltyRule to fetch.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1267,6 +1269,7 @@ export type LoyaltyRuleFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of LoyaltyRules.
    */
   distinct?: Prisma.LoyaltyRuleScalarFieldEnum | Prisma.LoyaltyRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1319,6 +1322,7 @@ export type LoyaltyRuleFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of LoyaltyRules.
    */
   distinct?: Prisma.LoyaltyRuleScalarFieldEnum | Prisma.LoyaltyRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1371,6 +1375,7 @@ export type LoyaltyRuleFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of LoyaltyRules.
    */
   distinct?: Prisma.LoyaltyRuleScalarFieldEnum | Prisma.LoyaltyRuleScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1393,6 +1398,7 @@ export type LoyaltyRuleCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a LoyaltyRule.
    */
   data: Prisma.XOR<Prisma.LoyaltyRuleCreateInput, Prisma.LoyaltyRuleUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1453,6 +1459,7 @@ export type LoyaltyRuleUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which LoyaltyRule to update.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1531,6 +1538,7 @@ export type LoyaltyRuleUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the LoyaltyRule was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.LoyaltyRuleUpdateInput, Prisma.LoyaltyRuleUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1553,6 +1561,7 @@ export type LoyaltyRuleDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which LoyaltyRule to delete.
    */
   where: Prisma.LoyaltyRuleWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

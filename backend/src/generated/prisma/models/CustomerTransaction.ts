@@ -1393,7 +1393,7 @@ export type $CustomerTransactionPayload<ExtArgs extends runtime.Types.Extensions
 export type CustomerTransactionGetPayload<S extends boolean | null | undefined | CustomerTransactionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerTransactionPayload, S>
 
 export type CustomerTransactionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerTransactionCountAggregateInputType | true
   }
 
@@ -1851,6 +1851,7 @@ export type CustomerTransactionFindUniqueArgs<ExtArgs extends runtime.Types.Exte
    * Filter, which CustomerTransaction to fetch.
    */
   where: Prisma.CustomerTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1873,6 +1874,7 @@ export type CustomerTransactionFindUniqueOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter, which CustomerTransaction to fetch.
    */
   where: Prisma.CustomerTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1925,6 +1927,7 @@ export type CustomerTransactionFindFirstArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of CustomerTransactions.
    */
   distinct?: Prisma.CustomerTransactionScalarFieldEnum | Prisma.CustomerTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1977,6 +1980,7 @@ export type CustomerTransactionFindFirstOrThrowArgs<ExtArgs extends runtime.Type
    * Filter by unique combinations of CustomerTransactions.
    */
   distinct?: Prisma.CustomerTransactionScalarFieldEnum | Prisma.CustomerTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2029,6 +2033,7 @@ export type CustomerTransactionFindManyArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of CustomerTransactions.
    */
   distinct?: Prisma.CustomerTransactionScalarFieldEnum | Prisma.CustomerTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2051,6 +2056,7 @@ export type CustomerTransactionCreateArgs<ExtArgs extends runtime.Types.Extensio
    * The data needed to create a CustomerTransaction.
    */
   data: Prisma.XOR<Prisma.CustomerTransactionCreateInput, Prisma.CustomerTransactionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2111,6 +2117,7 @@ export type CustomerTransactionUpdateArgs<ExtArgs extends runtime.Types.Extensio
    * Choose, which CustomerTransaction to update.
    */
   where: Prisma.CustomerTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2189,6 +2196,7 @@ export type CustomerTransactionUpsertArgs<ExtArgs extends runtime.Types.Extensio
    * In case the CustomerTransaction was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerTransactionUpdateInput, Prisma.CustomerTransactionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2211,6 +2219,7 @@ export type CustomerTransactionDeleteArgs<ExtArgs extends runtime.Types.Extensio
    * Filter which CustomerTransaction to delete.
    */
   where: Prisma.CustomerTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

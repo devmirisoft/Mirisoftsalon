@@ -1294,7 +1294,7 @@ export type $AuditLogPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type AuditLogGetPayload<S extends boolean | null | undefined | AuditLogDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AuditLogPayload, S>
 
 export type AuditLogCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<AuditLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: AuditLogCountAggregateInputType | true
   }
 
@@ -1754,6 +1754,7 @@ export type AuditLogFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter, which AuditLog to fetch.
    */
   where: Prisma.AuditLogWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1776,6 +1777,7 @@ export type AuditLogFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensio
    * Filter, which AuditLog to fetch.
    */
   where: Prisma.AuditLogWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1828,6 +1830,7 @@ export type AuditLogFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter by unique combinations of AuditLogs.
    */
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1880,6 +1883,7 @@ export type AuditLogFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extension
    * Filter by unique combinations of AuditLogs.
    */
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1932,6 +1936,7 @@ export type AuditLogFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter by unique combinations of AuditLogs.
    */
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1954,6 +1959,7 @@ export type AuditLogCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * The data needed to create a AuditLog.
    */
   data: Prisma.XOR<Prisma.AuditLogCreateInput, Prisma.AuditLogUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2014,6 +2020,7 @@ export type AuditLogUpdateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Choose, which AuditLog to update.
    */
   where: Prisma.AuditLogWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2092,6 +2099,7 @@ export type AuditLogUpsertArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * In case the AuditLog was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.AuditLogUpdateInput, Prisma.AuditLogUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2114,6 +2122,7 @@ export type AuditLogDeleteArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter which AuditLog to delete.
    */
   where: Prisma.AuditLogWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

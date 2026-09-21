@@ -4224,7 +4224,7 @@ export type $CustomerPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type CustomerGetPayload<S extends boolean | null | undefined | CustomerDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerPayload, S>
 
 export type CustomerCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerCountAggregateInputType | true
   }
 
@@ -4699,6 +4699,7 @@ export type CustomerFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter, which Customer to fetch.
    */
   where: Prisma.CustomerWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4721,6 +4722,7 @@ export type CustomerFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensio
    * Filter, which Customer to fetch.
    */
   where: Prisma.CustomerWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4773,6 +4775,7 @@ export type CustomerFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter by unique combinations of Customers.
    */
   distinct?: Prisma.CustomerScalarFieldEnum | Prisma.CustomerScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4825,6 +4828,7 @@ export type CustomerFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extension
    * Filter by unique combinations of Customers.
    */
   distinct?: Prisma.CustomerScalarFieldEnum | Prisma.CustomerScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4877,6 +4881,7 @@ export type CustomerFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter by unique combinations of Customers.
    */
   distinct?: Prisma.CustomerScalarFieldEnum | Prisma.CustomerScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4899,6 +4904,7 @@ export type CustomerCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * The data needed to create a Customer.
    */
   data: Prisma.XOR<Prisma.CustomerCreateInput, Prisma.CustomerUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4959,6 +4965,7 @@ export type CustomerUpdateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Choose, which Customer to update.
    */
   where: Prisma.CustomerWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5037,6 +5044,7 @@ export type CustomerUpsertArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * In case the Customer was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerUpdateInput, Prisma.CustomerUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5059,6 +5067,7 @@ export type CustomerDeleteArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter which Customer to delete.
    */
   where: Prisma.CustomerWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

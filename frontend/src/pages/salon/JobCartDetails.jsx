@@ -1675,7 +1675,7 @@ const JobCartDetails = () => {
                 </Row>
 
                 {tenders.slice(1).map((tender, offset) => (
-                  <Row className="g-2 jcp-tender-row" key={offset + 1}>
+                  <Row className="g-2 align-items-end jcp-tender-row" key={offset + 1}>
                     <Col sm="4">
                       <Label className="jcp-field-label">
                         Payment {offset + 2}
@@ -1714,38 +1714,37 @@ const JobCartDetails = () => {
                         }
                       />
                     </Col>
-                    <Col sm="5">
+                    <Col>
                       <Label className="jcp-field-label">
                         Reference <span className="text-soft">(Optional)</span>
                       </Label>
-                      <div className="d-flex gap-2 align-items-center">
-                        <Input
-                          className="jcp-tender-ref"
-                          placeholder="Reference"
-                          value={tender.referenceNo}
-                          onChange={(event) =>
-                            setTenderValue(
-                              offset + 1,
-                              "referenceNo",
-                              event.target.value
+                      <Input
+                        placeholder="Reference"
+                        value={tender.referenceNo}
+                        onChange={(event) =>
+                          setTenderValue(
+                            offset + 1,
+                            "referenceNo",
+                            event.target.value
+                          )
+                        }
+                      />
+                    </Col>
+                    <Col xs="auto">
+                      <button
+                        type="button"
+                        className="jcp-tender-remove"
+                        aria-label="Remove payment method"
+                        onClick={() =>
+                          setTenders((current) =>
+                            current.filter(
+                              (_row, rowIndex) => rowIndex !== offset + 1
                             )
-                          }
-                        />
-                        <button
-                          type="button"
-                          className="jcp-tender-remove"
-                          aria-label="Remove payment method"
-                          onClick={() =>
-                            setTenders((current) =>
-                              current.filter(
-                                (_row, rowIndex) => rowIndex !== offset + 1
-                              )
-                            )
-                          }
-                        >
-                          <Icon name="cross" />
-                        </button>
-                      </div>
+                          )
+                        }
+                      >
+                        <Icon name="cross" />
+                      </button>
                     </Col>
                   </Row>
                 ))}

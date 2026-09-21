@@ -759,7 +759,7 @@ export type $RetailSaleItemPayload<ExtArgs extends runtime.Types.Extensions.Inte
 export type RetailSaleItemGetPayload<S extends boolean | null | undefined | RetailSaleItemDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$RetailSaleItemPayload, S>
 
 export type RetailSaleItemCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<RetailSaleItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<RetailSaleItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: RetailSaleItemCountAggregateInputType | true
   }
 
@@ -1208,6 +1208,7 @@ export type RetailSaleItemFindUniqueArgs<ExtArgs extends runtime.Types.Extension
    * Filter, which RetailSaleItem to fetch.
    */
   where: Prisma.RetailSaleItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1230,6 +1231,7 @@ export type RetailSaleItemFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ex
    * Filter, which RetailSaleItem to fetch.
    */
   where: Prisma.RetailSaleItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1282,6 +1284,7 @@ export type RetailSaleItemFindFirstArgs<ExtArgs extends runtime.Types.Extensions
    * Filter by unique combinations of RetailSaleItems.
    */
   distinct?: Prisma.RetailSaleItemScalarFieldEnum | Prisma.RetailSaleItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1334,6 +1337,7 @@ export type RetailSaleItemFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ext
    * Filter by unique combinations of RetailSaleItems.
    */
   distinct?: Prisma.RetailSaleItemScalarFieldEnum | Prisma.RetailSaleItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1386,6 +1390,7 @@ export type RetailSaleItemFindManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter by unique combinations of RetailSaleItems.
    */
   distinct?: Prisma.RetailSaleItemScalarFieldEnum | Prisma.RetailSaleItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1408,6 +1413,7 @@ export type RetailSaleItemCreateArgs<ExtArgs extends runtime.Types.Extensions.In
    * The data needed to create a RetailSaleItem.
    */
   data: Prisma.XOR<Prisma.RetailSaleItemCreateInput, Prisma.RetailSaleItemUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1468,6 +1474,7 @@ export type RetailSaleItemUpdateArgs<ExtArgs extends runtime.Types.Extensions.In
    * Choose, which RetailSaleItem to update.
    */
   where: Prisma.RetailSaleItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1546,6 +1553,7 @@ export type RetailSaleItemUpsertArgs<ExtArgs extends runtime.Types.Extensions.In
    * In case the RetailSaleItem was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.RetailSaleItemUpdateInput, Prisma.RetailSaleItemUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1568,6 +1576,7 @@ export type RetailSaleItemDeleteArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter which RetailSaleItem to delete.
    */
   where: Prisma.RetailSaleItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

@@ -632,7 +632,12 @@ const recalculateCart = async (
   tx: TransactionClient,
   appointmentId: string,
   actor: JobCartActor,
-  audit: AuditContext
+  audit: AuditContext,
+  // The staff conflict + overtime sweep is ~9 round trips per staff member.
+  // Only services move the appointment window or the staff on it, so adding or
+  // removing a product, package or membership can skip it - the answer cannot
+  // have changed.
+  options: { skipStaffCheck?: boolean } = {}
 ) => {
   const cart = await tx.appointment.findUnique({
     where: { id: appointmentId },
@@ -761,17 +766,19 @@ const recalculateCart = async (
     cart.startTime.getTime() +
       Math.max(totalDurationMinutes, 30) * 60_000
   );
-  await assertNoStaffConflicts(tx, {
-    salonId: cart.salonId,
-    branchId: cart.branchId!,
-    staffIds: [
-      cart.staffId,
-      ...cart.services.map((item) => item.staffId),
-    ],
-    startTime: cart.startTime,
-    endTime,
-    excludeAppointmentId: cart.id,
-  });
+  if (!options.skipStaffCheck) {
+    await assertNoStaffConflicts(tx, {
+      salonId: cart.salonId,
+      branchId: cart.branchId!,
+      staffIds: [
+        cart.staffId,
+        ...cart.services.map((item) => item.staffId),
+      ],
+      startTime: cart.startTime,
+      endTime,
+      excludeAppointmentId: cart.id,
+    });
+  }
 
   await tx.invoiceItem.deleteMany({
     where: { invoiceId: cart.invoice.id, itemType: "SERVICE" },
@@ -1923,7 +1930,9 @@ export const addJobCartItem = async (
           },
         });
       }
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2019,7 +2028,9 @@ export const addJobCartItem = async (
           lineTotal: servicePackage.specialPrice,
         },
       });
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2088,7 +2099,9 @@ export const addJobCartItem = async (
           lineTotal: membership.price,
         },
       });
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2281,7 +2294,9 @@ export const removeJobCartItem = async (
     } else {
       await tx.invoiceItem.delete({ where: { id: packageItem!.id } });
     }
-    await recalculateCart(tx, id, actor, audit);
+    await recalculateCart(tx, id, actor, audit, {
+      skipStaffCheck: !serviceItem,
+    });
     await createAuditLog({
       tx,
       salonId: existing.salonId,

@@ -1171,7 +1171,7 @@ export type $MembershipPayload<ExtArgs extends runtime.Types.Extensions.Internal
 export type MembershipGetPayload<S extends boolean | null | undefined | MembershipDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MembershipPayload, S>
 
 export type MembershipCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<MembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<MembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: MembershipCountAggregateInputType | true
   }
 
@@ -1626,6 +1626,7 @@ export type MembershipFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter, which Membership to fetch.
    */
   where: Prisma.MembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1648,6 +1649,7 @@ export type MembershipFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which Membership to fetch.
    */
   where: Prisma.MembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1700,6 +1702,7 @@ export type MembershipFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of Memberships.
    */
   distinct?: Prisma.MembershipScalarFieldEnum | Prisma.MembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1752,6 +1755,7 @@ export type MembershipFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of Memberships.
    */
   distinct?: Prisma.MembershipScalarFieldEnum | Prisma.MembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1804,6 +1808,7 @@ export type MembershipFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter by unique combinations of Memberships.
    */
   distinct?: Prisma.MembershipScalarFieldEnum | Prisma.MembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1826,6 +1831,7 @@ export type MembershipCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data needed to create a Membership.
    */
   data: Prisma.XOR<Prisma.MembershipCreateInput, Prisma.MembershipUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1886,6 +1892,7 @@ export type MembershipUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Choose, which Membership to update.
    */
   where: Prisma.MembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1964,6 +1971,7 @@ export type MembershipUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * In case the Membership was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.MembershipUpdateInput, Prisma.MembershipUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1986,6 +1994,7 @@ export type MembershipDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter which Membership to delete.
    */
   where: Prisma.MembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

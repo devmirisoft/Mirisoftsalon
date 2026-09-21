@@ -14,7 +14,14 @@ const include = {
 
 export const VendorModel = {
   list: (where: object) =>
-    prisma.vendor.findMany({ where, include, orderBy: { name: "asc" } }),
+    prisma.vendor.findMany({
+      where,
+      include: {
+        ...include,
+        products: { select: { category: true }, where: { category: { not: null } }, distinct: ["category"] },
+      },
+      orderBy: { name: "asc" },
+    }),
   find: (where: object) => prisma.vendor.findFirst({ where, include }),
   duplicate: (salonId: string, name: string, excludeId?: string) =>
     prisma.vendor.findFirst({

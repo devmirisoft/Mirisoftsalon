@@ -1084,7 +1084,7 @@ export type $ServicePackageItemPayload<ExtArgs extends runtime.Types.Extensions.
 export type ServicePackageItemGetPayload<S extends boolean | null | undefined | ServicePackageItemDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ServicePackageItemPayload, S>
 
 export type ServicePackageItemCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ServicePackageItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ServicePackageItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ServicePackageItemCountAggregateInputType | true
   }
 
@@ -1538,6 +1538,7 @@ export type ServicePackageItemFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which ServicePackageItem to fetch.
    */
   where: Prisma.ServicePackageItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1560,6 +1561,7 @@ export type ServicePackageItemFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    * Filter, which ServicePackageItem to fetch.
    */
   where: Prisma.ServicePackageItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1612,6 +1614,7 @@ export type ServicePackageItemFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of ServicePackageItems.
    */
   distinct?: Prisma.ServicePackageItemScalarFieldEnum | Prisma.ServicePackageItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1664,6 +1667,7 @@ export type ServicePackageItemFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of ServicePackageItems.
    */
   distinct?: Prisma.ServicePackageItemScalarFieldEnum | Prisma.ServicePackageItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1716,6 +1720,7 @@ export type ServicePackageItemFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of ServicePackageItems.
    */
   distinct?: Prisma.ServicePackageItemScalarFieldEnum | Prisma.ServicePackageItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1738,6 +1743,7 @@ export type ServicePackageItemCreateArgs<ExtArgs extends runtime.Types.Extension
    * The data needed to create a ServicePackageItem.
    */
   data: Prisma.XOR<Prisma.ServicePackageItemCreateInput, Prisma.ServicePackageItemUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1798,6 +1804,7 @@ export type ServicePackageItemUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Choose, which ServicePackageItem to update.
    */
   where: Prisma.ServicePackageItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1876,6 +1883,7 @@ export type ServicePackageItemUpsertArgs<ExtArgs extends runtime.Types.Extension
    * In case the ServicePackageItem was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ServicePackageItemUpdateInput, Prisma.ServicePackageItemUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1898,6 +1906,7 @@ export type ServicePackageItemDeleteArgs<ExtArgs extends runtime.Types.Extension
    * Filter which ServicePackageItem to delete.
    */
   where: Prisma.ServicePackageItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

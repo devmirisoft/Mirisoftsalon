@@ -1390,7 +1390,7 @@ export type $StaffAttendancePayload<ExtArgs extends runtime.Types.Extensions.Int
 export type StaffAttendanceGetPayload<S extends boolean | null | undefined | StaffAttendanceDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffAttendancePayload, S>
 
 export type StaffAttendanceCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffAttendanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffAttendanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffAttendanceCountAggregateInputType | true
   }
 
@@ -1848,6 +1848,7 @@ export type StaffAttendanceFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    * Filter, which StaffAttendance to fetch.
    */
   where: Prisma.StaffAttendanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1870,6 +1871,7 @@ export type StaffAttendanceFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    * Filter, which StaffAttendance to fetch.
    */
   where: Prisma.StaffAttendanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1922,6 +1924,7 @@ export type StaffAttendanceFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Filter by unique combinations of StaffAttendances.
    */
   distinct?: Prisma.StaffAttendanceScalarFieldEnum | Prisma.StaffAttendanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1974,6 +1977,7 @@ export type StaffAttendanceFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    * Filter by unique combinations of StaffAttendances.
    */
   distinct?: Prisma.StaffAttendanceScalarFieldEnum | Prisma.StaffAttendanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2026,6 +2030,7 @@ export type StaffAttendanceFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Filter by unique combinations of StaffAttendances.
    */
   distinct?: Prisma.StaffAttendanceScalarFieldEnum | Prisma.StaffAttendanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2048,6 +2053,7 @@ export type StaffAttendanceCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    * The data needed to create a StaffAttendance.
    */
   data: Prisma.XOR<Prisma.StaffAttendanceCreateInput, Prisma.StaffAttendanceUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2108,6 +2114,7 @@ export type StaffAttendanceUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Choose, which StaffAttendance to update.
    */
   where: Prisma.StaffAttendanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2186,6 +2193,7 @@ export type StaffAttendanceUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * In case the StaffAttendance was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffAttendanceUpdateInput, Prisma.StaffAttendanceUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2208,6 +2216,7 @@ export type StaffAttendanceDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter which StaffAttendance to delete.
    */
   where: Prisma.StaffAttendanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

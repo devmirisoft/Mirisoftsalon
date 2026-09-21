@@ -1695,6 +1695,206 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   color: #dbdfea;
 }
 
+/* Vendors list: stat tiles over one card holding filters, table and pager.
+   Tiles skip .card so the theme's .card + .card top margin can't skew the grid. */
+.vendors-page {
+  --vd-surface: #fff;
+  --vd-line: #e5e9f2;
+  --vd-head: #f7f9fc;
+  --vd-text: #526484;
+  --vd-ink: #1c2b46;
+  --vd-muted: #8094ae;
+}
+
+.vendors-page .vd-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.vendors-page .vd-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--vd-surface);
+  border: 1px solid var(--vd-line);
+  border-radius: 0.75rem;
+}
+
+.vendors-page .vd-stat-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.625rem;
+  font-size: 1.375rem;
+}
+
+.vendors-page .vd-stat-label {
+  color: var(--vd-text);
+  font-size: 0.8125rem;
+}
+
+.vendors-page .vd-stat-value {
+  margin: 0.125rem 0 0.25rem;
+  color: var(--vd-ink);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.vendors-page .vd-stat-hint {
+  color: var(--vd-muted);
+  font-size: 0.8125rem;
+}
+
+.vendors-page .nk-block > .card {
+  border-color: var(--vd-line);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.vendors-page .vd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.vendors-page .vd-search {
+  flex: 1 1 18rem;
+}
+
+.vendors-page .vd-select {
+  flex: 0 0 13rem;
+}
+
+.vendors-page .vd-toolbar .form-control,
+.vendors-page .vd-toolbar .form-select {
+  height: 2.5rem;
+  border-radius: 0.5rem;
+}
+
+.vendors-page .table-tranx thead th {
+  padding: 0.75rem 1rem;
+  background: var(--vd-head);
+  border-top: 1px solid var(--vd-line);
+  border-bottom: 1px solid var(--vd-line);
+  color: var(--vd-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.vendors-page .table-tranx tbody td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--vd-line);
+  color: var(--vd-text);
+  vertical-align: middle;
+}
+
+.vendors-page .table-tranx tbody tr:hover td {
+  background: rgba(33, 46, 107, 0.03);
+}
+
+.vendors-page .vd-name {
+  color: var(--vd-ink);
+  font-weight: 600;
+}
+
+.vendors-page .vd-name:hover {
+  color: #212e6b;
+}
+
+.vendors-page .vd-sub {
+  margin-top: 0.125rem;
+  color: var(--vd-muted);
+  font-size: 0.75rem;
+}
+
+.vendors-page .table-tranx .badge {
+  padding: 0.3rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* three-dot trigger as a bordered square, dots stacked vertically */
+.vendors-page .btn-trigger {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--vd-line);
+  border-radius: 0.5rem;
+}
+
+.vendors-page .btn-trigger .icon {
+  color: var(--vd-ink);
+  transform: rotate(90deg);
+}
+
+/* pager sits inside the card: range on the left, pages on the right */
+.vendors-page .server-pagination {
+  margin: 0;
+  padding: 0.875rem 1.25rem;
+}
+
+.vendors-page .server-pagination-count {
+  order: -1;
+  color: var(--vd-text);
+  font-size: 0.875rem;
+}
+
+.vendors-page .server-pagination .pagination {
+  gap: 0.375rem;
+}
+
+.vendors-page .server-pagination .page-link {
+  min-width: 2rem;
+  border: 1px solid var(--vd-line);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.vendors-page .server-pagination .page-item.active .page-link {
+  background: #212e6b;
+  border-color: #212e6b;
+  color: #fff;
+}
+
+.vendors-page .server-pagination .page-item.disabled .page-link {
+  opacity: 0.5;
+}
+
+@media (max-width: 991.98px) {
+  .vendors-page .vd-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  .vendors-page .vd-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vendors-page .vd-select {
+    flex: 1 1 8rem;
+  }
+}
+
+body.dark-mode .vendors-page {
+  --vd-surface: rgba(255, 255, 255, 0.03);
+  --vd-line: rgba(255, 255, 255, 0.1);
+  --vd-head: rgba(255, 255, 255, 0.04);
+  --vd-text: #b6c6e3;
+  --vd-ink: #dbdfea;
+}
+
 /* ---------- Book appointment modal ---------- */
 .appointment-booking-modal {
   max-width: 1100px;
@@ -3412,12 +3612,6 @@ body.dark-mode .jcp-cancel {
   white-space: nowrap;
 }
 
-/* The reference input must shrink, or the remove button spills out of the row. */
-.jcp-tender-ref {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
 /* Each extra tender is its own card, same input size as the first row. */
 .jcp-tender-row {
   margin: 0.5rem 0 0;
@@ -3725,3 +3919,552 @@ body.dark-mode .jcp-pay-code {
     color: #000;
   }
 }
+
+/* Inventory: tabs and filters share one card header row. */
+.inv-toolbar .nav-tabs {
+  margin-bottom: 0 !important;
+  border-bottom: 0;
+  box-shadow: none;
+}
+
+/* ---------- Quick sell: membership / package (QuickSell.jsx) ---------- */
+.quick-sell-modal {
+  max-width: 960px;
+}
+
+.quick-sell-modal .modal-content {
+  border: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.quick-sell-head {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.15rem 1.5rem;
+  background: #212e6b;
+  color: #fff;
+}
+
+.quick-sell-head-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.625rem;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 1.25rem;
+}
+
+.quick-sell-head-text {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.quick-sell-head-text h5 {
+  margin: 0;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.quick-sell-head-text span {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* bootstrap's close glyph is near-black - flip it for the dark bar */
+.quick-sell-head .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.75;
+}
+
+.quick-sell-head .btn-close:hover {
+  opacity: 1;
+}
+
+.quick-sell-body {
+  padding: 1.5rem;
+}
+
+.quick-sell-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #364a63;
+}
+
+.quick-sell-label .icon {
+  color: #8094ae;
+  font-size: 1rem;
+}
+
+.quick-sell-body .form-control,
+.quick-sell-body .form-select {
+  min-height: 2.875rem;
+  border-color: #e5e9f2;
+  background-color: #f8f9fc;
+}
+
+.quick-sell-section {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.quick-sell-section > .icon {
+  flex-shrink: 0;
+  color: #212e6b;
+  font-size: 1.5rem;
+}
+
+.quick-sell-section h6 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #212e6b;
+}
+
+.quick-sell-section span {
+  font-size: 0.8125rem;
+  color: #8094ae;
+}
+
+.quick-sell-plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.quick-sell-plan {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.875rem 1rem;
+  border: 1px solid #e5e9f2;
+  border-radius: 0.625rem;
+  background: #fff;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.quick-sell-plan:hover:not(:disabled),
+.quick-sell-plan:focus-visible {
+  border-color: var(--qs-tone, #212e6b);
+  box-shadow: 0 2px 10px rgba(33, 46, 107, 0.1);
+  transform: translateY(-1px);
+}
+
+.quick-sell-plan:disabled {
+  opacity: 0.6;
+}
+
+.quick-sell-plan-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.625rem;
+  background: var(--qs-soft, rgba(33, 46, 107, 0.1));
+  color: var(--qs-tone, #212e6b);
+  font-size: 1.25rem;
+}
+
+.quick-sell-plan-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.quick-sell-plan-name,
+.quick-sell-plan-meta {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.quick-sell-plan-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #364a63;
+}
+
+.quick-sell-plan-meta {
+  font-size: 0.8125rem;
+  color: #8094ae;
+}
+
+.quick-sell-plan-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--qs-tone, #212e6b);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+/* tier tints, keyed off the plan name in QuickSell.jsx */
+.quick-sell-plan-amber {
+  --qs-tone: #f0932b;
+  --qs-soft: rgba(240, 147, 43, 0.14);
+}
+
+.quick-sell-plan-violet {
+  --qs-tone: #6576ff;
+  --qs-soft: rgba(101, 118, 255, 0.14);
+}
+
+.quick-sell-plan-slate {
+  --qs-tone: #8094ae;
+  --qs-soft: rgba(128, 148, 174, 0.16);
+}
+
+.quick-sell-empty {
+  padding: 2.5rem 1rem;
+  border: 1px dashed #e5e9f2;
+  border-radius: 0.625rem;
+  color: #8094ae;
+  text-align: center;
+}
+
+@media (max-width: 575.98px) {
+  .quick-sell-head,
+  .quick-sell-body {
+    padding: 1rem;
+  }
+
+  .quick-sell-plans {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- EOD report ---------- */
+.eod-page {
+  --eod-line: rgba(17, 24, 39, 0.08);
+  --eod-ink: #1c2b46;
+  --eod-ink-mid: #526484;
+  --eod-ink-soft: #8094ae;
+  --eod-accent: #6355d6;
+}
+
+body.dark-mode .eod-page {
+  --eod-line: rgba(255, 255, 255, 0.1);
+  --eod-ink: #fff;
+  --eod-ink-mid: #dbdfea;
+  --eod-ink-soft: #8091a7;
+  --eod-accent: #8878e6;
+}
+
+.eod-card-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--eod-ink);
+  margin-bottom: 1rem;
+}
+
+.eod-filters-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* --- range chip --- */
+.eod-range-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--eod-line);
+  border-radius: 0.5rem;
+  background: transparent;
+  font-size: 0.8125rem;
+  color: var(--eod-ink-mid);
+  cursor: pointer;
+}
+
+.eod-range-chip:hover,
+.eod-range-chip[aria-expanded="true"] {
+  border-color: var(--eod-accent);
+  color: var(--eod-accent);
+}
+
+.eod-range-caret { font-size: 0.7rem; }
+
+.eod-range-menu { min-width: 13rem; }
+
+.eod-range-pick {
+  padding: 0.35rem 1rem 0.5rem;
+  cursor: default;
+}
+
+.eod-range-pick:active,
+.eod-range-pick:focus { background: transparent; }
+
+.eod-range-pick label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--eod-ink-soft);
+  margin-bottom: 0.25rem;
+}
+
+/* --- stat tiles --- */
+.eod-tile { border-radius: 0.75rem; }
+
+.eod-tile-mint { background: #ecfdf5; }
+.eod-tile-sky { background: #eff6ff; }
+.eod-tile-lilac { background: #f5f3ff; }
+.eod-tile-rose { background: #fef2f2; }
+
+body.dark-mode .eod-tile-mint { background: rgba(13, 148, 136, 0.14); }
+body.dark-mode .eod-tile-sky { background: rgba(3, 105, 161, 0.16); }
+body.dark-mode .eod-tile-lilac { background: rgba(99, 85, 214, 0.16); }
+body.dark-mode .eod-tile-rose { background: rgba(180, 83, 9, 0.16); }
+
+.eod-tile-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--eod-ink-mid);
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+
+body.dark-mode .eod-tile-icon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #dbdfea;
+}
+
+.eod-tile-label {
+  font-size: 0.8125rem;
+  color: var(--eod-ink-mid);
+  line-height: 1.2;
+}
+
+.eod-tile-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--eod-ink);
+  margin-top: 0.75rem;
+}
+
+.eod-tile-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  min-height: 34px;
+}
+
+.eod-tile-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.eod-tile-delta.is-up { color: #0d9488; }
+.eod-tile-delta.is-down { color: #b45309; }
+.eod-tile-delta.is-flat { color: var(--eod-ink-soft); }
+
+body.dark-mode .eod-tile-delta.is-up { color: #0fa08f; }
+body.dark-mode .eod-tile-delta.is-down { color: #bf8400; }
+
+.eod-tile-spark {
+  display: block;
+  width: 72px;
+  height: 34px;
+  flex: 0 0 auto;
+}
+
+/* --- donut + legend --- */
+.eod-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.eod-donut {
+  position: relative;
+  width: 158px;
+  height: 158px;
+  flex: 0 0 auto;
+}
+
+.eod-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: 0 1.25rem;
+  text-align: center;
+}
+
+.eod-donut-total {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--eod-ink);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.eod-donut-caption {
+  font-size: 0.6875rem;
+  color: var(--eod-ink-soft);
+}
+
+.eod-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 11rem;
+  min-width: 11rem;
+}
+
+.eod-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.8125rem;
+}
+
+.eod-legend-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.eod-legend-name { color: var(--eod-ink-mid); }
+.eod-legend-share { margin-left: auto; color: var(--eod-ink-soft); font-variant-numeric: tabular-nums; }
+.eod-legend-value {
+  min-width: 4.75rem;
+  text-align: right;
+  font-weight: 600;
+  color: var(--eod-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.eod-trend { height: 238px; }
+
+/* --- top sellers --- */
+.eod-toggle {
+  display: inline-flex;
+  border: 1px solid var(--eod-line);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.eod-toggle button {
+  border: 0;
+  background: transparent;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.6875rem;
+  color: var(--eod-ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.eod-toggle button.is-active {
+  background: var(--eod-accent);
+  color: #fff;
+}
+
+.eod-top-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.eod-top-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--eod-line);
+  font-size: 0.8125rem;
+}
+
+.eod-top-list li:last-child { border-bottom: 0; }
+
+.eod-top-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+  /* Decorative, and uniform on purpose: a per-row hue would imply an identity
+     the ranking does not have. */
+  background: rgba(99, 85, 214, 0.12);
+  color: var(--eod-accent);
+  font-size: 0.75rem;
+  flex: 0 0 auto;
+}
+
+body.dark-mode .eod-top-mark { background: rgba(136, 120, 230, 0.18); }
+
+.eod-top-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--eod-ink-mid);
+}
+
+.eod-top-count {
+  flex: 0 0 auto;
+  color: var(--eod-ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.eod-top-value {
+  flex: 0 0 auto;
+  min-width: 4.75rem;
+  text-align: right;
+  font-weight: 600;
+  color: var(--eod-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.eod-top-empty { justify-content: center; }
+
+/* --- filters --- */
+.eod-filter-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.eod-table th { white-space: nowrap; }

@@ -1,6 +1,7 @@
 import { type Request, type Response } from "express";
 import { UserModel } from "./user.model.js";
 import { hashPass } from "../../utils/password.js";
+import { sendWelcomeEmail } from "../../utils/mailer.js";
 import { BranchModel } from "../branches/branch.model.js";
 import {
   isBranchAccessible,
@@ -55,6 +56,7 @@ export const createSalonAdmin = async (req: Request, res: Response) => {
       passwordHash,
       salonId,
     });
+    await sendWelcomeEmail(admin);
 
     return res.status(201).json({
       success: true,
@@ -69,8 +71,8 @@ export const createSalonAdmin = async (req: Request, res: Response) => {
   }
 };
 
-// Branch managers and receptionists are provisioned the same way — same
-// fields, same branch resolution — so only the role differs.
+// Branch managers and receptionists are provisioned the same way ï¿½ same
+// fields, same branch resolution ï¿½ so only the role differs.
 const createBranchScopedUser =
   (role: "BRANCH_MANAGER" | "RECEPTIONIST", label: string) =>
   async (req: Request, res: Response) => {
@@ -149,6 +151,7 @@ const createBranchScopedUser =
         salonId: finalSalonId,
         branchId: finalBranchId,
       });
+      await sendWelcomeEmail(user);
 
       return res.status(201).json({
         success: true,
@@ -253,6 +256,7 @@ export const createStaffAccount = async (req: Request, res: Response) => {
       salonId: staff.salonId,
       branchId: staff.branchId,
     });
+    await sendWelcomeEmail(user);
 
     return res.status(201).json({
       success: true,

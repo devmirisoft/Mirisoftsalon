@@ -98,6 +98,20 @@ export const login = async ({ email, password }) => {
   return createSessionFromResponse(body);
 };
 
+export const forgotPassword = (email) =>
+  apiRequest("/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+  });
+
+export const resetPassword = (token, password) =>
+  apiRequest("/api/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  });
+
 const verifySession = (accessToken, activeBranchId) =>
   apiRequest("/api/auth/me", {
     headers: {

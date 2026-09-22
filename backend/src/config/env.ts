@@ -58,4 +58,9 @@ export const env = {
   SUPER_ADMIN_NAME: process.env.SUPER_ADMIN_NAME,
   SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL,
   SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD,
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: Number(process.env.SMTP_PORT || 587),
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASS: process.env.SMTP_PASS,
+  MAIL_FROM: process.env.MAIL_FROM || process.env.SMTP_USER,
 };

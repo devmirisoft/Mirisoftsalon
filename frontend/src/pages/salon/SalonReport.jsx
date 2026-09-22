@@ -14,7 +14,7 @@ import {
   PointElement,
   Tooltip,
 } from "chart.js";
-import { Button } from "@/components/Component";
+import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import ReportExportButtons from "@/components/salon/ReportExportButtons";
 import { salonApi } from "@/services/salonApi";
@@ -124,10 +124,24 @@ const StatCard = ({ label, value, tone }) => (
   </Col>
 );
 
-export const RankTable = ({ title, rows, countLabel = "Qty" }) => (
+/** A card title, with the dashboard's round icon when one is given. */
+export const CardTitle = ({ icon, color = "primary", title }) => (
+  <h6 className="title mb-0 d-flex align-items-center dash-gap-2">
+    {icon && (
+      <span className={`dash-icon sm bg-${color}-dim text-${color}`}>
+        <Icon name={icon} />
+      </span>
+    )}
+    {title}
+  </h6>
+);
+
+export const RankTable = ({ title, icon, rows, countLabel = "Qty" }) => (
   <div className="card card-bordered h-100">
     <div className="card-inner">
-      <h6 className="title mb-2">{title}</h6>
+      <div className="mb-2">
+        <CardTitle icon={icon} title={title} />
+      </div>
       {rows?.length ? (
         <table className="table table-sm mb-0">
           <thead>

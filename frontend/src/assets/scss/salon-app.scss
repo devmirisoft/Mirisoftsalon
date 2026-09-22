@@ -5174,6 +5174,20 @@ body.dark-mode .dash-avatar {
 .dash-card-head .title {
   white-space: nowrap;
 }
+// Sales report: dashboard cards and table heads, shared RankTable included.
+.sales-report .card {
+  border-radius: 12px;
+}
+.sales-report .table thead th {
+  background: rgba(128, 148, 174, 0.08);
+  font-size: 12px;
+  font-weight: 600;
+  color: #8094ae;
+  white-space: nowrap;
+}
+.sales-report .table td {
+  vertical-align: middle;
+}
 @media (max-width: 575.98px) {
   .dash-hero-side {
     align-items: flex-start;

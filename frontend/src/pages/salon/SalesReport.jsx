@@ -1,17 +1,16 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
-import { Alert, Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Alert, Col, Input, Row, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Pie } from "react-chartjs-2";
-import { ArcElement, Chart, Legend, Tooltip } from "chart.js";
+import { Doughnut } from "react-chartjs-2";
+import { ArcElement, Chart, Tooltip } from "chart.js";
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
-import { RankTable } from "@/pages/salon/SalonReport";
-import { useAuth } from "@/auth/AuthContext";
+import { CardTitle, RankTable } from "@/pages/salon/SalonReport";
 import { salonApi } from "@/services/salonApi";
-import { allowsRole, formatDate, formatMoney, labelize } from "@/utils/salonFormat";
+import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
 
-Chart.register(ArcElement, Legend, Tooltip);
+Chart.register(ArcElement, Tooltip);
 
 const PALETTE = [
   "#212e6b", "#1ee0ac", "#f4bd0e", "#e85347", "#816bff",
@@ -28,21 +27,20 @@ const PERIODS = [
   ["custom", "Custom range"],
 ];
 
-const StatCard = ({ label, icon, color, row }) => (
-  <Col sm="6" xl="4">
-    <div className="card card-bordered h-100">
-      <div className="card-inner d-flex align-items-center gap-3">
-        <div className={`user-avatar bg-${color}-dim text-${color}`}>
-          <Icon name={icon} />
-        </div>
-        <div>
-          <div className="fs-2 fw-bold">{row?.count ?? 0}</div>
-          <div className="text-soft">{label}</div>
-          <div className="fs-12px text-soft">{formatMoney(row?.amount ?? 0)}</div>
-        </div>
+/** Round icon, headline number, label and a soft footnote — the dashboard tile. */
+const StatCard = ({ icon, color, value, label, note }) => (
+  <div className="card card-bordered dash-card h-100">
+    <div className="card-inner d-flex dash-gap-3 align-items-start">
+      <div className={`dash-icon bg-${color}-dim text-${color}`}>
+        <Icon name={icon} />
+      </div>
+      <div>
+        <div className="text-soft fs-13px">{label}</div>
+        <div className="fs-4 fw-bold lh-sm mt-1">{value}</div>
+        {note && <div className="fs-12px text-soft mt-1">{note}</div>}
       </div>
     </div>
-  </Col>
+  </div>
 );
 
 /**
@@ -72,61 +70,63 @@ const serviceWiseRow = (row, totalAmount) => ({
 const ServiceWiseRecord = ({ rows }) => {
   const totals = serviceWiseTotals(rows);
   return (
-    <div className="card card-bordered mb-4">
-      <div className="table-responsive" style={{ maxHeight: 440, overflowY: "auto" }}>
-        <table className="table table-hover mb-0">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Service</th>
-              <th className="text-end">Qty sold</th>
-              <th className="text-end">Revenue</th>
-              <th className="text-end">Avg price</th>
-              <th className="text-end">Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => {
-              const { average, share } = serviceWiseRow(row, totals.amount);
-              return (
-                <tr key={`${row.name}-${index}`}>
-                  <td>{index + 1}</td>
-                  <td>{row.name}</td>
-                  <td className="text-end">{row.count}</td>
-                  <td className="text-end">{formatMoney(row.amount)}</td>
-                  <td className="text-end">{formatMoney(average)}</td>
-                  <td className="text-end">{share.toFixed(1)}%</td>
-                </tr>
-              );
-            })}
-            {!rows.length && (
+    <div className="card card-bordered dash-card mb-4">
+      <div className="card-inner pb-0">
+        <CardTitle icon="scissor" title="Service wise record" />
+      </div>
+      <div className="card-inner pt-3">
+        <div className="table-responsive" style={{ maxHeight: 440, overflowY: "auto" }}>
+          <table className="table mb-0">
+            <thead>
               <tr>
-                <td colSpan={6} className="text-center text-soft">
-                  No services billed for this period
-                </td>
+                <th>#</th>
+                <th>Service</th>
+                <th className="text-end">Qty sold</th>
+                <th className="text-end">Revenue</th>
+                <th className="text-end">Avg price</th>
+                <th className="text-end">Share</th>
               </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => {
+                const { average, share } = serviceWiseRow(row, totals.amount);
+                return (
+                  <tr key={`${row.name}-${index}`}>
+                    <td>{index + 1}</td>
+                    <td>{row.name}</td>
+                    <td className="text-end">{row.count}</td>
+                    <td className="text-end">{formatMoney(row.amount)}</td>
+                    <td className="text-end">{formatMoney(average)}</td>
+                    <td className="text-end">{share.toFixed(1)}%</td>
+                  </tr>
+                );
+              })}
+              {!rows.length && (
+                <tr>
+                  <td colSpan={6} className="text-center text-soft py-4">
+                    No services billed for this period
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {rows.length > 0 && (
+              <tfoot>
+                <tr className="fw-bold">
+                  <td colSpan={2}>{rows.length} services</td>
+                  <td className="text-end">{totals.units}</td>
+                  <td className="text-end">{formatMoney(totals.amount)}</td>
+                  <td colSpan={2} />
+                </tr>
+              </tfoot>
             )}
-          </tbody>
-          {rows.length > 0 && (
-            <tfoot>
-              <tr className="fw-bold">
-                <td colSpan={2}>{rows.length} services</td>
-                <td className="text-end">{totals.units}</td>
-                <td className="text-end">{formatMoney(totals.amount)}</td>
-                <td colSpan={2} />
-              </tr>
-            </tfoot>
-          )}
-        </table>
+          </table>
+        </div>
       </div>
     </div>
   );
 };
 
 const SalesReport = () => {
-  const { user } = useAuth();
-  // Invoice cancel is admin-only on the backend.
-  const canDelete = allowsRole(["SUPER_ADMIN", "SALON_ADMIN"], user?.role);
   const [period, setPeriod] = useState("month");
   const [dates, setDates] = useState({ from: "", to: "" });
   const [data, setData] = useState(null);
@@ -156,206 +156,265 @@ const SalesReport = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period]);
 
-  // "Delete" cancels the invoice: that reverses stock, packages and balances,
-  // and keeps the invoice number on record for GST.
-  const deleteSale = async (sale) => {
-    if (!window.confirm(`Delete invoice ${sale.invoiceCode}? This cancels the invoice.`)) return;
-    try {
-      await salonApi.invoices.cancel(sale.id);
-      await load();
-    } catch (deleteError) {
-      setError(deleteError.message);
-    }
-  };
-
   const services = data?.services ?? {};
+  const serviceBuckets = [services.appointments, services.jobCarts, services.counter];
+  const servicesSold = serviceBuckets.reduce((sum, row) => sum + (row?.count ?? 0), 0);
+  const serviceAmount = serviceBuckets.reduce((sum, row) => sum + (row?.amount ?? 0), 0);
+  const totalSales =
+    serviceAmount +
+    (data?.products?.amount ?? 0) +
+    (data?.packages?.amount ?? 0) +
+    (data?.memberships?.amount ?? 0);
+  const serviceSales = data?.serviceSales ?? [];
   const paymentMethods = data?.paymentMethods ?? [];
+  const collected = paymentMethods.reduce((sum, row) => sum + row.amount, 0);
 
   return (
     <PageShell
-      title="Sales report"
-      description="How many services, products, packages and memberships were sold."
+      className="sales-report"
+      title="Sales Report"
+      description="Track your sales, services and revenue performance."
+      tools={
+        <div className="d-flex align-items-start dash-gap-2 flex-wrap">
+          <div>
+            <Input
+              type="select"
+              aria-label="Period"
+              value={period}
+              onChange={(event) => setPeriod(event.target.value)}
+            >
+              {PERIODS.map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </Input>
+            {data?.range?.from && (
+              <div className="text-soft fs-11px mt-1">
+                Showing {data.range.from} to {data.range.to} ({data.range.timezone})
+              </div>
+            )}
+          </div>
+          {period === "custom" && (
+            <>
+              <Input
+                type="date"
+                aria-label="From"
+                style={{ width: "auto" }}
+                value={dates.from}
+                onChange={(event) =>
+                  setDates((current) => ({ ...current, from: event.target.value }))
+                }
+              />
+              <Input
+                type="date"
+                aria-label="To"
+                style={{ width: "auto" }}
+                value={dates.to}
+                onChange={(event) =>
+                  setDates((current) => ({ ...current, to: event.target.value }))
+                }
+              />
+            </>
+          )}
+          <Button color="primary" onClick={load}>
+            Apply
+          </Button>
+        </div>
+      }
     >
       {error && <Alert color="danger">{error}</Alert>}
 
-      <div className="card card-bordered mb-4">
-        <div className="card-inner">
-          <Row className="g-3 align-items-end">
-            <Col md="3">
-              <Label>Period</Label>
-              <Input
-                type="select"
-                value={period}
-                onChange={(event) => setPeriod(event.target.value)}
-              >
-                {PERIODS.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </Input>
-            </Col>
-            {period === "custom" && (
-              <>
-                <Col md="2">
-                  <Label>From</Label>
-                  <Input
-                    type="date"
-                    value={dates.from}
-                    onChange={(event) =>
-                      setDates((current) => ({ ...current, from: event.target.value }))
-                    }
-                  />
-                </Col>
-                <Col md="2">
-                  <Label>To</Label>
-                  <Input
-                    type="date"
-                    value={dates.to}
-                    onChange={(event) =>
-                      setDates((current) => ({ ...current, to: event.target.value }))
-                    }
-                  />
-                </Col>
-              </>
-            )}
-            <Col md="2">
-              <Button color="primary" outline onClick={load}>
-                Apply
-              </Button>
-            </Col>
-          </Row>
-          {data?.range?.from && (
-            <div className="text-soft fs-12px mt-2">
-              Showing {data.range.from} to {data.range.to} ({data.range.timezone})
-            </div>
-          )}
-        </div>
-      </div>
-
       {loading ? (
-        <Spinner color="primary" />
+        <div className="text-center py-5">
+          <Spinner color="primary" />
+        </div>
       ) : (
         data && (
           <>
-            <h6 className="overline-title text-soft mb-2">Services sold</h6>
-            <Row className="g-gs mb-4">
-              <StatCard label="In appointments" icon="calender-date" color="purple" row={services.appointments} />
-              <StatCard label="In job carts" icon="cart" color="info" row={services.jobCarts} />
-              {services.counter?.count > 0 && (
-                <StatCard label="Counter bills" icon="file-docs" color="gray" row={services.counter} />
-              )}
-            </Row>
-            <h6 className="overline-title text-soft mb-2">Service sales</h6>
-            <div className="card card-bordered mb-4">
-              <div className="table-responsive">
-                <table className="table table-hover mb-0">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Invoice</th>
-                      <th className="text-end">Cost</th>
-                      <th>Payment mode</th>
-                      <th>Created by</th>
-                      <th>Edited by</th>
-                      <th className="text-end">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(data.serviceSales ?? []).map((sale) => (
-                      <tr key={sale.id}>
-                        <td>{formatDate(sale.invoiceDate, true)}</td>
-                        <td>
-                          <Link to={`/billing/invoices/${sale.id}`}>{sale.invoiceCode}</Link>
-                          <div className="fs-12px text-soft">{sale.customerName}</div>
-                        </td>
-                        <td className="text-end">{formatMoney(sale.amount)}</td>
-                        <td>
-                          {sale.paymentMethods.length
-                            ? sale.paymentMethods.map(labelize).join(", ")
-                            : "Unpaid"}
-                        </td>
-                        <td>{sale.createdBy ?? "-"}</td>
-                        <td>{sale.editedBy ?? "-"}</td>
-                        <td className="text-end">
-                          {canDelete && (
-                            <Button size="sm" color="danger" outline onClick={() => deleteSale(sale)}>
-                              <Icon name="trash" />
-                              <span>Delete</span>
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {!data.serviceSales?.length && (
+            <div className="dash-stats mb-4">
+              <StatCard
+                icon="cart"
+                color="success"
+                label="Total sales"
+                value={formatMoney(totalSales)}
+                note="Services, products, packages & memberships"
+              />
+              <StatCard
+                icon="file-docs"
+                color="purple"
+                label="Service invoices"
+                value={serviceSales.length}
+                note="Bills with at least one service"
+              />
+              <StatCard
+                icon="scissor"
+                color="danger"
+                label="Services sold"
+                value={servicesSold}
+                note={
+                  `${services.appointments?.count ?? 0} appointments · ` +
+                  `${services.jobCarts?.count ?? 0} job carts` +
+                  (services.counter?.count ? ` · ${services.counter.count} counter` : "")
+                }
+              />
+              <StatCard
+                icon="users"
+                color="info"
+                label="Memberships sold"
+                value={data.memberships?.count ?? 0}
+                note={formatMoney(data.memberships?.amount ?? 0)}
+              />
+            </div>
+
+            <div className="card card-bordered dash-card mb-4">
+              <div className="card-inner pb-0">
+                <div className="dash-card-head">
+                  <CardTitle icon="clock" title="Recent sales" />
+                  <span className="text-soft fs-12px">Invoices with services, newest first</span>
+                </div>
+              </div>
+              <div className="card-inner pt-3">
+                <div className="table-responsive" style={{ maxHeight: 440, overflowY: "auto" }}>
+                  <table className="table mb-0">
+                    <thead>
                       <tr>
-                        <td colSpan={7} className="text-center text-soft">
-                          No service sales for this period
-                        </td>
+                        <th>Date &amp; time</th>
+                        <th>Invoice</th>
+                        <th>Payment mode</th>
+                        <th>Created by</th>
+                        <th>Edited by</th>
+                        <th className="text-end">Amount</th>
+                        <th className="text-end">Action</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {serviceSales.map((sale) => (
+                        <tr key={sale.id}>
+                          <td className="text-nowrap">{formatDate(sale.invoiceDate, true)}</td>
+                          <td>
+                            <Link to={`/billing/invoices/${sale.id}`}>{sale.invoiceCode}</Link>
+                            <div className="fs-12px text-soft">{sale.customerName}</div>
+                          </td>
+                          <td>
+                            {sale.paymentMethods.length
+                              ? sale.paymentMethods.map(labelize).join(", ")
+                              : "Unpaid"}
+                          </td>
+                          <td>{sale.createdBy ?? "-"}</td>
+                          <td>{sale.editedBy ?? "-"}</td>
+                          <td className="text-end fw-medium">{formatMoney(sale.amount)}</td>
+                          <td className="text-end">
+                            <Link
+                              to={`/billing/invoices/${sale.id}`}
+                              className="btn btn-sm btn-outline-primary"
+                            >
+                              <Icon name="eye" />
+                              <span>View</span>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                      {!serviceSales.length && (
+                        <tr>
+                          <td colSpan={7} className="text-center text-soft py-4">
+                            No service sales for this period
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
-            <h6 className="overline-title text-soft mb-2">Service wise record</h6>
             <ServiceWiseRecord rows={data.serviceWise ?? []} />
 
-            <h6 className="overline-title text-soft mb-2">Other sales</h6>
-            <Row className="g-gs">
-              <StatCard label="Products" icon="bag" color="warning" row={data.products} />
-              <StatCard label="Packages" icon="package" color="success" row={data.packages} />
-              <StatCard label="Memberships" icon="heart" color="danger" row={data.memberships} />
+            <Row className="g-gs mb-4">
+              {[
+                ["Other sales", "Products", "bag", "warning", data.products],
+                ["Packages", "Packages", "package", "success", data.packages],
+                ["Memberships", "Memberships", "heart", "danger", data.memberships],
+              ].map(([title, unit, icon, color, row]) => (
+                <Col md="4" key={title}>
+                  <StatCard
+                    icon={icon}
+                    color={color}
+                    label={title}
+                    value={row?.count ?? 0}
+                    note={`${unit} · ${formatMoney(row?.amount ?? 0)}`}
+                  />
+                </Col>
+              ))}
             </Row>
 
-            <h6 className="overline-title text-soft mt-4 mb-2">Top sellers</h6>
-            <Row className="g-4 mb-4">
+            <Row className="g-gs mb-4">
               <Col lg="6">
-                <RankTable title="Top services" rows={data.topServices} />
+                <RankTable icon="trophy" title="Top services" rows={data.topServices} />
               </Col>
               <Col lg="6">
-                <RankTable title="Top products" rows={data.topProducts} />
-              </Col>
-              <Col lg="6">
-                <RankTable title="Top packages" rows={data.topPackages} countLabel="Sold" />
-              </Col>
-              <Col lg="6">
-                <RankTable title="Top memberships" rows={data.topMemberships} countLabel="Sold" />
+                <RankTable icon="box" title="Top products" rows={data.topProducts} />
               </Col>
             </Row>
 
-            <Row className="g-4">
-              <Col lg="5">
-                <div className="card card-bordered h-100">
+            <Row className="g-gs mb-4">
+              <Col xl="4" lg="6">
+                <RankTable icon="gift" title="Top packages" rows={data.topPackages} countLabel="Sold" />
+              </Col>
+              <Col xl="4" lg="6">
+                <div className="card card-bordered dash-card h-100">
                   <div className="card-inner">
-                    <h6 className="title mb-2">Payment methods</h6>
-                    {paymentMethods.length ? (
-                      <div style={{ height: 280 }}>
-                        <Pie
-                          data={{
-                            labels: paymentMethods.map((row) => labelize(row.method)),
-                            datasets: [
-                              {
-                                data: paymentMethods.map((row) => row.amount),
-                                backgroundColor: paymentMethods.map(
-                                  (_, index) => PALETTE[index % PALETTE.length]
-                                ),
-                              },
-                            ],
-                          }}
-                          options={{
-                            maintainAspectRatio: false,
-                            plugins: {
-                              legend: { labels: { boxWidth: 12, padding: 16 } },
-                              tooltip: {
-                                callbacks: {
-                                  label: (item) => `${item.label}: ${formatMoney(item.raw)}`,
+                    <div className="mb-3">
+                      <CardTitle icon="wallet" title="Payment methods" />
+                    </div>
+                    {collected ? (
+                      <div className="d-flex align-items-center justify-content-center flex-wrap dash-gap-3">
+                        <div className="dash-donut">
+                          <Doughnut
+                            data={{
+                              labels: paymentMethods.map((row) => labelize(row.method)),
+                              datasets: [
+                                {
+                                  data: paymentMethods.map((row) => row.amount),
+                                  backgroundColor: paymentMethods.map(
+                                    (_, index) => PALETTE[index % PALETTE.length]
+                                  ),
+                                  borderWidth: 2,
+                                },
+                              ],
+                            }}
+                            options={{
+                              cutout: "68%",
+                              maintainAspectRatio: false,
+                              plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                  callbacks: {
+                                    label: (item) => `${item.label}: ${formatMoney(item.raw)}`,
+                                  },
                                 },
                               },
-                            },
-                          }}
-                        />
+                            }}
+                          />
+                          <div className="dash-donut-center">
+                            <div className="fw-bold">{formatMoney(collected)}</div>
+                            <div className="text-soft fs-11px">Collected</div>
+                          </div>
+                        </div>
+                        <ul className="list-plain flex-grow-1 mb-0 fs-12px">
+                          {paymentMethods.map((row, index) => (
+                            <li key={row.method} className="d-flex align-items-center dash-gap-2 py-1">
+                              <span
+                                className="dash-dot"
+                                style={{ background: PALETTE[index % PALETTE.length] }}
+                              />
+                              <span className="flex-grow-1">{labelize(row.method)}</span>
+                              <span className="text-soft">
+                                {((row.amount / collected) * 100).toFixed(1)}%
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     ) : (
                       <div className="text-soft">No payments for this period</div>
@@ -363,10 +422,12 @@ const SalesReport = () => {
                   </div>
                 </div>
               </Col>
-              <Col lg="7">
-                <RankTable title="Top customers" rows={data.topCustomers} countLabel="Payments" />
+              <Col xl="4" lg="12">
+                <RankTable icon="users" title="Top memberships" rows={data.topMemberships} countLabel="Sold" />
               </Col>
             </Row>
+
+            <RankTable icon="user-list" title="Top customers" rows={data.topCustomers} countLabel="Payments" />
           </>
         )
       )}

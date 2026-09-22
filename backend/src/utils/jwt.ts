@@ -35,3 +35,11 @@ export const verifyAccessToken = (token: string) => {
 export const verifyRefreshToken = (token: string) => {
   return jwt.verify(token, env.JWT_REFRESH_SECRET);
 };
+
+// Keyed on the current password hash, so a reset link stops working the moment
+// the password changes — single-use without storing anything.
+export const generatePasswordResetToken = (userId: string, passwordHash: string) =>
+  jwt.sign({ userId }, env.JWT_ACCESS_SECRET + passwordHash, { expiresIn: "30m" });
+
+export const verifyPasswordResetToken = (token: string, passwordHash: string) =>
+  jwt.verify(token, env.JWT_ACCESS_SECRET + passwordHash);

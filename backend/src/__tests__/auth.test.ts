@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { app } from "../app.js";
 import { prisma } from "../config/prisma.js";
 import { env } from "../config/env.js";
-import { generateAccessToken } from "../utils/jwt.js";
+import { generateAccessToken, generatePasswordResetToken } from "../utils/jwt.js";
 
 const makePhoneNumber = () => {
   return `9${Date.now().toString().slice(-9)}`;
@@ -284,5 +284,44 @@ describe("Auth API", () => {
     const refresh = await agent.post("/api/auth/refresh");
     expect(refresh.statusCode).toBe(403);
     expect(refresh.body.message).toBe("Account is disabled");
+  });
+
+  it("resets a passcode with a single-use emailed token and signs out old sessions", async () => {
+    const agent = request.agent(app);
+    const payload = makeRegisterPayload();
+    const registration = await agent.post("/api/auth/register").send(payload);
+    const userId = registration.body.data.user.id;
+
+    const unknown = await request(app)
+      .post("/api/auth/forgot-password")
+      .send({ email: "nobody@example.com" });
+    const known = await request(app)
+      .post("/api/auth/forgot-password")
+      .send({ email: payload.email });
+    expect(unknown.statusCode).toBe(200);
+    expect(known.body).toEqual(unknown.body);
+
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    const token = generatePasswordResetToken(user.id, user.passwordHash);
+
+    const reset = await request(app)
+      .post("/api/auth/reset-password")
+      .send({ token, password: "NewPass@456" });
+    expect(reset.statusCode).toBe(200);
+
+    const reused = await request(app)
+      .post("/api/auth/reset-password")
+      .send({ token, password: "Another@789" });
+    expect(reused.statusCode).toBe(400);
+
+    expect((await agent.post("/api/auth/refresh")).statusCode).toBe(401);
+    const oldLogin = await request(app)
+      .post("/api/auth/login")
+      .send({ email: payload.email, password: payload.password });
+    expect(oldLogin.statusCode).toBe(401);
+    const newLogin = await request(app)
+      .post("/api/auth/login")
+      .send({ email: payload.email, password: "NewPass@456" });
+    expect(newLogin.statusCode).toBe(200);
   });
 });

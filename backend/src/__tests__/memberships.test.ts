@@ -161,6 +161,7 @@ describe("Memberships and customer membership assignment", () => {
         salonId: salonBId,
         name: "Gold",
         description: "Gold membership",
+        // Ignored: memberships no longer carry a discount.
         discountPercentage: 12.5,
       });
 
@@ -171,7 +172,7 @@ describe("Memberships and customer membership assignment", () => {
       description: "Gold membership",
       status: true,
     });
-    expect(Number(response.body.data.discountPercentage)).toBe(12.5);
+    expect(Number(response.body.data.discountPercentage)).toBe(0);
     expect(await prisma.auditLog.count({ where: { module: "MEMBERSHIP", action: "CREATE", entityId: response.body.data.id } })).toBe(1);
   });
 

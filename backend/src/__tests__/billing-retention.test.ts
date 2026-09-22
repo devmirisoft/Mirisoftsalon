@@ -154,7 +154,7 @@ const createInvoice = (
     });
 
 describe("Membership discounts and invoice loyalty integration", () => {
-  it("applies an active membership discount during invoice generation", async () => {
+  it("never discounts a bill for an active membership", async () => {
     const fixture = await createBillingFixture({
       membershipDiscount: 10,
     });
@@ -162,10 +162,10 @@ describe("Membership discounts and invoice loyalty integration", () => {
 
     expect(invoice.status).toBe(201);
     expect(Number(invoice.body.data.subtotalAmount)).toBe(1000);
-    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(100);
-    expect(Number(invoice.body.data.discountAmount)).toBe(100);
-    expect(Number(invoice.body.data.totalAmount)).toBe(900);
-    expect(Number(invoice.body.data.balanceAmount)).toBe(900);
+    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(0);
+    expect(Number(invoice.body.data.discountAmount)).toBe(0);
+    expect(Number(invoice.body.data.totalAmount)).toBe(1000);
+    expect(Number(invoice.body.data.balanceAmount)).toBe(1000);
   });
 
   it("does not apply an inactive membership discount", async () => {
@@ -181,7 +181,7 @@ describe("Membership discounts and invoice loyalty integration", () => {
     expect(Number(invoice.body.data.totalAmount)).toBe(1000);
   });
 
-  it("caps combined manual and membership discounts at subtotal", async () => {
+  it("applies only the manual discount for a member", async () => {
     const fixture = await createBillingFixture({
       membershipDiscount: 20,
     });
@@ -191,10 +191,10 @@ describe("Membership discounts and invoice loyalty integration", () => {
 
     expect(invoice.status).toBe(201);
     expect(Number(invoice.body.data.manualDiscountAmount)).toBe(950);
-    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(50);
-    expect(Number(invoice.body.data.discountAmount)).toBe(1000);
-    expect(Number(invoice.body.data.totalAmount)).toBe(0);
-    expect(Number(invoice.body.data.balanceAmount)).toBe(0);
+    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(0);
+    expect(Number(invoice.body.data.discountAmount)).toBe(950);
+    expect(Number(invoice.body.data.totalAmount)).toBe(50);
+    expect(Number(invoice.body.data.balanceAmount)).toBe(50);
   });
 
   it("awards points when an invoice becomes paid", async () => {

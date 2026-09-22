@@ -5012,3 +5012,198 @@ body.dark-mode .retail-cta {
 body.dark-mode .retail-remove {
   background: rgba(232, 83, 71, 0.15);
 }
+
+// Dashboard (Homepage)
+.dash-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #eef4ff 0%, #f7faff 55%, #e3edff 100%);
+}
+.dash-hero-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.dash-hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.dash-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+}
+.dash-tagline {
+  font-family: "Brush Script MT", "Segoe Script", cursive;
+  font-size: 1.6rem;
+  color: #1e3a8a;
+  line-height: 1;
+}
+// Dashlite spaces stacked cards with .card + .card:not(...) { margin-top },
+// which outranks any plain selector and shoves grid cells out of line.
+.card.dash-card {
+  margin-top: 0 !important;
+  border-radius: 12px;
+}
+// Dashlite's .gap-N classes are height spacers, not flex gaps.
+.dash-gap-2 {
+  gap: 0.5rem;
+}
+.dash-gap-3 {
+  gap: 1rem;
+}
+.dash-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1rem;
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(var(--dash-cols, 4), minmax(0, 1fr));
+  }
+}
+.dash-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  &.sm {
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+}
+.dash-chart {
+  position: relative;
+  height: 300px;
+  margin-top: 1rem;
+}
+.dash-donut-row {
+  min-height: 316px;
+}
+.dash-donut {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  flex-shrink: 0;
+}
+.dash-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  font-size: 13px;
+}
+// The theme's primary-dim is near-invisible on dark surfaces.
+.dash-icon.bg-primary-dim,
+.dash-avatar {
+  background: rgba(59, 130, 246, 0.14) !important;
+  color: #2563eb !important;
+}
+body.dark-mode .dash-icon.bg-primary-dim,
+body.dark-mode .dash-avatar {
+  color: #60a5fa !important;
+}
+.dash-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dash-table th {
+  font-size: 12px;
+  font-weight: 600;
+  color: #8094ae;
+}
+.dash-table td {
+  vertical-align: middle;
+}
+.dash-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+.dash-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 84px;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid #e5e9f2;
+  border-radius: 10px;
+  color: #364a63;
+  font-size: 13px;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+  .icon {
+    font-size: 1.35rem;
+    color: #2563eb;
+  }
+  &:hover {
+    border-color: #2563eb;
+    background: #f3f7ff;
+    color: #1e3a8a;
+  }
+}
+.dash-card-head .title {
+  white-space: nowrap;
+}
+@media (max-width: 575.98px) {
+  .dash-hero-side {
+    align-items: flex-start;
+  }
+  .dash-tagline {
+    display: none;
+  }
+  .dash-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+body.dark-mode .dash-hero {
+  background: linear-gradient(110deg, #1a2540 0%, #141c2e 55%, #1c2a4a 100%);
+}
+body.dark-mode .dash-date {
+  background: rgba(255, 255, 255, 0.06);
+}
+body.dark-mode .dash-tagline {
+  color: #93c5fd;
+}
+body.dark-mode .dash-action {
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b6c6e3;
+  .icon {
+    color: #60a5fa;
+  }
+  &:hover {
+    background: rgba(96, 165, 250, 0.08);
+    border-color: #60a5fa;
+    color: #fff;
+  }
+}

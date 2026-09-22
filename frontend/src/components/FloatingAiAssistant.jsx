@@ -2,6 +2,41 @@ import { useEffect, useRef, useState } from "react";
 import { FaPaperPlane, FaRedoAlt, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ApiError, request } from "../services/api";
+import { getStoredSession } from "../services/auth";
+
+// How long the "Mira AI" tooltip stays up on its own after a fresh login.
+const LOGIN_HINT_MS = 3 * 60 * 1000;
+const FAB_SIZE = 68;
+
+function MiraMark({ size = 30 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" style={{ display: "block" }}>
+      <defs>
+        <linearGradient id="mira-ring" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#4f7cff" />
+          <stop offset="1" stopColor="#b06cff" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M22.6 6.8A11 11 0 1 0 26.9 14"
+        fill="none"
+        stroke="url(#mira-ring)"
+        strokeWidth="3.2"
+        strokeLinecap="round"
+      />
+      <circle cx="25.4" cy="8.6" r="2.6" fill="#a66bff" />
+    </svg>
+  );
+}
+
+function Sparkles() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true" style={{ display: "block", flexShrink: 0 }}>
+      <path d="M12 3l2.4 7.1L21.5 12.5l-7.1 2.4L12 22l-2.4-7.1L2.5 12.5l7.1-2.4z" fill="#c4a8ff" />
+      <path d="M24 18l1.3 3.7L29 23l-3.7 1.3L24 28l-1.3-3.7L19 23l3.7-1.3z" fill="#9d7bff" />
+    </svg>
+  );
+}
 
 const QUICK_PROMPTS = [
   "What should I focus on today?",
@@ -26,6 +61,18 @@ export default function FloatingAiAssistant() {
   const [chat, setChat] = useState(INITIAL_CHAT);
   const [conversationId, setConversationId] = useState(null);
   const bottomRef = useRef(null);
+  const [hovered, setHovered] = useState(false);
+  const [loginHint, setLoginHint] = useState(() => {
+    const loggedInAt = getStoredSession()?.loggedInAt;
+    return Boolean(loggedInAt) && Date.now() - loggedInAt < LOGIN_HINT_MS;
+  });
+
+  useEffect(() => {
+    if (!loginHint) return undefined;
+    const remaining = LOGIN_HINT_MS - (Date.now() - getStoredSession()?.loggedInAt);
+    const timer = setTimeout(() => setLoginHint(false), Math.max(remaining, 0));
+    return () => clearTimeout(timer);
+  }, [loginHint]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -98,16 +145,36 @@ export default function FloatingAiAssistant() {
   return (
     <>
       {!open && (
-        <button
-          type="button"
-          style={styles.fab}
-          onClick={() => setOpen(true)}
-          aria-label="Open Salon AI assistant"
-          title="Open Salon AI"
+        <div
+          style={styles.fabWrap}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
         >
-          <img src="/salon ai logo.png" alt="" style={styles.fabLogo} />
-          
-        </button>
+          <div
+            style={{ ...styles.tip, ...(hovered || loginHint ? styles.tipVisible : {}) }}
+            aria-hidden="true"
+          >
+            <Sparkles />
+            <div>
+              <div style={styles.tipTitle}>Mira AI</div>
+              <div style={styles.tipSub}>Your Salon Assistant</div>
+            </div>
+            <span style={styles.tipArrow} />
+          </div>
+          <button
+            type="button"
+            style={{ ...styles.fab, ...(hovered ? styles.fabHover : {}) }}
+            onClick={() => {
+              setLoginHint(false);
+              setOpen(true);
+            }}
+            onFocus={() => setHovered(true)}
+            onBlur={() => setHovered(false)}
+            aria-label="Open Mira AI, your salon assistant"
+          >
+            <MiraMark size={34} />
+          </button>
+        </div>
       )}
 
       {open && (
@@ -115,7 +182,7 @@ export default function FloatingAiAssistant() {
           <header style={styles.header}>
             <div style={styles.brand}>
               <span style={styles.avatar}>
-                <img src="/salon ai logo.png" alt="" style={styles.logo} />
+                <MiraMark size={24} />
               </span>
               <div>
                 <strong>Salon AI</strong>
@@ -305,29 +372,82 @@ export default function FloatingAiAssistant() {
 }
 
 const styles = {
-  fab: {
+  fabWrap: {
     position: "fixed",
     right: 20,
     bottom: 72,
-    height: 54,
-    border: 0,
-    borderRadius: 999,
-    color: "#fff",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 9,
-    fontSize: 14,
-    fontWeight: 700,
-    cursor: "pointer",
-    boxShadow: "0 12px 28px rgba(15,23,42,.24)",
     zIndex: 9999,
+    lineHeight: 1,
+    fontFamily: "inherit",
   },
-  fabLogo: {
-    width: 46,
-    height: 46,
+  fab: {
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    padding: 0,
+    border: "6px solid rgba(255,255,255,.9)",
     borderRadius: "50%",
-    objectFit: "cover",
-    background: "#fff",
+    background: "radial-gradient(circle at 50% 40%, #ffffff 0%, #f6f5ff 100%)",
+    backgroundClip: "padding-box",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    outline: "none",
+    boxShadow:
+      "0 0 0 1px rgba(124,108,255,.18), 0 0 18px 6px rgba(124,108,255,.35), 0 10px 28px rgba(79,70,229,.25)",
+    transition: "transform .18s ease, box-shadow .18s ease",
+  },
+  fabHover: {
+    transform: "scale(1.06)",
+    boxShadow:
+      "0 0 0 1px rgba(124,108,255,.28), 0 0 26px 10px rgba(124,108,255,.45), 0 12px 32px rgba(79,70,229,.3)",
+  },
+  tip: {
+    position: "absolute",
+    right: 0,
+    bottom: "calc(100% + 16px)",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    padding: "12px 20px 12px 14px",
+    borderRadius: 16,
+    background: "linear-gradient(120deg, #151a3d 0%, #26307a 60%, #4c5fd6 100%)",
+    color: "#fff",
+    textAlign: "left",
+    whiteSpace: "nowrap",
+    boxShadow: "0 12px 32px rgba(38,48,122,.4)",
+    opacity: 0,
+    transform: "translateY(6px)",
+    transition: "opacity .18s ease, transform .18s ease",
+    pointerEvents: "none",
+  },
+  tipVisible: {
+    opacity: 1,
+    transform: "translateY(0)",
+  },
+  tipTitle: {
+    color: "#fff",
+    fontSize: 22,
+    fontWeight: 600,
+    lineHeight: 1.1,
+    letterSpacing: "-0.01em",
+  },
+  tipSub: {
+    marginTop: 4,
+    color: "rgba(255,255,255,.85)",
+    fontSize: 13,
+    lineHeight: 1.2,
+  },
+  // Sits under the button's centre, whatever the tooltip's width.
+  tipArrow: {
+    position: "absolute",
+    right: FAB_SIZE / 2 - 9,
+    top: "100%",
+    width: 0,
+    height: 0,
+    borderLeft: "9px solid transparent",
+    borderRight: "9px solid transparent",
+    borderTop: "9px solid #2e3a8c",
   },
   box: {
     position: "fixed",
@@ -366,11 +486,6 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
-  },
-  logo: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
   },
   sub: {
     marginTop: 2,

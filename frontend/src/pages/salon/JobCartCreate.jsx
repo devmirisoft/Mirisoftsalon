@@ -355,32 +355,8 @@ const JobCartCreate = () => {
     refs.salon?.gstEnabled === false
       ? 0
       : Number(refs.salon?.serviceGstRate ?? 0);
-  // Stacking off (Settings): a member gets their membership discount only, so
-  // per-service discounts are cleared and locked. The server refuses them too.
-  const discountsLocked =
-    Number(customerSummary?.membershipDiscountPercentage || 0) > 0 &&
-    !refs.salon?.stackMembershipDiscount;
-  useEffect(() => {
-    if (!discountsLocked) return;
-    setServiceRows((rows) =>
-      rows.some((row) => row.discount !== "")
-        ? rows.map((row) =>
-            row.discount === ""
-              ? row
-              : {
-                  ...row,
-                  discount: "",
-                  total:
-                    row.price === ""
-                      ? row.total
-                      : priceToTotal(row.price, row.qty, serviceGstPercent),
-                }
-          )
-        : rows
-    );
-  }, [discountsLocked, serviceGstPercent]);
   // Estimate only: the real tax is computed server-side on the draft invoice,
-  // after the membership discount and any coupon are applied.
+  // after any coupon is applied.
   const estimatedTax = ((subtotal + packageSubtotal) * serviceGstPercent) / 100;
   const membershipLabel = !customerSummary?.membershipName
     ? "None"
@@ -1103,14 +1079,6 @@ const JobCartCreate = () => {
                       </Button>
                     </div>
                   </div>
-                  {discountsLocked && (
-                    <Alert color="info" className="py-2">
-                      {customerSummary.membershipName} gives{" "}
-                      {Number(customerSummary.membershipDiscountPercentage)}% off
-                      at billing. Extra discounts on top are turned off in
-                      Settings.
-                    </Alert>
-                  )}
                   <div className="table-responsive jobcart-services-table-wrap">
                     <table
                       className="table table-sm table-bordered mb-2 jobcart-services-table"
@@ -1328,12 +1296,7 @@ const JobCartCreate = () => {
                                         : String(Math.max(0, Number(row.price || 0)))
                                     }
                                     value={row.discount}
-                                    disabled={!selectedService || saving || discountsLocked}
-                                    title={
-                                      discountsLocked
-                                        ? "Membership discount applies. Extra discounts are off in Settings."
-                                        : undefined
-                                    }
+                                    disabled={!selectedService || saving}
                                     style={{ minWidth: 0 }}
                                     onChange={(event) => {
                                       const discount = cappedDiscount(
@@ -1356,7 +1319,7 @@ const JobCartCreate = () => {
                                   <button
                                     type="button"
                                     className="input-group-text jobcart-discount-unit"
-                                    disabled={!selectedService || saving || discountsLocked}
+                                    disabled={!selectedService || saving}
                                     title="Switch discount type"
                                     onClick={() => {
                                       const nextType =

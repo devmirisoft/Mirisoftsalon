@@ -9,6 +9,7 @@ import { getHolidaysTodayTool } from "./tools/getHolidaysToday.tool.js";
 import { getStaffAvailabilityTool } from "./tools/getStaffAvailability.tool.js";
 import { getStaffSummaryTool } from "./tools/getStaffSummary.tool.js";
 import { getServiceSummaryTool } from "./tools/getServiceSummary.tool.js";
+import { getProductSummaryTool } from "./tools/getProductSummary.tool.js";
 import { getSelectedCustomerSummaryTool } from "./tools/getSelectedCustomerSummary.tool.js";
 import { getSelectedInvoiceSummaryTool } from "./tools/getSelectedInvoiceSummary.tool.js";
 import { getSelectedAppointmentSummaryTool } from "./tools/getSelectedAppointmentSummary.tool.js";
@@ -35,6 +36,7 @@ const tools: AiTool[] = [
   getStaffAvailabilityTool,
   getStaffSummaryTool,
   getServiceSummaryTool,
+  getProductSummaryTool,
   getSelectedCustomerSummaryTool,
   getSelectedInvoiceSummaryTool,
   getSelectedAppointmentSummaryTool,

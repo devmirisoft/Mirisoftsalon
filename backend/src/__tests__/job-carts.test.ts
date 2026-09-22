@@ -641,7 +641,7 @@ describe("Walk-in job carts", () => {
     ).toBe(1500);
   });
 
-  it("gives a member only the membership discount unless the salon allows stacking", async () => {
+  it("never discounts a member's bill but still allows manual discounts", async () => {
     const f = await fixture();
     const customer = await prisma.customer.create({
       data: {
@@ -682,30 +682,17 @@ describe("Walk-in job carts", () => {
       serviceItems: [{ serviceId: f.service.id, price: 250 }],
     };
 
-    const refused = await createCart(f, f.adminToken, discounted);
-    expect(refused.status).toBe(400);
-    expect(refused.body.message).toMatch(/Stacking discounts is turned off/);
-
-    const plain = await createCart(f, f.adminToken, member);
-    expect(plain.status).toBe(201);
-    const extra = await request(app)
-      .post(`/api/job-carts/${plain.body.data.id}/confirm`)
-      .set(auth(f.adminToken))
-      .send({ discountAmount: 50 });
-    expect(extra.status).toBe(400);
-
-    await prisma.salon.update({
-      where: { id: f.salon.id },
-      data: { stackMembershipDiscount: true },
-    });
-    const stacked = await createCart(f, f.adminToken, discounted);
-    expect(stacked.status).toBe(201);
+    const created = await createCart(f, f.adminToken, discounted);
+    expect(created.status).toBe(201);
+    expect(Number(created.body.data.invoice.discountAmount)).toBe(0);
     const confirmed = await request(app)
-      .post(`/api/job-carts/${stacked.body.data.id}/confirm`)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
       .set(auth(f.adminToken))
+      .send({ discountAmount: 50 })
       .expect(200);
-    // 250 less 15% = 212.50, billed in whole rupees.
-    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(213);
+    // 250 less the 50 typed in; the 15% plan takes nothing off.
+    expect(Number(confirmed.body.data.invoice.membershipDiscountAmount)).toBe(0);
+    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(200);
   });
 
   it("cancels an active cart and blocks edits to cancelled or completed carts", async () => {
@@ -798,7 +785,7 @@ describe("Walk-in job carts", () => {
     ).toBe(true);
   });
 
-  it("applies membership and coupon logic to the draft before issuing", async () => {
+  it("applies coupon logic, but no membership discount, to the draft before issuing", async () => {
     const f = await fixture();
     const membership = await prisma.membership.create({
       data: {
@@ -831,13 +818,13 @@ describe("Walk-in job carts", () => {
       customerName: "Member Walk-in",
       phone: "9876543233",
     });
-    expect(Number(created.body.data.invoice.discountAmount)).toBe(50);
+    expect(Number(created.body.data.invoice.discountAmount)).toBe(0);
     const applied = await request(app)
       .post(`/api/invoices/${created.body.data.invoice.id}/apply-coupon`)
       .set(auth(f.adminToken))
       .send({ couponCode: coupon.couponCode });
     expect(applied.status).toBe(200);
-    expect(Number(applied.body.data.totalAmount)).toBe(405);
+    expect(Number(applied.body.data.totalAmount)).toBe(450);
 
     await request(app)
       .post(`/api/job-carts/${created.body.data.id}/confirm`)

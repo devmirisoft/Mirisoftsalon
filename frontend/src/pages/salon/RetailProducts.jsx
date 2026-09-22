@@ -117,9 +117,7 @@ const RetailProducts = () => {
   const unitCount = items.reduce((sum, item) => sum + (item.productId ? Number(item.quantity || 0) : 0), 0);
   const discountPercent = Math.min(Math.max(Number(form.discountPercent) || 0, 0), 100);
   const manualDiscount = round2(subtotal * discountPercent / 100);
-  const membershipPercent = Number(selectedCustomer?.membership?.discountPercentage || 0);
-  const membershipDiscount = Math.min(subtotal * membershipPercent / 100, subtotal - manualDiscount);
-  const taxable = subtotal - manualDiscount - membershipDiscount;
+  const taxable = subtotal - manualDiscount;
   const taxAmount = taxable * Number(form.taxPercent || 0) / 100;
   const total = taxable + taxAmount;
 
@@ -324,7 +322,6 @@ const RetailProducts = () => {
                 <div><dt>Items</dt><dd>{unitCount}</dd></div>
                 <div><dt>Subtotal</dt><dd>{formatMoney(subtotal)}</dd></div>
                 <div><dt>Discount</dt><dd>{formatMoney(manualDiscount)}</dd></div>
-                {membershipDiscount > 0 && <div><dt>Membership</dt><dd>-{formatMoney(membershipDiscount)}</dd></div>}
                 {taxAmount > 0 && <div><dt>Tax</dt><dd>{formatMoney(taxAmount)}</dd></div>}
               </dl>
               <div className="retail-total"><span>Total</span><strong>{formatMoney(total)}</strong></div>

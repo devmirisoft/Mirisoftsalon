@@ -19,7 +19,6 @@ import {
   CustomerMembershipError,
   getCurrentMembershipForCustomer,
   getCustomerMembershipHistory,
-  resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
 import {
   checkStaffAvailabilityForSlot,
@@ -120,8 +119,6 @@ const jobCartInclude = {
       gstStateCode: true,
       serviceGstRate: true,
       productGstRate: true,
-      membershipDiscountOnPackages: true,
-      stackMembershipDiscount: true,
     },
   },
   branch: { select: { id: true, name: true } },
@@ -612,58 +609,11 @@ const decimalOrZero = (value: unknown) => {
 };
 
 /**
- * Which invoice lines a membership percentage is allowed to reduce.
- *
- * Services: always. Products: never - a product is sold at its own price even
- * to a member. Packages: only when the salon opts in, because a package is
- * already sold at a discounted price and stacking is usually double-dipping.
- * Memberships: never - a plan costs what it costs.
+ * Which invoice lines a bill-level discount may reduce: services only.
+ * Products, packages and memberships are always sold at their own price.
+ * A membership itself never discounts anything; it only loads a wallet.
  */
-const isMembershipDiscountable = (
-  itemType: string,
-  salon: { membershipDiscountOnPackages: boolean }
-) => {
-  if (itemType === "PRODUCT") return false;
-  // Buying a plan is never cheaper because you already hold one.
-  if (itemType === "MEMBERSHIP") return false;
-  if (itemType === "PACKAGE") return salon.membershipDiscountOnPackages;
-  return true;
-};
-
-/**
- * Stacking off (the salon default): a member whose plan carries a discount
- * gets that discount and nothing else - no service priced below its catalogue
- * rate, no overall discount typed in at billing. Checked when the cart is
- * created and again at confirm, which also catches a membership bought after
- * the cart was discounted.
- */
-const assertNoStackedDiscount = (
-  salon: { stackMembershipDiscount: boolean },
-  membershipPercent: Prisma.Decimal | null | undefined,
-  lines: Array<{
-    name: string;
-    price: Prisma.Decimal | number;
-    catalogue: Prisma.Decimal | number;
-  }>,
-  manualDiscount: Prisma.Decimal = new Prisma.Decimal(0)
-) => {
-  if (salon.stackMembershipDiscount || !membershipPercent?.gt(0)) return;
-  // ponytail: compares against today's catalogue price, so a price rise between
-  // create and confirm reads as a discount; snapshot the rate on the line if
-  // that ever bites.
-  const discounted = lines.find((line) =>
-    new Prisma.Decimal(line.price).lt(line.catalogue)
-  );
-  if (!discounted && !manualDiscount.gt(0)) return;
-  throw new JobCartError(
-    400,
-    `${
-      discounted
-        ? `${discounted.name} is priced below its catalogue rate`
-        : "An extra discount was added"
-    }, but this customer's membership discount already applies. Stacking discounts is turned off in Settings.`
-  );
-};
+const isDiscountable = (itemType: string) => itemType === "SERVICE";
 
 const recalculateCart = async (
   tx: TransactionClient,
@@ -687,7 +637,6 @@ const recalculateCart = async (
           gstStateCode: true,
           serviceGstRate: true,
           productGstRate: true,
-          membershipDiscountOnPackages: true,
         },
       },
       services: { orderBy: { createdAt: "asc" } },
@@ -743,13 +692,13 @@ const recalculateCart = async (
       itemType: "SERVICE",
       quantity: item.quantity,
       unitPrice: item.price,
-      discountable: isMembershipDiscountable("SERVICE", cart.salon),
+      discountable: isDiscountable("SERVICE"),
     })),
     ...keptItems.map((item) => ({
       itemType: item.itemType,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-      discountable: isMembershipDiscountable(item.itemType, cart.salon),
+      discountable: isDiscountable(item.itemType),
     })),
   ];
   const subtotal = gstLines.reduce(
@@ -757,32 +706,12 @@ const recalculateCart = async (
       sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice)),
     new Prisma.Decimal(0)
   );
-  const currentMembership = await resolveCurrentCustomerMembership(tx, {
-    customerId: cart.customerId,
-    actor,
-    audit,
-  });
-  const membershipPercentage =
-    currentMembership?.discountPercentageSnapshot ?? new Prisma.Decimal(0);
-  // The percentage applies only to the lines it is allowed to touch, so a
-  // member never gets money off a product.
-  const discountableSubtotal = gstLines.reduce(
-    (sum, line) =>
-      line.discountable
-        ? sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice))
-        : sum,
-    new Prisma.Decimal(0)
-  );
-  const membershipDiscount = Prisma.Decimal.min(
-    discountableSubtotal.mul(membershipPercentage).div(100).toDecimalPlaces(2),
-    discountableSubtotal
-  );
   // Tax is computed live so the running total on the job card matches the bill
   // the customer will actually be asked to pay.
   const draftCalculation = calculateInvoiceGst(
     {
       invoiceType: cart.invoice.invoiceType,
-      discountAmount: membershipDiscount,
+      discountAmount: new Prisma.Decimal(0),
       couponDiscountAmount: new Prisma.Decimal(0),
       processingFeeAmount: new Prisma.Decimal(0),
       items: gstLines,
@@ -824,8 +753,8 @@ const recalculateCart = async (
     where: { id: cart.invoice.id },
     data: {
       subtotalAmount: subtotal,
-      discountAmount: membershipDiscount,
-      membershipDiscountAmount: membershipDiscount,
+      discountAmount: 0,
+      membershipDiscountAmount: 0,
       couponDiscountAmount: 0,
       processingFeeAmount: 0,
       serviceTaxableAmount: draftCalculation.serviceTaxableAmount,
@@ -1083,8 +1012,6 @@ export const getJobCartReferences = async (
       name: true,
       gstEnabled: true,
       serviceGstRate: true,
-      stackMembershipDiscount: true,
-      membershipDiscountOnPackages: true,
     },
   });
   const branchId = scopedBranchId(actor) ?? requestedBranchId;
@@ -1429,10 +1356,6 @@ export const getJobCartCustomerSummary = async (
     membershipStatus:
       currentMembership?.status ?? latestMembership?.status ?? null,
     currentCustomerMembershipId: currentMembership?.id ?? null,
-    // Only the membership in force discounts a bill, so an expired one in the
-    // history contributes nothing here.
-    membershipDiscountPercentage:
-      currentMembership?.discountPercentageSnapshot ?? 0,
     // What the counter may put on the bill from membership wallets right now,
     // summed across every spendable membership the customer holds.
     membershipWalletBalance: spendableWallet.total,
@@ -1647,33 +1570,11 @@ export const createJobCart = async (
       },
       tx
     );
-    const membership = await resolveCurrentCustomerMembership(tx, {
-      customerId: customer.id,
-      actor,
-      audit,
-    });
-    assertNoStackedDiscount(
-      salon,
-      membership?.discountPercentageSnapshot,
-      services.map((service) => ({
-        name: service.name,
-        price: lineOf(service).price,
-        catalogue: service.price,
-      }))
-    );
     const subtotal = services.reduce(
       (sum, service) => sum.add(lineOf(service).lineTotal),
       new Prisma.Decimal(0)
     );
-    const discount = membership
-      ? Prisma.Decimal.min(
-          subtotal
-            .mul(membership.discountPercentageSnapshot)
-            .div(100)
-            .toDecimalPlaces(2),
-          subtotal
-        )
-      : new Prisma.Decimal(0);
+    const discount = new Prisma.Decimal(0);
     // A GST-registered salon bills GST by default; without this every job cart
     // opened as a bill of supply and the running total showed no tax at all.
     const invoiceType = salon.gstEnabled ? "GST_INVOICE" : "BILL_OF_SUPPLY";
@@ -1689,7 +1590,7 @@ export const createJobCart = async (
             itemType: "SERVICE" as const,
             quantity: line.quantity,
             unitPrice: line.price,
-            discountable: isMembershipDiscountable("SERVICE", salon),
+            discountable: isDiscountable("SERVICE"),
           };
         }),
       },
@@ -2789,47 +2690,7 @@ export const confirmJobCart = async (
       existing.invoice.subtotalAmount
     ).toDecimalPlaces(2);
     const processingFee = decimalOrZero(billing.processingFeeAmount);
-    const currentMembership = await resolveCurrentCustomerMembership(tx, {
-      customerId: existing.customerId,
-      actor,
-      audit,
-    });
-    assertNoStackedDiscount(
-      existing.salon,
-      currentMembership?.discountPercentageSnapshot,
-      existing.services
-        .filter((item) => !item.customerPackageUsageItemId)
-        .map((item) => ({
-          name: item.serviceName,
-          price: item.price,
-          catalogue: item.service.price,
-        })),
-      manualDiscount
-    );
-    // Only the lines a membership may touch form the base, so products (and
-    // packages, unless the salon opted in) are billed at full price.
-    const membershipDiscountableSubtotal = existing.invoice.items.reduce(
-      (sum, item) =>
-        isMembershipDiscountable(item.itemType, existing.salon)
-          ? sum.plus(new Prisma.Decimal(item.quantity).mul(item.unitPrice))
-          : sum,
-      new Prisma.Decimal(0)
-    ).toDecimalPlaces(2);
-    const membershipDiscount = currentMembership
-      ? Prisma.Decimal.min(
-          membershipDiscountableSubtotal
-            .mul(currentMembership.discountPercentageSnapshot)
-            .div(100),
-          Prisma.Decimal.max(
-            membershipDiscountableSubtotal.minus(manualDiscount),
-            new Prisma.Decimal(0)
-          )
-        ).toDecimalPlaces(2)
-      : new Prisma.Decimal(0);
-    const discountAmount = Prisma.Decimal.min(
-      manualDiscount.plus(membershipDiscount),
-      existing.invoice.subtotalAmount
-    ).toDecimalPlaces(2);
+    const discountAmount = manualDiscount;
     const taxPercent =
       billing.taxPercent === undefined ? null : decimalOrZero(billing.taxPercent);
     const gstSettings =
@@ -2849,7 +2710,7 @@ export const confirmJobCart = async (
         processingFeeAmount: processingFee,
         items: existing.invoice.items.map((item) => ({
           ...item,
-          discountable: isMembershipDiscountable(item.itemType, existing.salon),
+          discountable: isDiscountable(item.itemType),
         })),
       },
       gstSettings
@@ -2876,7 +2737,7 @@ export const confirmJobCart = async (
       data: {
         invoiceType,
         discountAmount,
-        membershipDiscountAmount: membershipDiscount,
+        membershipDiscountAmount: 0,
         processingFeeAmount: processingFee,
         serviceTaxableAmount: calculation.serviceTaxableAmount,
         productTaxableAmount: calculation.productTaxableAmount,
@@ -3056,8 +2917,7 @@ export const confirmJobCart = async (
       });
     }
     // Enrollment happens last, after the bill is settled, so the wallet it
-    // credits cannot be spent on the very bill that bought it, and so the
-    // membership discount above is the one the customer walked in with.
+    // credits cannot be spent on the very bill that bought it.
     for (const [index, item] of existing.invoice.items.entries()) {
       if (item.itemType !== "MEMBERSHIP" || !item.membershipId) continue;
       try {
@@ -3108,7 +2968,6 @@ export const confirmJobCart = async (
         appointmentStatus: "COMPLETED",
         invoiceStatus: billing.status === "DRAFT" ? "DRAFT" : "ISSUED",
         manualDiscountAmount: manualDiscount,
-        membershipDiscountAmount: membershipDiscount,
         ...(billing.payment
           ? { paymentMethod: billing.payment.method }
           : {}),

@@ -6,7 +6,6 @@ import {
   type ServicePackageType,
 } from "../../generated/prisma/client.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
-import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
 import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 type TransactionClient = Prisma.TransactionClient;
@@ -849,21 +848,7 @@ export const createCustomPackageFromCart = async (
       .filter((item) => item.itemType === "PACKAGE")
       .reduce((sum, item) => sum.add(item.lineTotal), new Prisma.Decimal(0));
     const subtotal = serviceSubtotal.add(packageSubtotal).toDecimalPlaces(2);
-    const membership = await resolveCurrentCustomerMembership(tx, {
-      customerId: cart.customerId,
-      actor,
-      audit,
-    });
-    const discount = membership
-      ? Prisma.Decimal.min(
-          subtotal
-            .mul(membership.discountPercentageSnapshot)
-            .div(100)
-            .toDecimalPlaces(2),
-          subtotal
-        )
-      : new Prisma.Decimal(0);
-    const total = subtotal.minus(discount).toDecimalPlaces(2);
+    const total = subtotal;
     const totalDurationMinutes = paidServices.reduce(
       (sum, item) =>
         sum +
@@ -879,7 +864,7 @@ export const createCustomPackageFromCart = async (
       where: { id: cart.invoice.id },
       data: {
         subtotalAmount: subtotal,
-        discountAmount: discount,
+        discountAmount: 0,
         couponDiscountAmount: 0,
         processingFeeAmount: 0,
         taxAmount: 0,

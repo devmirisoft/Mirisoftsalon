@@ -37,7 +37,6 @@ export const MembershipModel = {
     salonId: string;
     name: string;
     description?: string;
-    discountPercentage?: number;
     durationMonths?: number | null;
     price?: number;
     walletCreditAmount?: number;
@@ -101,7 +100,6 @@ export const MembershipModel = {
     data: {
       name?: string;
       description?: string | null;
-      discountPercentage?: number;
       durationMonths?: number | null;
       price?: number;
       walletCreditAmount?: number;

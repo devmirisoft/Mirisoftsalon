@@ -82,7 +82,7 @@ const createSessionFromResponse = (body) => {
     throw new ApiError("The server returned an incomplete authentication response.");
   }
 
-  return saveSession({ user, accessToken, branch: body.data?.branch || null });
+  return saveSession({ user, accessToken, branch: body.data?.branch || null, loggedInAt: Date.now() });
 };
 
 export const login = async ({ email, password }) => {

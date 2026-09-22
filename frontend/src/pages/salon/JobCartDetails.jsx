@@ -312,43 +312,17 @@ const JobCartDetails = () => {
   const invoice = cart?.invoice;
   const subtotalAmount = Number(invoice?.subtotalAmount || 0);
   const discountInput = Number(billingForm.discountAmount || 0);
-  // Stacking off (Settings): a member gets their membership discount only, so
-  // the overall discount is locked at zero. The server refuses it too.
-  const discountsLocked =
-    Number(customerSummary?.membershipDiscountPercentage || 0) > 0 &&
-    !cart?.salon?.stackMembershipDiscount;
-  const manualDiscount = !active || discountsLocked
+  const manualDiscount = !active
     ? 0
     : discountMode === "PERCENT"
       ? (subtotalAmount * Math.min(Math.max(discountInput, 0), 100)) / 100
       : Math.max(discountInput, 0);
-  const membershipPercent = Number(
-    cart?.customer?.membership?.discountPercentage || 0
-  );
-  // Mirrors isMembershipDiscountable on the server: a membership never reduces
-  // a product, and only reduces a package when the salon has opted in. Keeping
-  // the rule in step here stops the page promising a discount the bill refuses.
+  // Mirrors isDiscountable on the server: only services take a share of the
+  // overall discount. Memberships never discount anything.
   const isDiscountableLine = (item) =>
-    item.itemType === "PRODUCT" || item.itemType === "MEMBERSHIP"
-      ? false
-      : item.itemType === "PACKAGE"
-        ? Boolean(cart?.salon?.membershipDiscountOnPackages)
-        : true;
-  const membershipDiscountBase = (invoice?.items || [])
-    .filter(isDiscountableLine)
-    .reduce(
-      (total, item) =>
-        total + Number(item.quantity || 0) * Number(item.unitPrice || 0),
-      0
-    );
-  const membershipDiscount = active
-    ? Math.min(
-        membershipDiscountBase * (membershipPercent / 100),
-        Math.max(membershipDiscountBase - manualDiscount, 0)
-      )
-    : Number(invoice?.discountAmount || 0);
+    !["PRODUCT", "PACKAGE", "MEMBERSHIP"].includes(item.itemType);
   const discountTotal = active
-    ? Math.min(manualDiscount + membershipDiscount, subtotalAmount)
+    ? Math.min(manualDiscount, subtotalAmount)
     : Number(invoice?.discountAmount || 0);
   const processingFee = active
     ? Number(billingForm.processingFeeAmount || 0)
@@ -519,6 +493,27 @@ const JobCartDetails = () => {
           ?.label || tender.method
     )
     .join(" + ");
+
+  // The wallet cannot pay products, packages or memberships, so with any on
+  // the bill the rest opens as a ready split row. Keyed on the first method
+  // only, so a row the operator removes stays removed.
+  useEffect(() => {
+    if (
+      !confirmOpen ||
+      !collecting ||
+      !hasProducts ||
+      tenders.length !== 1 ||
+      tenders[0].method !== "MEMBERSHIP_WALLET" ||
+      tenders[0].amount ||
+      outstandingAfter <= 0.004
+    )
+      return;
+    setTenders((current) => [
+      ...current,
+      { method: "CASH", amount: outstandingAfter.toFixed(2), referenceNo: "" },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmOpen, collecting, tenders[0].method]);
 
   const buildConfirmBody = () => ({
     ...billingForm,
@@ -1087,7 +1082,6 @@ const JobCartDetails = () => {
                               bsSize="sm"
                               style={{ flex: "0 0 150px" }}
                               value={discountMode}
-                              disabled={discountsLocked}
                               onChange={(event) =>
                                 setDiscountMode(event.target.value)
                               }
@@ -1104,8 +1098,7 @@ const JobCartDetails = () => {
                                   discountMode === "PERCENT" ? "100" : undefined
                                 }
                                 step="0.01"
-                                value={discountsLocked ? "" : billingForm.discountAmount}
-                                disabled={discountsLocked}
+                                value={billingForm.discountAmount}
                                 onChange={(event) =>
                                   setBillingForm((current) => ({
                                     ...current,
@@ -1118,15 +1111,6 @@ const JobCartDetails = () => {
                               </span>
                             </div>
                           </div>
-                          {membershipDiscount > 0 && (
-                            <small className="text-soft d-block mt-1">
-                              Membership discount included:{" "}
-                              {formatMoney(membershipDiscount)}
-                              {discountsLocked
-                                ? ". Extra discounts are off in Settings."
-                                : ""}
-                            </small>
-                          )}
                         </Col>
 
                         <Col md="7">
@@ -1956,9 +1940,14 @@ const JobCartDetails = () => {
               >
                 {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
                 <span>
-                  {collecting
-                    ? `Pay ${formatMoney(collectedAmount)}`
-                    : "Issue bill"}
+                  {!collecting
+                    ? "Issue bill"
+                    : walletTender
+                      ? "Pay with membership" +
+                        (collectedAmount - walletPaid > 0.004
+                          ? ` + ${formatMoney(collectedAmount - walletPaid)}`
+                          : "")
+                      : `Pay ${formatMoney(collectedAmount)}`}
                 </span>
               </Button>
             </div>

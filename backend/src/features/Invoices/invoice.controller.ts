@@ -453,23 +453,16 @@ export const createInvoiceFromAppointment = async (
         : {}),
     };
 
-    const { invoice, membershipDiscountAmount } = await prisma.$transaction(
+    const invoice = await prisma.$transaction(
       async (tx) => {
         const currentMembership = await resolveCurrentCustomerMembership(tx, {
           customerId: appointment.customerId,
           actor: membershipActor,
           audit: auditContext,
         });
-        const membershipDiscountAmount = currentMembership
-          ? Prisma.Decimal.min(
-              subtotalAmount
-                .mul(currentMembership.discountPercentageSnapshot)
-                .div(100),
-              subtotalAmount.minus(manualDiscountAmount)
-            ).toDecimalPlaces(2)
-          : new Prisma.Decimal(0);
+        // A membership never discounts a bill; only the manual discount does.
         const finalDiscountAmount = Prisma.Decimal.min(
-          manualDiscountAmount.plus(membershipDiscountAmount),
+          manualDiscountAmount,
           subtotalAmount
         ).toDecimalPlaces(2);
         const gstSettings =
@@ -738,13 +731,10 @@ export const createInvoiceFromAppointment = async (
             customerMembershipId: currentMembership?.id ?? null,
             membershipName:
               currentMembership?.membershipNameSnapshot ?? null,
-            membershipDiscountPercentage:
-              currentMembership?.discountPercentageSnapshot ?? null,
-            membershipDiscountAmount,
           },
           ...auditContext,
         });
-        return { invoice: created, membershipDiscountAmount };
+        return created;
       }
     );
 
@@ -754,7 +744,6 @@ export const createInvoiceFromAppointment = async (
       data: {
         ...invoice,
         manualDiscountAmount,
-        membershipDiscountAmount,
       },
     });
   } catch (error) {

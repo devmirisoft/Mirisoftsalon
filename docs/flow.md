@@ -35,11 +35,11 @@ Token expiry ──POST /auth/refresh──► new token     Logout ──POST /
 
 ## 3. One-time setup (admin)
 
-1. **Salon settings**: GST on/off, service and product GST rates, GSTIN, and the membership discount rules `membershipDiscountOnPackages` and `stackMembershipDiscount`.
+1. **Salon settings**: GST on/off, service and product GST rates, GSTIN.
 2. **Branches**, **Staff** (users + `StaffSalaryConfig`), **Staff availability / roster / time blocks** (`ShiftRoster.jsx`).
 3. **Catalogue**: Main services → Services (price, duration) → Service consumables (products each service uses up).
 4. **Products**: brands, products, vendors (`admin/products`, `admin/vendors`).
-5. **Retention**: Memberships (price, discount %, wallet credit, duration), Packages (bundles of services with validity), Loyalty rules, Coupons.
+5. **Retention**: Memberships (price, wallet credit, duration; no discount), Packages (bundles of services with validity), Loyalty rules, Coupons.
 6. **Online booking settings**: enable it and pick a slug (`settings/online-booking`).
 
 ## 4. Where customers come from
@@ -95,10 +95,7 @@ JobCartDetails.jsx (edit while the cart is still open)
 
 1. Locks the cart and checks it has at least one line and no staff time conflicts.
 2. Package redemptions go from **RESERVED to USED**.
-3. **Discounts**:
-   - manual discount (capped at the subtotal)
-   - + membership discount = `discount %` of the *membership-discountable* lines. That means services, plus packages only if `membershipDiscountOnPackages` is on. Products are never discounted.
-   - If `stackMembershipDiscount` is off, a membership discount can't be combined with a manual discount or a price override (`assertNoStackedDiscount`).
+3. **Discounts**: manual discount only (capped at the subtotal), spread across service lines. Products, packages and memberships are never discounted, and a membership never discounts a bill.
 4. **GST** per line (`calculateInvoiceGst`), round-off, processing fee. The resulting totals are written to the invoice.
 5. Appointment → **COMPLETED**.
 6. If `status !== DRAFT`: the invoice is **ISSUED**, then each tender in `payments[]` is settled in turn (split payment, see section 7).
@@ -106,7 +103,7 @@ JobCartDetails.jsx (edit while the cart is still open)
 7. **Products** on the bill leave stock (`RETAIL_SALE` movement). A shortfall fails the whole confirm.
 8. **Packages** sold on the bill → `CustomerPackage` created with service balances and a `validUntil` date.
 9. **Memberships** sold on the bill → `CustomerMembership` is assigned and its wallet credited (`PURCHASE_CREDIT`).
-   This happens *last*, so the new wallet can't pay for the bill that bought it and the discount applied is the one the customer walked in with.
+   This happens *last*, so the new wallet can't pay for the bill that bought it.
 10. Audit log `JOB_CART / COMPLETE`.
 
 ### Cancel
@@ -140,7 +137,7 @@ Payment methods: CASH, UPI, GPAY, PAYTM, PHONEPE, CARD, BANK_TRANSFER, CHEQUE, M
 
 | Feature | Lifecycle |
 |---|---|
-| **Membership** | Sold on a job cart → `CustomerMembership` ACTIVE → EXPIRED (by `durationMonths`) / CANCELLED / REMOVED. It gives a discount % on services. |
+| **Membership** | Sold on a job cart → `CustomerMembership` ACTIVE → EXPIRED (by `durationMonths`) / CANCELLED / REMOVED. It loads a wallet that pays for services; it never discounts a bill. |
 | **Membership wallet** | Credited when the membership is sold (`walletCreditAmount` can be more than the price). Admins can top up or adjust it. It is spent on **services only**. Refunded on reversal and forfeited when the membership ends. Ledger: `MembershipWalletTransaction`. |
 | **Package** | Sold on a job cart → `CustomerPackage` ACTIVE with per-service balances. Redeeming on a cart moves a balance from reserved to used on confirm. Ends as USED or EXPIRED. |
 | **Loyalty** | Points are awarded when an invoice is fully paid (per `LoyaltyRule`) and redeemed against an invoice. |

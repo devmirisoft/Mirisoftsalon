@@ -180,23 +180,14 @@ const QuickSell = ({ kind, onClose }) => {
         } days validity`
       : [
           formatMoney(item.price),
-          `${Number(item.discountPercentage || 0)}% off`,
           `${formatMoney(item.walletCreditAmount || 0)} wallet`,
           item.durationMonths ? `${item.durationMonths} months` : "no expiry",
         ].join(" - ");
 
   // An estimate for the till; the server settles against its own total.
-  const subtotal = Number(
+  const taxable = Number(
     (isPackage ? picked?.specialPrice : picked?.price) || 0
   );
-  // A membership never discounts itself or a product, and only discounts a
-  // package when the salon opted in - same rule the server bills by.
-  const discount =
-    isPackage && refs.salon?.membershipDiscountOnPackages
-      ? subtotal *
-        (Number(existing?.membership?.discountPercentage || 0) / 100)
-      : 0;
-  const taxable = Math.max(subtotal - discount, 0);
   const tax =
     bill.invoiceType === "GST_INVOICE"
       ? taxable * (Number(bill.taxPercent || 0) / 100)
@@ -334,7 +325,7 @@ const QuickSell = ({ kind, onClose }) => {
             <div className="border rounded p-3 mb-3">
               <div className="d-flex justify-content-between py-1">
                 <span>{picked.name}</span>
-                <span>{formatMoney(subtotal)}</span>
+                <span>{formatMoney(taxable)}</span>
               </div>
               <div className="d-flex justify-content-between py-1 text-soft">
                 <span>For</span>
@@ -342,12 +333,6 @@ const QuickSell = ({ kind, onClose }) => {
                   {customerName} - {phone}
                 </span>
               </div>
-              {discount > 0 && (
-                <div className="d-flex justify-content-between py-1">
-                  <span className="text-soft">Membership discount</span>
-                  <span>-{formatMoney(discount)}</span>
-                </div>
-              )}
               {tax > 0 && (
                 <div className="d-flex justify-content-between py-1">
                   <span className="text-soft">Tax</span>

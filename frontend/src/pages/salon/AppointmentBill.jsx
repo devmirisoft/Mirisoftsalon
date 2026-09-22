@@ -249,17 +249,9 @@ const AppointmentBill = () => {
     // A membership is billed at its plan price and never discounted, but it
     // is taxed at the service rate like a package.
     const membershipSubtotal = num(selectedMembership?.price);
+    // Only the typed discount applies; a membership never discounts a bill.
     const manualDiscount = Math.min(num(bill.discountAmount), serviceSubtotal);
-    // The membership the customer already holds discounts the services on top
-    // of the typed amount, exactly as the server applies it on issue.
-    const membershipDiscount = Math.min(
-      (serviceSubtotal * num(summary?.membershipDiscountPercentage)) / 100,
-      serviceSubtotal - manualDiscount
-    );
-    const discount = Math.min(
-      manualDiscount + membershipDiscount,
-      serviceSubtotal
-    );
+    const discount = manualDiscount;
     const gst = bill.invoiceType === "GST_INVOICE";
     const serviceTax = gst
       ? ((serviceSubtotal - discount + packageSubtotal + membershipSubtotal) *
@@ -278,7 +270,6 @@ const AppointmentBill = () => {
       membershipSubtotal,
       subtotal,
       manualDiscount,
-      membershipDiscount,
       discount,
       serviceTax,
       productTax,
@@ -295,7 +286,6 @@ const AppointmentBill = () => {
     selectedPackages,
     selectedProducts,
     services,
-    summary,
   ]);
 
   const walletBalance = num(wallet?.spendableBalance);
@@ -714,8 +704,7 @@ const AppointmentBill = () => {
                         </option>
                         {memberships.map((item) => (
                           <option key={item.id} value={item.id}>
-                            {item.name} · {formatMoney(item.price)} ·{" "}
-                            {num(item.discountPercentage)}% off
+                            {item.name} · {formatMoney(item.price)}
                           </option>
                         ))}
                       </Input>
@@ -1114,14 +1103,6 @@ const AppointmentBill = () => {
                         label="Discount"
                         value={`- ${formatMoney(preview.manualDiscount)}`}
                       />
-                      {preview.membershipDiscount > 0 && (
-                        <SummaryRow
-                          label={`Membership discount (${num(
-                            summary.membershipDiscountPercentage
-                          )}%)`}
-                          value={`- ${formatMoney(preview.membershipDiscount)}`}
-                        />
-                      )}
                       <SummaryRow
                         label="Service tax"
                         value={formatMoney(preview.serviceTax)}

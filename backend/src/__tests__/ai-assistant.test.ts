@@ -416,6 +416,7 @@ describe("AI assistant integration", () => {
       "getStaffAvailability",
       "getStaffSummary",
       "getServiceSummary",
+      "getProductSummary",
       "getSelectedCustomerSummary",
       "getSelectedInvoiceSummary",
       "getSelectedAppointmentSummary",

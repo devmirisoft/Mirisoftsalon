@@ -419,6 +419,292 @@
   margin-left: 0.5rem;
 }
 
+.link-btn {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #526484;
+  font: inherit;
+  cursor: pointer;
+}
+
+.link-btn:hover,
+.link-btn:focus {
+  color: #212e6b;
+}
+
+.link-btn:disabled {
+  color: #b6c2d0;
+  cursor: default;
+}
+
+.appt-late-notifications .nk-notification-content {
+  min-width: 0;
+}
+
+.appt-notification-menu {
+  width: min(58rem, calc(100vw - 2rem));
+  max-width: none;
+  position: fixed !important;
+  top: 4.75rem !important;
+  right: 1rem !important;
+  left: auto !important;
+  transform: none !important;
+  overflow: hidden;
+  border: 1px solid #d7e8ff;
+  border-radius: 1.125rem;
+  box-shadow: 0 1.25rem 3rem rgba(37, 99, 235, 0.16);
+}
+
+.appt-notification-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.75rem 2.4rem;
+  background: #eef7ff;
+}
+
+.appt-notification-title {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  color: #15336b;
+  font-size: 2.35rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.appt-notification-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: #1f73e8;
+  font-size: 2rem;
+}
+
+.appt-notification-bell::after {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  right: 0.25rem;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: #ff5f6d;
+}
+
+.appt-notification-tools {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-left: auto;
+}
+
+.appt-notification-read {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #86a5d5;
+  font-size: 1.15rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.appt-notification-read:not(:disabled) {
+  color: #1f73e8;
+  cursor: pointer;
+}
+
+.appt-notification-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 2.75rem;
+  border: 1px solid #fff;
+  border-radius: 999px;
+  padding: 0 1.5rem;
+  background: rgba(255, 255, 255, 0.6);
+  color: #1368df;
+  font-size: 1.15rem;
+  font-weight: 800;
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+.appt-notification-refresh .icon {
+  font-size: 1.5rem;
+}
+
+.appt-notification-body {
+  max-height: min(32rem, calc(100vh - 8rem));
+  overflow-y: auto;
+  background: #fff;
+}
+
+.appt-late-card {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 2.25rem;
+  padding: 2.4rem 2.8rem;
+}
+
+.appt-late-card + .appt-late-card {
+  border-top: 1px solid #e6eefb;
+}
+
+.appt-late-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.25rem;
+  height: 5.25rem;
+  border-radius: 50%;
+  background: #ddecff;
+  color: #2580f4;
+  font-size: 2.625rem;
+}
+
+.appt-late-main {
+  min-width: 0;
+}
+
+.appt-late-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.appt-late-topline h6 {
+  margin: 0;
+  color: #15336b;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.appt-late-phone {
+  color: #15336b;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.appt-late-missed {
+  margin-top: 0.75rem;
+  color: #8aa0c4;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.appt-late-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-top: 1.85rem;
+}
+
+.appt-late-actions .form-control {
+  flex: 1 1 10rem;
+  min-width: 10rem;
+}
+
+.appt-late-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  min-width: 9rem;
+  min-height: 3.45rem;
+  border-radius: 0.625rem !important;
+  padding: 0 1.65rem !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+}
+
+.appt-late-btn .icon {
+  font-size: 1.25rem;
+}
+
+.appt-late-btn-primary {
+  border-color: transparent !important;
+  background: #e8f3ff !important;
+  color: #1368df !important;
+}
+
+.appt-late-btn-danger {
+  border: 1px solid #ffb8c1 !important;
+  background: #fff6f8 !important;
+  color: #f0445f !important;
+}
+
+@media (max-width: 575.98px) {
+  .appt-notification-menu {
+    width: calc(100vw - 1rem);
+    top: 4.25rem !important;
+    right: 0.5rem !important;
+  }
+
+  .appt-notification-head,
+  .appt-notification-tools,
+  .appt-late-topline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .appt-notification-head {
+    padding: 1rem 1.25rem;
+  }
+
+  .appt-notification-tools {
+    width: 100%;
+    gap: 0.625rem;
+    margin-left: 0;
+  }
+
+  .appt-notification-title {
+    font-size: 1.5rem;
+  }
+
+  .appt-late-card {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .appt-late-avatar {
+    width: 4.5rem;
+    height: 4.5rem;
+    font-size: 2rem;
+  }
+
+  .appt-late-topline h6,
+  .appt-late-phone {
+    font-size: 1.25rem;
+  }
+
+  .appt-late-phone {
+    white-space: normal;
+  }
+
+  .appt-late-missed {
+    font-size: 1rem;
+  }
+
+  .appt-late-actions {
+    margin-top: 1rem;
+  }
+
+  .appt-late-btn {
+    min-height: 2.75rem;
+    font-size: 1rem !important;
+  }
+}
+
 .nk-header .user-toggle .user-avatar {
   background: var(--salon-header-accent);
   color: #fff;
@@ -2317,6 +2603,25 @@ body.dark-mode .vendors-page {
 }
 
 /* ---------- Appointment status palette ---------- */
+/* unknown status falls back to slate so nothing renders unstyled */
+.appt-status {
+  --appt-main: #64748b;
+  --appt-bg: #f1f5f9;
+  --appt-text: #475569;
+  --appt-border: #d8e0ea;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--appt-bg);
+  color: var(--appt-text);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
 .appt-status-scheduled {
   --appt-border: #ddc9fb;
   --appt-main: #7c3aed;
@@ -2359,25 +2664,6 @@ body.dark-mode .vendors-page {
   --appt-text: #475569;
 }
 
-/* unknown status falls back to slate so nothing renders unstyled */
-.appt-status {
-  --appt-main: #64748b;
-  --appt-bg: #f1f5f9;
-  --appt-text: #475569;
-  --appt-border: #d8e0ea;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  background: var(--appt-bg);
-  color: var(--appt-text);
-  font-size: 0.7rem;
-  font-weight: 600;
-  line-height: 1.6;
-  white-space: nowrap;
-}
-
 .appt-status::before {
   content: "";
   width: 0.4rem;
@@ -2410,6 +2696,28 @@ body.dark-mode .vendors-page {
   display: grid;
   gap: 0.1rem;
   line-height: 1.2;
+}
+
+.appt-dayhead-button {
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.appt-dayhead-button:hover .appt-dayhead-name,
+.appt-dayhead-button:focus-visible .appt-dayhead-name {
+  color: #2563eb;
+}
+
+.appointment-calendar[data-expanded-week-day] .fc-timeGridWeek-view {
+  overflow-x: auto;
+}
+
+.appointment-calendar[data-expanded-week-day] .fc-timeGridWeek-view .fc-timegrid-col,
+.appointment-calendar[data-expanded-week-day] .fc-timeGridWeek-view .fc-col-header-cell {
+  transition: width 0.2s ease, min-width 0.2s ease;
 }
 
 .appt-dayhead-name {
@@ -2466,6 +2774,14 @@ body.dark-mode .vendors-page {
   color: #2563eb;
 }
 
+.appointment-calendar .fc-daygrid-more-link:hover,
+.appointment-calendar .fc-daygrid-more-link:focus,
+.appointment-calendar .fc-daygrid-more-link:focus-visible {
+  background: #fff;
+  color: #2563eb;
+  text-decoration: none;
+}
+
 /* themeSystem is bootstrap5, so FullCalendar skips the fc-theme-standard rule
    that gives the "+N more" popover its background and the grid shows through. */
 .appointment-calendar .fc-popover {
@@ -2484,6 +2800,26 @@ body.dark-mode .vendors-page {
   color: #364a63;
 }
 
+.appointment-calendar .fc .fc-more-popover,
+.appointment-calendar .fc .fc-more-popover .fc-popover-body {
+  background: #fff !important;
+  background-color: #fff !important;
+}
+
+.appointment-calendar .fc .fc-more-popover .fc-popover-body {
+  min-width: 220px;
+  padding: 10px;
+}
+
+.appointment-calendar .fc .fc-more-popover .fc-daygrid-event-harness {
+  background: #fff;
+}
+
+.appointment-calendar .fc .fc-more-popover .fc-daygrid-event-harness,
+.appointment-calendar .fc .fc-more-popover .fc-daygrid-event-harness-abs {
+  opacity: 1 !important;
+}
+
 /* ---------- Calendar events use the status palette ---------- */
 .appointment-calendar .fc-event {
   border: 1px solid var(--appt-border, #d8e0ea);
@@ -2493,6 +2829,35 @@ body.dark-mode .vendors-page {
   background: var(--appt-bg, #f1f5f9);
   color: var(--appt-text, #475569);
   box-shadow: none;
+}
+
+.appointment-calendar .fc-event:hover,
+.appointment-calendar .fc-event:focus,
+.appointment-calendar .fc-event:focus-visible {
+  border-color: var(--appt-border, #d8e0ea);
+  background: var(--appt-bg, #f1f5f9);
+  color: var(--appt-text, #475569);
+  box-shadow: none;
+}
+
+.appointment-calendar .fc-event:hover .fc-event-main,
+.appointment-calendar .fc-event:focus .fc-event-main,
+.appointment-calendar .fc-event:focus-visible .fc-event-main {
+  color: var(--appt-text, #475569);
+}
+
+.appointment-calendar .fc-popover .fc-event,
+.appointment-calendar .fc-popover .fc-event:hover,
+.appointment-calendar .fc-popover .fc-event:focus,
+.appointment-calendar .fc-popover .fc-event:focus-visible,
+.appointment-calendar .fc-popover .fc-event .fc-event-main,
+.appointment-calendar .fc-popover .fc-event:hover .fc-event-main,
+.appointment-calendar .fc-popover .fc-event:focus .fc-event-main,
+.appointment-calendar .fc-popover .fc-event:focus-visible .fc-event-main {
+  background: var(--appt-bg, #f1f5f9) !important;
+  background-color: var(--appt-bg, #f1f5f9) !important;
+  color: var(--appt-text, #475569) !important;
+  opacity: 1 !important;
 }
 
 .appointment-calendar .fc-event .fc-event-main {

@@ -150,6 +150,11 @@ const Appointments = () => {
   }, [load]);
 
   useEffect(() => {
+    window.addEventListener("appointments:refresh", load);
+    return () => window.removeEventListener("appointments:refresh", load);
+  }, [load]);
+
+  useEffect(() => {
     loadRefs();
   }, [loadRefs]);
 

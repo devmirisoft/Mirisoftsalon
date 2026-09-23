@@ -44,6 +44,7 @@ const AppointmentCalendar = ({
   // bar below is ours and these mirror whatever the calendar currently shows.
   const [title, setTitle] = useState("");
   const [view, setView] = useState("dayGridMonth");
+  const [expandedWeekDate, setExpandedWeekDate] = useState("");
   const api = () => calendarRef.current?.getApi();
 
   // The staff board replaces FullCalendar for one day, so it borrows the same
@@ -70,6 +71,30 @@ const AppointmentCalendar = ({
     if (isStaffView) setView(type);
     else api()?.changeView(type);
   };
+
+  const expandWeekDay = (date) => {
+    const day = toISODate(date);
+    setExpandedWeekDate(day);
+    onDateChange?.(day);
+  };
+
+  const weekExpansionCss = useMemo(() => {
+    if (view !== "timeGridWeek" || !expandedWeekDate) return "";
+
+    return `
+      .appointment-calendar[data-expanded-week-day="${expandedWeekDate}"] .fc-timeGridWeek-view .fc-col-header-cell,
+      .appointment-calendar[data-expanded-week-day="${expandedWeekDate}"] .fc-timeGridWeek-view .fc-timegrid-col {
+        width: 8% !important;
+        min-width: 3.75rem;
+      }
+
+      .appointment-calendar[data-expanded-week-day="${expandedWeekDate}"] .fc-timeGridWeek-view .fc-col-header-cell[data-date="${expandedWeekDate}"],
+      .appointment-calendar[data-expanded-week-day="${expandedWeekDate}"] .fc-timeGridWeek-view .fc-timegrid-col[data-date="${expandedWeekDate}"] {
+        width: 42% !important;
+        min-width: 18rem;
+      }
+    `;
+  }, [expandedWeekDate, view]);
 
   // A date filter is useless if the calendar keeps showing the current month.
   useEffect(() => {
@@ -155,7 +180,11 @@ const AppointmentCalendar = ({
           </div>
         </div>
       </div>
-      <div className="card-inner appointment-calendar">
+      <div
+        className="card-inner appointment-calendar"
+        data-expanded-week-day={expandedWeekDate || undefined}
+      >
+        {weekExpansionCss ? <style>{weekExpansionCss}</style> : null}
         {isStaffView ? (
           <StaffDayBoard
             date={boardDate}
@@ -181,6 +210,7 @@ const AppointmentCalendar = ({
             datesSet={(arg) => {
               setTitle(arg.view.title);
               setView(arg.view.type);
+              if (arg.view.type !== "timeGridWeek") setExpandedWeekDate("");
             }}
             views={{
               dayGridMonth: {
@@ -204,7 +234,16 @@ const AppointmentCalendar = ({
             // Week header stacks the weekday over the date, as in the design.
             dayHeaderContent={(arg) =>
               arg.view.type === "timeGridWeek" ? (
-                <div className="appt-dayhead">
+                <button
+                  type="button"
+                  className="appt-dayhead appt-dayhead-button"
+                  onClick={() => expandWeekDay(arg.date)}
+                  aria-label={`Expand ${arg.date.toLocaleDateString(undefined, {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  })}`}
+                >
                   <span className="appt-dayhead-name">
                     {arg.date.toLocaleDateString(undefined, { weekday: "short" })}
                   </span>
@@ -214,7 +253,7 @@ const AppointmentCalendar = ({
                       month: "short",
                     })}
                   </span>
-                </div>
+                </button>
               ) : true
             }
             themeSystem="bootstrap5"
@@ -229,7 +268,13 @@ const AppointmentCalendar = ({
             slotLabelInterval="01:00:00"
             slotLabelFormat={TIME_FORMAT}
             eventTimeFormat={TIME_FORMAT}
-            dateClick={(info) => onDateSelect?.(info)}
+            dateClick={(info) => {
+              if (info.view.type === "timeGridWeek") {
+                expandWeekDay(info.date);
+                return;
+              }
+              onDateSelect?.(info);
+            }}
             dayCellClassNames={(info) =>
               toISODate(info.date) === selectedDate
                 ? ["appointment-calendar-selected-day"]
@@ -261,15 +306,19 @@ const AppointmentCalendar = ({
           }}
           eventDidMount={(info) => {
             const props = info.event.extendedProps;
-            info.el.title = [
-              props.appointmentCode,
-              props.services,
-              props.staff,
-              props.branch,
-              props.status,
-            ]
-              .filter(Boolean)
-              .join(" · ");
+            info.el.removeAttribute("title");
+            info.el.setAttribute(
+              "aria-label",
+              [
+                props.appointmentCode,
+                props.services,
+                props.staff,
+                props.branch,
+                props.status,
+              ]
+                .filter(Boolean)
+                .join(" - ")
+            );
           }}
         />
         )}
@@ -279,3 +328,5 @@ const AppointmentCalendar = ({
 };
 
 export default AppointmentCalendar;
+
+

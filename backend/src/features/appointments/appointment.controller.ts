@@ -16,6 +16,7 @@ import { prisma } from "../../config/prisma.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { reverseUsedPackageUsagesForAppointment } from "../packages/package.service.js";
+import { serviceUsageSchema } from "../stock/serviceUsage.service.js";
 import {
   checkStaffAvailabilityForSlot,
   StaffAvailabilityError,
@@ -564,6 +565,19 @@ export const updateAppointmentStatus = async (
             });
         }
 
+        // Actual consumable use confirmed on completion; without it the
+        // service defaults are booked.
+        const usage =
+            req.body?.usage === undefined
+                ? undefined
+                : serviceUsageSchema.safeParse(req.body.usage);
+        if (usage && !usage.success) {
+            return res.status(400).json({
+                success: false,
+                message: usage.error.issues[0]?.message || "Invalid product usage",
+            });
+        }
+
         const existingAppointment = await getExistingAppointmentByAccess(req, id);
 
         if (!existingAppointment) {
@@ -603,6 +617,7 @@ export const updateAppointmentStatus = async (
               newStatus: status,
               ...(note ? { note } : {}),
               ...(req.user?.userId ? { changedById: req.user.userId } : {}),
+              ...(usage?.data ? { usage: usage.data } : {}),
           }, tx);
           await createAuditLog({
             tx,

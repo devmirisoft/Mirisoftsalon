@@ -43,6 +43,9 @@ describe("Staff code generation", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "MONDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         joiningDate: "2026-06-03T10:00:00.000Z",
         salonId: salon.body.data.id,
       });
@@ -62,6 +65,9 @@ describe("Staff code generation", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "TUESDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         joiningDate: "2026-06-03T12:00:00.000Z",
         salonId: salon.body.data.id,
       });

@@ -24,10 +24,10 @@ export const UserModel = {
             },
         });
     },
-    createStaffAccount: async (data) => {
+    createStaffAccount: async (data, tx) => {
         const { staffId, ...userData } = data;
-        return prisma.$transaction(async (tx) => {
-            const user = await tx.user.create({
+        const run = async (client) => {
+            const user = await client.user.create({
                 data: {
                     ...userData,
                     role: "STAFF",
@@ -44,12 +44,15 @@ export const UserModel = {
                     createdAt: true,
                 },
             });
-            await tx.staff.update({
+            await client.staff.update({
                 where: { id: staffId },
                 data: { userId: user.id },
             });
             return user;
-        });
+        };
+        // Called inside the staff-create transaction so a failed login rolls the
+        // staff row back too; standalone it opens its own.
+        return tx ? run(tx) : prisma.$transaction(run);
     },
     findByPhoneNumber: async (phone_number) => {
         return prisma.user.findUnique({

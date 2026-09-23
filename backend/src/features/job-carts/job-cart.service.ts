@@ -13,7 +13,11 @@ import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.
 import { normalizePhone } from "../public-booking/public-booking.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
-import { createStockMovement } from "../stock/stockMovement.service.js";
+import {
+  createStockMovement,
+  locationStock,
+} from "../stock/stockMovement.service.js";
+import type { ServiceUsageEntry } from "../stock/serviceUsage.service.js";
 import {
   assignCustomerMembershipInTransaction,
   CustomerMembershipError,
@@ -74,6 +78,8 @@ type JobCartBillingInput = {
     | undefined;
   idempotencyKey?: string | undefined;
   confirmedAt?: string | undefined;
+  /** Actual consumable use confirmed before billing; defaults otherwise. */
+  usage?: ServiceUsageEntry[] | undefined;
 };
 
 type AuditContext = {
@@ -84,12 +90,46 @@ type AuditContext = {
 export class JobCartError extends Error {
   constructor(
     public readonly status: number,
-    message: string
+    message: string,
+    /** Extra response fields, e.g. the stock a client can offer to transfer. */
+    public readonly details?: Record<string, unknown>
   ) {
     super(message);
     this.name = "JobCartError";
   }
 }
+
+/**
+ * A retail line can only be sold from the retail shelf of the cart's branch.
+ * The answer carries the warehouse stock so the counter can offer a transfer.
+ */
+const retailShortage = (
+  product: { id: string; name: string },
+  branchId: string | null,
+  stock: Awaited<ReturnType<typeof locationStock>>,
+  needed: number
+) => {
+  const retail = stock.at(product.id, branchId, "RETAIL");
+  if (retail.gte(needed)) return null;
+  return new JobCartError(
+    409,
+    `Only ${Number(retail)} of ${product.name} on the retail shelf`,
+    {
+      code: "INSUFFICIENT_STOCK",
+      stock: {
+        productId: product.id,
+        branchId,
+        location: "RETAIL",
+        available: Number(retail),
+        needed,
+        warehouse: Number(stock.at(product.id, branchId, "WAREHOUSE")),
+        salonWarehouse: branchId
+          ? Number(stock.at(product.id, null, "WAREHOUSE"))
+          : 0,
+      },
+    }
+  );
+};
 
 const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 
@@ -233,7 +273,11 @@ const mappedStatus = (cart: JobCartRecord) => {
   if (
     cart.status === "COMPLETED" &&
     cart.invoice &&
-    ["DRAFT", "ISSUED"].includes(cart.invoice.status)
+    ["DRAFT", "ISSUED"].includes(cart.invoice.status) &&
+    // A job cart is completed *by* its confirm, so COMPLETED means billed. A
+    // regular appointment billed on this same page is already COMPLETED before
+    // its draft exists, so only an issued invoice means it is done.
+    (cart.walkInJobCart || cart.invoice.status === "ISSUED")
   ) {
     return "COMPLETED" as const;
   }
@@ -255,6 +299,7 @@ const present = (cart: JobCartRecord) => ({
   estimatedAmount: cart.estimatedAmount,
   status: mappedStatus(cart),
   appointmentStatus: cart.status,
+  isJobCart: cart.walkInJobCart,
   source: cart.source,
   bookingNote: cart.bookingNote,
   internalNote: cart.internalNote,
@@ -565,8 +610,9 @@ const loadCart = async (
   client.appointment.findFirst({
     where: {
       id,
-      walkInJobCart: true,
-      source: "WALK_IN",
+      // Not filtered to walk-ins: a regular appointment is billed through this
+      // same page. requireMutable still gates every mutation on a DRAFT
+      // invoice, and listJobCarts keeps its own walk-in-only filter.
       ...accessWhere(actor),
     },
     include: jobCartInclude,
@@ -1082,9 +1128,15 @@ export const getJobCartReferences = async (
       sellingPrice: true,
       currentStock: true,
       unit: true,
+      branchId: true,
+      isRetailProduct: true,
+      isServiceConsumable: true,
     },
     orderBy: { name: "asc" },
   });
+  // What the counter can sell now (retail shelf) and what a transfer could
+  // bring onto it (warehouse), for the branch being billed.
+  const shelf = await locationStock(prisma, products);
   const memberships = await prisma.membership.findMany({
     where: { salonId, status: true },
     select: {
@@ -1121,7 +1173,18 @@ export const getJobCartReferences = async (
       ...item,
       soldCount: soldCount("packageId", item.id),
     })),
-    products,
+    products: products.map((product) => {
+      const site = branchId ?? product.branchId;
+      return {
+        ...product,
+        retailStock: shelf.at(product.id, site, "RETAIL"),
+        warehouseStock: shelf.at(product.id, site, "WAREHOUSE"),
+        serviceStock: shelf.at(product.id, site, "SERVICE"),
+        salonWarehouseStock: site
+          ? shelf.at(product.id, null, "WAREHOUSE")
+          : new Prisma.Decimal(0),
+      };
+    }),
     memberships: memberships.map((item) => ({
       ...item,
       soldCount: soldCount("membershipId", item.id),
@@ -1842,21 +1905,22 @@ export const addJobCartItem = async (
           sku: true,
           sellingPrice: true,
           currentStock: true,
+          branchId: true,
+          isRetailProduct: true,
+          isServiceConsumable: true,
         },
       });
       if (!product) {
         throw new JobCartError(400, "Product is unavailable");
       }
       const quantity = input.quantity ?? 1;
-      // Stock leaves the shelf at confirm, not here, so the cart can still be
-      // edited. The check is repeated there under a row lock, which is what
-      // actually prevents overselling.
-      if (product.currentStock.lt(quantity)) {
-        throw new JobCartError(
-          409,
-          `Only ${product.currentStock} of ${product.name} in stock`
-        );
-      }
+      // Stock leaves the retail shelf at confirm, not here, so the cart can
+      // still be edited. The check is repeated there under a row lock, which
+      // is what actually prevents overselling.
+      const stock = await locationStock(tx, [product]);
+      const shelfBranchId = existing.branchId ?? product.branchId;
+      const shortage = retailShortage(product, shelfBranchId, stock, quantity);
+      if (shortage) throw shortage;
       if (input.staffId) {
         await validateStaff(
           tx,
@@ -1871,12 +1935,13 @@ export const addJobCartItem = async (
       if (existingLine) {
         // Same product twice is a quantity change, not a second line.
         const newQuantity = existingLine.quantity + quantity;
-        if (product.currentStock.lt(newQuantity)) {
-          throw new JobCartError(
-            409,
-            `Only ${product.currentStock} of ${product.name} in stock`
-          );
-        }
+        const lineShortage = retailShortage(
+          product,
+          shelfBranchId,
+          stock,
+          newQuantity
+        );
+        if (lineShortage) throw lineShortage;
         await tx.invoiceItem.update({
           where: { id: existingLine.id },
           data: {
@@ -2763,16 +2828,24 @@ export const confirmJobCart = async (
           : {}),
       },
     });
-    await AppointmentModel.updateStatusWithHistory(
-      id,
-      {
-        oldStatus: existing.status,
-        newStatus: "COMPLETED",
-        note: "Walk-in job cart confirmed",
-        changedById: actor.userId,
-      },
-      tx
-    );
+    // Consumables are booked here, with the quantities confirmed on the usage
+    // step, so a failure anywhere below rolls them back with the bill.
+    // A job cart is always still open here, so this both completes it and
+    // books its consumables. An appointment reaching this page was completed
+    // earlier and already booked them, so the step must not run twice.
+    if (existing.status !== "COMPLETED") {
+      await AppointmentModel.updateStatusWithHistory(
+        id,
+        {
+          oldStatus: existing.status,
+          newStatus: "COMPLETED",
+          note: "Walk-in job cart confirmed",
+          changedById: actor.userId,
+          usage: billing.usage,
+        },
+        tx
+      );
+    }
     if (billing.status !== "DRAFT") {
       const issued = await issueInvoice({
         invoiceId: existing.invoice.id,
@@ -2847,7 +2920,10 @@ export const confirmJobCart = async (
           409,
           error instanceof Error
             ? error.message
-            : "Product stock could not be updated"
+            : "Product stock could not be updated",
+          typeof error === "object" && error !== null && "stock" in error
+            ? { code: "INSUFFICIENT_STOCK", stock: error.stock }
+            : undefined
         );
       }
     }

@@ -1,7 +1,10 @@
 import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { transactionError } from "../products/inventory-access.js";
-import { createStockMovement } from "../stock/stockMovement.service.js";
+import {
+  recordServiceUsage,
+  type ServiceUsageEntry,
+} from "../stock/serviceUsage.service.js";
 
 type AppointmentStatus =
   | "SCHEDULED"
@@ -693,6 +696,8 @@ updateStatusWithHistory: async (
     newStatus: AppointmentStatus;
     note?: string;
     changedById?: string;
+    /** Actual consumable use confirmed at completion; defaults otherwise. */
+    usage?: ServiceUsageEntry[] | undefined;
   },
   tx?: TransactionClient
 ) => {
@@ -710,10 +715,8 @@ updateStatusWithHistory: async (
         id: true,
         salonId: true,
         branchId: true,
+        staffId: true,
         status: true,
-        services: {
-          select: { serviceId: true },
-        },
       },
     });
 
@@ -730,64 +733,26 @@ updateStatusWithHistory: async (
     }
 
     if (data.newStatus === "COMPLETED") {
-      const serviceCounts = new Map<string, number>();
-      for (const appointmentService of currentAppointment.services) {
-        serviceCounts.set(
-          appointmentService.serviceId,
-          (serviceCounts.get(appointmentService.serviceId) ?? 0) + 1
-        );
-      }
-
-      const consumables = serviceCounts.size
-        ? await client.serviceConsumable.findMany({
-            where: {
-              salonId: currentAppointment.salonId,
-              serviceId: { in: [...serviceCounts.keys()] },
-              status: true,
-            },
-          })
-        : [];
-      const quantitiesByProduct = new Map<string, Prisma.Decimal>();
-
-      for (const consumable of consumables) {
-        const serviceQuantity = serviceCounts.get(consumable.serviceId) ?? 1;
-        const quantity = consumable.quantity.mul(serviceQuantity);
-        quantitiesByProduct.set(
-          consumable.productId,
-          (quantitiesByProduct.get(consumable.productId) ??
-            new Prisma.Decimal(0)).add(quantity)
-        );
-      }
-
-      for (const [productId, quantity] of [...quantitiesByProduct.entries()].sort(
-        ([left], [right]) => left.localeCompare(right)
-      )) {
-        try {
-          await createStockMovement({
-            tx: client,
-            salonId: currentAppointment.salonId,
-            ...(currentAppointment.branchId
-              ? { branchId: currentAppointment.branchId }
-              : {}),
-            productId,
-            type: "USED_IN_SERVICE",
-            quantity,
-            referenceType: "APPOINTMENT",
-            referenceId: currentAppointment.id,
-            reason: "Used in completed appointment",
-            ...(data.changedById ? { createdById: data.changedById } : {}),
-          });
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            error.message.toLowerCase().includes("insufficient stock")
-          ) {
-            throw transactionError(
-              "Insufficient stock for service consumables"
-            );
-          }
-          throw error;
+      try {
+        await recordServiceUsage({
+          tx: client,
+          appointment: currentAppointment,
+          usage: data.usage,
+          createdById: data.changedById,
+        });
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.toLowerCase().includes("insufficient stock")
+        ) {
+          // Same message as before, plus the stock detail a client needs to
+          // offer a transfer.
+          throw Object.assign(
+            transactionError("Insufficient stock for service consumables"),
+            "stock" in error ? { code: "INSUFFICIENT_STOCK", stock: error.stock } : {}
+          );
         }
+        throw error;
       }
     }
 

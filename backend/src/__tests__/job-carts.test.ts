@@ -492,6 +492,97 @@ describe("Walk-in job carts", () => {
     ).toBe(0);
   });
 
+  // "Make bill" on an appointment hands over to this same confirm. The
+  // appointment is already COMPLETED by then and its consumables are already
+  // booked, so neither may happen a second time.
+  it("bills a completed appointment through the job cart confirm", async () => {
+    const f = await fixture();
+    const customer = await prisma.customer.create({
+      data: {
+        customerCode: `JC-${randomUUID()}`,
+        name: "Appointment Customer",
+        phone: `98${Math.floor(Math.random() * 1e8)}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+      },
+    });
+    const appointment = await prisma.appointment.create({
+      data: {
+        appointmentCode: `APT-${randomUUID()}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: customer.id,
+        staffId: f.stylist.id,
+        startTime: new Date("2038-02-01T10:00:00.000Z"),
+        endTime: new Date("2038-02-01T10:45:00.000Z"),
+        status: "CHECKED_IN",
+        services: {
+          create: [
+            {
+              serviceId: f.service.id,
+              serviceName: f.service.name,
+              price: 500,
+              staffId: f.stylist.id,
+            },
+          ],
+        },
+      },
+    });
+
+    await request(app)
+      .patch(`/api/appointments/${appointment.id}/status`)
+      .set(auth(f.adminToken))
+      .send({ status: "COMPLETED" })
+      .expect(200);
+    const stockAfterCompletion = Number(
+      (await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } }))
+        .currentStock
+    );
+    expect(stockAfterCompletion).toBe(8);
+
+    // What the appointment bill page does before handing over.
+    const seeded = await request(app)
+      .post(`/api/invoices/from-appointment/${appointment.id}`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" });
+    expect(seeded.status).toBe(201);
+
+    const opened = await request(app)
+      .get(`/api/job-carts/${appointment.id}`)
+      .set(auth(f.adminToken));
+    expect(opened.status).toBe(200);
+    // A completed appointment holding a draft is not billed yet.
+    expect(opened.body.data).toMatchObject({
+      status: "ACTIVE",
+      appointmentStatus: "COMPLETED",
+      isJobCart: false,
+    });
+
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${appointment.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH", amount: 500 } });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body.data.status).toBe("COMPLETED");
+    expect(confirmed.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PAID",
+    });
+    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(500);
+
+    expect(
+      Number(
+        (await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } }))
+          .currentStock
+      )
+    ).toBe(stockAfterCompletion);
+    expect(
+      await prisma.productStockMovement.count({
+        where: { referenceId: appointment.id, type: "USED_IN_SERVICE" },
+      })
+    ).toBe(1);
+  });
+
   it("rejects a payment on confirm when the invoice is left as a draft", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {
@@ -585,6 +676,7 @@ describe("Walk-in job carts", () => {
         branchId: f.branch.id,
         currentStock: 5,
         sellingPrice: 200,
+        isRetailProduct: true,
       },
     });
     const cart = await createCart(f, f.adminToken, { staffId: f.stylist.id });

@@ -18,6 +18,7 @@ import {
 import { Link } from "react-router-dom";
 import { Button, Icon } from "@/components/Component";
 import SchemaModal from "./SchemaModal";
+import { LOCATIONS } from "./InventoryModals";
 import { salonApi } from "@/services/salonApi";
 import { formatMoney, labelize } from "@/utils/salonFormat";
 
@@ -104,6 +105,8 @@ const emptyProduct = {
   description: "",
   isRetailProduct: true,
   isServiceConsumable: false,
+  packSize: "",
+  packUnit: "",
 };
 
 const Section = ({ title, children }) => (
@@ -169,6 +172,8 @@ export const ProductDrawer = ({ isOpen, toggle, product, refs, reloadRefs, categ
         description: form.description || null,
         isRetailProduct: form.isRetailProduct,
         isServiceConsumable: form.isServiceConsumable,
+        packSize: form.packSize === "" || form.packSize === null ? null : Number(form.packSize),
+        packUnit: form.packUnit || null,
         ...(role !== "STAFF" ? { branchId: form.branchId || null } : {}),
         ...(!editing && form.salonId ? { salonId: form.salonId } : {}),
       };
@@ -264,6 +269,16 @@ export const ProductDrawer = ({ isOpen, toggle, product, refs, reloadRefs, categ
               )}
               <Col sm="6"><FormGroup><Label>Low Stock Alert</Label>
                 <Input type="number" min="0" step="0.01" value={form.lowStockAlert} onChange={set("lowStockAlert")} /></FormGroup></Col>
+              <Col sm="6"><FormGroup><Label>Pack Size</Label>
+                <Input type="number" min="0" step="0.01" value={form.packSize ?? ""} onChange={set("packSize")} placeholder="1000" /></FormGroup></Col>
+              <Col sm="6"><FormGroup><Label>Pack Unit</Label>
+                <Input type="select" value={form.packUnit ?? ""} onChange={set("packUnit")}>
+                  <option value="">Not opened into containers</option>
+                  {UNITS.map((u) => <option key={u}>{u}</option>)}
+                </Input></FormGroup></Col>
+              <Col xs="12"><div className="form-note mt-n2 mb-2">
+                With a pack size (e.g. 1000 ML per bottle), service stock is opened bottle by bottle and service consumables are measured in the pack unit.
+              </div></Col>
               <Col xs="12"><FormGroup>
                 <div className="d-flex justify-content-between"><Label>Preferred Vendor</Label>
                   <a href="#new-vendor" className="small" onClick={(e) => { e.preventDefault(); setQuickAdd("vendor"); }}>+ Add New Vendor</a></div>
@@ -341,6 +356,7 @@ export const AddStockModal = ({ isOpen, toggle, product, vendors, onSaved }) => 
   );
   const fields = useMemo(() => [
     { name: "quantity", label: `Quantity${product ? ` (${product.unit})` : ""}`, type: "number", min: 0.01, step: "0.01", required: true },
+    { name: "location", label: "Receive into", type: "select", required: true, defaultValue: "WAREHOUSE", options: LOCATIONS },
     { name: "unitCost", label: "Rate (₹ per unit)", type: "number", min: 0, step: "0.01", required: true },
     { name: "vendorId", label: "Vendor", type: "select", nullable: true, options: vendors.map((x) => ({ value: x.id, label: x.name })) },
     { name: "invoiceNo", label: "Vendor invoice no.", nullable: true },
@@ -359,6 +375,7 @@ export const AddStockModal = ({ isOpen, toggle, product, vendors, onSaved }) => 
       await salonApi.productPurchases.create({
         salonId: product.salonId,
         ...(product.branchId ? { branchId: product.branchId } : {}),
+        location: v.location,
         ...(v.vendorId ? { vendorId: v.vendorId } : {}),
         ...(v.invoiceNo ? { invoiceNo: v.invoiceNo } : {}),
         ...(v.purchaseDate ? { purchaseDate: v.purchaseDate } : {}),
@@ -374,6 +391,8 @@ export const AddStockModal = ({ isOpen, toggle, product, vendors, onSaved }) => 
 export const ADJUST_TYPES = [
   { value: "ADJUSTMENT", label: "Stock count correction (+/-)" },
   { value: "DAMAGED", label: "Damaged" },
+  { value: "WASTAGE", label: "Wastage" },
+  { value: "LOST", label: "Lost" },
   { value: "USED_IN_SERVICE", label: "Used in service" },
   { value: "STOCK_OUT", label: "Expired / removed" },
   { value: "RETURNED", label: "Returned to stock" },
@@ -381,6 +400,7 @@ export const ADJUST_TYPES = [
 
 const ADJUST_FIELDS = [
   { name: "type", label: "Reason type", type: "select", required: true, defaultValue: "ADJUSTMENT", options: ADJUST_TYPES },
+  { name: "location", label: "Location", type: "select", required: true, defaultValue: "WAREHOUSE", options: LOCATIONS },
   { name: "quantity", label: "Quantity", type: "number", step: "0.01", required: true, help: "Negative values are allowed only for count corrections." },
   { name: "reason", label: "Reason", required: true, fullWidth: true },
 ];
@@ -421,7 +441,22 @@ const MOVEMENT_LABELS = {
   DAMAGED: "Damaged",
   ADJUSTMENT: "Adjustment",
   RETURNED: "Return",
+  TRANSFER: "Transfer",
+  OPEN_CONTAINER: "Opened pack",
+  CONTAINER_CLOSED: "Pack closed",
+  WASTAGE: "Wastage",
+  LOST: "Lost",
 };
+
+/**
+ * True for a movement inside an opened pack: its quantity and balances are in
+ * the container unit and it does not change how many packs are in stock.
+ * Rows recorded before packs were tracked carry no unit and were all content.
+ */
+export const isContainerContent = (m) =>
+  Boolean(m.containerId) &&
+  m.type !== "OPEN_CONTAINER" &&
+  (!m.unit || !m.container || m.unit === m.container.unit);
 
 export const movementLabel = (m) => {
   if (m.reason === "Opening stock") return "Opening Stock";
@@ -429,7 +464,10 @@ export const movementLabel = (m) => {
   return MOVEMENT_LABELS[m.type] || labelize(m.type);
 };
 
-export const movementDelta = (m) => Number(m.stockAfter) - Number(m.stockBefore);
+// A movement inside an opened container changes what is left in it, not the
+// product's stock, so it counts as zero here.
+export const movementDelta = (m) =>
+  isContainerContent(m) ? 0 : Number(m.stockAfter) - Number(m.stockBefore);
 
 /** Same rule the backend uses for reorder suggestions: refill to twice the minimum. */
 export const suggestedOrderQty = (p) =>

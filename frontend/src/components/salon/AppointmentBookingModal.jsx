@@ -300,7 +300,7 @@ const AppointmentBookingModal = ({
                 </h6>
                 <Row className="g-3">
                   {isSuper && (
-                    <Col md="6">
+                    <Col md>
                       <FormGroup className="mb-0">
                         <Label>Salon</Label>
                         <Input
@@ -322,7 +322,7 @@ const AppointmentBookingModal = ({
                       </FormGroup>
                     </Col>
                   )}
-                  <Col md="6">
+                  <Col md>
                     <FormGroup className="mb-0">
                       <Label>Branch</Label>
                       <Input
@@ -360,7 +360,7 @@ const AppointmentBookingModal = ({
                       </Input>
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  <Col md>
                     <FormGroup className="mb-0">
                       <Label>Customer</Label>
                       <CreatableSelect
@@ -381,7 +381,7 @@ const AppointmentBookingModal = ({
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  <Col md>
                     <FormGroup className="mb-0">
                       <Label>Start time</Label>
                       <Input
@@ -395,7 +395,7 @@ const AppointmentBookingModal = ({
                       />
                     </FormGroup>
                   </Col>
-                  <Col md="6">
+                  <Col md>
                     <FormGroup className="mb-0">
                       <Label>Initial status</Label>
                       <Input

@@ -492,6 +492,8 @@ export const InvoiceModel = {
       },
       data: {
         status: "CANCELLED",
+        // Nothing is owed on a cancelled bill.
+        balanceAmount: 0,
       },
     });
   },

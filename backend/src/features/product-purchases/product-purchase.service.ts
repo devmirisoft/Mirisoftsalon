@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma, type InventoryLocation } from "../../generated/prisma/client.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { transactionError } from "../products/inventory-access.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
@@ -23,6 +23,8 @@ type CreateReceivedPurchaseInput = {
   purchaseDate?: Date;
   note?: string;
   createdById?: string;
+  /** Receiving location; defaults to each product's default location. */
+  location?: InventoryLocation;
   items: ReceivedPurchaseItem[];
   /** Purchase tax on top of the item subtotal. */
   taxAmount?: number;
@@ -133,6 +135,7 @@ export const createReceivedProductPurchase = async (
       productId: item.productId,
       type: "STOCK_IN",
       quantity: item.quantity,
+      ...(input.location ? { location: input.location } : {}),
       referenceType: "PRODUCT_PURCHASE",
       referenceId: purchaseId,
       ...(input.createdById ? { createdById: input.createdById } : {}),

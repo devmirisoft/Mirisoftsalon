@@ -141,7 +141,7 @@ describe("audit logs", () => {
     const f = await businessFixture(true);
     const main = await prisma.mainService.create({ data: { name: "Rollback Main", salonId: f.salon.id } });
     const service = await prisma.service.create({ data: { name: "Rollback Service", price: 50, salonId: f.salon.id, branchId: f.branch.id, mainServiceId: main.id } });
-    const product = await prisma.product.create({ data: { name: "Rollback Product", salonId: f.salon.id, branchId: f.branch.id, currentStock: 5 } });
+    const product = await prisma.product.create({ data: { name: "Rollback Product", salonId: f.salon.id, branchId: f.branch.id, currentStock: 5, isServiceConsumable: true } });
     await prisma.serviceConsumable.create({ data: { salonId: f.salon.id, serviceId: service.id, productId: product.id, quantity: 2 } });
     const appointment = await prisma.appointment.create({ data: { appointmentCode: `APT-${randomUUID()}`, salonId: f.salon.id, branchId: f.branch.id, customerId: f.customer.id, staffId: f.staff.id, startTime: new Date("2030-01-01T10:00:00Z"), endTime: new Date("2030-01-01T11:00:00Z"), status: "CHECKED_IN", services: { create: { serviceId: service.id, serviceName: service.name, price: 50 } } } });
     await forceAuditFailure();

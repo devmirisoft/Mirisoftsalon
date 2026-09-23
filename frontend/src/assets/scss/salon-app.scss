@@ -1918,6 +1918,24 @@ body.dark-mode .vendors-page {
   background: #f8f9fc;
 }
 
+/* inner scroll: each column scrolls, the modal body itself does not */
+@media (min-width: 992px) {
+  .appointment-booking-modal .modal-body {
+    display: flex;
+    overflow: hidden;
+  }
+
+  .appointment-booking-modal .modal-body > .row {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .appointment-booking-modal .modal-body > .row > [class*="col-"] {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+}
+
 .booking-head {
   display: flex;
   align-items: center;
@@ -2193,6 +2211,21 @@ body.dark-mode .vendors-page {
   padding-top: 0.75rem;
 }
 
+.appt-status-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.appt-status-legend-title {
+  color: #526484;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 /* ---------- Filter bar ----------
    One row of fields plus its buttons: bottom-aligned, every control the same
    height, each label sitting tight on its own field. */
@@ -2292,10 +2325,10 @@ body.dark-mode .vendors-page {
 }
 
 .appt-status-confirmed {
-  --appt-border: #a7e9cd;
-  --appt-main: #10b981;
-  --appt-bg: #d1fae5;
-  --appt-text: #047857;
+  --appt-border: #bfdbfe;
+  --appt-main: #3b82f6;
+  --appt-bg: #dbeafe;
+  --appt-text: #1d4ed8;
 }
 
 .appt-status-checked_in {
@@ -2306,10 +2339,10 @@ body.dark-mode .vendors-page {
 }
 
 .appt-status-completed {
-  --appt-border: #b6d2fb;
-  --appt-main: #3b82f6;
-  --appt-bg: #dbeafe;
-  --appt-text: #1d4ed8;
+  --appt-border: #a7e9cd;
+  --appt-main: #10b981;
+  --appt-bg: #d1fae5;
+  --appt-text: #047857;
 }
 
 .appt-status-cancelled {
@@ -2431,6 +2464,24 @@ body.dark-mode .vendors-page {
   font-size: 0.7rem;
   font-weight: 500;
   color: #2563eb;
+}
+
+/* themeSystem is bootstrap5, so FullCalendar skips the fc-theme-standard rule
+   that gives the "+N more" popover its background and the grid shows through. */
+.appointment-calendar .fc-popover {
+  z-index: 10;
+  border: 1px solid #e5e9f2;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 0 0.5rem 1.25rem rgba(33, 46, 107, 0.12);
+}
+
+.appointment-calendar .fc-popover-header {
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #364a63;
 }
 
 /* ---------- Calendar events use the status palette ---------- */

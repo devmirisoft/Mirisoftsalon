@@ -174,10 +174,6 @@ const Router = () => (
               >
                 <Route path="billing" element={<Billing />} />
                 <Route
-                  path="appointments/:appointmentId/bill"
-                  element={<AppointmentBill />}
-                />
-                <Route
                   path="billing/invoices/:invoiceId"
                   element={<InvoiceDetails />}
                 />
@@ -194,6 +190,12 @@ const Router = () => (
                   />
                 }
               >
+                {/* Hands over to the job cart bill page, which the same roles
+                    reach at /job-carts/:id. */}
+                <Route
+                  path="appointments/:appointmentId/bill"
+                  element={<AppointmentBill />}
+                />
                 <Route path="management" element={<Management />} />
                 <Route path="admin/retail-products" element={<RetailProducts />} />
               </Route>

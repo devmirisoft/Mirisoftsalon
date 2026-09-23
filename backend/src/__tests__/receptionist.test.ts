@@ -133,6 +133,9 @@ describe("Receptionist role", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "MONDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         salonId: salonAId,
         branchId: branchAId,
       });
@@ -150,6 +153,9 @@ describe("Receptionist role", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "TUESDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         salonId: salonAId,
         branchId: branchCId,
       });

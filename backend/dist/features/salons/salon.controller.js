@@ -26,6 +26,7 @@ const gstAuditData = (salon) => ({
     serviceGstRate: salon.serviceGstRate,
     productGstRate: salon.productGstRate,
     gstVerifiedAt: salon.gstVerifiedAt,
+    stackMembershipDiscount: salon.stackMembershipDiscount,
 });
 const getTargetSalonId = (req) => {
     if (req.user?.role === "SUPER_ADMIN") {
@@ -118,6 +119,9 @@ export const updateSalonGstSettings = async (req, res) => {
             return res.status(404).json({ success: false, message: "Salon not found" });
         }
         const gstEnabled = "gstEnabled" in req.body ? Boolean(req.body.gstEnabled) : existing.gstEnabled;
+        const stackMembershipDiscount = "stackMembershipDiscount" in req.body
+            ? Boolean(req.body.stackMembershipDiscount)
+            : existing.stackMembershipDiscount;
         const gstNumber = "gstNumber" in req.body && req.body.gstNumber !== null
             ? String(req.body.gstNumber).trim().toUpperCase()
             : "gstNumber" in req.body
@@ -166,7 +170,12 @@ export const updateSalonGstSettings = async (req, res) => {
                 gstStateCode,
                 serviceGstRate: serviceGstRate.value,
                 productGstRate: productGstRate.value,
-                gstVerifiedAt: null,
+                // Flipping the discount toggle alone is not a GST change, so it
+                // leaves the verification stamp alone.
+                ...(Object.keys(req.body).some((key) => key !== "stackMembershipDiscount")
+                    ? { gstVerifiedAt: null }
+                    : {}),
+                stackMembershipDiscount,
             }, tx);
             await createAuditLog({
                 tx,

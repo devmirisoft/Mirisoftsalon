@@ -10,6 +10,7 @@ import {
 import { ProductPurchaseModel } from "./product-purchase.model.js";
 import { createReceivedProductPurchase } from "./product-purchase.service.js";
 import { PAYMENT_METHODS, type PaymentMethod } from "../vendor-payments/vendor-payment.controller.js";
+import { isInventoryLocation } from "../stock/stockMovement.service.js";
 
 type PurchaseItem = { productId: string; quantity: number; unitCost: number };
 const idParam = (req: Request) => typeof req.params.id === "string" ? req.params.id : "";
@@ -60,6 +61,11 @@ export const createProductPurchase = async (req: Request, res: Response) => {
     if (paidAmount > 0 && !PAYMENT_METHODS.includes(paymentMethod)) {
       return res.status(400).json({ success: false, message: "A valid payment method is required when recording a payment" });
     }
+    // Where the received stock goes; left out, each product's default location.
+    const location = req.body.location;
+    if (location !== undefined && location !== null && location !== "" && !isInventoryLocation(location)) {
+      return res.status(400).json({ success: false, message: "Location must be WAREHOUSE, RETAIL or SERVICE" });
+    }
 
     const data = await prisma.$transaction((tx) =>
       createReceivedProductPurchase({
@@ -92,6 +98,7 @@ export const createProductPurchase = async (req: Request, res: Response) => {
             }
           : {}),
         ...(req.user?.userId ? { createdById: req.user.userId } : {}),
+        ...(isInventoryLocation(location) ? { location } : {}),
         items,
         taxAmount,
         paidAmount,

@@ -16,17 +16,23 @@ const globalDatabase = globalThis as unknown as {
   vercelPoolAttached?: boolean;
 };
 
+// Jest gives every test file its own module registry, so each suite builds
+// its own pool in the same process. A small pool that lets go of idle
+// connections quickly keeps a whole run inside the server's connection limit;
+// src/tests/setup.ts also closes the pool when a suite ends.
+const isTest = process.env.NODE_ENV === "test";
+
 const pool =
   globalDatabase.pgPool ||
   new Pool({
     connectionString: databaseUrl,
-    max: process.env.VERCEL ? 5 : 10,
+    max: process.env.VERCEL ? 5 : isTest ? 3 : 10,
     // Opening a connection to the remote DB takes ~4s from a dev machine and a
     // cold pool of 10 ~8s, so keep idle connections warm and let a queued
     // request wait instead of failing at 10s.
-    idleTimeoutMillis: process.env.VERCEL ? 30_000 : 600_000,
+    idleTimeoutMillis: process.env.VERCEL ? 30_000 : isTest ? 1_000 : 600_000,
     connectionTimeoutMillis: 30_000,
-    allowExitOnIdle: process.env.NODE_ENV === "test",
+    allowExitOnIdle: isTest,
   });
 
 if (!globalDatabase.pgPool) {
@@ -53,3 +59,4 @@ export const prisma =
 
 globalDatabase.pgPool = pool;
 globalDatabase.prisma = prisma;
+

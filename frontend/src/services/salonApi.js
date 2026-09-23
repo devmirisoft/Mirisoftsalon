@@ -25,6 +25,8 @@ export const salonApi = {
       request("/api/users/branch-manager", { method: "POST", body }),
     createReceptionist: (body) =>
       request("/api/users/receptionist", { method: "POST", body }),
+    createStaffAccount: (body) =>
+      request("/api/users/staff", { method: "POST", body }),
   },
   salons: {
     list: () => request("/api/salons"),
@@ -420,6 +422,20 @@ export const salonApi = {
     list: (query) => request("/api/stock-movements", { query }),
     byProduct: (productId) => request(`/api/stock-movements/product/${productId}`),
     createManual: (body) => request("/api/stock-movements/manual", { method: "POST", body }),
+  },
+  inventory: {
+    product: (productId) => request(`/api/inventory/products/${productId}`),
+    usagePlan: (appointmentId) =>
+      request(`/api/inventory/usage-plan/${appointmentId}`),
+    transfer: (body) =>
+      request("/api/inventory/transfers", { method: "POST", body }),
+    openContainers: (body) =>
+      request("/api/inventory/containers/open", { method: "POST", body }),
+    reconcile: (containerId, body) =>
+      request(`/api/inventory/containers/${containerId}/reconcile`, {
+        method: "POST",
+        body,
+      }),
   },
   stockAlerts: {
     list: (query) => request("/api/stock-alerts", { query }),

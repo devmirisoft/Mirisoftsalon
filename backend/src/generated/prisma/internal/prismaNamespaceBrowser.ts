@@ -93,6 +93,8 @@ export const ModelName = {
   ProductBrand: 'ProductBrand',
   Product: 'Product',
   ProductStockMovement: 'ProductStockMovement',
+  ProductLocationStock: 'ProductLocationStock',
+  ProductContainer: 'ProductContainer',
   ProductPurchase: 'ProductPurchase',
   Vendor: 'Vendor',
   VendorPayment: 'VendorPayment',
@@ -1029,6 +1031,8 @@ export const ProductScalarFieldEnum = {
   isRetailProduct: 'isRetailProduct',
   isServiceConsumable: 'isServiceConsumable',
   status: 'status',
+  packSize: 'packSize',
+  packUnit: 'packUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1050,10 +1054,57 @@ export const ProductStockMovementScalarFieldEnum = {
   referenceType: 'referenceType',
   referenceId: 'referenceId',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  location: 'location',
+  toLocation: 'toLocation',
+  toBranchId: 'toBranchId',
+  containerId: 'containerId',
+  appointmentServiceId: 'appointmentServiceId',
+  serviceId: 'serviceId',
+  staffId: 'staffId',
+  receivedByStaffId: 'receivedByStaffId',
+  expectedQuantity: 'expectedQuantity',
+  unit: 'unit'
 } as const
 
 export type ProductStockMovementScalarFieldEnum = (typeof ProductStockMovementScalarFieldEnum)[keyof typeof ProductStockMovementScalarFieldEnum]
+
+
+export const ProductLocationStockScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  siteKey: 'siteKey',
+  productId: 'productId',
+  location: 'location',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductLocationStockScalarFieldEnum = (typeof ProductLocationStockScalarFieldEnum)[keyof typeof ProductLocationStockScalarFieldEnum]
+
+
+export const ProductContainerScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  productId: 'productId',
+  location: 'location',
+  originalQuantity: 'originalQuantity',
+  remainingQuantity: 'remainingQuantity',
+  unit: 'unit',
+  status: 'status',
+  openedByStaffId: 'openedByStaffId',
+  openedById: 'openedById',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductContainerScalarFieldEnum = (typeof ProductContainerScalarFieldEnum)[keyof typeof ProductContainerScalarFieldEnum]
 
 
 export const ProductPurchaseScalarFieldEnum = {

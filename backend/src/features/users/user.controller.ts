@@ -9,6 +9,7 @@ import {
   resolveWritableBranchId,
 } from "../../utils/branch-scope.js";
 import { StaffModel } from "../staff/staff.model.js";
+import { staffLoginError } from "./staff-login.service.js";
 
 export const getUsers = async (req: Request, res: Response) => {
   return res.status(200).json({
@@ -180,7 +181,7 @@ export const createStaffAccount = async (req: Request, res: Response) => {
   try {
     const { staffId, password } = req.body;
 
-    if (!staffId || !password) {
+    if (!staffId) {
       return res.status(400).json({
         success: false,
         message: "staffId and password are required",
@@ -208,42 +209,12 @@ export const createStaffAccount = async (req: Request, res: Response) => {
       });
     }
 
-    // The login inherits the staff member's branch, and STAFF is branch-locked,
-    // so provisioning a login for an unassigned staff row would create a user
-    // that no branch filter applies to.
-    if (!staff.branchId) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Assign this staff member to a branch before creating their login",
-      });
-    }
+    const loginError = await staffLoginError(staff, password);
 
-    if (staff.userId) {
-      return res.status(409).json({
+    if (loginError) {
+      return res.status(loginError.status).json({
         success: false,
-        message: "Staff login already exists",
-      });
-    }
-
-    if (!staff.phone) {
-      return res.status(400).json({
-        success: false,
-        message: "Staff phone number is required to create a login",
-      });
-    }
-
-    if (await UserModel.findByEmail(staff.email)) {
-      return res.status(400).json({
-        success: false,
-        message: "Email already exists",
-      });
-    }
-
-    if (await UserModel.findByPhoneNumber(staff.phone)) {
-      return res.status(400).json({
-        success: false,
-        message: "Phone number already exists",
+        message: loginError.message,
       });
     }
 
@@ -251,10 +222,11 @@ export const createStaffAccount = async (req: Request, res: Response) => {
       staffId: staff.id,
       name: staff.name,
       email: staff.email,
-      phone_number: staff.phone,
+      phone_number: staff.phone!,
       passwordHash: await hashPass(password),
       salonId: staff.salonId,
-      branchId: staff.branchId,
+      // staffLoginError above rejects a missing phone or branch.
+      branchId: staff.branchId!,
     });
     await sendWelcomeEmail(user);
 

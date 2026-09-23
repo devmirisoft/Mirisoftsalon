@@ -177,6 +177,9 @@ describe("Salon SaaS backend E2E flow", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "MONDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         branchId: branchAId,
       });
     expectSuccess(staffRes, 201);
@@ -618,6 +621,9 @@ describe("Salon SaaS backend E2E flow", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "TUESDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         salonId: salonBId,
         branchId: branchBId,
       });

@@ -401,6 +401,8 @@ export type SalonWhereInput = {
   productBrands?: Prisma.ProductBrandListRelationFilter
   products?: Prisma.ProductListRelationFilter
   productStockMovements?: Prisma.ProductStockMovementListRelationFilter
+  productLocationStocks?: Prisma.ProductLocationStockListRelationFilter
+  productContainers?: Prisma.ProductContainerListRelationFilter
   productPurchases?: Prisma.ProductPurchaseListRelationFilter
   stockAlerts?: Prisma.StockAlertListRelationFilter
   reorderSuggestions?: Prisma.ReorderSuggestionListRelationFilter
@@ -475,6 +477,8 @@ export type SalonOrderByWithRelationInput = {
   productBrands?: Prisma.ProductBrandOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
   productStockMovements?: Prisma.ProductStockMovementOrderByRelationAggregateInput
+  productLocationStocks?: Prisma.ProductLocationStockOrderByRelationAggregateInput
+  productContainers?: Prisma.ProductContainerOrderByRelationAggregateInput
   productPurchases?: Prisma.ProductPurchaseOrderByRelationAggregateInput
   stockAlerts?: Prisma.StockAlertOrderByRelationAggregateInput
   reorderSuggestions?: Prisma.ReorderSuggestionOrderByRelationAggregateInput
@@ -552,6 +556,8 @@ export type SalonWhereUniqueInput = Prisma.AtLeast<{
   productBrands?: Prisma.ProductBrandListRelationFilter
   products?: Prisma.ProductListRelationFilter
   productStockMovements?: Prisma.ProductStockMovementListRelationFilter
+  productLocationStocks?: Prisma.ProductLocationStockListRelationFilter
+  productContainers?: Prisma.ProductContainerListRelationFilter
   productPurchases?: Prisma.ProductPurchaseListRelationFilter
   stockAlerts?: Prisma.StockAlertListRelationFilter
   reorderSuggestions?: Prisma.ReorderSuggestionListRelationFilter
@@ -690,6 +696,8 @@ export type SalonCreateInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -764,6 +772,8 @@ export type SalonUncheckedCreateInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -838,6 +848,8 @@ export type SalonUpdateInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -912,6 +924,8 @@ export type SalonUncheckedUpdateInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -1647,6 +1661,34 @@ export type SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SalonUpdateToOneWithWhereWithoutProductStockMovementsInput, Prisma.SalonUpdateWithoutProductStockMovementsInput>, Prisma.SalonUncheckedUpdateWithoutProductStockMovementsInput>
 }
 
+export type SalonCreateNestedOneWithoutProductLocationStocksInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutProductLocationStocksInput, Prisma.SalonUncheckedCreateWithoutProductLocationStocksInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutProductLocationStocksInput
+  connect?: Prisma.SalonWhereUniqueInput
+}
+
+export type SalonUpdateOneRequiredWithoutProductLocationStocksNestedInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutProductLocationStocksInput, Prisma.SalonUncheckedCreateWithoutProductLocationStocksInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutProductLocationStocksInput
+  upsert?: Prisma.SalonUpsertWithoutProductLocationStocksInput
+  connect?: Prisma.SalonWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SalonUpdateToOneWithWhereWithoutProductLocationStocksInput, Prisma.SalonUpdateWithoutProductLocationStocksInput>, Prisma.SalonUncheckedUpdateWithoutProductLocationStocksInput>
+}
+
+export type SalonCreateNestedOneWithoutProductContainersInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutProductContainersInput, Prisma.SalonUncheckedCreateWithoutProductContainersInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutProductContainersInput
+  connect?: Prisma.SalonWhereUniqueInput
+}
+
+export type SalonUpdateOneRequiredWithoutProductContainersNestedInput = {
+  create?: Prisma.XOR<Prisma.SalonCreateWithoutProductContainersInput, Prisma.SalonUncheckedCreateWithoutProductContainersInput>
+  connectOrCreate?: Prisma.SalonCreateOrConnectWithoutProductContainersInput
+  upsert?: Prisma.SalonUpsertWithoutProductContainersInput
+  connect?: Prisma.SalonWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SalonUpdateToOneWithWhereWithoutProductContainersInput, Prisma.SalonUpdateWithoutProductContainersInput>, Prisma.SalonUncheckedUpdateWithoutProductContainersInput>
+}
+
 export type SalonCreateNestedOneWithoutProductPurchasesInput = {
   create?: Prisma.XOR<Prisma.SalonCreateWithoutProductPurchasesInput, Prisma.SalonUncheckedCreateWithoutProductPurchasesInput>
   connectOrCreate?: Prisma.SalonCreateOrConnectWithoutProductPurchasesInput
@@ -1851,6 +1893,8 @@ export type SalonCreateWithoutUsersInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -1924,6 +1968,8 @@ export type SalonUncheckedCreateWithoutUsersInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -2013,6 +2059,8 @@ export type SalonUpdateWithoutUsersInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -2086,6 +2134,8 @@ export type SalonUncheckedUpdateWithoutUsersInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -2159,6 +2209,8 @@ export type SalonCreateWithoutCustomersInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -2232,6 +2284,8 @@ export type SalonUncheckedCreateWithoutCustomersInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -2321,6 +2375,8 @@ export type SalonUpdateWithoutCustomersInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -2394,6 +2450,8 @@ export type SalonUncheckedUpdateWithoutCustomersInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -2467,6 +2525,8 @@ export type SalonCreateWithoutMembershipsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -2540,6 +2600,8 @@ export type SalonUncheckedCreateWithoutMembershipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -2629,6 +2691,8 @@ export type SalonUpdateWithoutMembershipsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -2702,6 +2766,8 @@ export type SalonUncheckedUpdateWithoutMembershipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -2776,6 +2842,8 @@ export type SalonCreateWithoutCustomerMembershipsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -2849,6 +2917,8 @@ export type SalonUncheckedCreateWithoutCustomerMembershipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -2938,6 +3008,8 @@ export type SalonUpdateWithoutCustomerMembershipsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -3011,6 +3083,8 @@ export type SalonUncheckedUpdateWithoutCustomerMembershipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -3084,6 +3158,8 @@ export type SalonCreateWithoutMembershipWalletTransactionsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -3157,6 +3233,8 @@ export type SalonUncheckedCreateWithoutMembershipWalletTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -3246,6 +3324,8 @@ export type SalonUpdateWithoutMembershipWalletTransactionsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -3319,6 +3399,8 @@ export type SalonUncheckedUpdateWithoutMembershipWalletTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -3391,6 +3473,8 @@ export type SalonCreateWithoutCustomerTransactionsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -3464,6 +3548,8 @@ export type SalonUncheckedCreateWithoutCustomerTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -3553,6 +3639,8 @@ export type SalonUpdateWithoutCustomerTransactionsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -3626,6 +3714,8 @@ export type SalonUncheckedUpdateWithoutCustomerTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -3699,6 +3789,8 @@ export type SalonCreateWithoutLoyaltyRulesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -3772,6 +3864,8 @@ export type SalonUncheckedCreateWithoutLoyaltyRulesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -3861,6 +3955,8 @@ export type SalonUpdateWithoutLoyaltyRulesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -3934,6 +4030,8 @@ export type SalonUncheckedUpdateWithoutLoyaltyRulesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -4007,6 +4105,8 @@ export type SalonCreateWithoutLoyaltyTransactionsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -4080,6 +4180,8 @@ export type SalonUncheckedCreateWithoutLoyaltyTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -4169,6 +4271,8 @@ export type SalonUpdateWithoutLoyaltyTransactionsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -4242,6 +4346,8 @@ export type SalonUncheckedUpdateWithoutLoyaltyTransactionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -4315,6 +4421,8 @@ export type SalonCreateWithoutCouponsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -4388,6 +4496,8 @@ export type SalonUncheckedCreateWithoutCouponsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -4477,6 +4587,8 @@ export type SalonUpdateWithoutCouponsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -4550,6 +4662,8 @@ export type SalonUncheckedUpdateWithoutCouponsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -4623,6 +4737,8 @@ export type SalonCreateWithoutBranchesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -4696,6 +4812,8 @@ export type SalonUncheckedCreateWithoutBranchesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -4785,6 +4903,8 @@ export type SalonUpdateWithoutBranchesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -4858,6 +4978,8 @@ export type SalonUncheckedUpdateWithoutBranchesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -4931,6 +5053,8 @@ export type SalonCreateWithoutStaffInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -5004,6 +5128,8 @@ export type SalonUncheckedCreateWithoutStaffInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -5093,6 +5219,8 @@ export type SalonUpdateWithoutStaffInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -5166,6 +5294,8 @@ export type SalonUncheckedUpdateWithoutStaffInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -5240,6 +5370,8 @@ export type SalonCreateWithoutStaffAttendancesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -5313,6 +5445,8 @@ export type SalonUncheckedCreateWithoutStaffAttendancesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -5402,6 +5536,8 @@ export type SalonUpdateWithoutStaffAttendancesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -5475,6 +5611,8 @@ export type SalonUncheckedUpdateWithoutStaffAttendancesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -5548,6 +5686,8 @@ export type SalonCreateWithoutStaffLeavesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -5621,6 +5761,8 @@ export type SalonUncheckedCreateWithoutStaffLeavesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -5710,6 +5852,8 @@ export type SalonUpdateWithoutStaffLeavesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -5783,6 +5927,8 @@ export type SalonUncheckedUpdateWithoutStaffLeavesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -5856,6 +6002,8 @@ export type SalonCreateWithoutStaffAvailabilityRulesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -5929,6 +6077,8 @@ export type SalonUncheckedCreateWithoutStaffAvailabilityRulesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -6018,6 +6168,8 @@ export type SalonUpdateWithoutStaffAvailabilityRulesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -6091,6 +6243,8 @@ export type SalonUncheckedUpdateWithoutStaffAvailabilityRulesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -6164,6 +6318,8 @@ export type SalonCreateWithoutStaffTimeBlocksInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -6237,6 +6393,8 @@ export type SalonUncheckedCreateWithoutStaffTimeBlocksInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -6326,6 +6484,8 @@ export type SalonUpdateWithoutStaffTimeBlocksInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -6399,6 +6559,8 @@ export type SalonUncheckedUpdateWithoutStaffTimeBlocksInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -6472,6 +6634,8 @@ export type SalonCreateWithoutStaffSalaryConfigsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -6545,6 +6709,8 @@ export type SalonUncheckedCreateWithoutStaffSalaryConfigsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -6634,6 +6800,8 @@ export type SalonUpdateWithoutStaffSalaryConfigsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -6707,6 +6875,8 @@ export type SalonUncheckedUpdateWithoutStaffSalaryConfigsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -6780,6 +6950,8 @@ export type SalonCreateWithoutSalarySlipsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -6853,6 +7025,8 @@ export type SalonUncheckedCreateWithoutSalarySlipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -6942,6 +7116,8 @@ export type SalonUpdateWithoutSalarySlipsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -7015,6 +7191,8 @@ export type SalonUncheckedUpdateWithoutSalarySlipsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -7087,6 +7265,8 @@ export type SalonCreateWithoutMainServicesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -7160,6 +7340,8 @@ export type SalonUncheckedCreateWithoutMainServicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -7249,6 +7431,8 @@ export type SalonUpdateWithoutMainServicesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -7322,6 +7506,8 @@ export type SalonUncheckedUpdateWithoutMainServicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -7395,6 +7581,8 @@ export type SalonCreateWithoutServicesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -7468,6 +7656,8 @@ export type SalonUncheckedCreateWithoutServicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -7557,6 +7747,8 @@ export type SalonUpdateWithoutServicesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -7630,6 +7822,8 @@ export type SalonUncheckedUpdateWithoutServicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -7703,6 +7897,8 @@ export type SalonCreateWithoutServiceConsumablesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -7776,6 +7972,8 @@ export type SalonUncheckedCreateWithoutServiceConsumablesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -7865,6 +8063,8 @@ export type SalonUpdateWithoutServiceConsumablesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -7938,6 +8138,8 @@ export type SalonUncheckedUpdateWithoutServiceConsumablesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -8012,6 +8214,8 @@ export type SalonCreateWithoutPackageCategoriesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -8085,6 +8289,8 @@ export type SalonUncheckedCreateWithoutPackageCategoriesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -8174,6 +8380,8 @@ export type SalonUpdateWithoutPackageCategoriesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -8247,6 +8455,8 @@ export type SalonUncheckedUpdateWithoutPackageCategoriesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -8320,6 +8530,8 @@ export type SalonCreateWithoutServicePackagesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -8393,6 +8605,8 @@ export type SalonUncheckedCreateWithoutServicePackagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -8482,6 +8696,8 @@ export type SalonUpdateWithoutServicePackagesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -8555,6 +8771,8 @@ export type SalonUncheckedUpdateWithoutServicePackagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -8628,6 +8846,8 @@ export type SalonCreateWithoutServicePackageItemsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -8701,6 +8921,8 @@ export type SalonUncheckedCreateWithoutServicePackageItemsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -8790,6 +9012,8 @@ export type SalonUpdateWithoutServicePackageItemsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -8863,6 +9087,8 @@ export type SalonUncheckedUpdateWithoutServicePackageItemsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -8935,6 +9161,8 @@ export type SalonCreateWithoutAppointmentsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -9008,6 +9236,8 @@ export type SalonUncheckedCreateWithoutAppointmentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -9097,6 +9327,8 @@ export type SalonUpdateWithoutAppointmentsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -9170,6 +9402,8 @@ export type SalonUncheckedUpdateWithoutAppointmentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -9243,6 +9477,8 @@ export type SalonCreateWithoutPublicBookingSettingsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -9316,6 +9552,8 @@ export type SalonUncheckedCreateWithoutPublicBookingSettingsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -9405,6 +9643,8 @@ export type SalonUpdateWithoutPublicBookingSettingsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -9478,6 +9718,8 @@ export type SalonUncheckedUpdateWithoutPublicBookingSettingsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -9551,6 +9793,8 @@ export type SalonCreateWithoutSalesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -9624,6 +9868,8 @@ export type SalonUncheckedCreateWithoutSalesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -9713,6 +9959,8 @@ export type SalonUpdateWithoutSalesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -9786,6 +10034,8 @@ export type SalonUncheckedUpdateWithoutSalesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -9859,6 +10109,8 @@ export type SalonCreateWithoutInvoicesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -9932,6 +10184,8 @@ export type SalonUncheckedCreateWithoutInvoicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -10021,6 +10275,8 @@ export type SalonUpdateWithoutInvoicesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -10094,6 +10350,8 @@ export type SalonUncheckedUpdateWithoutInvoicesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -10168,6 +10426,8 @@ export type SalonCreateWithoutCustomerPackagesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -10241,6 +10501,8 @@ export type SalonUncheckedCreateWithoutCustomerPackagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -10330,6 +10592,8 @@ export type SalonUpdateWithoutCustomerPackagesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -10403,6 +10667,8 @@ export type SalonUncheckedUpdateWithoutCustomerPackagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -10476,6 +10742,8 @@ export type SalonCreateWithoutCustomerPackageServiceBalancesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -10549,6 +10817,8 @@ export type SalonUncheckedCreateWithoutCustomerPackageServiceBalancesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -10638,6 +10908,8 @@ export type SalonUpdateWithoutCustomerPackageServiceBalancesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -10711,6 +10983,8 @@ export type SalonUncheckedUpdateWithoutCustomerPackageServiceBalancesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -10784,6 +11058,8 @@ export type SalonCreateWithoutCustomerPackageUsagesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -10857,6 +11133,8 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -10946,6 +11224,8 @@ export type SalonUpdateWithoutCustomerPackageUsagesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -11019,6 +11299,8 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsagesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -11092,6 +11374,8 @@ export type SalonCreateWithoutCustomerPackageUsageItemsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -11165,6 +11449,8 @@ export type SalonUncheckedCreateWithoutCustomerPackageUsageItemsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -11254,6 +11540,8 @@ export type SalonUpdateWithoutCustomerPackageUsageItemsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -11327,6 +11615,8 @@ export type SalonUncheckedUpdateWithoutCustomerPackageUsageItemsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -11399,6 +11689,8 @@ export type SalonCreateWithoutPaymentsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -11472,6 +11764,8 @@ export type SalonUncheckedCreateWithoutPaymentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -11561,6 +11855,8 @@ export type SalonUpdateWithoutPaymentsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -11634,6 +11930,8 @@ export type SalonUncheckedUpdateWithoutPaymentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -11707,6 +12005,8 @@ export type SalonCreateWithoutProductBrandsInput = {
   supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -11780,6 +12080,8 @@ export type SalonUncheckedCreateWithoutProductBrandsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -11869,6 +12171,8 @@ export type SalonUpdateWithoutProductBrandsInput = {
   supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -11942,6 +12246,8 @@ export type SalonUncheckedUpdateWithoutProductBrandsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -12015,6 +12321,8 @@ export type SalonCreateWithoutProductsInput = {
   supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -12088,6 +12396,8 @@ export type SalonUncheckedCreateWithoutProductsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -12177,6 +12487,8 @@ export type SalonUpdateWithoutProductsInput = {
   supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -12250,6 +12562,8 @@ export type SalonUncheckedUpdateWithoutProductsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -12323,6 +12637,8 @@ export type SalonCreateWithoutProductStockMovementsInput = {
   supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -12396,6 +12712,8 @@ export type SalonUncheckedCreateWithoutProductStockMovementsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -12485,6 +12803,8 @@ export type SalonUpdateWithoutProductStockMovementsInput = {
   supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -12558,6 +12878,640 @@ export type SalonUncheckedUpdateWithoutProductStockMovementsInput = {
   supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUncheckedUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonCreateWithoutProductLocationStocksInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
+}
+
+export type SalonUncheckedCreateWithoutProductLocationStocksInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceUncheckedCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorUncheckedCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
+}
+
+export type SalonCreateOrConnectWithoutProductLocationStocksInput = {
+  where: Prisma.SalonWhereUniqueInput
+  create: Prisma.XOR<Prisma.SalonCreateWithoutProductLocationStocksInput, Prisma.SalonUncheckedCreateWithoutProductLocationStocksInput>
+}
+
+export type SalonUpsertWithoutProductLocationStocksInput = {
+  update: Prisma.XOR<Prisma.SalonUpdateWithoutProductLocationStocksInput, Prisma.SalonUncheckedUpdateWithoutProductLocationStocksInput>
+  create: Prisma.XOR<Prisma.SalonCreateWithoutProductLocationStocksInput, Prisma.SalonUncheckedCreateWithoutProductLocationStocksInput>
+  where?: Prisma.SalonWhereInput
+}
+
+export type SalonUpdateToOneWithWhereWithoutProductLocationStocksInput = {
+  where?: Prisma.SalonWhereInput
+  data: Prisma.XOR<Prisma.SalonUpdateWithoutProductLocationStocksInput, Prisma.SalonUncheckedUpdateWithoutProductLocationStocksInput>
+}
+
+export type SalonUpdateWithoutProductLocationStocksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonUncheckedUpdateWithoutProductLocationStocksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUncheckedUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUncheckedUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUncheckedUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUncheckedUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonCreateWithoutProductContainersInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationCreateNestedManyWithoutSalonInput
+}
+
+export type SalonUncheckedCreateWithoutProductContainersInput = {
+  id?: string
+  name: string
+  legalName?: string | null
+  salonCode?: string | null
+  timezone?: string
+  status?: boolean
+  gstEnabled?: boolean
+  gstNumber?: string | null
+  gstLegalName?: string | null
+  gstStateCode?: string | null
+  serviceGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Date | string | null
+  membershipDiscountOnPackages?: boolean
+  stackMembershipDiscount?: boolean
+  addressLine1?: string | null
+  addressLine2?: string | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  postalCode?: string | null
+  phone?: string | null
+  email?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branches?: Prisma.BranchUncheckedCreateNestedManyWithoutSalonInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedCreateNestedManyWithoutSalonInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutSalonInput
+  mainServices?: Prisma.MainServiceUncheckedCreateNestedManyWithoutSalonInput
+  services?: Prisma.ServiceUncheckedCreateNestedManyWithoutSalonInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedCreateNestedManyWithoutSalonInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutSalonInput
+  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutSalonInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutSalonInput
+  users?: Prisma.UserUncheckedCreateNestedManyWithoutSalonInput
+  staff?: Prisma.StaffUncheckedCreateNestedManyWithoutSalonInput
+  customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutSalonInput
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedCreateNestedManyWithoutSalonInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedCreateNestedManyWithoutSalonInput
+  coupons?: Prisma.CouponUncheckedCreateNestedManyWithoutSalonInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedCreateNestedManyWithoutSalonInput
+  supportTickets?: Prisma.SupportTicketUncheckedCreateNestedManyWithoutSalonInput
+  productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
+  stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutSalonInput
+  vendors?: Prisma.VendorUncheckedCreateNestedManyWithoutSalonInput
+  vendorPayments?: Prisma.VendorPaymentUncheckedCreateNestedManyWithoutSalonInput
+  expenses?: Prisma.ExpenseUncheckedCreateNestedManyWithoutSalonInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUncheckedCreateNestedManyWithoutSalonInput
+  staffAttendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutSalonInput
+  staffLeaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutSalonInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutSalonInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutSalonInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutSalonInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutSalonInput
+  packageCategories?: Prisma.PackageCategoryUncheckedCreateNestedManyWithoutSalonInput
+  servicePackages?: Prisma.ServicePackageUncheckedCreateNestedManyWithoutSalonInput
+  servicePackageItems?: Prisma.ServicePackageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUncheckedCreateNestedManyWithoutSalonInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutSalonInput
+  customerMemberships?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSalonInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUncheckedCreateNestedManyWithoutSalonInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUncheckedCreateNestedManyWithoutSalonInput
+}
+
+export type SalonCreateOrConnectWithoutProductContainersInput = {
+  where: Prisma.SalonWhereUniqueInput
+  create: Prisma.XOR<Prisma.SalonCreateWithoutProductContainersInput, Prisma.SalonUncheckedCreateWithoutProductContainersInput>
+}
+
+export type SalonUpsertWithoutProductContainersInput = {
+  update: Prisma.XOR<Prisma.SalonUpdateWithoutProductContainersInput, Prisma.SalonUncheckedUpdateWithoutProductContainersInput>
+  create: Prisma.XOR<Prisma.SalonCreateWithoutProductContainersInput, Prisma.SalonUncheckedCreateWithoutProductContainersInput>
+  where?: Prisma.SalonWhereInput
+}
+
+export type SalonUpdateToOneWithWhereWithoutProductContainersInput = {
+  where?: Prisma.SalonWhereInput
+  data: Prisma.XOR<Prisma.SalonUpdateWithoutProductContainersInput, Prisma.SalonUncheckedUpdateWithoutProductContainersInput>
+}
+
+export type SalonUpdateWithoutProductContainersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
+  stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
+  reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutSalonNestedInput
+  vendors?: Prisma.VendorUpdateManyWithoutSalonNestedInput
+  vendorPayments?: Prisma.VendorPaymentUpdateManyWithoutSalonNestedInput
+  expenses?: Prisma.ExpenseUpdateManyWithoutSalonNestedInput
+  expenseCategories?: Prisma.ExpenseCategoryDefinitionUpdateManyWithoutSalonNestedInput
+  staffAttendances?: Prisma.StaffAttendanceUpdateManyWithoutSalonNestedInput
+  staffLeaves?: Prisma.StaffLeaveUpdateManyWithoutSalonNestedInput
+  staffAvailabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutSalonNestedInput
+  staffTimeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutSalonNestedInput
+  staffSalaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutSalonNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutSalonNestedInput
+  packageCategories?: Prisma.PackageCategoryUpdateManyWithoutSalonNestedInput
+  servicePackages?: Prisma.ServicePackageUpdateManyWithoutSalonNestedInput
+  servicePackageItems?: Prisma.ServicePackageItemUpdateManyWithoutSalonNestedInput
+  customerPackages?: Prisma.CustomerPackageUpdateManyWithoutSalonNestedInput
+  customerPackageServiceBalances?: Prisma.CustomerPackageServiceBalanceUpdateManyWithoutSalonNestedInput
+  customerPackageUsages?: Prisma.CustomerPackageUsageUpdateManyWithoutSalonNestedInput
+  customerPackageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutSalonNestedInput
+  customerMemberships?: Prisma.CustomerMembershipUpdateManyWithoutSalonNestedInput
+  membershipWalletTransactions?: Prisma.MembershipWalletTransactionUpdateManyWithoutSalonNestedInput
+  salonAssistantConversations?: Prisma.SalonAssistantConversationUpdateManyWithoutSalonNestedInput
+}
+
+export type SalonUncheckedUpdateWithoutProductContainersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  legalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salonCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  gstNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstLegalName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gstStateCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  productGstRate?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  gstVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  membershipDiscountOnPackages?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stackMembershipDiscount?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  addressLine1?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  addressLine2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postalCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branches?: Prisma.BranchUncheckedUpdateManyWithoutSalonNestedInput
+  publicBookingSettings?: Prisma.PublicBookingSettingUncheckedUpdateManyWithoutSalonNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutSalonNestedInput
+  mainServices?: Prisma.MainServiceUncheckedUpdateManyWithoutSalonNestedInput
+  services?: Prisma.ServiceUncheckedUpdateManyWithoutSalonNestedInput
+  serviceConsumables?: Prisma.ServiceConsumableUncheckedUpdateManyWithoutSalonNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutSalonNestedInput
+  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutSalonNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutSalonNestedInput
+  users?: Prisma.UserUncheckedUpdateManyWithoutSalonNestedInput
+  staff?: Prisma.StaffUncheckedUpdateManyWithoutSalonNestedInput
+  customers?: Prisma.CustomerUncheckedUpdateManyWithoutSalonNestedInput
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyRules?: Prisma.LoyaltyRuleUncheckedUpdateManyWithoutSalonNestedInput
+  loyaltyTransactions?: Prisma.LoyaltyTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  coupons?: Prisma.CouponUncheckedUpdateManyWithoutSalonNestedInput
+  customerTransactions?: Prisma.CustomerTransactionUncheckedUpdateManyWithoutSalonNestedInput
+  supportTickets?: Prisma.SupportTicketUncheckedUpdateManyWithoutSalonNestedInput
+  productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
+  productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -12632,6 +13586,8 @@ export type SalonCreateWithoutProductPurchasesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
@@ -12705,6 +13661,8 @@ export type SalonUncheckedCreateWithoutProductPurchasesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
@@ -12794,6 +13752,8 @@ export type SalonUpdateWithoutProductPurchasesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
@@ -12867,6 +13827,8 @@ export type SalonUncheckedUpdateWithoutProductPurchasesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
@@ -12940,6 +13902,8 @@ export type SalonCreateWithoutVendorsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -13013,6 +13977,8 @@ export type SalonUncheckedCreateWithoutVendorsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -13102,6 +14068,8 @@ export type SalonUpdateWithoutVendorsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -13175,6 +14143,8 @@ export type SalonUncheckedUpdateWithoutVendorsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -13248,6 +14218,8 @@ export type SalonCreateWithoutVendorPaymentsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -13321,6 +14293,8 @@ export type SalonUncheckedCreateWithoutVendorPaymentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -13410,6 +14384,8 @@ export type SalonUpdateWithoutVendorPaymentsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -13483,6 +14459,8 @@ export type SalonUncheckedUpdateWithoutVendorPaymentsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -13556,6 +14534,8 @@ export type SalonCreateWithoutStockAlertsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
@@ -13629,6 +14609,8 @@ export type SalonUncheckedCreateWithoutStockAlertsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
@@ -13718,6 +14700,8 @@ export type SalonUpdateWithoutStockAlertsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
@@ -13791,6 +14775,8 @@ export type SalonUncheckedUpdateWithoutStockAlertsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
@@ -13864,6 +14850,8 @@ export type SalonCreateWithoutReorderSuggestionsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutSalonInput
@@ -13937,6 +14925,8 @@ export type SalonUncheckedCreateWithoutReorderSuggestionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutSalonInput
@@ -14026,6 +15016,8 @@ export type SalonUpdateWithoutReorderSuggestionsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutSalonNestedInput
@@ -14099,6 +15091,8 @@ export type SalonUncheckedUpdateWithoutReorderSuggestionsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutSalonNestedInput
@@ -14172,6 +15166,8 @@ export type SalonCreateWithoutAuditLogsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -14245,6 +15241,8 @@ export type SalonUncheckedCreateWithoutAuditLogsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -14334,6 +15332,8 @@ export type SalonUpdateWithoutAuditLogsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -14407,6 +15407,8 @@ export type SalonUncheckedUpdateWithoutAuditLogsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -14480,6 +15482,8 @@ export type SalonCreateWithoutRetailSalesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -14553,6 +15557,8 @@ export type SalonUncheckedCreateWithoutRetailSalesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -14642,6 +15648,8 @@ export type SalonUpdateWithoutRetailSalesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -14715,6 +15723,8 @@ export type SalonUncheckedUpdateWithoutRetailSalesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -14788,6 +15798,8 @@ export type SalonCreateWithoutExpensesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -14861,6 +15873,8 @@ export type SalonUncheckedCreateWithoutExpensesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -14950,6 +15964,8 @@ export type SalonUpdateWithoutExpensesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -15023,6 +16039,8 @@ export type SalonUncheckedUpdateWithoutExpensesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -15096,6 +16114,8 @@ export type SalonCreateWithoutExpenseCategoriesInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -15169,6 +16189,8 @@ export type SalonUncheckedCreateWithoutExpenseCategoriesInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -15258,6 +16280,8 @@ export type SalonUpdateWithoutExpenseCategoriesInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -15331,6 +16355,8 @@ export type SalonUncheckedUpdateWithoutExpenseCategoriesInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -15403,6 +16429,8 @@ export type SalonCreateWithoutSupportTicketsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -15476,6 +16504,8 @@ export type SalonUncheckedCreateWithoutSupportTicketsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -15565,6 +16595,8 @@ export type SalonUpdateWithoutSupportTicketsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -15638,6 +16670,8 @@ export type SalonUncheckedUpdateWithoutSupportTicketsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -15712,6 +16746,8 @@ export type SalonCreateWithoutSalonAssistantConversationsInput = {
   productBrands?: Prisma.ProductBrandCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionCreateNestedManyWithoutSalonInput
@@ -15785,6 +16821,8 @@ export type SalonUncheckedCreateWithoutSalonAssistantConversationsInput = {
   productBrands?: Prisma.ProductBrandUncheckedCreateNestedManyWithoutSalonInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutSalonInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutSalonInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedCreateNestedManyWithoutSalonInput
+  productContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutSalonInput
   productPurchases?: Prisma.ProductPurchaseUncheckedCreateNestedManyWithoutSalonInput
   stockAlerts?: Prisma.StockAlertUncheckedCreateNestedManyWithoutSalonInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedCreateNestedManyWithoutSalonInput
@@ -15874,6 +16912,8 @@ export type SalonUpdateWithoutSalonAssistantConversationsInput = {
   productBrands?: Prisma.ProductBrandUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUpdateManyWithoutSalonNestedInput
@@ -15947,6 +16987,8 @@ export type SalonUncheckedUpdateWithoutSalonAssistantConversationsInput = {
   productBrands?: Prisma.ProductBrandUncheckedUpdateManyWithoutSalonNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutSalonNestedInput
   productStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutSalonNestedInput
+  productLocationStocks?: Prisma.ProductLocationStockUncheckedUpdateManyWithoutSalonNestedInput
+  productContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutSalonNestedInput
   productPurchases?: Prisma.ProductPurchaseUncheckedUpdateManyWithoutSalonNestedInput
   stockAlerts?: Prisma.StockAlertUncheckedUpdateManyWithoutSalonNestedInput
   reorderSuggestions?: Prisma.ReorderSuggestionUncheckedUpdateManyWithoutSalonNestedInput
@@ -16000,6 +17042,8 @@ export type SalonCountOutputType = {
   productBrands: number
   products: number
   productStockMovements: number
+  productLocationStocks: number
+  productContainers: number
   productPurchases: number
   stockAlerts: number
   reorderSuggestions: number
@@ -16049,6 +17093,8 @@ export type SalonCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   productBrands?: boolean | SalonCountOutputTypeCountProductBrandsArgs
   products?: boolean | SalonCountOutputTypeCountProductsArgs
   productStockMovements?: boolean | SalonCountOutputTypeCountProductStockMovementsArgs
+  productLocationStocks?: boolean | SalonCountOutputTypeCountProductLocationStocksArgs
+  productContainers?: boolean | SalonCountOutputTypeCountProductContainersArgs
   productPurchases?: boolean | SalonCountOutputTypeCountProductPurchasesArgs
   stockAlerts?: boolean | SalonCountOutputTypeCountStockAlertsArgs
   reorderSuggestions?: boolean | SalonCountOutputTypeCountReorderSuggestionsArgs
@@ -16231,6 +17277,20 @@ export type SalonCountOutputTypeCountProductsArgs<ExtArgs extends runtime.Types.
  */
 export type SalonCountOutputTypeCountProductStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ProductStockMovementWhereInput
+}
+
+/**
+ * SalonCountOutputType without action
+ */
+export type SalonCountOutputTypeCountProductLocationStocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductLocationStockWhereInput
+}
+
+/**
+ * SalonCountOutputType without action
+ */
+export type SalonCountOutputTypeCountProductContainersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductContainerWhereInput
 }
 
 /**
@@ -16456,6 +17516,8 @@ export type SalonSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   productBrands?: boolean | Prisma.Salon$productBrandsArgs<ExtArgs>
   products?: boolean | Prisma.Salon$productsArgs<ExtArgs>
   productStockMovements?: boolean | Prisma.Salon$productStockMovementsArgs<ExtArgs>
+  productLocationStocks?: boolean | Prisma.Salon$productLocationStocksArgs<ExtArgs>
+  productContainers?: boolean | Prisma.Salon$productContainersArgs<ExtArgs>
   productPurchases?: boolean | Prisma.Salon$productPurchasesArgs<ExtArgs>
   stockAlerts?: boolean | Prisma.Salon$stockAlertsArgs<ExtArgs>
   reorderSuggestions?: boolean | Prisma.Salon$reorderSuggestionsArgs<ExtArgs>
@@ -16591,6 +17653,8 @@ export type SalonInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   productBrands?: boolean | Prisma.Salon$productBrandsArgs<ExtArgs>
   products?: boolean | Prisma.Salon$productsArgs<ExtArgs>
   productStockMovements?: boolean | Prisma.Salon$productStockMovementsArgs<ExtArgs>
+  productLocationStocks?: boolean | Prisma.Salon$productLocationStocksArgs<ExtArgs>
+  productContainers?: boolean | Prisma.Salon$productContainersArgs<ExtArgs>
   productPurchases?: boolean | Prisma.Salon$productPurchasesArgs<ExtArgs>
   stockAlerts?: boolean | Prisma.Salon$stockAlertsArgs<ExtArgs>
   reorderSuggestions?: boolean | Prisma.Salon$reorderSuggestionsArgs<ExtArgs>
@@ -16645,6 +17709,8 @@ export type $SalonPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     productBrands: Prisma.$ProductBrandPayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
     productStockMovements: Prisma.$ProductStockMovementPayload<ExtArgs>[]
+    productLocationStocks: Prisma.$ProductLocationStockPayload<ExtArgs>[]
+    productContainers: Prisma.$ProductContainerPayload<ExtArgs>[]
     productPurchases: Prisma.$ProductPurchasePayload<ExtArgs>[]
     stockAlerts: Prisma.$StockAlertPayload<ExtArgs>[]
     reorderSuggestions: Prisma.$ReorderSuggestionPayload<ExtArgs>[]
@@ -17121,6 +18187,8 @@ export interface Prisma__SalonClient<T, Null = never, ExtArgs extends runtime.Ty
   productBrands<T extends Prisma.Salon$productBrandsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productBrandsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductBrandPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.Salon$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productStockMovements<T extends Prisma.Salon$productStockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productStockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productLocationStocks<T extends Prisma.Salon$productLocationStocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productLocationStocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductLocationStockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  productContainers<T extends Prisma.Salon$productContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   productPurchases<T extends Prisma.Salon$productPurchasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$productPurchasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPurchasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   stockAlerts<T extends Prisma.Salon$stockAlertsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$stockAlertsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StockAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reorderSuggestions<T extends Prisma.Salon$reorderSuggestionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Salon$reorderSuggestionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReorderSuggestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -18103,6 +19171,54 @@ export type Salon$productStockMovementsArgs<ExtArgs extends runtime.Types.Extens
   take?: number
   skip?: number
   distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
+}
+
+/**
+ * Salon.productLocationStocks
+ */
+export type Salon$productLocationStocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductLocationStock
+   */
+  select?: Prisma.ProductLocationStockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductLocationStock
+   */
+  omit?: Prisma.ProductLocationStockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductLocationStockInclude<ExtArgs> | null
+  where?: Prisma.ProductLocationStockWhereInput
+  orderBy?: Prisma.ProductLocationStockOrderByWithRelationInput | Prisma.ProductLocationStockOrderByWithRelationInput[]
+  cursor?: Prisma.ProductLocationStockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductLocationStockScalarFieldEnum | Prisma.ProductLocationStockScalarFieldEnum[]
+}
+
+/**
+ * Salon.productContainers
+ */
+export type Salon$productContainersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductContainer
+   */
+  select?: Prisma.ProductContainerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductContainer
+   */
+  omit?: Prisma.ProductContainerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductContainerInclude<ExtArgs> | null
+  where?: Prisma.ProductContainerWhereInput
+  orderBy?: Prisma.ProductContainerOrderByWithRelationInput | Prisma.ProductContainerOrderByWithRelationInput[]
+  cursor?: Prisma.ProductContainerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductContainerScalarFieldEnum | Prisma.ProductContainerScalarFieldEnum[]
 }
 
 /**

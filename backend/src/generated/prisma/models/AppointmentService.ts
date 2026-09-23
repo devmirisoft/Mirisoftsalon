@@ -276,6 +276,7 @@ export type AppointmentServiceWhereInput = {
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
   customerPackageUsageItem?: Prisma.XOR<Prisma.CustomerPackageUsageItemNullableScalarRelationFilter, Prisma.CustomerPackageUsageItemWhereInput> | null
+  stockMovements?: Prisma.ProductStockMovementListRelationFilter
 }
 
 export type AppointmentServiceOrderByWithRelationInput = {
@@ -294,6 +295,7 @@ export type AppointmentServiceOrderByWithRelationInput = {
   service?: Prisma.ServiceOrderByWithRelationInput
   staff?: Prisma.StaffOrderByWithRelationInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemOrderByWithRelationInput
+  stockMovements?: Prisma.ProductStockMovementOrderByRelationAggregateInput
 }
 
 export type AppointmentServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -315,6 +317,7 @@ export type AppointmentServiceWhereUniqueInput = Prisma.AtLeast<{
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
   customerPackageUsageItem?: Prisma.XOR<Prisma.CustomerPackageUsageItemNullableScalarRelationFilter, Prisma.CustomerPackageUsageItemWhereInput> | null
+  stockMovements?: Prisma.ProductStockMovementListRelationFilter
 }, "id">
 
 export type AppointmentServiceOrderByWithAggregationInput = {
@@ -365,6 +368,7 @@ export type AppointmentServiceCreateInput = {
   service: Prisma.ServiceCreateNestedOneWithoutAppointmentServicesInput
   staff?: Prisma.StaffCreateNestedOneWithoutAppointmentServicesInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutAppointmentServicesInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUncheckedCreateInput = {
@@ -379,6 +383,7 @@ export type AppointmentServiceUncheckedCreateInput = {
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
   createdAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUpdateInput = {
@@ -393,6 +398,7 @@ export type AppointmentServiceUpdateInput = {
   service?: Prisma.ServiceUpdateOneRequiredWithoutAppointmentServicesNestedInput
   staff?: Prisma.StaffUpdateOneWithoutAppointmentServicesNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutAppointmentServicesNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateInput = {
@@ -407,6 +413,7 @@ export type AppointmentServiceUncheckedUpdateInput = {
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceCreateManyInput = {
@@ -509,6 +516,11 @@ export type AppointmentServiceSumOrderByAggregateInput = {
   price?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
   durationValue?: Prisma.SortOrder
+}
+
+export type AppointmentServiceNullableScalarRelationFilter = {
+  is?: Prisma.AppointmentServiceWhereInput | null
+  isNot?: Prisma.AppointmentServiceWhereInput | null
 }
 
 export type AppointmentServiceCreateNestedManyWithoutStaffInput = {
@@ -683,6 +695,22 @@ export type AppointmentServiceUncheckedUpdateManyWithoutCustomerPackageUsageItem
   deleteMany?: Prisma.AppointmentServiceScalarWhereInput | Prisma.AppointmentServiceScalarWhereInput[]
 }
 
+export type AppointmentServiceCreateNestedOneWithoutStockMovementsInput = {
+  create?: Prisma.XOR<Prisma.AppointmentServiceCreateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.AppointmentServiceCreateOrConnectWithoutStockMovementsInput
+  connect?: Prisma.AppointmentServiceWhereUniqueInput
+}
+
+export type AppointmentServiceUpdateOneWithoutStockMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.AppointmentServiceCreateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.AppointmentServiceCreateOrConnectWithoutStockMovementsInput
+  upsert?: Prisma.AppointmentServiceUpsertWithoutStockMovementsInput
+  disconnect?: Prisma.AppointmentServiceWhereInput | boolean
+  delete?: Prisma.AppointmentServiceWhereInput | boolean
+  connect?: Prisma.AppointmentServiceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AppointmentServiceUpdateToOneWithWhereWithoutStockMovementsInput, Prisma.AppointmentServiceUpdateWithoutStockMovementsInput>, Prisma.AppointmentServiceUncheckedUpdateWithoutStockMovementsInput>
+}
+
 export type AppointmentServiceCreateWithoutStaffInput = {
   id?: string
   serviceName: string
@@ -694,6 +722,7 @@ export type AppointmentServiceCreateWithoutStaffInput = {
   appointment: Prisma.AppointmentCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutAppointmentServicesInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutAppointmentServicesInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUncheckedCreateWithoutStaffInput = {
@@ -707,6 +736,7 @@ export type AppointmentServiceUncheckedCreateWithoutStaffInput = {
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
   createdAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceCreateOrConnectWithoutStaffInput = {
@@ -763,6 +793,7 @@ export type AppointmentServiceCreateWithoutServiceInput = {
   appointment: Prisma.AppointmentCreateNestedOneWithoutServicesInput
   staff?: Prisma.StaffCreateNestedOneWithoutAppointmentServicesInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutAppointmentServicesInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUncheckedCreateWithoutServiceInput = {
@@ -776,6 +807,7 @@ export type AppointmentServiceUncheckedCreateWithoutServiceInput = {
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
   createdAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceCreateOrConnectWithoutServiceInput = {
@@ -815,6 +847,7 @@ export type AppointmentServiceCreateWithoutAppointmentInput = {
   service: Prisma.ServiceCreateNestedOneWithoutAppointmentServicesInput
   staff?: Prisma.StaffCreateNestedOneWithoutAppointmentServicesInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutAppointmentServicesInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUncheckedCreateWithoutAppointmentInput = {
@@ -828,6 +861,7 @@ export type AppointmentServiceUncheckedCreateWithoutAppointmentInput = {
   durationUnit?: $Enums.DurationUnit | null
   customerPackageUsageItemId?: string | null
   createdAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceCreateOrConnectWithoutAppointmentInput = {
@@ -867,6 +901,7 @@ export type AppointmentServiceCreateWithoutCustomerPackageUsageItemInput = {
   appointment: Prisma.AppointmentCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutAppointmentServicesInput
   staff?: Prisma.StaffCreateNestedOneWithoutAppointmentServicesInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceUncheckedCreateWithoutCustomerPackageUsageItemInput = {
@@ -880,6 +915,7 @@ export type AppointmentServiceUncheckedCreateWithoutCustomerPackageUsageItemInpu
   durationValue?: number | null
   durationUnit?: $Enums.DurationUnit | null
   createdAt?: Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput
 }
 
 export type AppointmentServiceCreateOrConnectWithoutCustomerPackageUsageItemInput = {
@@ -908,6 +944,78 @@ export type AppointmentServiceUpdateManyWithWhereWithoutCustomerPackageUsageItem
   data: Prisma.XOR<Prisma.AppointmentServiceUpdateManyMutationInput, Prisma.AppointmentServiceUncheckedUpdateManyWithoutCustomerPackageUsageItemInput>
 }
 
+export type AppointmentServiceCreateWithoutStockMovementsInput = {
+  id?: string
+  serviceName: string
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
+  durationValue?: number | null
+  durationUnit?: $Enums.DurationUnit | null
+  createdAt?: Date | string
+  appointment: Prisma.AppointmentCreateNestedOneWithoutServicesInput
+  service: Prisma.ServiceCreateNestedOneWithoutAppointmentServicesInput
+  staff?: Prisma.StaffCreateNestedOneWithoutAppointmentServicesInput
+  customerPackageUsageItem?: Prisma.CustomerPackageUsageItemCreateNestedOneWithoutAppointmentServicesInput
+}
+
+export type AppointmentServiceUncheckedCreateWithoutStockMovementsInput = {
+  id?: string
+  appointmentId: string
+  serviceId: string
+  serviceName: string
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: number
+  staffId?: string | null
+  durationValue?: number | null
+  durationUnit?: $Enums.DurationUnit | null
+  customerPackageUsageItemId?: string | null
+  createdAt?: Date | string
+}
+
+export type AppointmentServiceCreateOrConnectWithoutStockMovementsInput = {
+  where: Prisma.AppointmentServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.AppointmentServiceCreateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedCreateWithoutStockMovementsInput>
+}
+
+export type AppointmentServiceUpsertWithoutStockMovementsInput = {
+  update: Prisma.XOR<Prisma.AppointmentServiceUpdateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedUpdateWithoutStockMovementsInput>
+  create: Prisma.XOR<Prisma.AppointmentServiceCreateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedCreateWithoutStockMovementsInput>
+  where?: Prisma.AppointmentServiceWhereInput
+}
+
+export type AppointmentServiceUpdateToOneWithWhereWithoutStockMovementsInput = {
+  where?: Prisma.AppointmentServiceWhereInput
+  data: Prisma.XOR<Prisma.AppointmentServiceUpdateWithoutStockMovementsInput, Prisma.AppointmentServiceUncheckedUpdateWithoutStockMovementsInput>
+}
+
+export type AppointmentServiceUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceName?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  appointment?: Prisma.AppointmentUpdateOneRequiredWithoutServicesNestedInput
+  service?: Prisma.ServiceUpdateOneRequiredWithoutAppointmentServicesNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutAppointmentServicesNestedInput
+  customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutAppointmentServicesNestedInput
+}
+
+export type AppointmentServiceUncheckedUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  appointmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceName?: Prisma.StringFieldUpdateOperationsInput | string
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  quantity?: Prisma.IntFieldUpdateOperationsInput | number
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
+  customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type AppointmentServiceCreateManyStaffInput = {
   id?: string
   appointmentId: string
@@ -932,6 +1040,7 @@ export type AppointmentServiceUpdateWithoutStaffInput = {
   appointment?: Prisma.AppointmentUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutAppointmentServicesNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutAppointmentServicesNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateWithoutStaffInput = {
@@ -945,6 +1054,7 @@ export type AppointmentServiceUncheckedUpdateWithoutStaffInput = {
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateManyWithoutStaffInput = {
@@ -984,6 +1094,7 @@ export type AppointmentServiceUpdateWithoutServiceInput = {
   appointment?: Prisma.AppointmentUpdateOneRequiredWithoutServicesNestedInput
   staff?: Prisma.StaffUpdateOneWithoutAppointmentServicesNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutAppointmentServicesNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateWithoutServiceInput = {
@@ -997,6 +1108,7 @@ export type AppointmentServiceUncheckedUpdateWithoutServiceInput = {
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateManyWithoutServiceInput = {
@@ -1036,6 +1148,7 @@ export type AppointmentServiceUpdateWithoutAppointmentInput = {
   service?: Prisma.ServiceUpdateOneRequiredWithoutAppointmentServicesNestedInput
   staff?: Prisma.StaffUpdateOneWithoutAppointmentServicesNestedInput
   customerPackageUsageItem?: Prisma.CustomerPackageUsageItemUpdateOneWithoutAppointmentServicesNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateWithoutAppointmentInput = {
@@ -1049,6 +1162,7 @@ export type AppointmentServiceUncheckedUpdateWithoutAppointmentInput = {
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   customerPackageUsageItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateManyWithoutAppointmentInput = {
@@ -1088,6 +1202,7 @@ export type AppointmentServiceUpdateWithoutCustomerPackageUsageItemInput = {
   appointment?: Prisma.AppointmentUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutAppointmentServicesNestedInput
   staff?: Prisma.StaffUpdateOneWithoutAppointmentServicesNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateWithoutCustomerPackageUsageItemInput = {
@@ -1101,6 +1216,7 @@ export type AppointmentServiceUncheckedUpdateWithoutCustomerPackageUsageItemInpu
   durationValue?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   durationUnit?: Prisma.NullableEnumDurationUnitFieldUpdateOperationsInput | $Enums.DurationUnit | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput
 }
 
 export type AppointmentServiceUncheckedUpdateManyWithoutCustomerPackageUsageItemInput = {
@@ -1116,6 +1232,35 @@ export type AppointmentServiceUncheckedUpdateManyWithoutCustomerPackageUsageItem
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type AppointmentServiceCountOutputType
+ */
+
+export type AppointmentServiceCountOutputType = {
+  stockMovements: number
+}
+
+export type AppointmentServiceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  stockMovements?: boolean | AppointmentServiceCountOutputTypeCountStockMovementsArgs
+}
+
+/**
+ * AppointmentServiceCountOutputType without action
+ */
+export type AppointmentServiceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AppointmentServiceCountOutputType
+   */
+  select?: Prisma.AppointmentServiceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * AppointmentServiceCountOutputType without action
+ */
+export type AppointmentServiceCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductStockMovementWhereInput
+}
 
 
 export type AppointmentServiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1134,6 +1279,8 @@ export type AppointmentServiceSelect<ExtArgs extends runtime.Types.Extensions.In
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.AppointmentService$staffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.AppointmentService$customerPackageUsageItemArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.AppointmentService$stockMovementsArgs<ExtArgs>
+  _count?: boolean | Prisma.AppointmentServiceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["appointmentService"]>
 
 export type AppointmentServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1192,6 +1339,8 @@ export type AppointmentServiceInclude<ExtArgs extends runtime.Types.Extensions.I
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   staff?: boolean | Prisma.AppointmentService$staffArgs<ExtArgs>
   customerPackageUsageItem?: boolean | Prisma.AppointmentService$customerPackageUsageItemArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.AppointmentService$stockMovementsArgs<ExtArgs>
+  _count?: boolean | Prisma.AppointmentServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AppointmentServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   appointment?: boolean | Prisma.AppointmentDefaultArgs<ExtArgs>
@@ -1213,6 +1362,7 @@ export type $AppointmentServicePayload<ExtArgs extends runtime.Types.Extensions.
     service: Prisma.$ServicePayload<ExtArgs>
     staff: Prisma.$StaffPayload<ExtArgs> | null
     customerPackageUsageItem: Prisma.$CustomerPackageUsageItemPayload<ExtArgs> | null
+    stockMovements: Prisma.$ProductStockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1624,6 +1774,7 @@ export interface Prisma__AppointmentServiceClient<T, Null = never, ExtArgs exten
   service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   staff<T extends Prisma.AppointmentService$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AppointmentService$staffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customerPackageUsageItem<T extends Prisma.AppointmentService$customerPackageUsageItemArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AppointmentService$customerPackageUsageItemArgs<ExtArgs>>): Prisma.Prisma__CustomerPackageUsageItemClient<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsageItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  stockMovements<T extends Prisma.AppointmentService$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AppointmentService$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2109,6 +2260,30 @@ export type AppointmentService$customerPackageUsageItemArgs<ExtArgs extends runt
    */
   include?: Prisma.CustomerPackageUsageItemInclude<ExtArgs> | null
   where?: Prisma.CustomerPackageUsageItemWhereInput
+}
+
+/**
+ * AppointmentService.stockMovements
+ */
+export type AppointmentService$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductStockMovement
+   */
+  select?: Prisma.ProductStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductStockMovement
+   */
+  omit?: Prisma.ProductStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductStockMovementInclude<ExtArgs> | null
+  where?: Prisma.ProductStockMovementWhereInput
+  orderBy?: Prisma.ProductStockMovementOrderByWithRelationInput | Prisma.ProductStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.ProductStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
 }
 
 /**

@@ -178,6 +178,9 @@ describe("Customer ledger flow", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "MONDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         branchId,
       });
     expectStatus(staff, 201);
@@ -463,6 +466,9 @@ describe("Customer ledger flow", () => {
         workingFrom: "10:00",
         workingTo: "19:00",
         weekOff: "TUESDAY",
+        baseSalary: 20000,
+        salaryType: "MONTHLY",
+        workingDaysPerMonth: 26,
         salonId: salonBId,
         branchId: branchBId,
       });

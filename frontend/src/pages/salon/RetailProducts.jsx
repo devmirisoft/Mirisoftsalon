@@ -5,6 +5,7 @@ import { Icon, RSelect } from "@/components/Component";
 import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
 import DataGrid from "@/components/salon/DataGrid";
+import { TransferStockModal } from "@/components/salon/InventoryModals";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney } from "@/utils/salonFormat";
@@ -68,6 +69,9 @@ const RetailProducts = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  // The retail shelf ran short: what a warehouse transfer could cover.
+  const [shortage, setShortage] = useState(null);
+  const [transferring, setTransferring] = useState(false);
 
   const set = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
 
@@ -105,7 +109,7 @@ const RetailProducts = () => {
     .map((p) => ({
       value: p.id,
       label: p.name,
-      sub: [p.sku, p.category, `${Number(p.currentStock)} ${p.unit} in stock`].filter(Boolean).join(" · "),
+      sub: [p.sku, p.category, `${Number(p.currentStock)} ${p.unit} in stock (all locations)`].filter(Boolean).join(" · "),
       icon: "package",
       search: lower(p.name, p.sku, p.barcode, p.category),
       product: p,
@@ -140,10 +144,33 @@ const RetailProducts = () => {
     });
   };
 
+  const offerTransfer = async (stock) => {
+    try {
+      const { data } = await salonApi.inventory.product(stock.productId);
+      const site =
+        data.sites.find((row) => (row.branchId || null) === (stock.branchId || null)) ||
+        { branchId: stock.branchId || null, WAREHOUSE: 0, RETAIL: stock.available, SERVICE: 0 };
+      const salonWarehouse = site.branchId
+        ? Number(data.sites.find((row) => !row.branchId)?.WAREHOUSE || 0)
+        : 0;
+      if (Number(site.WAREHOUSE) + salonWarehouse <= 0) return;
+      setShortage({
+        product: data.product,
+        site,
+        salonWarehouse,
+        staff: data.staff,
+        needed: Math.max(stock.needed - stock.available, 1),
+      });
+    } catch {
+      // No transfer offer; the error above still explains the shortfall.
+    }
+  };
+
   const submit = async (event) => {
-    event.preventDefault();
+    event?.preventDefault();
     setError("");
     setMessage("");
+    setShortage(null);
     const lines = items.filter((item) => item.productId);
     if (!lines.length || lines.some((item) => Number(item.quantity) <= 0)) {
       setError("Add at least one product with a positive quantity.");
@@ -171,6 +198,9 @@ const RetailProducts = () => {
       await load();
     } catch (saveError) {
       setError(saveError.message);
+      if (saveError.code === "INSUFFICIENT_STOCK" && saveError.stock?.location === "RETAIL") {
+        await offerTransfer(saveError.stock);
+      }
     } finally {
       setSaving(false);
     }
@@ -198,7 +228,33 @@ const RetailProducts = () => {
           <span className="retail-chip"><Icon name="user" />{selectedCustomer?.name || "Walk-in customer"}</span>
         </div>
 
-        {error && <Alert color="danger">{error}</Alert>}
+        {error && (
+          <Alert color="danger" className="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+            <span>{error}</span>
+            {shortage && (
+              <button type="button" className="btn btn-sm btn-primary" onClick={() => setTransferring(true)}>
+                Transfer from Warehouse
+              </button>
+            )}
+          </Alert>
+        )}
+        <TransferStockModal
+          isOpen={transferring}
+          toggle={() => setTransferring(false)}
+          product={shortage?.product}
+          branchId={shortage?.site.branchId}
+          stock={shortage?.site}
+          salonWarehouse={shortage?.salonWarehouse}
+          staff={shortage?.staff}
+          from={Number(shortage?.site.WAREHOUSE || 0) > 0 ? "WAREHOUSE" : "SALON:WAREHOUSE"}
+          toLocation="RETAIL"
+          quantity={shortage?.needed || 1}
+          submitLabel="Transfer & Continue"
+          onSaved={() => {
+            setTransferring(false);
+            submit();
+          }}
+        />
         {message && <Alert color="success">{message}</Alert>}
 
         <form className="retail-board" onSubmit={submit}>

@@ -344,11 +344,14 @@ describe("service consumables", () => {
     ]);
     expect(Number(first.currentStock)).toBe(15);
     expect(Number(second.currentStock)).toBe(16);
-    expect(movements).toHaveLength(2);
+    // One movement per service line and product, so each use is traceable to
+    // the service that made it; the product total is unchanged.
+    expect(movements).toHaveLength(3);
+    expect(movements.every((row) => row.appointmentServiceId)).toBe(true);
     expect(
-      Number(
-        movements.find((row) => row.productId === fixture.product.id)?.quantity
-      )
+      movements
+        .filter((row) => row.productId === fixture.product.id)
+        .reduce((sum, row) => sum + Number(row.quantity), 0)
     ).toBe(5);
   });
 

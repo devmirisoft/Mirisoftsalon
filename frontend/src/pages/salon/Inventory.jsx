@@ -33,14 +33,15 @@ import {
   stockStatus,
   suggestedOrderQty,
 } from "@/components/salon/ProductForms";
+import { LOCATIONS } from "@/components/salon/InventoryModals";
 import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { formatDate, formatMoney, labelize, todayInputDate } from "@/utils/salonFormat";
 
 const BASE = "/admin/inventory";
-const MOVEMENT_TYPES = ["STOCK_IN", "RETAIL_SALE", "USED_IN_SERVICE", "STOCK_OUT", "DAMAGED", "ADJUSTMENT", "RETURNED"];
-const STOCK_OUT_TYPES = ["STOCK_OUT", "USED_IN_SERVICE", "DAMAGED"];
+const MOVEMENT_TYPES = ["STOCK_IN", "RETAIL_SALE", "USED_IN_SERVICE", "STOCK_OUT", "DAMAGED", "ADJUSTMENT", "RETURNED", "TRANSFER", "OPEN_CONTAINER", "WASTAGE", "LOST"];
+const STOCK_OUT_TYPES = ["STOCK_OUT", "USED_IN_SERVICE", "DAMAGED", "WASTAGE", "LOST"];
 
 Chart.register(ArcElement, BarElement, CategoryScale, Filler, Legend, LineElement, LinearScale, PointElement, Tooltip);
 
@@ -507,7 +508,7 @@ const ReceiveStock = ({ products, vendors, onReceived }) => {
   const [params, setParams] = useSearchParams();
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const prefill = byId.get(params.get("productId"));
-  const blankForm = { vendorId: "", invoiceNo: "", purchaseDate: todayInputDate(), taxAmount: "", paymentStatus: "UNPAID", paidAmount: "", paymentMethod: "CASH", note: "" };
+  const blankForm = { vendorId: "", invoiceNo: "", purchaseDate: todayInputDate(), location: "WAREHOUSE", taxAmount: "", paymentStatus: "UNPAID", paidAmount: "", paymentMethod: "CASH", note: "" };
   const [form, setForm] = useState(() => ({ ...blankForm, vendorId: params.get("vendorId") || prefill?.vendorId || "" }));
   const [lines, setLines] = useState(() => [
     prefill ? { productId: prefill.id, quantity: Number(params.get("qty")) || 1, unitCost: Number(prefill.costPrice) } : emptyLine(),
@@ -548,6 +549,7 @@ const ReceiveStock = ({ products, vendors, onReceived }) => {
         ...(form.invoiceNo ? { invoiceNo: form.invoiceNo } : {}),
         ...(form.note ? { note: form.note } : {}),
         purchaseDate: form.purchaseDate,
+        location: form.location,
         taxAmount: tax,
         paidAmount: paid,
         ...(paid > 0 ? { paymentMethod: form.paymentMethod } : {}),
@@ -580,6 +582,8 @@ const ReceiveStock = ({ products, vendors, onReceived }) => {
                 </Input></FormGroup></Col>
               <Col md="4"><FormGroup><Label>Invoice Number</Label><Input value={form.invoiceNo} onChange={set("invoiceNo")} placeholder="Vendor bill no." /></FormGroup></Col>
               <Col md="4"><FormGroup><Label>Purchase Date</Label><Input type="date" value={form.purchaseDate} onChange={set("purchaseDate")} /></FormGroup></Col>
+              <Col md="4"><FormGroup><Label>Receive Into</Label>
+                <Input type="select" value={form.location} onChange={set("location")}>{LOCATIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}</Input></FormGroup></Col>
             </Row>
 
             <div className="table-responsive mt-2">
@@ -662,7 +666,7 @@ const ReceiveStock = ({ products, vendors, onReceived }) => {
 
 const AdjustStock = ({ products, onAdjusted }) => {
   const [params, setParams] = useSearchParams();
-  const [form, setForm] = useState(() => ({ productId: params.get("productId") || "", type: "ADJUSTMENT", quantity: "", reason: "" }));
+  const [form, setForm] = useState(() => ({ productId: params.get("productId") || "", type: "ADJUSTMENT", location: "WAREHOUSE", quantity: "", reason: "" }));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -680,9 +684,9 @@ const AdjustStock = ({ products, onAdjusted }) => {
     if (!form.reason.trim()) return setError("Give a reason so the history makes sense later.");
     setSaving(true);
     try {
-      await salonApi.stockMovements.createManual({ salonId: product.salonId, productId: product.id, type: form.type, quantity: qty, reason: form.reason });
+      await salonApi.stockMovements.createManual({ salonId: product.salonId, productId: product.id, type: form.type, location: form.location, quantity: qty, reason: form.reason });
       setMessage(`${product.name}: stock updated to ${formatQty(Number(product.currentStock) + delta)} ${product.unit}.`);
-      setForm({ productId: "", type: "ADJUSTMENT", quantity: "", reason: "" });
+      setForm({ productId: "", type: "ADJUSTMENT", location: "WAREHOUSE", quantity: "", reason: "" });
       setParams({}, { replace: true });
       await onAdjusted();
     } catch (saveError) {
@@ -705,6 +709,8 @@ const AdjustStock = ({ products, onAdjusted }) => {
               <Input type="select" value={form.type} onChange={set("type")}>{ADJUST_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}</Input></FormGroup></Col>
             <Col md="6"><FormGroup><Label>Quantity</Label>
               <Input type="number" step="0.01" value={form.quantity} onChange={set("quantity")} placeholder={form.type === "ADJUSTMENT" ? "e.g. -2 or 3" : "e.g. 2"} /></FormGroup></Col>
+            <Col md="6"><FormGroup><Label>Location</Label>
+              <Input type="select" value={form.location} onChange={set("location")}>{LOCATIONS.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}</Input></FormGroup></Col>
             <Col xs="12"><FormGroup><Label>Reason</Label><Input value={form.reason} onChange={set("reason")} placeholder="e.g. Monthly stock count, bottle broken" /></FormGroup></Col>
           </Row>
           <div className="d-flex justify-content-between align-items-center mt-3">

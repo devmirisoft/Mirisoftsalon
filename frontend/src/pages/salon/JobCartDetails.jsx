@@ -16,6 +16,10 @@ import { Button, Icon } from "@/components/Component";
 import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
 import StatusBadge from "@/components/salon/StatusBadge";
+import {
+  ProductUsageModal,
+  TransferStockModal,
+} from "@/components/salon/InventoryModals";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { enqueueConfirm, startConfirmQueue } from "@/services/offlineQueue";
@@ -142,6 +146,11 @@ const JobCartDetails = () => {
     { method: "CASH", amount: "", referenceNo: "" },
   ]);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  // Product usage is confirmed first and sent with the bill, so nothing is
+  // booked until the cart is actually confirmed.
+  const [usageOpen, setUsageOpen] = useState(false);
+  const [usage, setUsage] = useState(null);
+  const [shelfTransfer, setShelfTransfer] = useState(false);
   // "+ Product / Membership / Package" picker: which kind is open, the picked
   // id and quantity. Reference lists load once, on the first open.
   const [adding, setAdding] = useState(null);
@@ -160,6 +169,7 @@ const JobCartDetails = () => {
       const response = await salonApi.jobCarts.get(id);
       const next = response.data;
       setCart(next);
+      setUsage(null);
       setForm({
         customerName: next.customer?.name || "",
         phone: next.customer?.phone || "",
@@ -200,12 +210,21 @@ const JobCartDetails = () => {
     load();
   }, [load]);
 
+  // Consumables are booked as the job ends: a job cart books them at pay time,
+  // but an appointment billed on this page was completed earlier and already
+  // booked them, so it skips the usage step.
+  const openPayment = () =>
+    cart?.appointmentStatus === "COMPLETED"
+      ? setConfirmOpen(true)
+      : setUsageOpen(true);
+
   // "Make bill" on the job cart list lands here with ?bill=1: open the confirm
   // bill modal straight away instead of making the user find the button.
   useEffect(() => {
     if (!searchParams.get("bill") || !cart) return;
     setSearchParams({}, { replace: true });
-    if (cart.status === "ACTIVE" && cart.items.length) setConfirmOpen(true);
+    if (cart.status === "ACTIVE" && cart.items.length) openPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart, searchParams, setSearchParams]);
 
   // Push any bill confirmed while offline as soon as the connection is back.
@@ -275,7 +294,7 @@ const JobCartDetails = () => {
     : adding === "PRODUCT"
       ? (addRefs.products || []).map((product) => ({
           id: product.id,
-          label: `${product.name} - ${formatMoney(product.sellingPrice)} (${Number(product.currentStock || 0)} in stock)`,
+          label: `${product.name} - ${formatMoney(product.sellingPrice)} (${Number(product.retailStock || 0)} on the retail shelf)`,
         }))
       : adding === "MEMBERSHIP"
         ? (addRefs.memberships || []).map((membership) => ({
@@ -300,6 +319,29 @@ const JobCartDetails = () => {
     };
     setAdding(null);
     run(() => salonApi.jobCarts.addItem(id, body));
+  };
+
+  // Retail sales leave the retail shelf only; with the shelf short, the
+  // counter can pull stock from the warehouse and carry on adding the line.
+  const addingProduct =
+    adding === "PRODUCT"
+      ? (addRefs?.products || []).find((product) => product.id === addForm.id)
+      : null;
+  const shelfShort =
+    addingProduct &&
+    Number(addingProduct.retailStock || 0) < (Number(addForm.quantity) || 1);
+  const warehouseForShelf = addingProduct
+    ? Number(addingProduct.warehouseStock || 0) +
+      Number(addingProduct.salonWarehouseStock || 0)
+    : 0;
+  const transferAndContinue = async () => {
+    const response = await salonApi.jobCarts.references({
+      salonId: cart.salonId,
+      branchId: cart.branchId,
+    });
+    setAddRefs(response.data);
+    setShelfTransfer(false);
+    submitAdd();
   };
 
   const canApplyCoupon = ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"].includes(
@@ -526,6 +568,7 @@ const JobCartDetails = () => {
     // offline queue keeps the time the operator actually ended the job.
     confirmedAt: new Date().toISOString(),
     idempotencyKey: globalThis.crypto.randomUUID(),
+    ...(usage?.length ? { usage } : {}),
     ...(collecting && activeTenders.length
       ? {
           payments: activeTenders
@@ -596,10 +639,12 @@ const JobCartDetails = () => {
               <button
                 type="button"
                 className="jcp-back"
-                onClick={() => navigate("/job-carts")}
+                onClick={() =>
+                  navigate(cart.isJobCart === false ? "/appointments" : "/job-carts")
+                }
               >
                 <Icon name="arrow-left" />
-                <span>Back to Jobs</span>
+                <span>{cart.isJobCart === false ? "Back to Appointments" : "Back to Jobs"}</span>
               </button>
               <div className="jcp-topbar-meta">
                 <span>
@@ -1399,7 +1444,7 @@ const JobCartDetails = () => {
                         <Button
                           className="jcp-pay"
                           disabled={working || !cart.items.length}
-                          onClick={() => setConfirmOpen(true)}
+                          onClick={openPayment}
                         >
                           {working ? (
                             <Spinner size="sm" />
@@ -1408,13 +1453,15 @@ const JobCartDetails = () => {
                           )}
                           <span>Pay Now {formatMoney(payableAmount)}</span>
                         </Button>
-                        <Button
-                          className="jcp-cancel"
-                          disabled={working}
-                          onClick={cancel}
-                        >
-                          Cancel Job Cart
-                        </Button>
+                        {cart.isJobCart !== false && (
+                          <Button
+                            className="jcp-cancel"
+                            disabled={working}
+                            onClick={cancel}
+                          >
+                            Cancel Job Cart
+                          </Button>
+                        )}
                       </div>
                     ) : invoice && canOpenInvoice ? (
                       <Link
@@ -1471,6 +1518,22 @@ const JobCartDetails = () => {
                     </option>
                   ))}
                 </Input>
+                {adding === "PRODUCT" && addingProduct && (
+                  <div className="small text-soft mt-2">
+                    Retail stock: <strong>{Number(addingProduct.retailStock || 0)}</strong>
+                    {" · "}Warehouse: <strong>{warehouseForShelf}</strong>
+                  </div>
+                )}
+                {adding === "PRODUCT" && shelfShort && (
+                  <Alert color="warning" className="mt-2 mb-0 py-2 small d-flex align-items-center justify-content-between gap-2">
+                    <span>Retail stock unavailable.</span>
+                    {warehouseForShelf > 0 && (
+                      <Button size="sm" color="primary" onClick={() => setShelfTransfer(true)}>
+                        Transfer From Warehouse
+                      </Button>
+                    )}
+                  </Alert>
+                )}
                 {adding === "PRODUCT" && (
                   <FormGroup className="mt-2" noMargin>
                     <Label className="jcp-field-label">Quantity</Label>
@@ -1496,7 +1559,7 @@ const JobCartDetails = () => {
               </Button>
               <Button
                 color="primary"
-                disabled={!addForm.id || working}
+                disabled={!addForm.id || working || Boolean(shelfShort)}
                 onClick={submitAdd}
               >
                 Add
@@ -1504,6 +1567,39 @@ const JobCartDetails = () => {
             </div>
           </ModalBody>
         </Modal>
+
+        <TransferStockModal
+          isOpen={shelfTransfer}
+          toggle={() => setShelfTransfer(false)}
+          product={addingProduct}
+          branchId={cart?.branchId}
+          stock={{
+            WAREHOUSE: addingProduct?.warehouseStock,
+            RETAIL: addingProduct?.retailStock,
+            SERVICE: addingProduct?.serviceStock,
+          }}
+          salonWarehouse={addingProduct?.salonWarehouseStock}
+          staff={addRefs?.staff || []}
+          from={Number(addingProduct?.warehouseStock || 0) > 0 ? "WAREHOUSE" : "SALON:WAREHOUSE"}
+          toLocation="RETAIL"
+          quantity={Math.max(
+            (Number(addForm.quantity) || 1) - Number(addingProduct?.retailStock || 0),
+            1
+          )}
+          submitLabel="Transfer & Continue"
+          onSaved={transferAndContinue}
+        />
+
+        <ProductUsageModal
+          isOpen={usageOpen}
+          appointmentId={id}
+          onCancel={() => setUsageOpen(false)}
+          onConfirm={(entries) => {
+            setUsage(entries);
+            setUsageOpen(false);
+            setConfirmOpen(true);
+          }}
+        />
 
         <Modal
           isOpen={confirmOpen}

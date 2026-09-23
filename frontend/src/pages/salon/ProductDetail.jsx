@@ -23,10 +23,13 @@ import {
   StockBadge,
   canManageProducts,
   formatQty,
+  isContainerContent,
   movementDelta,
   movementLabel,
   useProductRefs,
 } from "@/components/salon/ProductForms";
+import ProductInventoryPanel from "@/components/salon/ProductInventoryPanel";
+import { formatAmount, locationLabel } from "@/components/salon/InventoryModals";
 import { LoaderOne } from "@/components/ui/loader";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
@@ -34,6 +37,7 @@ import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
 
 const TABS = [
   { key: "overview", label: "Overview" },
+  { key: "inventory", label: "Inventory" },
   { key: "sales", label: "Sales" },
   { key: "stock", label: "Stock History" },
   { key: "purchases", label: "Purchases" },
@@ -48,20 +52,23 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [activity, setActivity] = useState({ sales: [], purchases: [], productGstRate: 0 });
   const [movements, setMovements] = useState([]);
+  const [inventory, setInventory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [open, setOpen] = useState(null); // "edit" | "add" | "adjust"
 
   const load = async () => {
     try {
-      const [p, a, m] = await Promise.all([
+      const [p, a, m, inv] = await Promise.all([
         salonApi.products.get(id),
         salonApi.products.activity(id),
         salonApi.stockMovements.byProduct(id),
+        salonApi.inventory.product(id),
       ]);
       setProduct(p.data);
       setActivity(a.data);
       setMovements(m.data || []);
+      setInventory(inv.data);
       setError("");
     } catch (loadError) {
       setError(loadError.message);
@@ -151,7 +158,7 @@ const ProductDetail = () => {
       {error && <Alert color="danger">{error}</Alert>}
 
       <Row className="g-3 mb-4">
-        <Col xs="6" lg="3"><KpiCard label="Current Stock" value={`${formatQty(product.currentStock)}`} /></Col>
+        <Col xs="6" lg="3"><KpiCard label="Stock (all locations)" value={`${formatQty(product.currentStock)}`} /></Col>
         <Col xs="6" lg="3"><KpiCard label="Units Sold" value={formatQty(stats.soldQty)} /></Col>
         <Col xs="6" lg="3"><KpiCard label="Sales Value" value={formatMoney(stats.revenue)} /></Col>
         <Col xs="6" lg="3"><KpiCard label="Profit" value={formatMoney(stats.profit)} tone={stats.profit < 0 ? "danger" : "success"} /></Col>
@@ -184,7 +191,7 @@ const ProductDetail = () => {
           </Col>
           <Col md="6">
             <InfoList title="Inventory" items={[
-              ["Current stock", `${formatQty(product.currentStock)} ${product.unit}`],
+              ["Stock (all locations)", `${formatQty(product.currentStock)} ${product.unit}`],
               ["Low-stock threshold", formatQty(product.lowStockAlert)],
               ["Total purchased", formatQty(stats.purchasedQty)],
               ["Total sold", formatQty(stats.soldQty)],
@@ -200,6 +207,10 @@ const ProductDetail = () => {
             ]} />
           </Col>
         </Row>
+      )}
+
+      {tab === "inventory" && inventory && (
+        <ProductInventoryPanel inventory={inventory} role={user?.role} onChanged={load} />
       )}
 
       {tab === "sales" && (
@@ -235,7 +246,15 @@ const ProductDetail = () => {
           header={<div className="card-inner border-bottom">Current Stock: <strong>{formatQty(product.currentStock)} {product.unit}</strong></div>}
           columns={[
             { key: "createdAt", label: "Date", render: (v) => formatDate(v, true) },
-            { key: "type", label: "Activity", render: (_, m) => <>{movementLabel(m)}{m.reason && m.reason !== "Opening stock" && <div className="small text-soft">{m.reason}</div>}</> },
+            { key: "type", label: "Activity", render: (_, m) => <>{movementLabel(m)}{m.reason && m.reason !== "Opening stock" && <div className="small text-soft">{m.reason}</div>}{m.note && <div className="small text-soft">{m.note}</div>}</> },
+            {
+              key: "location",
+              label: "Where",
+              render: (v, m) =>
+                m.type === "TRANSFER"
+                  ? `${m.branchId || !m.toBranchId ? "" : "Salon "}${locationLabel(v)} → ${locationLabel(m.toLocation)}`
+                  : <>{locationLabel(v)}{m.container && <div className="small text-soft">{m.container.code}</div>}</>,
+            },
             {
               key: "referenceId",
               label: "Reference",
@@ -243,14 +262,45 @@ const ProductDetail = () => {
                 const ref = references.get(v);
                 if (ref?.to) return <Link to={ref.to}>{ref.code}</Link>;
                 if (ref) return ref.code;
+                if (m.appointment) {
+                  return (
+                    <>
+                      {m.appointment.walkInJobCart
+                        ? <Link to={`/job-carts/${m.appointment.id}/view`}>{m.appointment.appointmentCode}</Link>
+                        : m.appointment.appointmentCode}
+                      {m.service && <div className="small text-soft">{m.service.name}</div>}
+                    </>
+                  );
+                }
                 if (m.referenceType === "JOB_CART" && v) return <Link to={`/job-carts/${v}/view`}>Job cart</Link>;
                 return m.referenceType ? labelize(m.referenceType) : "—";
               },
             },
-            { key: "in", label: "Stock In", render: (_, m) => (movementDelta(m) > 0 ? <span className="text-success">+{formatQty(movementDelta(m))}</span> : "—") },
-            { key: "out", label: "Stock Out", render: (_, m) => (movementDelta(m) < 0 ? <span className="text-danger">{formatQty(-movementDelta(m))}</span> : "—") },
-            { key: "stockAfter", label: "Balance", render: formatQty },
-            { key: "createdBy", label: "By", render: (v) => v?.name || "System" },
+            {
+              key: "quantity",
+              label: "Quantity",
+              render: (v, m) => {
+                // Use inside an opened container is in its unit (ml), not product units.
+                if (isContainerContent(m)) {
+                  const delta = Number(m.stockAfter) - Number(m.stockBefore);
+                  return <span className={delta < 0 ? "text-danger" : "text-success"}>{delta > 0 ? "+" : "-"}{formatAmount(Math.abs(delta), m.unit || m.container?.unit)}</span>;
+                }
+                const delta = movementDelta(m);
+                if (m.type === "TRANSFER" || delta === 0) return `${formatQty(v)} ${(m.unit || product.unit).toLowerCase()}`;
+                return <span className={delta > 0 ? "text-success" : "text-danger"}>{delta > 0 ? "+" : "-"}{formatQty(Math.abs(delta))}</span>;
+              },
+            },
+            {
+              key: "stockAfter",
+              label: "Balance",
+              render: (v, m) => (isContainerContent(m) ? `${formatAmount(v, m.unit || m.container?.unit)} left` : formatQty(v)),
+            },
+            {
+              key: "staff",
+              label: "Staff",
+              render: (v, m) => (v || m.receivedByStaff ? <>{v?.name || "—"}{m.receivedByStaff && <div className="small text-soft">Received: {m.receivedByStaff.name}</div>}</> : "—"),
+            },
+            { key: "createdBy", label: "Recorded by", render: (v) => v?.name || "System" },
           ]}
         />
       )}

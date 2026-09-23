@@ -3971,11 +3971,59 @@ body.dark-mode .jcp-pay-code {
   }
 }
 
-/* Inventory: tabs and filters share one card header row. */
-.inv-toolbar .nav-tabs {
+/* Inventory: keep tabs, filters, table, and pager in distinct rows. */
+.inventory-page .inv-toolbar {
+  display: grid;
+  gap: 0.875rem;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+}
+
+.inventory-page .inv-toolbar .nav-tabs {
   margin-bottom: 0 !important;
-  border-bottom: 0;
+  border-bottom: 1px solid #dbdfea;
   box-shadow: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  flex-wrap: nowrap;
+}
+
+.inventory-page .inv-toolbar .nav-item {
+  flex: 0 0 auto;
+}
+
+.inventory-page .inv-toolbar .nav-link {
+  white-space: nowrap;
+}
+
+.inventory-page .inv-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.inventory-page .inv-filters .form-control-wrap,
+.inventory-page .inv-filters .form-control,
+.inventory-page .inv-filters .form-select,
+.inventory-page .inv-filters select {
+  max-width: 100%;
+}
+
+.inventory-page .table-responsive {
+  clear: both;
+}
+
+.inventory-page .table-tranx {
+  min-width: 1180px;
+}
+
+.inventory-page .table-tranx thead th {
+  white-space: nowrap;
+}
+
+.inventory-page .server-pagination {
+  margin-top: 0;
 }
 
 /* ---------- Quick sell: membership / package (QuickSell.jsx) ---------- */

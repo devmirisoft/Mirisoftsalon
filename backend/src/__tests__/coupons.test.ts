@@ -329,7 +329,9 @@ describe("discount coupons", () => {
     expect(Number(applied.body.data.discountAmount)).toBe(10);
     expect(Number(applied.body.data.couponDiscountAmount)).toBe(9);
     expect(Number(applied.body.data.taxAmount)).toBe(14.58);
-    expect(Number(applied.body.data.totalAmount)).toBe(95.58);
+    // 95.58 rounded to whole rupees, with the 0.42 kept as the round-off.
+    expect(Number(applied.body.data.roundOffAmount)).toBe(0.42);
+    expect(Number(applied.body.data.totalAmount)).toBe(96);
     expect(
       Number(
         (
@@ -338,7 +340,7 @@ describe("discount coupons", () => {
           })
         ).outstandingAmount
       )
-    ).toBe(95.58);
+    ).toBe(96);
 
     const removed = await request(app)
       .post(`/api/invoices/${f.invoice.id}/remove-coupon`)
@@ -346,7 +348,9 @@ describe("discount coupons", () => {
     expect(removed.status).toBe(200);
     expect(removed.body.data.couponId).toBeNull();
     expect(Number(removed.body.data.couponDiscountAmount)).toBe(0);
-    expect(Number(removed.body.data.totalAmount)).toBe(106.2);
+    // Recalculated without the coupon: 106.20 rounded to whole rupees.
+    expect(Number(removed.body.data.roundOffAmount)).toBe(-0.2);
+    expect(Number(removed.body.data.totalAmount)).toBe(106);
   });
 
   it("counts coupon usage when issuing and reverses it on cancellation", async () => {

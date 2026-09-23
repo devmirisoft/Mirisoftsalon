@@ -15,19 +15,15 @@ const view = (request, productId = f.products.shampoo) =>
 const movements = (request, productId = f.products.shampoo) =>
   api(request, admin, "GET", `/api/stock-movements/product/${productId}`);
 
-// Each cart takes its own slot: the same stylist cannot be booked twice.
-let slot = 0;
-const newCart = (request, serviceIds = [f.services.hairWash], phone = "98765 10000") => {
-  slot += 1;
-  return api(request, counter, "POST", "/api/job-carts", {
+// A walk-in cart always starts now and holds its stylist for the length of
+// the service, so these carts go on the books without one.
+const newCart = (request, serviceIds = [f.services.hairWash], phone = "98765 10000") =>
+  api(request, counter, "POST", "/api/job-carts", {
     branchId: f.branchId,
     customerName: "Walk-in Flows",
     phone,
-    startTime: new Date(Date.now() + (4 + slot) * 3_600_000).toISOString(),
     serviceIds,
-    staffId: f.staff.rahul,
   });
-};
 
 /** A customer and an appointment of its own, so no test depends on another. */
 let hour = 0;
@@ -38,8 +34,10 @@ const bookFor = async (request, name, serviceIds) => {
     phone: `99911${String(10000 + hour).slice(-5)}`,
     branchId: f.branchId,
   });
-  const start = new Date();
-  start.setHours(9 + hour, 30, 0, 0);
+  // An hour apart, starting after now, so the same stylist is free for each
+  // and nothing is booked in the past whatever time the suite runs.
+  const start = new Date(Date.now() + hour * 3_600_000);
+  start.setMinutes(30, 0, 0);
   await api(request, counter, "POST", "/api/appointments", {
     branchId: f.branchId,
     customerId: customer.id,

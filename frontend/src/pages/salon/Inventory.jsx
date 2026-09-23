@@ -220,9 +220,9 @@ const Inventory = () => {
   );
 
   const toolbar = (controls) => (
-    <div className="inv-toolbar card-inner py-0 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div className="inv-toolbar card-inner border-bottom">
       <RouteTabs base={BASE} tabs={TABS} active={tab} />
-      {controls && <div className="d-flex flex-wrap align-items-center gap-2 py-2">{controls}</div>}
+      {controls && <div className="inv-filters">{controls}</div>}
     </div>
   );
   const productFilters = (
@@ -283,6 +283,7 @@ const Inventory = () => {
 
   return (
     <PageShell
+      className="inventory-page"
       title="Inventory"
       description="Track stock, monitor levels and manage purchases"
       tools={canManage && (

@@ -159,9 +159,12 @@ test.describe("signed in at the counter", () => {
   };
 
   const addProduct = async (page, name) => {
-    await page.getByRole("button", { name: "+ Product" }).click();
+    await page.getByRole("button", { name: /Product/ }).click();
     const add = page.locator(".modal").filter({ hasText: "Add Product" });
-    await add.locator("select").first().selectOption({ label: new RegExp(name) });
+    const select = add.locator("select").first();
+    // The option label carries the stock alongside the name, so pick by value.
+    const option = select.locator("option", { hasText: name }).first();
+    await select.selectOption(await option.getAttribute("value"));
     return add;
   };
 

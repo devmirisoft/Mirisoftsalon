@@ -468,10 +468,9 @@ describe("Walk-in job carts", () => {
       )
     ).toBe(300);
 
-    const overpaid = await createCart(f, f.adminToken, {
-      staffId: f.stylist.id,
-      startTime: "2038-01-02T10:00:00.000Z",
-    });
+    // A walk-in cart always starts now, so the stylist is still busy with the
+    // cart above: this one goes on the books without a stylist.
+    const overpaid = await createCart(f, f.adminToken, {});
     const rejected = await request(app)
       .post(`/api/job-carts/${overpaid.body.data.id}/confirm`)
       .set(auth(f.adminToken))

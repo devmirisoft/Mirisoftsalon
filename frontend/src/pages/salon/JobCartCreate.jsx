@@ -198,12 +198,12 @@ const JobCartCreate = () => {
             : null;
         setRefs({
           ...(referenceData || {
-          salons: [],
-          branches: [],
-          staff: [],
-          services: [],
-          packages: [],
-          salon: null,
+            salons: [],
+            branches: [],
+            staff: [],
+            services: [],
+            packages: [],
+            salon: null,
           }),
           customers:
             customerResult.status === "fulfilled"
@@ -341,7 +341,7 @@ const JobCartCreate = () => {
     (sum, service) =>
       sum +
       Number(service.durationValue || 0) *
-        (service.durationUnit === "HOURS" ? 60 : 1),
+      (service.durationUnit === "HOURS" ? 60 : 1),
     0
   );
   const selectedPackageServiceIds = useMemo(() => {
@@ -360,15 +360,13 @@ const JobCartCreate = () => {
   const estimatedTax = ((subtotal + packageSubtotal) * serviceGstPercent) / 100;
   const membershipLabel = !customerSummary?.membershipName
     ? "None"
-    : `${customerSummary.membershipName}${
-        customerSummary.membershipExpiresAt
-          ? `, expires ${formatDate(customerSummary.membershipExpiresAt)}`
-          : ""
-      }${
-        customerSummary.membershipStatus !== "ACTIVE"
-          ? ` (${customerSummary.membershipStatus})`
-          : ""
-      }`;
+    : `${customerSummary.membershipName}${customerSummary.membershipExpiresAt
+      ? `, expires ${formatDate(customerSummary.membershipExpiresAt)}`
+      : ""
+    }${customerSummary.membershipStatus !== "ACTIVE"
+      ? ` (${customerSummary.membershipStatus})`
+      : ""
+    }`;
   const customerRows = [
     {
       icon: "award-fill",
@@ -391,13 +389,13 @@ const JobCartCreate = () => {
     // Money already owed stays visible before another cart is opened.
     ...(Number(customerSummary?.outstandingBalance) > 0
       ? [
-          {
-            icon: "alert-circle",
-            label: "Outstanding",
-            value: formatMoney(customerSummary.outstandingBalance),
-            danger: true,
-          },
-        ]
+        {
+          icon: "alert-circle",
+          label: "Outstanding",
+          value: formatMoney(customerSummary.outstandingBalance),
+          danger: true,
+        },
+      ]
       : []),
   ];
   const mainServices = useMemo(
@@ -777,8 +775,8 @@ const JobCartCreate = () => {
                                 phone: /[^\d\s]/.test(event.target.value)
                                   ? event.target.value
                                   : event.target.value
-                                      .replace(/\D/g, "")
-                                      .slice(0, 10),
+                                    .replace(/\D/g, "")
+                                    .slice(0, 10),
                                 // A matched customer filled the name; changing
                                 // the phone breaks the match, so the name goes
                                 // too.
@@ -937,6 +935,7 @@ const JobCartCreate = () => {
                           required
                           className="cust-input"
                           value={form.date}
+                          min={new Date().toISOString().split("T")[0]}
                           disabled={saving}
                           onChange={(event) =>
                             setForm((current) => ({
@@ -990,8 +989,8 @@ const JobCartCreate = () => {
                             row.danger
                               ? "text-danger fw-bold"
                               : row.muted
-                              ? "text-soft"
-                              : "fw-medium"
+                                ? "text-soft"
+                                : "fw-medium"
                           }
                         >
                           {row.value}
@@ -1123,79 +1122,79 @@ const JobCartCreate = () => {
                           const discountedPrice =
                             Number(row.discount) > 0
                               ? netPrice(
-                                  row.price,
-                                  row.discount,
-                                  row.discountType
-                                )
+                                row.price,
+                                row.discount,
+                                row.discountType
+                              )
                               : null;
                           return (
                             <tr key={row.rowId}>
                               <td>
-  <Select
-    className="react-select-container"
-    classNamePrefix="react-select"
-    isClearable
-    isDisabled={!form.branchId || saving}
-    options={rowServices.map((service) => ({
-      value: service.id,
-      label: service.name,
-    }))}
-    value={
-      selectedService
-        ? { value: selectedService.id, label: selectedService.name }
-        : null
-    }
-    placeholder="Search service"
-    noOptionsMessage={() => "No services"}
-    menuPortalTarget={document.body}
-    menuPosition="fixed"
-    styles={{
-      menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-      menu: (base) => ({
-        ...base,
-        width: "max-content",
-        minWidth: "100%",
-        maxWidth: 420,
-      }),
-      option: (base) => ({
-        ...base,
-        whiteSpace: "normal",
-        wordBreak: "break-word",
-      }),
-      singleValue: (base) => ({
-        ...base,
-        whiteSpace: "normal",
-        overflow: "visible",
-        textOverflow: "unset",
-      }),
-      control: (base) => ({
-        ...base,
-        minHeight: 38,
-        height: "auto",
-      }),
-    }}
-    onChange={(option) => {
-      const service = refs.services.find(
-        (item) => item.id === option?.value
-      );
-      updateServiceRow(row.rowId, {
-        serviceId: option?.value || "",
-        mainServiceId:
-          service?.mainService?.id ||
-          service?.mainServiceId ||
-          row.mainServiceId,
-        staffId: "",
-        discount: "",
-        discountType: "AMT",
-        price: service === undefined ? "" : String(service.price ?? ""),
-        total:
-          service === undefined
-            ? ""
-            : priceToTotal(service.price ?? 0, row.qty, serviceGstPercent),
-      });
-    }}
-  />
-</td>
+                                <Select
+                                  className="react-select-container"
+                                  classNamePrefix="react-select"
+                                  isClearable
+                                  isDisabled={!form.branchId || saving}
+                                  options={rowServices.map((service) => ({
+                                    value: service.id,
+                                    label: service.name,
+                                  }))}
+                                  value={
+                                    selectedService
+                                      ? { value: selectedService.id, label: selectedService.name }
+                                      : null
+                                  }
+                                  placeholder="Search service"
+                                  noOptionsMessage={() => "No services"}
+                                  menuPortalTarget={document.body}
+                                  menuPosition="fixed"
+                                  styles={{
+                                    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                                    menu: (base) => ({
+                                      ...base,
+                                      width: "max-content",
+                                      minWidth: "100%",
+                                      maxWidth: 420,
+                                    }),
+                                    option: (base) => ({
+                                      ...base,
+                                      whiteSpace: "normal",
+                                      wordBreak: "break-word",
+                                    }),
+                                    singleValue: (base) => ({
+                                      ...base,
+                                      whiteSpace: "normal",
+                                      overflow: "visible",
+                                      textOverflow: "unset",
+                                    }),
+                                    control: (base) => ({
+                                      ...base,
+                                      minHeight: 38,
+                                      height: "auto",
+                                    }),
+                                  }}
+                                  onChange={(option) => {
+                                    const service = refs.services.find(
+                                      (item) => item.id === option?.value
+                                    );
+                                    updateServiceRow(row.rowId, {
+                                      serviceId: option?.value || "",
+                                      mainServiceId:
+                                        service?.mainService?.id ||
+                                        service?.mainServiceId ||
+                                        row.mainServiceId,
+                                      staffId: "",
+                                      discount: "",
+                                      discountType: "AMT",
+                                      price: service === undefined ? "" : String(service.price ?? ""),
+                                      total:
+                                        service === undefined
+                                          ? ""
+                                          : priceToTotal(service.price ?? 0, row.qty, serviceGstPercent),
+                                    });
+                                  }}
+                                />
+                              </td>
                               <td>
                                 <Input
                                   type="select"
@@ -1253,25 +1252,24 @@ const JobCartCreate = () => {
                                         ? undefined
                                         : { paddingRight: 92 }
                                     }
-                                    onChange={(event) =>
-                                      {
-                                        const discount = cappedDiscount(
+                                    onChange={(event) => {
+                                      const discount = cappedDiscount(
+                                        event.target.value,
+                                        row.discount,
+                                        row.discountType
+                                      );
+                                      updateServiceRow(row.rowId, {
+                                        price: event.target.value,
+                                        discount,
+                                        total: priceToTotal(
                                           event.target.value,
-                                          row.discount,
-                                          row.discountType
-                                        );
-                                        updateServiceRow(row.rowId, {
-                                          price: event.target.value,
+                                          row.qty,
+                                          serviceGstPercent,
                                           discount,
-                                          total: priceToTotal(
-                                            event.target.value,
-                                            row.qty,
-                                            serviceGstPercent,
-                                            discount,
-                                            row.discountType
-                                          ),
-                                        });
-                                      }
+                                          row.discountType
+                                        ),
+                                      });
+                                    }
                                     }
                                   />
                                   {discountedPrice !== null && (
@@ -1559,149 +1557,149 @@ const JobCartCreate = () => {
                   </span>
                 </div>
                 <div className="cart-scroll">
-                {customerSummary && (
-                  <>
-                    <div className="cart-panel mb-3">
-                      <div className="d-flex align-items-center gap-2 mt-2">
-                        <span className="cart-avatar mb-2">
-                          {customerSummary.customerName
-                            ?.trim()?.[0]
-                            ?.toUpperCase() || "?"}
-                        </span>
-                        <div className="flex-grow-1 " style={{ minWidth: 0 }}>
-                          <div className="fw-bold text-truncate ">
-                            {customerSummary.customerId ? (
-                              <Link
-                                to={`/customers/${customerSummary.customerId}`}
-                              >
-                                {customerSummary.customerName}
-                              </Link>
-                            ) : (
-                              customerSummary.customerName
-                            )}
+                  {customerSummary && (
+                    <>
+                      <div className="cart-panel mb-3">
+                        <div className="d-flex align-items-center gap-2 mt-2">
+                          <span className="cart-avatar mb-2">
+                            {customerSummary.customerName
+                              ?.trim()?.[0]
+                              ?.toUpperCase() || "?"}
+                          </span>
+                          <div className="flex-grow-1 " style={{ minWidth: 0 }}>
+                            <div className="fw-bold text-truncate ">
+                              {customerSummary.customerId ? (
+                                <Link
+                                  to={`/customers/${customerSummary.customerId}`}
+                                >
+                                  {customerSummary.customerName}
+                                </Link>
+                              ) : (
+                                customerSummary.customerName
+                              )}
+                            </div>
+                            <div className="small text-soft mb-2">
+                              {customerSummary.phone}
+                            </div>
                           </div>
-                          <div className="small text-soft mb-2">
-                            {customerSummary.phone}
-                          </div>
+                          <span className="cart-chip flex-shrink-0">
+                            {customerSummary.totalVisits > 0
+                              ? "Returning Customer"
+                              : "New Customer"}
+                          </span>
                         </div>
-                        <span className="cart-chip flex-shrink-0">
-                          {customerSummary.totalVisits > 0
-                            ? "Returning Customer"
-                            : "New Customer"}
-                        </span>
+                        <div className="cart-stats">
+                          {[
+                            {
+                              icon: "calendar-alt",
+                              value: formatDate(customerSummary.lastVisitDate),
+                              label: "Last Visit",
+                            },
+                            {
+                              icon: "bar-chart",
+                              value: customerSummary.totalVisits,
+                              label: "Total Visits",
+                            },
+                            {
+                              icon: "star",
+                              value: customerSummary.loyaltyPoints,
+                              label: "Loyalty Points",
+                            },
+                            {
+                              icon: "wallet",
+                              value: formatMoney(customerSummary.walletBalance),
+                              label: "Wallet Balance",
+                            },
+                          ].map((stat) => (
+                            <div key={stat.label}>
+                              <Icon name={stat.icon} />
+                              <div className="cart-stat-value">{stat.value}</div>
+                              <div className="cart-stat-label">{stat.label}</div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="cart-stats">
-                        {[
-                          {
-                            icon: "calendar-alt",
-                            value: formatDate(customerSummary.lastVisitDate),
-                            label: "Last Visit",
-                          },
-                          {
-                            icon: "bar-chart",
-                            value: customerSummary.totalVisits,
-                            label: "Total Visits",
-                          },
-                          {
-                            icon: "star",
-                            value: customerSummary.loyaltyPoints,
-                            label: "Loyalty Points",
-                          },
-                          {
-                            icon: "wallet",
-                            value: formatMoney(customerSummary.walletBalance),
-                            label: "Wallet Balance",
-                          },
-                        ].map((stat) => (
-                          <div key={stat.label}>
-                            <Icon name={stat.icon} />
-                            <div className="cart-stat-value">{stat.value}</div>
-                            <div className="cart-stat-label">{stat.label}</div>
-                          </div>
-                        ))}
-                      </div>
+                    </>
+                  )}
+                  {customerSummary?.activePackages?.length > 0 && (
+                    <div className="cart-panel mb-3">
+                      <h6 className="d-flex align-items-center gap-2 mb-2">
+                        <Icon name="package" className="text-primary" />
+                        <span>Available Packages</span>
+                      </h6>
+                      {customerSummary.activePackages.map((item) => (
+                        <div key={item.customerPackageId} className="cart-row">
+                          <span>
+                            <span className="d-block fw-medium">
+                              {item.packageName}
+                            </span>
+                            <span className="cart-stat-label">
+                              Valid to {formatDate(item.validUntil)}
+                              {item.soldByStaffName
+                                ? ` - sold by ${item.soldByStaffName}`
+                                : ""}
+                            </span>
+                          </span>
+                          <span className="text-end">
+                            {(item.serviceBalances || []).map((balance) => (
+                              <span
+                                key={balance.balanceId}
+                                className="d-block cart-stat-label"
+                              >
+                                {balance.serviceName}: {balance.remainingQuantity}{" "}
+                                of {balance.includedQuantity} left
+                              </span>
+                            ))}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  </>
-                )}
-                {customerSummary?.activePackages?.length > 0 && (
+                  )}
                   <div className="cart-panel mb-3">
                     <h6 className="d-flex align-items-center gap-2 mb-2">
-                      <Icon name="package" className="text-primary" />
-                      <span>Available Packages</span>
+                      <Icon name="scissor" className="text-primary" />
+                      <span>Order Details</span>
                     </h6>
-                    {customerSummary.activePackages.map((item) => (
-                      <div key={item.customerPackageId} className="cart-row">
+                    {[
+                      {
+                        icon: "scissor",
+                        label: "Services",
+                        value: selectedServices.length,
+                      },
+                      {
+                        icon: "gift",
+                        label: "Packages",
+                        value: selectedPackages.length,
+                      },
+                      {
+                        icon: "clock",
+                        label: "Total Duration",
+                        value: `${duration} min`,
+                      },
+                    ].map((row) => (
+                      <div key={row.label} className="cart-row">
                         <span>
-                          <span className="d-block fw-medium">
-                            {item.packageName}
-                          </span>
-                          <span className="cart-stat-label">
-                            Valid to {formatDate(item.validUntil)}
-                            {item.soldByStaffName
-                              ? ` - sold by ${item.soldByStaffName}`
-                              : ""}
-                          </span>
+                          <Icon name={row.icon} />
+                          {row.label}
                         </span>
-                        <span className="text-end">
-                          {(item.serviceBalances || []).map((balance) => (
-                            <span
-                              key={balance.balanceId}
-                              className="d-block cart-stat-label"
-                            >
-                              {balance.serviceName}: {balance.remainingQuantity}{" "}
-                              of {balance.includedQuantity} left
-                            </span>
-                          ))}
-                        </span>
+                        <span className="fw-bold">{row.value}</span>
                       </div>
                     ))}
-                  </div>
-                )}
-                <div className="cart-panel mb-3">
-                  <h6 className="d-flex align-items-center gap-2 mb-2">
-                    <Icon name="scissor" className="text-primary" />
-                    <span>Order Details</span>
-                  </h6>
-                  {[
-                    {
-                      icon: "scissor",
-                      label: "Services",
-                      value: selectedServices.length,
-                    },
-                    {
-                      icon: "gift",
-                      label: "Packages",
-                      value: selectedPackages.length,
-                    },
-                    {
-                      icon: "clock",
-                      label: "Total Duration",
-                      value: `${duration} min`,
-                    },
-                  ].map((row) => (
-                    <div key={row.label} className="cart-row">
-                      <span>
-                        <Icon name={row.icon} />
-                        {row.label}
-                      </span>
-                      <span className="fw-bold">{row.value}</span>
+                    <div className="cart-row">
+                      <span>Estimated Subtotal</span>
+                      <span>{formatMoney(subtotal + packageSubtotal)}</span>
                     </div>
-                  ))}
-                  <div className="cart-row">
-                    <span>Estimated Subtotal</span>
-                    <span>{formatMoney(subtotal + packageSubtotal)}</span>
+                    <div className="cart-row">
+                      <span>Estimated Tax ({serviceGstPercent}%)</span>
+                      <span>{formatMoney(estimatedTax)}</span>
+                    </div>
+                    <div className="cart-total">
+                      <span>Estimated Total</span>
+                      <span>
+                        {formatMoney(subtotal + packageSubtotal + estimatedTax)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="cart-row">
-                    <span>Estimated Tax ({serviceGstPercent}%)</span>
-                    <span>{formatMoney(estimatedTax)}</span>
-                  </div>
-                  <div className="cart-total">
-                    <span>Estimated Total</span>
-                    <span>
-                      {formatMoney(subtotal + packageSubtotal + estimatedTax)}
-                    </span>
-                  </div>
-                </div>
                 </div>
                 <Button
                   type="submit"

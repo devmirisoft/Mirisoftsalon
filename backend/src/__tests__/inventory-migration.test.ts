@@ -24,6 +24,7 @@ const ids = {
   both: randomUUID(),
   neither: randomUUID(),
   sharedRetail: randomUUID(),
+  sharedConsumable: randomUUID(),
   empty: randomUUID(),
   negative: randomUUID(),
 };
@@ -64,6 +65,7 @@ describe("inventory locations migration", () => {
       ${product(ids.both, "Shampoo", ids.branchB, 99, true, true)}
       ${product(ids.neither, "Towels", ids.branchA, 30, false, false)}
       ${product(ids.sharedRetail, "Shared Wax", null, 8, true, false)}
+      ${product(ids.sharedConsumable, "Shared Bleach", null, 6, false, true)}
       ${product(ids.empty, "Empty Oil", ids.branchA, 0, true, false)}
       ${product(ids.negative, "Oversold Mask", ids.branchA, -3, true, false)}
       INSERT INTO "ProductStockMovement" ("id","salonId","branchId","productId","type","quantity","stockBefore","stockAfter","referenceType","referenceId")
@@ -92,6 +94,9 @@ describe("inventory locations migration", () => {
     expect(at(ids.both)).toEqual([expect.objectContaining({ branchId: ids.branchB, location: "RETAIL", quantity: "99.00" })]);
     expect(at(ids.neither)).toEqual([expect.objectContaining({ location: "WAREHOUSE", quantity: "30.00" })]);
     expect(at(ids.sharedRetail)).toEqual([expect.objectContaining({ branchId: null, siteKey: "SALON", location: "RETAIL", quantity: "8.00" })]);
+    expect(at(ids.sharedConsumable)).toEqual([
+      expect.objectContaining({ branchId: null, siteKey: "SALON", location: "SERVICE", quantity: "6.00" }),
+    ]);
     expect(at(ids.empty)).toEqual([]);
     // Stock that was already negative is carried across as it stands rather
     // than being quietly corrected; it shows up as a balance to reconcile.

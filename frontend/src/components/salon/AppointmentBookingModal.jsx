@@ -16,7 +16,6 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
-import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
 import {
   appointmentTotals,
@@ -33,6 +32,7 @@ const emptyForm = {
   salonId: "",
   branchId: "",
   customerId: "",
+  customerPhone: "",
   startTime: "",
   status: "SCHEDULED",
   bookingNote: "",
@@ -45,6 +45,8 @@ const AppointmentBookingModal = ({
   isOpen,
   toggle,
   isSuper,
+  lockBranch = false,
+  defaultBranchId = "",
   statuses = [],
   refs,
   defaults,
@@ -64,20 +66,33 @@ const AppointmentBookingModal = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setForm({ ...emptyForm, ...defaults });
+    setForm({
+      ...emptyForm,
+      ...defaults,
+      ...(lockBranch
+        ? { branchId: defaultBranchId || defaults?.branchId || "" }
+        : {}),
+    });
     setRows([]);
     setPickerStaffId(defaults?.staffId || "");
     setPickerOpen(false);
     setError("");
-  }, [isOpen, defaults]);
+  }, [isOpen, defaults, defaultBranchId, lockBranch]);
 
   // A customer added from the inline "create" option drops straight into the
   // form; the cart built so far is left untouched.
   useEffect(() => {
     if (newCustomerId) {
-      setForm((current) => ({ ...current, customerId: newCustomerId }));
+      const customer = (refs.customers || []).find(
+        (item) => item.id === newCustomerId
+      );
+      setForm((current) => ({
+        ...current,
+        customerId: newCustomerId,
+        customerPhone: customer?.phone || current.customerPhone,
+      }));
     }
-  }, [newCustomerId]);
+  }, [newCustomerId, refs.customers]);
 
   // Tax rate comes from the salon GST settings. A super admin picks the salon
   // in this form, so the rate is refetched when that changes.
@@ -89,9 +104,7 @@ const AppointmentBookingModal = ({
       .catch(() => setGst(null));
   }, [isOpen, isSuper, form.salonId]);
 
-  // Past visits for the selected customer: job carts (walk-in and completed
-  // jobs) plus booked appointments, newest first. Walk-in appointments are
-  // dropped because their job cart is already in the list.
+  // Past visits show job-cart records only, newest first.
   useEffect(() => {
     if (!isOpen || !form.customerId) {
       setHistory([]);
@@ -99,35 +112,17 @@ const AppointmentBookingModal = ({
     }
     let cancelled = false;
     setHistoryLoading(true);
-    Promise.all([
-      salonApi.jobCarts.list({ customerId: form.customerId, limit: 10 }),
-      salonApi.appointments.list({ customerId: form.customerId }),
-    ])
-      .then(([jobs, appointments]) => {
+    salonApi.jobCarts
+      .list({ customerId: form.customerId, limit: 15 })
+      .then((response) => {
         if (cancelled) return;
-        const jobRows = (jobs.data || []).map((row) => ({
-          key: `job-${row.id}`,
-          code: row.jobCartId,
-          startTime: row.startTime,
-          services: (row.items || []).map((item) => item.serviceName),
-          staff: row.staff?.name,
-          status: row.status,
-          amount: row.invoice?.totalAmount ?? row.invoice?.subtotalAmount,
-        }));
-        const appointmentRows = (appointments.data || [])
-          .filter((row) => !row.walkInJobCart)
-          .map((row) => ({
-            key: `apt-${row.id}`,
-            code: row.appointmentCode,
-            startTime: row.startTime,
-            services: (row.items || []).map(
-              (item) => item.service?.name || item.serviceName
-            ),
-            staff: row.staff?.name,
-            status: row.status,
-          }));
         setHistory(
-          [...jobRows, ...appointmentRows]
+          (response.data || [])
+            .map((row) => ({
+              key: row.id,
+              code: row.jobCartId,
+              startTime: row.startTime,
+            }))
             .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
             .slice(0, 15)
         );
@@ -167,7 +162,7 @@ const AppointmentBookingModal = ({
         .map((row) => {
           const service = serviceById.get(row.serviceId);
           if (!service) return null;
-          const price = Number(service.price || 0);
+          const price = Number(row.price ?? service.price ?? 0);
           return {
             ...row,
             name: service.name,
@@ -216,15 +211,42 @@ const AppointmentBookingModal = ({
     setRows((current) =>
       current.some((row) => row.serviceId === serviceId)
         ? current.filter((row) => row.serviceId !== serviceId)
-        : [...current, { serviceId, staffId: pickerStaffId }]
+        : [
+            ...current,
+            {
+              serviceId,
+              staffId: pickerStaffId,
+              price: Number(serviceById.get(serviceId)?.price || 0),
+            },
+          ]
     );
 
   // Label carries name and phone so react-select's default filter matches
   // either, and the picked customer shows both.
   const customerOptions = (refs.customers || []).map((item) => ({
     value: item.id,
+    phone: item.phone || "",
     label: `${item.name}${item.phone ? ` · ${item.phone}` : ""}`,
   }));
+
+  const selectCustomerByPhone = (value) => {
+    const digits = value.replace(/\D/g, "");
+    const match =
+      digits.length >= 10
+        ? (refs.customers || []).find((customer) => {
+            const stored = String(customer.phone || "").replace(/\D/g, "");
+            return stored.length >= 10 && stored.endsWith(digits.slice(-10));
+          })
+        : null;
+    setForm((current) => ({
+      ...current,
+      customerPhone: value,
+      customerId: match?.id || "",
+    }));
+  };
+
+  const hasAppointmentRows = cart.length > 0;
+  const hasScrollableContent = hasAppointmentRows || Boolean(form.customerId);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -250,6 +272,7 @@ const AppointmentBookingModal = ({
         serviceIds: cart.map((item) => item.serviceId),
         serviceItems: cart.map((item) => ({
           serviceId: item.serviceId,
+          price: item.price,
           ...(item.staffId ? { staffId: item.staffId } : {}),
         })),
         startTime: startTime.toISOString(),
@@ -271,8 +294,13 @@ const AppointmentBookingModal = ({
         isOpen={isOpen}
         toggle={toggle}
         centered
-        scrollable
-        className="appointment-booking-modal"
+        scrollable={hasScrollableContent}
+        wrapClassName="appointment-booking-modal-wrap"
+        className={`appointment-booking-modal ${
+          hasScrollableContent
+            ? "appointment-booking-modal--filled"
+            : "appointment-booking-modal--empty"
+        }`}
       >
         <Form onSubmit={submit}>
           <ModalHeader toggle={toggle}>
@@ -295,12 +323,13 @@ const AppointmentBookingModal = ({
             )}
             <Row className="g-4">
               <Col lg="8">
-                <h6 className="booking-section-title">
-                  <Icon name="user-circle" /> Booking details
-                </h6>
-                <Row className="g-3">
+                <Row
+                  className={`g-3 booking-details-grid booking-details-grid--${
+                    isSuper ? "six" : lockBranch ? "four" : "five"
+                  }`}
+                >
                   {isSuper && (
-                    <Col md>
+                    <Col md="6">
                       <FormGroup className="mb-0">
                         <Label>Salon</Label>
                         <Input
@@ -322,45 +351,32 @@ const AppointmentBookingModal = ({
                       </FormGroup>
                     </Col>
                   )}
-                  <Col md>
+                  <Col md="6">
                     <FormGroup className="mb-0">
-                      <Label>Branch</Label>
+                      <Label>Phone Number</Label>
                       <Input
-                        type="select"
-                        value={form.branchId}
-                        onChange={(event) => {
-                          const branchId = event.target.value;
-                          setField("branchId", branchId);
-                          setPickerStaffId("");
-                          const allowed = new Set(
-                            (refs.staff || [])
-                              .filter(
-                                (member) =>
-                                  !branchId ||
-                                  !member.branchId ||
-                                  member.branchId === branchId
-                              )
-                              .map((member) => member.id)
-                          );
-                          setRows((current) =>
-                            current.map((row) =>
-                              allowed.has(row.staffId)
-                                ? row
-                                : { ...row, staffId: "" }
-                            )
-                          );
-                        }}
-                      >
-                        <option value="">All branches</option>
-                        {(refs.branches || []).map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.name}
-                          </option>
-                        ))}
-                      </Input>
+                        type="tel"
+                        inputMode="tel"
+                        list="appointment-customer-phones"
+                        autoComplete="off"
+                        placeholder="Search by phone"
+                        value={form.customerPhone}
+                        onChange={(event) =>
+                          selectCustomerByPhone(event.target.value)
+                        }
+                      />
+                      <datalist id="appointment-customer-phones">
+                        {customerOptions
+                          .filter((option) => option.phone)
+                          .map((option) => (
+                            <option key={option.value} value={option.phone}>
+                              {option.label}
+                            </option>
+                          ))}
+                      </datalist>
                     </FormGroup>
                   </Col>
-                  <Col md>
+                  <Col md="6">
                     <FormGroup className="mb-0">
                       <Label>Customer</Label>
                       <CreatableSelect
@@ -375,13 +391,17 @@ const AppointmentBookingModal = ({
                         }
                         placeholder="Search by name or phone"
                         onChange={(option) =>
-                          setField("customerId", option?.value || "")
+                          setForm((current) => ({
+                            ...current,
+                            customerId: option?.value || "",
+                            customerPhone: option?.phone || "",
+                          }))
                         }
                         onCreateOption={(name) => onCreateCustomer?.(name, form)}
                       />
                     </FormGroup>
                   </Col>
-                  <Col md>
+                  <Col md="6">
                     <FormGroup className="mb-0">
                       <Label>Start time</Label>
                       <Input
@@ -395,7 +415,7 @@ const AppointmentBookingModal = ({
                       />
                     </FormGroup>
                   </Col>
-                  <Col md>
+                  <Col md="6">
                     <FormGroup className="mb-0">
                       <Label>Initial status</Label>
                       <Input
@@ -413,13 +433,53 @@ const AppointmentBookingModal = ({
                       </Input>
                     </FormGroup>
                   </Col>
+                  {!lockBranch && (
+                    <Col md="6">
+                      <FormGroup className="mb-0">
+                        <Label>Branch</Label>
+                        <Input
+                          type="select"
+                          value={form.branchId}
+                          onChange={(event) => {
+                            const branchId = event.target.value;
+                            setField("branchId", branchId);
+                            setPickerStaffId("");
+                            const allowed = new Set(
+                              (refs.staff || [])
+                                .filter(
+                                  (member) =>
+                                    !branchId ||
+                                    !member.branchId ||
+                                    member.branchId === branchId
+                                )
+                                .map((member) => member.id)
+                            );
+                            setRows((current) =>
+                              current.map((row) =>
+                                allowed.has(row.staffId)
+                                  ? row
+                                  : { ...row, staffId: "" }
+                              )
+                            );
+                          }}
+                        >
+                          <option value="">All branches</option>
+                          {(refs.branches || []).map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                  )}
                 </Row>
 
                 <FormGroup className="mt-4">
                   <div className="booking-section-head">
                     <h6 className="booking-section-title mb-0">
                       <Icon name="cart-fill" /> Services
-                      {cart.length > 0 && (
+                      {hasAppointmentRows && (
                         <span className="booking-count">{cart.length}</span>
                       )}
                     </h6>
@@ -433,7 +493,11 @@ const AppointmentBookingModal = ({
                       <Icon name="plus" /> <span>Add service</span>
                     </Button>
                   </div>
-                  <div className="table-responsive booking-cart">
+                  <div
+                    className={`booking-cart${
+                      hasAppointmentRows ? " booking-cart--filled" : ""
+                    }`}
+                  >
                     <table className="table table-sm mb-2">
                       <thead>
                         <tr>
@@ -452,7 +516,7 @@ const AppointmentBookingModal = ({
                         </tr>
                       </thead>
                       <tbody>
-                        {cart.length === 0 && (
+                        {!hasAppointmentRows && (
                           <tr>
                             <td colSpan="6">
                               <div className="booking-cart-empty">
@@ -503,8 +567,27 @@ const AppointmentBookingModal = ({
                                 ))}
                               </Input>
                             </td>
-                            <td className="text-end">
-                              {formatMoney(item.price)}
+                            <td>
+                              <Input
+                                type="number"
+                                bsSize="sm"
+                                min="0"
+                                step="0.01"
+                                className="booking-price-input"
+                                aria-label={`Price for ${item.name}`}
+                                value={item.price}
+                                disabled={saving}
+                                onChange={(event) => {
+                                  const price = event.target.value;
+                                  setRows((current) =>
+                                    current.map((row) =>
+                                      row.serviceId === item.serviceId
+                                        ? { ...row, price }
+                                        : row
+                                    )
+                                  );
+                                }}
+                              />
                             </td>
                             <td className="text-end text-soft">
                               {gstPercent}%
@@ -528,11 +611,13 @@ const AppointmentBookingModal = ({
                       </tbody>
                     </table>
                   </div>
-                  <small className="text-soft">
-                    Prices come from the service catalog. Rows left on
-                    &quot;primary staff&quot; are booked with the first assigned
-                    stylist.
-                  </small>
+                  {hasAppointmentRows && (
+                    <small className="text-soft">
+                      Prices come from the service catalog. Rows left on
+                      &quot;primary staff&quot; are booked with the first assigned
+                      stylist.
+                    </small>
+                  )}
                 </FormGroup>
 
                 <h6 className="booking-section-title mt-4">
@@ -544,6 +629,7 @@ const AppointmentBookingModal = ({
                       <Label>Booking note</Label>
                       <Input
                         type="textarea"
+                        rows="2"
                         value={form.bookingNote}
                         onChange={(event) =>
                           setField("bookingNote", event.target.value)
@@ -556,6 +642,7 @@ const AppointmentBookingModal = ({
                       <Label>Internal note</Label>
                       <Input
                         type="textarea"
+                        rows="2"
                         value={form.internalNote}
                         onChange={(event) =>
                           setField("internalNote", event.target.value)
@@ -605,10 +692,12 @@ const AppointmentBookingModal = ({
                         <span>Estimated total</span>
                         <strong>{formatMoney(totals.total)}</strong>
                       </div>
-                      <p className="text-soft small">
-                        Tax is an estimate at the salon service GST rate. The
-                        final invoice is raised from the bill screen.
-                      </p>
+                      {hasAppointmentRows && (
+                        <p className="text-soft small">
+                          Tax is an estimate at the salon service GST rate. The
+                          final invoice is raised from the bill screen.
+                        </p>
+                      )}
                       <Button
                         type="submit"
                         color="primary"
@@ -626,50 +715,38 @@ const AppointmentBookingModal = ({
                     </div>
                   </div>
 
-                  <div className="card card-bordered mt-3">
-                    <div className="card-inner">
-                      <h6 className="booking-section-title">
-                        <Icon name="history" /> Past visits
-                      </h6>
-                      {!form.customerId ? (
-                        <p className="text-soft small mb-0">
-                          Pick a customer to see their history.
-                        </p>
-                      ) : historyLoading ? (
-                        <Spinner size="sm" />
-                      ) : history.length === 0 ? (
-                        <p className="text-soft small mb-0">
-                          No past appointments or job carts.
-                        </p>
-                      ) : (
-                        <div className="booking-history">
-                          {history.map((visit) => (
-                            <div key={visit.key} className="booking-history-item">
-                              <div className="d-flex justify-content-between align-items-center gap-2">
+                  {form.customerId && (
+                    <div className="card card-bordered mt-3">
+                      <div className="card-inner">
+                        <h6 className="booking-section-title">
+                          <Icon name="history" /> Past visits
+                        </h6>
+                        {historyLoading ? (
+                          <Spinner size="sm" />
+                        ) : history.length === 0 ? (
+                          <p className="text-soft small mb-0">
+                            No past job carts.
+                          </p>
+                        ) : (
+                          <div className="booking-history">
+                            {history.map((visit) => (
+                              <div
+                                key={visit.key}
+                                className="booking-history-item"
+                              >
                                 <strong className="small">
-                                  {visit.code || "—"}
+                                  {visit.code || "-"}
                                 </strong>
-                                <StatusBadge value={visit.status} />
+                                <div className="text-soft small">
+                                  {formatDate(visit.startTime)}
+                                </div>
                               </div>
-                              <div className="text-soft small">
-                                {formatDate(visit.startTime, true)}
-                              </div>
-                              <div className="small">
-                                {visit.services.filter(Boolean).join(", ") ||
-                                  "—"}
-                              </div>
-                              <div className="text-soft small">
-                                {visit.staff || "Unassigned"}
-                                {visit.amount != null
-                                  ? ` · ${formatMoney(visit.amount)}`
-                                  : ""}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </Col>
             </Row>

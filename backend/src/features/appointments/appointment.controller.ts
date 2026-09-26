@@ -249,13 +249,28 @@ export const createAppointment = async (req: Request, res: Response) => {
         // The booking cart assigns a stylist per service. Anything left
         // unassigned falls back to the appointment's primary staff.
         const staffByServiceId = new Map<string, string>();
+        const priceByServiceId = new Map<string, number>();
         for (const item of Array.isArray(serviceItems) ? serviceItems : []) {
             if (item?.serviceId && item?.staffId) {
                 staffByServiceId.set(String(item.serviceId), String(item.staffId));
             }
+            if (item?.serviceId && item?.price !== undefined) {
+                const price = Number(item.price);
+                if (!Number.isFinite(price) || price < 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Service prices must be valid non-negative numbers",
+                    });
+                }
+                priceByServiceId.set(String(item.serviceId), price);
+            }
         }
 
-        if ([...staffByServiceId.keys()].some((id) => !serviceIds.includes(id))) {
+        const itemServiceIds = new Set([
+            ...staffByServiceId.keys(),
+            ...priceByServiceId.keys(),
+        ]);
+        if ([...itemServiceIds].some((id) => !serviceIds.includes(id))) {
             return res.status(400).json({
                 success: false,
                 message: "serviceItems must reference the booked services",
@@ -292,7 +307,7 @@ export const createAppointment = async (req: Request, res: Response) => {
         }, 0);
 
         const estimatedAmount = services.reduce((total, service) => {
-            return total + Number(service.price);
+            return total + (priceByServiceId.get(service.id) ?? Number(service.price));
         }, 0);
 
         const finalStartTime = new Date(startTime);
@@ -357,7 +372,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             services: services.map((service) => ({
                 serviceId: service.id,
                 serviceName: service.name,
-                price: Number(service.price),
+                price: priceByServiceId.get(service.id) ?? Number(service.price),
                 staffId: staffByServiceId.get(service.id) ?? staffId,
 
                 ...(service.durationValue !== null && service.durationValue !== undefined

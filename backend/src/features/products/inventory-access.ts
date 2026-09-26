@@ -82,5 +82,15 @@ export const sendInventoryError = (
     error instanceof Error && status !== 500
       ? error.message
       : "Internal server error";
-  return res.status(status).json({ success: false, message });
+  // A stock shortfall also says where, so the client can offer a transfer.
+  const detail =
+    status !== 500 && typeof error === "object" && error !== null
+      ? {
+          ...("code" in error && typeof error.code === "string"
+            ? { code: error.code }
+            : {}),
+          ...("stock" in error ? { stock: error.stock } : {}),
+        }
+      : {};
+  return res.status(status).json({ success: false, message, ...detail });
 };

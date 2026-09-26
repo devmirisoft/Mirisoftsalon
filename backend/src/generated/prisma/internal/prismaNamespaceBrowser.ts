@@ -93,6 +93,8 @@ export const ModelName = {
   ProductBrand: 'ProductBrand',
   Product: 'Product',
   ProductStockMovement: 'ProductStockMovement',
+  ProductLocationStock: 'ProductLocationStock',
+  ProductContainer: 'ProductContainer',
   ProductPurchase: 'ProductPurchase',
   Vendor: 'Vendor',
   VendorPayment: 'VendorPayment',
@@ -142,6 +144,7 @@ export const SalonScalarFieldEnum = {
   productGstRate: 'productGstRate',
   gstVerifiedAt: 'gstVerifiedAt',
   membershipDiscountOnPackages: 'membershipDiscountOnPackages',
+  stackMembershipDiscount: 'stackMembershipDiscount',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',
@@ -155,6 +158,14 @@ export const SalonScalarFieldEnum = {
 } as const
 
 export type SalonScalarFieldEnum = (typeof SalonScalarFieldEnum)[keyof typeof SalonScalarFieldEnum]
+
+
+export const RelationLoadStrategy = {
+  query: 'query',
+  join: 'join'
+} as const
+
+export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
 
 
 export const UserScalarFieldEnum = {
@@ -1010,6 +1021,7 @@ export const ProductScalarFieldEnum = {
   description: 'description',
   sku: 'sku',
   barcode: 'barcode',
+  hsnCode: 'hsnCode',
   category: 'category',
   unit: 'unit',
   costPrice: 'costPrice',
@@ -1019,6 +1031,8 @@ export const ProductScalarFieldEnum = {
   isRetailProduct: 'isRetailProduct',
   isServiceConsumable: 'isServiceConsumable',
   status: 'status',
+  packSize: 'packSize',
+  packUnit: 'packUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1040,10 +1054,57 @@ export const ProductStockMovementScalarFieldEnum = {
   referenceType: 'referenceType',
   referenceId: 'referenceId',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  location: 'location',
+  toLocation: 'toLocation',
+  toBranchId: 'toBranchId',
+  containerId: 'containerId',
+  appointmentServiceId: 'appointmentServiceId',
+  serviceId: 'serviceId',
+  staffId: 'staffId',
+  receivedByStaffId: 'receivedByStaffId',
+  expectedQuantity: 'expectedQuantity',
+  unit: 'unit'
 } as const
 
 export type ProductStockMovementScalarFieldEnum = (typeof ProductStockMovementScalarFieldEnum)[keyof typeof ProductStockMovementScalarFieldEnum]
+
+
+export const ProductLocationStockScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  siteKey: 'siteKey',
+  productId: 'productId',
+  location: 'location',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductLocationStockScalarFieldEnum = (typeof ProductLocationStockScalarFieldEnum)[keyof typeof ProductLocationStockScalarFieldEnum]
+
+
+export const ProductContainerScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  productId: 'productId',
+  location: 'location',
+  originalQuantity: 'originalQuantity',
+  remainingQuantity: 'remainingQuantity',
+  unit: 'unit',
+  status: 'status',
+  openedByStaffId: 'openedByStaffId',
+  openedById: 'openedById',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductContainerScalarFieldEnum = (typeof ProductContainerScalarFieldEnum)[keyof typeof ProductContainerScalarFieldEnum]
 
 
 export const ProductPurchaseScalarFieldEnum = {

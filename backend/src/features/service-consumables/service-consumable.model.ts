@@ -14,6 +14,8 @@ const include = {
       id: true,
       name: true,
       unit: true,
+      packSize: true,
+      packUnit: true,
       branchId: true,
       currentStock: true,
       isServiceConsumable: true,

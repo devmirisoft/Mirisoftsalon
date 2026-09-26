@@ -30,12 +30,14 @@ export type ProductStockMovementAvgAggregateOutputType = {
   quantity: runtime.Decimal | null
   stockBefore: runtime.Decimal | null
   stockAfter: runtime.Decimal | null
+  expectedQuantity: runtime.Decimal | null
 }
 
 export type ProductStockMovementSumAggregateOutputType = {
   quantity: runtime.Decimal | null
   stockBefore: runtime.Decimal | null
   stockAfter: runtime.Decimal | null
+  expectedQuantity: runtime.Decimal | null
 }
 
 export type ProductStockMovementMinAggregateOutputType = {
@@ -53,6 +55,16 @@ export type ProductStockMovementMinAggregateOutputType = {
   referenceId: string | null
   createdById: string | null
   createdAt: Date | null
+  location: $Enums.InventoryLocation | null
+  toLocation: $Enums.InventoryLocation | null
+  toBranchId: string | null
+  containerId: string | null
+  appointmentServiceId: string | null
+  serviceId: string | null
+  staffId: string | null
+  receivedByStaffId: string | null
+  expectedQuantity: runtime.Decimal | null
+  unit: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementMaxAggregateOutputType = {
@@ -70,6 +82,16 @@ export type ProductStockMovementMaxAggregateOutputType = {
   referenceId: string | null
   createdById: string | null
   createdAt: Date | null
+  location: $Enums.InventoryLocation | null
+  toLocation: $Enums.InventoryLocation | null
+  toBranchId: string | null
+  containerId: string | null
+  appointmentServiceId: string | null
+  serviceId: string | null
+  staffId: string | null
+  receivedByStaffId: string | null
+  expectedQuantity: runtime.Decimal | null
+  unit: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCountAggregateOutputType = {
@@ -87,6 +109,16 @@ export type ProductStockMovementCountAggregateOutputType = {
   referenceId: number
   createdById: number
   createdAt: number
+  location: number
+  toLocation: number
+  toBranchId: number
+  containerId: number
+  appointmentServiceId: number
+  serviceId: number
+  staffId: number
+  receivedByStaffId: number
+  expectedQuantity: number
+  unit: number
   _all: number
 }
 
@@ -95,12 +127,14 @@ export type ProductStockMovementAvgAggregateInputType = {
   quantity?: true
   stockBefore?: true
   stockAfter?: true
+  expectedQuantity?: true
 }
 
 export type ProductStockMovementSumAggregateInputType = {
   quantity?: true
   stockBefore?: true
   stockAfter?: true
+  expectedQuantity?: true
 }
 
 export type ProductStockMovementMinAggregateInputType = {
@@ -118,6 +152,16 @@ export type ProductStockMovementMinAggregateInputType = {
   referenceId?: true
   createdById?: true
   createdAt?: true
+  location?: true
+  toLocation?: true
+  toBranchId?: true
+  containerId?: true
+  appointmentServiceId?: true
+  serviceId?: true
+  staffId?: true
+  receivedByStaffId?: true
+  expectedQuantity?: true
+  unit?: true
 }
 
 export type ProductStockMovementMaxAggregateInputType = {
@@ -135,6 +179,16 @@ export type ProductStockMovementMaxAggregateInputType = {
   referenceId?: true
   createdById?: true
   createdAt?: true
+  location?: true
+  toLocation?: true
+  toBranchId?: true
+  containerId?: true
+  appointmentServiceId?: true
+  serviceId?: true
+  staffId?: true
+  receivedByStaffId?: true
+  expectedQuantity?: true
+  unit?: true
 }
 
 export type ProductStockMovementCountAggregateInputType = {
@@ -152,6 +206,16 @@ export type ProductStockMovementCountAggregateInputType = {
   referenceId?: true
   createdById?: true
   createdAt?: true
+  location?: true
+  toLocation?: true
+  toBranchId?: true
+  containerId?: true
+  appointmentServiceId?: true
+  serviceId?: true
+  staffId?: true
+  receivedByStaffId?: true
+  expectedQuantity?: true
+  unit?: true
   _all?: true
 }
 
@@ -256,6 +320,16 @@ export type ProductStockMovementGroupByOutputType = {
   referenceId: string | null
   createdById: string | null
   createdAt: Date
+  location: $Enums.InventoryLocation | null
+  toLocation: $Enums.InventoryLocation | null
+  toBranchId: string | null
+  containerId: string | null
+  appointmentServiceId: string | null
+  serviceId: string | null
+  staffId: string | null
+  receivedByStaffId: string | null
+  expectedQuantity: runtime.Decimal | null
+  unit: $Enums.ProductUnit | null
   _count: ProductStockMovementCountAggregateOutputType | null
   _avg: ProductStockMovementAvgAggregateOutputType | null
   _sum: ProductStockMovementSumAggregateOutputType | null
@@ -296,10 +370,25 @@ export type ProductStockMovementWhereInput = {
   referenceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdById?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductStockMovement"> | Date | string
+  location?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toLocation?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  containerId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  appointmentServiceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  serviceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  staffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  receivedByStaffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  expectedQuantity?: Prisma.DecimalNullableFilter<"ProductStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.EnumProductUnitNullableFilter<"ProductStockMovement"> | $Enums.ProductUnit | null
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  container?: Prisma.XOR<Prisma.ProductContainerNullableScalarRelationFilter, Prisma.ProductContainerWhereInput> | null
+  appointmentService?: Prisma.XOR<Prisma.AppointmentServiceNullableScalarRelationFilter, Prisma.AppointmentServiceWhereInput> | null
+  service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
+  receivedByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
 }
 
 export type ProductStockMovementOrderByWithRelationInput = {
@@ -317,10 +406,25 @@ export type ProductStockMovementOrderByWithRelationInput = {
   referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  location?: Prisma.SortOrderInput | Prisma.SortOrder
+  toLocation?: Prisma.SortOrderInput | Prisma.SortOrder
+  toBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  containerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appointmentServiceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  staffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  receivedByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unit?: Prisma.SortOrderInput | Prisma.SortOrder
   salon?: Prisma.SalonOrderByWithRelationInput
   branch?: Prisma.BranchOrderByWithRelationInput
   product?: Prisma.ProductOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  container?: Prisma.ProductContainerOrderByWithRelationInput
+  appointmentService?: Prisma.AppointmentServiceOrderByWithRelationInput
+  service?: Prisma.ServiceOrderByWithRelationInput
+  staff?: Prisma.StaffOrderByWithRelationInput
+  receivedByStaff?: Prisma.StaffOrderByWithRelationInput
 }
 
 export type ProductStockMovementWhereUniqueInput = Prisma.AtLeast<{
@@ -341,10 +445,25 @@ export type ProductStockMovementWhereUniqueInput = Prisma.AtLeast<{
   referenceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdById?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductStockMovement"> | Date | string
+  location?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toLocation?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  containerId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  appointmentServiceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  serviceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  staffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  receivedByStaffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  expectedQuantity?: Prisma.DecimalNullableFilter<"ProductStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.EnumProductUnitNullableFilter<"ProductStockMovement"> | $Enums.ProductUnit | null
   salon?: Prisma.XOR<Prisma.SalonScalarRelationFilter, Prisma.SalonWhereInput>
   branch?: Prisma.XOR<Prisma.BranchNullableScalarRelationFilter, Prisma.BranchWhereInput> | null
   product?: Prisma.XOR<Prisma.ProductScalarRelationFilter, Prisma.ProductWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  container?: Prisma.XOR<Prisma.ProductContainerNullableScalarRelationFilter, Prisma.ProductContainerWhereInput> | null
+  appointmentService?: Prisma.XOR<Prisma.AppointmentServiceNullableScalarRelationFilter, Prisma.AppointmentServiceWhereInput> | null
+  service?: Prisma.XOR<Prisma.ServiceNullableScalarRelationFilter, Prisma.ServiceWhereInput> | null
+  staff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
+  receivedByStaff?: Prisma.XOR<Prisma.StaffNullableScalarRelationFilter, Prisma.StaffWhereInput> | null
 }, "id">
 
 export type ProductStockMovementOrderByWithAggregationInput = {
@@ -362,6 +481,16 @@ export type ProductStockMovementOrderByWithAggregationInput = {
   referenceId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  location?: Prisma.SortOrderInput | Prisma.SortOrder
+  toLocation?: Prisma.SortOrderInput | Prisma.SortOrder
+  toBranchId?: Prisma.SortOrderInput | Prisma.SortOrder
+  containerId?: Prisma.SortOrderInput | Prisma.SortOrder
+  appointmentServiceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceId?: Prisma.SortOrderInput | Prisma.SortOrder
+  staffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  receivedByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  unit?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProductStockMovementCountOrderByAggregateInput
   _avg?: Prisma.ProductStockMovementAvgOrderByAggregateInput
   _max?: Prisma.ProductStockMovementMaxOrderByAggregateInput
@@ -387,6 +516,16 @@ export type ProductStockMovementScalarWhereWithAggregatesInput = {
   referenceId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
   createdById?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProductStockMovement"> | Date | string
+  location?: Prisma.EnumInventoryLocationNullableWithAggregatesFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toLocation?: Prisma.EnumInventoryLocationNullableWithAggregatesFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  containerId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  appointmentServiceId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  serviceId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  staffId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  receivedByStaffId?: Prisma.StringNullableWithAggregatesFilter<"ProductStockMovement"> | string | null
+  expectedQuantity?: Prisma.DecimalNullableWithAggregatesFilter<"ProductStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.EnumProductUnitNullableWithAggregatesFilter<"ProductStockMovement"> | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateInput = {
@@ -400,10 +539,20 @@ export type ProductStockMovementCreateInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
   salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
   branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
 }
 
 export type ProductStockMovementUncheckedCreateInput = {
@@ -421,6 +570,16 @@ export type ProductStockMovementUncheckedCreateInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateInput = {
@@ -434,10 +593,20 @@ export type ProductStockMovementUpdateInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
   salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
   branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
 }
 
 export type ProductStockMovementUncheckedUpdateInput = {
@@ -455,6 +624,16 @@ export type ProductStockMovementUncheckedUpdateInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateManyInput = {
@@ -472,6 +651,16 @@ export type ProductStockMovementCreateManyInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateManyMutationInput = {
@@ -485,6 +674,11 @@ export type ProductStockMovementUpdateManyMutationInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUncheckedUpdateManyInput = {
@@ -502,6 +696,16 @@ export type ProductStockMovementUncheckedUpdateManyInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementListRelationFilter = {
@@ -529,12 +733,23 @@ export type ProductStockMovementCountOrderByAggregateInput = {
   referenceId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  toLocation?: Prisma.SortOrder
+  toBranchId?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
+  appointmentServiceId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
+  staffId?: Prisma.SortOrder
+  receivedByStaffId?: Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrder
+  unit?: Prisma.SortOrder
 }
 
 export type ProductStockMovementAvgOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   stockBefore?: Prisma.SortOrder
   stockAfter?: Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrder
 }
 
 export type ProductStockMovementMaxOrderByAggregateInput = {
@@ -552,6 +767,16 @@ export type ProductStockMovementMaxOrderByAggregateInput = {
   referenceId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  toLocation?: Prisma.SortOrder
+  toBranchId?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
+  appointmentServiceId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
+  staffId?: Prisma.SortOrder
+  receivedByStaffId?: Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrder
+  unit?: Prisma.SortOrder
 }
 
 export type ProductStockMovementMinOrderByAggregateInput = {
@@ -569,12 +794,23 @@ export type ProductStockMovementMinOrderByAggregateInput = {
   referenceId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  location?: Prisma.SortOrder
+  toLocation?: Prisma.SortOrder
+  toBranchId?: Prisma.SortOrder
+  containerId?: Prisma.SortOrder
+  appointmentServiceId?: Prisma.SortOrder
+  serviceId?: Prisma.SortOrder
+  staffId?: Prisma.SortOrder
+  receivedByStaffId?: Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrder
+  unit?: Prisma.SortOrder
 }
 
 export type ProductStockMovementSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   stockBefore?: Prisma.SortOrder
   stockAfter?: Prisma.SortOrder
+  expectedQuantity?: Prisma.SortOrder
 }
 
 export type ProductStockMovementCreateNestedManyWithoutSalonInput = {
@@ -703,6 +939,174 @@ export type ProductStockMovementUncheckedUpdateManyWithoutBranchNestedInput = {
   deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
 }
 
+export type ProductStockMovementCreateNestedManyWithoutStaffInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput> | Prisma.ProductStockMovementCreateWithoutStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyStaffInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput> | Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyReceivedByStaffInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput> | Prisma.ProductStockMovementCreateWithoutStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyStaffInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput> | Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyReceivedByStaffInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUpdateManyWithoutStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput> | Prisma.ProductStockMovementCreateWithoutStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutStaffInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyStaffInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutStaffInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutStaffInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutStaffInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutStaffInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput> | Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutReceivedByStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyReceivedByStaffInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutReceivedByStaffInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutReceivedByStaffInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput> | Prisma.ProductStockMovementCreateWithoutStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutStaffInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutStaffInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyStaffInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutStaffInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutStaffInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutStaffInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutStaffInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput> | Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput | Prisma.ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutReceivedByStaffInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyReceivedByStaffInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutReceivedByStaffInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutReceivedByStaffInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutReceivedByStaffInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput> | Prisma.ProductStockMovementCreateWithoutServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyServiceInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUncheckedCreateNestedManyWithoutServiceInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput> | Prisma.ProductStockMovementCreateWithoutServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyServiceInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput> | Prisma.ProductStockMovementCreateWithoutServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutServiceInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyServiceInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutServiceInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutServiceInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput> | Prisma.ProductStockMovementCreateWithoutServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutServiceInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutServiceInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyServiceInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutServiceInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutServiceInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutServiceInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutServiceInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementCreateNestedManyWithoutAppointmentServiceInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput> | Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyAppointmentServiceInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUncheckedCreateNestedManyWithoutAppointmentServiceInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput> | Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyAppointmentServiceInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUpdateManyWithoutAppointmentServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput> | Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutAppointmentServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyAppointmentServiceInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutAppointmentServiceInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutAppointmentServiceInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput> | Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput | Prisma.ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutAppointmentServiceInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyAppointmentServiceInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutAppointmentServiceInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutAppointmentServiceInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutAppointmentServiceInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
 export type ProductStockMovementCreateNestedManyWithoutProductInput = {
   create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutProductInput, Prisma.ProductStockMovementUncheckedCreateWithoutProductInput> | Prisma.ProductStockMovementCreateWithoutProductInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutProductInput[]
   connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutProductInput | Prisma.ProductStockMovementCreateOrConnectWithoutProductInput[]
@@ -749,6 +1153,52 @@ export type EnumProductStockMovementTypeFieldUpdateOperationsInput = {
   set?: $Enums.ProductStockMovementType
 }
 
+export type NullableEnumInventoryLocationFieldUpdateOperationsInput = {
+  set?: $Enums.InventoryLocation | null
+}
+
+export type ProductStockMovementCreateNestedManyWithoutContainerInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput> | Prisma.ProductStockMovementCreateWithoutContainerInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput | Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyContainerInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUncheckedCreateNestedManyWithoutContainerInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput> | Prisma.ProductStockMovementCreateWithoutContainerInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput | Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyContainerInputEnvelope
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+}
+
+export type ProductStockMovementUpdateManyWithoutContainerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput> | Prisma.ProductStockMovementCreateWithoutContainerInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput | Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutContainerInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutContainerInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyContainerInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutContainerInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutContainerInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutContainerInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutContainerInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutContainerNestedInput = {
+  create?: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput> | Prisma.ProductStockMovementCreateWithoutContainerInput[] | Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput[]
+  connectOrCreate?: Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput | Prisma.ProductStockMovementCreateOrConnectWithoutContainerInput[]
+  upsert?: Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutContainerInput | Prisma.ProductStockMovementUpsertWithWhereUniqueWithoutContainerInput[]
+  createMany?: Prisma.ProductStockMovementCreateManyContainerInputEnvelope
+  set?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  disconnect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  delete?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  connect?: Prisma.ProductStockMovementWhereUniqueInput | Prisma.ProductStockMovementWhereUniqueInput[]
+  update?: Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutContainerInput | Prisma.ProductStockMovementUpdateWithWhereUniqueWithoutContainerInput[]
+  updateMany?: Prisma.ProductStockMovementUpdateManyWithWhereWithoutContainerInput | Prisma.ProductStockMovementUpdateManyWithWhereWithoutContainerInput[]
+  deleteMany?: Prisma.ProductStockMovementScalarWhereInput | Prisma.ProductStockMovementScalarWhereInput[]
+}
+
 export type ProductStockMovementCreateWithoutSalonInput = {
   id?: string
   type: $Enums.ProductStockMovementType
@@ -760,9 +1210,19 @@ export type ProductStockMovementCreateWithoutSalonInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
   branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
 }
 
 export type ProductStockMovementUncheckedCreateWithoutSalonInput = {
@@ -779,6 +1239,16 @@ export type ProductStockMovementUncheckedCreateWithoutSalonInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateOrConnectWithoutSalonInput = {
@@ -825,6 +1295,16 @@ export type ProductStockMovementScalarWhereInput = {
   referenceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdById?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ProductStockMovement"> | Date | string
+  location?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toLocation?: Prisma.EnumInventoryLocationNullableFilter<"ProductStockMovement"> | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  containerId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  appointmentServiceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  serviceId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  staffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  receivedByStaffId?: Prisma.StringNullableFilter<"ProductStockMovement"> | string | null
+  expectedQuantity?: Prisma.DecimalNullableFilter<"ProductStockMovement"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.EnumProductUnitNullableFilter<"ProductStockMovement"> | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateWithoutCreatedByInput = {
@@ -838,9 +1318,19 @@ export type ProductStockMovementCreateWithoutCreatedByInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
   salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
   branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
 }
 
 export type ProductStockMovementUncheckedCreateWithoutCreatedByInput = {
@@ -857,6 +1347,16 @@ export type ProductStockMovementUncheckedCreateWithoutCreatedByInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateOrConnectWithoutCreatedByInput = {
@@ -896,9 +1396,19 @@ export type ProductStockMovementCreateWithoutBranchInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
   salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
   product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
 }
 
 export type ProductStockMovementUncheckedCreateWithoutBranchInput = {
@@ -915,6 +1425,16 @@ export type ProductStockMovementUncheckedCreateWithoutBranchInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateOrConnectWithoutBranchInput = {
@@ -943,6 +1463,318 @@ export type ProductStockMovementUpdateManyWithWhereWithoutBranchInput = {
   data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutBranchInput>
 }
 
+export type ProductStockMovementCreateWithoutStaffInput = {
+  id?: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+  salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
+}
+
+export type ProductStockMovementUncheckedCreateWithoutStaffInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateOrConnectWithoutStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput>
+}
+
+export type ProductStockMovementCreateManyStaffInputEnvelope = {
+  data: Prisma.ProductStockMovementCreateManyStaffInput | Prisma.ProductStockMovementCreateManyStaffInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductStockMovementCreateWithoutReceivedByStaffInput = {
+  id?: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+  salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+}
+
+export type ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateOrConnectWithoutReceivedByStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput>
+}
+
+export type ProductStockMovementCreateManyReceivedByStaffInputEnvelope = {
+  data: Prisma.ProductStockMovementCreateManyReceivedByStaffInput | Prisma.ProductStockMovementCreateManyReceivedByStaffInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductStockMovementUpsertWithWhereUniqueWithoutStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutStaffInput, Prisma.ProductStockMovementUncheckedUpdateWithoutStaffInput>
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutStaffInput>
+}
+
+export type ProductStockMovementUpdateWithWhereUniqueWithoutStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutStaffInput, Prisma.ProductStockMovementUncheckedUpdateWithoutStaffInput>
+}
+
+export type ProductStockMovementUpdateManyWithWhereWithoutStaffInput = {
+  where: Prisma.ProductStockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffInput>
+}
+
+export type ProductStockMovementUpsertWithWhereUniqueWithoutReceivedByStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedUpdateWithoutReceivedByStaffInput>
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedCreateWithoutReceivedByStaffInput>
+}
+
+export type ProductStockMovementUpdateWithWhereUniqueWithoutReceivedByStaffInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutReceivedByStaffInput, Prisma.ProductStockMovementUncheckedUpdateWithoutReceivedByStaffInput>
+}
+
+export type ProductStockMovementUpdateManyWithWhereWithoutReceivedByStaffInput = {
+  where: Prisma.ProductStockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffInput>
+}
+
+export type ProductStockMovementCreateWithoutServiceInput = {
+  id?: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+  salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
+}
+
+export type ProductStockMovementUncheckedCreateWithoutServiceInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateOrConnectWithoutServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput>
+}
+
+export type ProductStockMovementCreateManyServiceInputEnvelope = {
+  data: Prisma.ProductStockMovementCreateManyServiceInput | Prisma.ProductStockMovementCreateManyServiceInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductStockMovementUpsertWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutServiceInput, Prisma.ProductStockMovementUncheckedUpdateWithoutServiceInput>
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutServiceInput>
+}
+
+export type ProductStockMovementUpdateWithWhereUniqueWithoutServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutServiceInput, Prisma.ProductStockMovementUncheckedUpdateWithoutServiceInput>
+}
+
+export type ProductStockMovementUpdateManyWithWhereWithoutServiceInput = {
+  where: Prisma.ProductStockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutServiceInput>
+}
+
+export type ProductStockMovementCreateWithoutAppointmentServiceInput = {
+  id?: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+  salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
+}
+
+export type ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateOrConnectWithoutAppointmentServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput>
+}
+
+export type ProductStockMovementCreateManyAppointmentServiceInputEnvelope = {
+  data: Prisma.ProductStockMovementCreateManyAppointmentServiceInput | Prisma.ProductStockMovementCreateManyAppointmentServiceInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductStockMovementUpsertWithWhereUniqueWithoutAppointmentServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedUpdateWithoutAppointmentServiceInput>
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedCreateWithoutAppointmentServiceInput>
+}
+
+export type ProductStockMovementUpdateWithWhereUniqueWithoutAppointmentServiceInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutAppointmentServiceInput, Prisma.ProductStockMovementUncheckedUpdateWithoutAppointmentServiceInput>
+}
+
+export type ProductStockMovementUpdateManyWithWhereWithoutAppointmentServiceInput = {
+  where: Prisma.ProductStockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceInput>
+}
+
 export type ProductStockMovementCreateWithoutProductInput = {
   id?: string
   type: $Enums.ProductStockMovementType
@@ -954,9 +1786,19 @@ export type ProductStockMovementCreateWithoutProductInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
   salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
   branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
   createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  container?: Prisma.ProductContainerCreateNestedOneWithoutMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
 }
 
 export type ProductStockMovementUncheckedCreateWithoutProductInput = {
@@ -973,6 +1815,16 @@ export type ProductStockMovementUncheckedCreateWithoutProductInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateOrConnectWithoutProductInput = {
@@ -1001,6 +1853,84 @@ export type ProductStockMovementUpdateManyWithWhereWithoutProductInput = {
   data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutProductInput>
 }
 
+export type ProductStockMovementCreateWithoutContainerInput = {
+  id?: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+  salon: Prisma.SalonCreateNestedOneWithoutProductStockMovementsInput
+  branch?: Prisma.BranchCreateNestedOneWithoutProductStockMovementsInput
+  product: Prisma.ProductCreateNestedOneWithoutStockMovementsInput
+  createdBy?: Prisma.UserCreateNestedOneWithoutCreatedProductStockMovementsInput
+  appointmentService?: Prisma.AppointmentServiceCreateNestedOneWithoutStockMovementsInput
+  service?: Prisma.ServiceCreateNestedOneWithoutStockMovementsInput
+  staff?: Prisma.StaffCreateNestedOneWithoutStockMovementsInput
+  receivedByStaff?: Prisma.StaffCreateNestedOneWithoutReceivedStockMovementsInput
+}
+
+export type ProductStockMovementUncheckedCreateWithoutContainerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateOrConnectWithoutContainerInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput>
+}
+
+export type ProductStockMovementCreateManyContainerInputEnvelope = {
+  data: Prisma.ProductStockMovementCreateManyContainerInput | Prisma.ProductStockMovementCreateManyContainerInput[]
+  skipDuplicates?: boolean
+}
+
+export type ProductStockMovementUpsertWithWhereUniqueWithoutContainerInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  update: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutContainerInput, Prisma.ProductStockMovementUncheckedUpdateWithoutContainerInput>
+  create: Prisma.XOR<Prisma.ProductStockMovementCreateWithoutContainerInput, Prisma.ProductStockMovementUncheckedCreateWithoutContainerInput>
+}
+
+export type ProductStockMovementUpdateWithWhereUniqueWithoutContainerInput = {
+  where: Prisma.ProductStockMovementWhereUniqueInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateWithoutContainerInput, Prisma.ProductStockMovementUncheckedUpdateWithoutContainerInput>
+}
+
+export type ProductStockMovementUpdateManyWithWhereWithoutContainerInput = {
+  where: Prisma.ProductStockMovementScalarWhereInput
+  data: Prisma.XOR<Prisma.ProductStockMovementUpdateManyMutationInput, Prisma.ProductStockMovementUncheckedUpdateManyWithoutContainerInput>
+}
+
 export type ProductStockMovementCreateManySalonInput = {
   id?: string
   branchId?: string | null
@@ -1015,6 +1945,16 @@ export type ProductStockMovementCreateManySalonInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateWithoutSalonInput = {
@@ -1028,9 +1968,19 @@ export type ProductStockMovementUpdateWithoutSalonInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
   branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
 }
 
 export type ProductStockMovementUncheckedUpdateWithoutSalonInput = {
@@ -1047,6 +1997,16 @@ export type ProductStockMovementUncheckedUpdateWithoutSalonInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUncheckedUpdateManyWithoutSalonInput = {
@@ -1063,6 +2023,16 @@ export type ProductStockMovementUncheckedUpdateManyWithoutSalonInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateManyCreatedByInput = {
@@ -1079,6 +2049,16 @@ export type ProductStockMovementCreateManyCreatedByInput = {
   referenceType?: string | null
   referenceId?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateWithoutCreatedByInput = {
@@ -1092,9 +2072,19 @@ export type ProductStockMovementUpdateWithoutCreatedByInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
   salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
   branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
 }
 
 export type ProductStockMovementUncheckedUpdateWithoutCreatedByInput = {
@@ -1111,6 +2101,16 @@ export type ProductStockMovementUncheckedUpdateWithoutCreatedByInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUncheckedUpdateManyWithoutCreatedByInput = {
@@ -1127,6 +2127,16 @@ export type ProductStockMovementUncheckedUpdateManyWithoutCreatedByInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateManyBranchInput = {
@@ -1143,6 +2153,16 @@ export type ProductStockMovementCreateManyBranchInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateWithoutBranchInput = {
@@ -1156,9 +2176,19 @@ export type ProductStockMovementUpdateWithoutBranchInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
   salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
   product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
 }
 
 export type ProductStockMovementUncheckedUpdateWithoutBranchInput = {
@@ -1175,6 +2205,16 @@ export type ProductStockMovementUncheckedUpdateWithoutBranchInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUncheckedUpdateManyWithoutBranchInput = {
@@ -1191,6 +2231,432 @@ export type ProductStockMovementUncheckedUpdateManyWithoutBranchInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateManyStaffInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateManyReceivedByStaffInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUpdateWithoutStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
+}
+
+export type ProductStockMovementUncheckedUpdateWithoutStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUpdateWithoutReceivedByStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+}
+
+export type ProductStockMovementUncheckedUpdateWithoutReceivedByStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateManyServiceInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
+}
+
+export type ProductStockMovementUncheckedUpdateWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateManyAppointmentServiceInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUpdateWithoutAppointmentServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
+}
+
+export type ProductStockMovementUncheckedUpdateWithoutAppointmentServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutAppointmentServiceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementCreateManyProductInput = {
@@ -1207,6 +2673,16 @@ export type ProductStockMovementCreateManyProductInput = {
   referenceId?: string | null
   createdById?: string | null
   createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  containerId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUpdateWithoutProductInput = {
@@ -1220,9 +2696,19 @@ export type ProductStockMovementUpdateWithoutProductInput = {
   referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
   salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
   branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
   createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  container?: Prisma.ProductContainerUpdateOneWithoutMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
 }
 
 export type ProductStockMovementUncheckedUpdateWithoutProductInput = {
@@ -1239,6 +2725,16 @@ export type ProductStockMovementUncheckedUpdateWithoutProductInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 export type ProductStockMovementUncheckedUpdateManyWithoutProductInput = {
@@ -1255,6 +2751,120 @@ export type ProductStockMovementUncheckedUpdateManyWithoutProductInput = {
   referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  containerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementCreateManyContainerInput = {
+  id?: string
+  salonId: string
+  branchId?: string | null
+  productId: string
+  type: $Enums.ProductStockMovementType
+  quantity: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore: runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter: runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: string | null
+  note?: string | null
+  referenceType?: string | null
+  referenceId?: string | null
+  createdById?: string | null
+  createdAt?: Date | string
+  location?: $Enums.InventoryLocation | null
+  toLocation?: $Enums.InventoryLocation | null
+  toBranchId?: string | null
+  appointmentServiceId?: string | null
+  serviceId?: string | null
+  staffId?: string | null
+  receivedByStaffId?: string | null
+  expectedQuantity?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUpdateWithoutContainerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+  salon?: Prisma.SalonUpdateOneRequiredWithoutProductStockMovementsNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutProductStockMovementsNestedInput
+  product?: Prisma.ProductUpdateOneRequiredWithoutStockMovementsNestedInput
+  createdBy?: Prisma.UserUpdateOneWithoutCreatedProductStockMovementsNestedInput
+  appointmentService?: Prisma.AppointmentServiceUpdateOneWithoutStockMovementsNestedInput
+  service?: Prisma.ServiceUpdateOneWithoutStockMovementsNestedInput
+  staff?: Prisma.StaffUpdateOneWithoutStockMovementsNestedInput
+  receivedByStaff?: Prisma.StaffUpdateOneWithoutReceivedStockMovementsNestedInput
+}
+
+export type ProductStockMovementUncheckedUpdateWithoutContainerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
+}
+
+export type ProductStockMovementUncheckedUpdateManyWithoutContainerInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  productId?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumProductStockMovementTypeFieldUpdateOperationsInput | $Enums.ProductStockMovementType
+  quantity?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockBefore?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  stockAfter?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  referenceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  location?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toLocation?: Prisma.NullableEnumInventoryLocationFieldUpdateOperationsInput | $Enums.InventoryLocation | null
+  toBranchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  appointmentServiceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  serviceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  staffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receivedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedQuantity?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  unit?: Prisma.NullableEnumProductUnitFieldUpdateOperationsInput | $Enums.ProductUnit | null
 }
 
 
@@ -1274,10 +2884,25 @@ export type ProductStockMovementSelect<ExtArgs extends runtime.Types.Extensions.
   referenceId?: boolean
   createdById?: boolean
   createdAt?: boolean
+  location?: boolean
+  toLocation?: boolean
+  toBranchId?: boolean
+  containerId?: boolean
+  appointmentServiceId?: boolean
+  serviceId?: boolean
+  staffId?: boolean
+  receivedByStaffId?: boolean
+  expectedQuantity?: boolean
+  unit?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }, ExtArgs["result"]["productStockMovement"]>
 
 export type ProductStockMovementSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1295,10 +2920,25 @@ export type ProductStockMovementSelectCreateManyAndReturn<ExtArgs extends runtim
   referenceId?: boolean
   createdById?: boolean
   createdAt?: boolean
+  location?: boolean
+  toLocation?: boolean
+  toBranchId?: boolean
+  containerId?: boolean
+  appointmentServiceId?: boolean
+  serviceId?: boolean
+  staffId?: boolean
+  receivedByStaffId?: boolean
+  expectedQuantity?: boolean
+  unit?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }, ExtArgs["result"]["productStockMovement"]>
 
 export type ProductStockMovementSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1316,10 +2956,25 @@ export type ProductStockMovementSelectUpdateManyAndReturn<ExtArgs extends runtim
   referenceId?: boolean
   createdById?: boolean
   createdAt?: boolean
+  location?: boolean
+  toLocation?: boolean
+  toBranchId?: boolean
+  containerId?: boolean
+  appointmentServiceId?: boolean
+  serviceId?: boolean
+  staffId?: boolean
+  receivedByStaffId?: boolean
+  expectedQuantity?: boolean
+  unit?: boolean
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }, ExtArgs["result"]["productStockMovement"]>
 
 export type ProductStockMovementSelectScalar = {
@@ -1337,26 +2992,51 @@ export type ProductStockMovementSelectScalar = {
   referenceId?: boolean
   createdById?: boolean
   createdAt?: boolean
+  location?: boolean
+  toLocation?: boolean
+  toBranchId?: boolean
+  containerId?: boolean
+  appointmentServiceId?: boolean
+  serviceId?: boolean
+  staffId?: boolean
+  receivedByStaffId?: boolean
+  expectedQuantity?: boolean
+  unit?: boolean
 }
 
-export type ProductStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "productId" | "type" | "quantity" | "stockBefore" | "stockAfter" | "reason" | "note" | "referenceType" | "referenceId" | "createdById" | "createdAt", ExtArgs["result"]["productStockMovement"]>
+export type ProductStockMovementOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "salonId" | "branchId" | "productId" | "type" | "quantity" | "stockBefore" | "stockAfter" | "reason" | "note" | "referenceType" | "referenceId" | "createdById" | "createdAt" | "location" | "toLocation" | "toBranchId" | "containerId" | "appointmentServiceId" | "serviceId" | "staffId" | "receivedByStaffId" | "expectedQuantity" | "unit", ExtArgs["result"]["productStockMovement"]>
 export type ProductStockMovementInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }
 export type ProductStockMovementIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }
 export type ProductStockMovementIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   salon?: boolean | Prisma.SalonDefaultArgs<ExtArgs>
   branch?: boolean | Prisma.ProductStockMovement$branchArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.ProductStockMovement$createdByArgs<ExtArgs>
+  container?: boolean | Prisma.ProductStockMovement$containerArgs<ExtArgs>
+  appointmentService?: boolean | Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>
+  service?: boolean | Prisma.ProductStockMovement$serviceArgs<ExtArgs>
+  staff?: boolean | Prisma.ProductStockMovement$staffArgs<ExtArgs>
+  receivedByStaff?: boolean | Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>
 }
 
 export type $ProductStockMovementPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1366,6 +3046,11 @@ export type $ProductStockMovementPayload<ExtArgs extends runtime.Types.Extension
     branch: Prisma.$BranchPayload<ExtArgs> | null
     product: Prisma.$ProductPayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs> | null
+    container: Prisma.$ProductContainerPayload<ExtArgs> | null
+    appointmentService: Prisma.$AppointmentServicePayload<ExtArgs> | null
+    service: Prisma.$ServicePayload<ExtArgs> | null
+    staff: Prisma.$StaffPayload<ExtArgs> | null
+    receivedByStaff: Prisma.$StaffPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1382,6 +3067,39 @@ export type $ProductStockMovementPayload<ExtArgs extends runtime.Types.Extension
     referenceId: string | null
     createdById: string | null
     createdAt: Date
+    /**
+     * Location whose stock changed; the source of a TRANSFER. Null on rows
+     * recorded before stock had locations.
+     */
+    location: $Enums.InventoryLocation | null
+    toLocation: $Enums.InventoryLocation | null
+    /**
+     * Receiving branch when salon-level stock is transferred into a branch.
+     */
+    toBranchId: string | null
+    /**
+     * Set when the movement changed an opened container: quantity, stockBefore
+     * and stockAfter are then in the container unit, not product units.
+     */
+    containerId: string | null
+    appointmentServiceId: string | null
+    serviceId: string | null
+    /**
+     * Staff who performed the service, issued the transfer or opened the pack.
+     */
+    staffId: string | null
+    receivedByStaffId: string | null
+    /**
+     * Service consumable default at the time of use, for expected vs actual.
+     */
+    expectedQuantity: runtime.Decimal | null
+    /**
+     * Unit quantity, stockBefore, stockAfter and expectedQuantity are in, as it
+     * was when the movement happened: the container unit for a movement inside
+     * an opened pack, the product unit otherwise. Older rows have none and are
+     * read as the product unit of their time.
+     */
+    unit: $Enums.ProductUnit | null
   }, ExtArgs["result"]["productStockMovement"]>
   composites: {}
 }
@@ -1389,7 +3107,7 @@ export type $ProductStockMovementPayload<ExtArgs extends runtime.Types.Extension
 export type ProductStockMovementGetPayload<S extends boolean | null | undefined | ProductStockMovementDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ProductStockMovementPayload, S>
 
 export type ProductStockMovementCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ProductStockMovementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ProductStockMovementFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ProductStockMovementCountAggregateInputType | true
   }
 
@@ -1780,6 +3498,11 @@ export interface Prisma__ProductStockMovementClient<T, Null = never, ExtArgs ext
   branch<T extends Prisma.ProductStockMovement$branchArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$branchArgs<ExtArgs>>): Prisma.Prisma__BranchClient<runtime.Types.Result.GetResult<Prisma.$BranchPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   product<T extends Prisma.ProductDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductDefaultArgs<ExtArgs>>): Prisma.Prisma__ProductClient<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.ProductStockMovement$createdByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$createdByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  container<T extends Prisma.ProductStockMovement$containerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$containerArgs<ExtArgs>>): Prisma.Prisma__ProductContainerClient<runtime.Types.Result.GetResult<Prisma.$ProductContainerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  appointmentService<T extends Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$appointmentServiceArgs<ExtArgs>>): Prisma.Prisma__AppointmentServiceClient<runtime.Types.Result.GetResult<Prisma.$AppointmentServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  service<T extends Prisma.ProductStockMovement$serviceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$serviceArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  staff<T extends Prisma.ProductStockMovement$staffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$staffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  receivedByStaff<T extends Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProductStockMovement$receivedByStaffArgs<ExtArgs>>): Prisma.Prisma__StaffClient<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1823,6 +3546,16 @@ export interface ProductStockMovementFieldRefs {
   readonly referenceId: Prisma.FieldRef<"ProductStockMovement", 'String'>
   readonly createdById: Prisma.FieldRef<"ProductStockMovement", 'String'>
   readonly createdAt: Prisma.FieldRef<"ProductStockMovement", 'DateTime'>
+  readonly location: Prisma.FieldRef<"ProductStockMovement", 'InventoryLocation'>
+  readonly toLocation: Prisma.FieldRef<"ProductStockMovement", 'InventoryLocation'>
+  readonly toBranchId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly containerId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly appointmentServiceId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly serviceId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly staffId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly receivedByStaffId: Prisma.FieldRef<"ProductStockMovement", 'String'>
+  readonly expectedQuantity: Prisma.FieldRef<"ProductStockMovement", 'Decimal'>
+  readonly unit: Prisma.FieldRef<"ProductStockMovement", 'ProductUnit'>
 }
     
 
@@ -1847,6 +3580,7 @@ export type ProductStockMovementFindUniqueArgs<ExtArgs extends runtime.Types.Ext
    * Filter, which ProductStockMovement to fetch.
    */
   where: Prisma.ProductStockMovementWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1869,6 +3603,7 @@ export type ProductStockMovementFindUniqueOrThrowArgs<ExtArgs extends runtime.Ty
    * Filter, which ProductStockMovement to fetch.
    */
   where: Prisma.ProductStockMovementWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1921,6 +3656,7 @@ export type ProductStockMovementFindFirstArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of ProductStockMovements.
    */
   distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1973,6 +3709,7 @@ export type ProductStockMovementFindFirstOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter by unique combinations of ProductStockMovements.
    */
   distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2025,6 +3762,7 @@ export type ProductStockMovementFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of ProductStockMovements.
    */
   distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2047,6 +3785,7 @@ export type ProductStockMovementCreateArgs<ExtArgs extends runtime.Types.Extensi
    * The data needed to create a ProductStockMovement.
    */
   data: Prisma.XOR<Prisma.ProductStockMovementCreateInput, Prisma.ProductStockMovementUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2107,6 +3846,7 @@ export type ProductStockMovementUpdateArgs<ExtArgs extends runtime.Types.Extensi
    * Choose, which ProductStockMovement to update.
    */
   where: Prisma.ProductStockMovementWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2185,6 +3925,7 @@ export type ProductStockMovementUpsertArgs<ExtArgs extends runtime.Types.Extensi
    * In case the ProductStockMovement was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ProductStockMovementUpdateInput, Prisma.ProductStockMovementUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2207,6 +3948,7 @@ export type ProductStockMovementDeleteArgs<ExtArgs extends runtime.Types.Extensi
    * Filter which ProductStockMovement to delete.
    */
   where: Prisma.ProductStockMovementWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2259,6 +4001,101 @@ export type ProductStockMovement$createdByArgs<ExtArgs extends runtime.Types.Ext
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * ProductStockMovement.container
+ */
+export type ProductStockMovement$containerArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductContainer
+   */
+  select?: Prisma.ProductContainerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductContainer
+   */
+  omit?: Prisma.ProductContainerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductContainerInclude<ExtArgs> | null
+  where?: Prisma.ProductContainerWhereInput
+}
+
+/**
+ * ProductStockMovement.appointmentService
+ */
+export type ProductStockMovement$appointmentServiceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AppointmentService
+   */
+  select?: Prisma.AppointmentServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AppointmentService
+   */
+  omit?: Prisma.AppointmentServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AppointmentServiceInclude<ExtArgs> | null
+  where?: Prisma.AppointmentServiceWhereInput
+}
+
+/**
+ * ProductStockMovement.service
+ */
+export type ProductStockMovement$serviceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Service
+   */
+  select?: Prisma.ServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Service
+   */
+  omit?: Prisma.ServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceInclude<ExtArgs> | null
+  where?: Prisma.ServiceWhereInput
+}
+
+/**
+ * ProductStockMovement.staff
+ */
+export type ProductStockMovement$staffArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Staff
+   */
+  select?: Prisma.StaffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Staff
+   */
+  omit?: Prisma.StaffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffInclude<ExtArgs> | null
+  where?: Prisma.StaffWhereInput
+}
+
+/**
+ * ProductStockMovement.receivedByStaff
+ */
+export type ProductStockMovement$receivedByStaffArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Staff
+   */
+  select?: Prisma.StaffSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Staff
+   */
+  omit?: Prisma.StaffOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffInclude<ExtArgs> | null
+  where?: Prisma.StaffWhereInput
 }
 
 /**

@@ -52,6 +52,7 @@ const DataGrid = ({
   onDelete,
   renderActions,
   header,
+  footer,
 }) => {
   const hasActions = Boolean(onView || onEdit || onDelete || renderActions);
 
@@ -114,6 +115,7 @@ const DataGrid = ({
           </tbody>
         </table>
       </div>
+      {footer}
     </div>
   );
 };

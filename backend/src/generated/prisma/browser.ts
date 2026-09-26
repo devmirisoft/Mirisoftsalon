@@ -228,6 +228,18 @@ export type Product = Prisma.ProductModel
  */
 export type ProductStockMovement = Prisma.ProductStockMovementModel
 /**
+ * Model ProductLocationStock
+ * Sealed stock of one product at one location. branchId null is salon-level
+ * stock, bought or moved without a branch.
+ */
+export type ProductLocationStock = Prisma.ProductLocationStockModel
+/**
+ * Model ProductContainer
+ * One opened pack of a service product. Sealed packs stay aggregated in
+ * ProductLocationStock; a record exists from the moment a pack is opened.
+ */
+export type ProductContainer = Prisma.ProductContainerModel
+/**
  * Model ProductPurchase
  * 
  */

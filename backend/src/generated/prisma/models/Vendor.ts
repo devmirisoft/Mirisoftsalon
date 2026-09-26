@@ -1433,7 +1433,7 @@ export type $VendorPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type VendorGetPayload<S extends boolean | null | undefined | VendorDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$VendorPayload, S>
 
 export type VendorCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<VendorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<VendorFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: VendorCountAggregateInputType | true
   }
 
@@ -1891,6 +1891,7 @@ export type VendorFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter, which Vendor to fetch.
    */
   where: Prisma.VendorWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1913,6 +1914,7 @@ export type VendorFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    * Filter, which Vendor to fetch.
    */
   where: Prisma.VendorWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1965,6 +1967,7 @@ export type VendorFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Filter by unique combinations of Vendors.
    */
   distinct?: Prisma.VendorScalarFieldEnum | Prisma.VendorScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2017,6 +2020,7 @@ export type VendorFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter by unique combinations of Vendors.
    */
   distinct?: Prisma.VendorScalarFieldEnum | Prisma.VendorScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2069,6 +2073,7 @@ export type VendorFindManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter by unique combinations of Vendors.
    */
   distinct?: Prisma.VendorScalarFieldEnum | Prisma.VendorScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2091,6 +2096,7 @@ export type VendorCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * The data needed to create a Vendor.
    */
   data: Prisma.XOR<Prisma.VendorCreateInput, Prisma.VendorUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2151,6 +2157,7 @@ export type VendorUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Choose, which Vendor to update.
    */
   where: Prisma.VendorWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2229,6 +2236,7 @@ export type VendorUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * In case the Vendor was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.VendorUpdateInput, Prisma.VendorUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2251,6 +2259,7 @@ export type VendorDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Filter which Vendor to delete.
    */
   where: Prisma.VendorWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

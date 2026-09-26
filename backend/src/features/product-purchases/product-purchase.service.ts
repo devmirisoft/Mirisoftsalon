@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma, type InventoryLocation } from "../../generated/prisma/client.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { transactionError } from "../products/inventory-access.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
@@ -23,7 +23,14 @@ type CreateReceivedPurchaseInput = {
   purchaseDate?: Date;
   note?: string;
   createdById?: string;
+  /** Receiving location; defaults to each product's default location. */
+  location?: InventoryLocation;
   items: ReceivedPurchaseItem[];
+  /** Purchase tax on top of the item subtotal. */
+  taxAmount?: number;
+  /** Paid at receipt; recorded as a vendor payment against this purchase. */
+  paidAmount?: number;
+  paymentMethod?: Prisma.VendorPaymentCreateInput["paymentMethod"];
 };
 
 export const createReceivedProductPurchase = async (
@@ -101,10 +108,22 @@ export const createReceivedProductPurchase = async (
   }
 
   const purchaseId = randomUUID();
-  const total = items.reduce(
+  const subtotal = items.reduce(
     (sum, item) => sum.plus(item.quantity.mul(item.unitCost)),
     new Prisma.Decimal(0)
   );
+  const tax = new Prisma.Decimal(input.taxAmount ?? 0);
+  if (!tax.isFinite() || tax.isNegative()) {
+    throw transactionError("Tax must be a non-negative amount");
+  }
+  const total = subtotal.plus(tax);
+  const paid = new Prisma.Decimal(input.paidAmount ?? 0);
+  if (!paid.isFinite() || paid.isNegative() || paid.greaterThan(total)) {
+    throw transactionError("Paid amount must be between 0 and the purchase total");
+  }
+  if (paid.greaterThan(0) && (!vendor || !input.paymentMethod)) {
+    throw transactionError("Select a vendor and payment method to record a payment");
+  }
 
   for (const item of [...items].sort((left, right) =>
     left.productId.localeCompare(right.productId)
@@ -116,6 +135,7 @@ export const createReceivedProductPurchase = async (
       productId: item.productId,
       type: "STOCK_IN",
       quantity: item.quantity,
+      ...(input.location ? { location: input.location } : {}),
       referenceType: "PRODUCT_PURCHASE",
       referenceId: purchaseId,
       ...(input.createdById ? { createdById: input.createdById } : {}),
@@ -126,7 +146,7 @@ export const createReceivedProductPurchase = async (
     });
   }
 
-  return input.tx.productPurchase.create({
+  const purchase = await input.tx.productPurchase.create({
     data: {
       id: purchaseId,
       purchaseCode: buildBusinessCode({
@@ -142,11 +162,11 @@ export const createReceivedProductPurchase = async (
       invoiceNo: input.invoiceNo ?? null,
       ...(input.purchaseDate ? { purchaseDate: input.purchaseDate } : {}),
       note: input.note ?? null,
-      subtotalAmount: total,
+      subtotalAmount: subtotal,
       totalAmount: total,
-      paidAmount: 0,
-      balanceAmount: total,
-      paymentStatus: "UNPAID",
+      paidAmount: paid,
+      balanceAmount: total.minus(paid),
+      paymentStatus: paid.isZero() ? "UNPAID" : paid.equals(total) ? "PAID" : "PARTIALLY_PAID",
       createdById: input.createdById ?? null,
       items: {
         create: items.map((item) => ({
@@ -163,4 +183,21 @@ export const createReceivedProductPurchase = async (
       branch: { select: { id: true, name: true } },
     },
   });
+
+  if (vendor && input.paymentMethod && paid.greaterThan(0)) {
+    await input.tx.vendorPayment.create({
+      data: {
+        salonId: input.salonId,
+        vendorId: vendor.id,
+        branchId: input.branchId ?? null,
+        purchaseId,
+        amount: paid,
+        paymentMethod: input.paymentMethod,
+        ...(input.purchaseDate ? { paymentDate: input.purchaseDate } : {}),
+        note: "Paid at stock receipt",
+        createdById: input.createdById ?? null,
+      },
+    });
+  }
+  return purchase;
 };

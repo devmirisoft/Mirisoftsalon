@@ -1488,7 +1488,7 @@ export type $VendorPaymentPayload<ExtArgs extends runtime.Types.Extensions.Inter
 export type VendorPaymentGetPayload<S extends boolean | null | undefined | VendorPaymentDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$VendorPaymentPayload, S>
 
 export type VendorPaymentCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<VendorPaymentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<VendorPaymentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: VendorPaymentCountAggregateInputType | true
   }
 
@@ -1946,6 +1946,7 @@ export type VendorPaymentFindUniqueArgs<ExtArgs extends runtime.Types.Extensions
    * Filter, which VendorPayment to fetch.
    */
   where: Prisma.VendorPaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1968,6 +1969,7 @@ export type VendorPaymentFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Ext
    * Filter, which VendorPayment to fetch.
    */
   where: Prisma.VendorPaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2020,6 +2022,7 @@ export type VendorPaymentFindFirstArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter by unique combinations of VendorPayments.
    */
   distinct?: Prisma.VendorPaymentScalarFieldEnum | Prisma.VendorPaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2072,6 +2075,7 @@ export type VendorPaymentFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of VendorPayments.
    */
   distinct?: Prisma.VendorPaymentScalarFieldEnum | Prisma.VendorPaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2124,6 +2128,7 @@ export type VendorPaymentFindManyArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter by unique combinations of VendorPayments.
    */
   distinct?: Prisma.VendorPaymentScalarFieldEnum | Prisma.VendorPaymentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2146,6 +2151,7 @@ export type VendorPaymentCreateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * The data needed to create a VendorPayment.
    */
   data: Prisma.XOR<Prisma.VendorPaymentCreateInput, Prisma.VendorPaymentUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2206,6 +2212,7 @@ export type VendorPaymentUpdateArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Choose, which VendorPayment to update.
    */
   where: Prisma.VendorPaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2284,6 +2291,7 @@ export type VendorPaymentUpsertArgs<ExtArgs extends runtime.Types.Extensions.Int
    * In case the VendorPayment was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.VendorPaymentUpdateInput, Prisma.VendorPaymentUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2306,6 +2314,7 @@ export type VendorPaymentDeleteArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter which VendorPayment to delete.
    */
   where: Prisma.VendorPaymentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

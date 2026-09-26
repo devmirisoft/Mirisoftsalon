@@ -134,9 +134,7 @@ const ManageMemberships = () => {
       `${item.customer?.name || "—"}${
         item.customer?.phone ? ` · ${item.customer.phone}` : ""
       }`,
-      `${item.membershipNameSnapshot} · ${Number(
-        item.discountPercentageSnapshot
-      )}% off`,
+      item.membershipNameSnapshot,
       `Wallet ${formatMoney(item.walletCredited)}`,
       `Paid ${item.amountPaid == null ? "—" : formatMoney(item.amountPaid)}${
         item.paymentMethod ? ` (${labelize(item.paymentMethod)})` : ""
@@ -292,7 +290,6 @@ const ManageMemberships = () => {
                   </h5>
                   {customer.currentMembership && (
                     <div className="small text-soft">
-                      {Number(customer.currentMembership.discountPercentage)}% discount ·
                       Starts {formatDate(customer.currentMembership.startsAt)} · Expires{" "}
                       {customer.currentMembership.expiresAt
                         ? formatDate(customer.currentMembership.expiresAt)
@@ -351,7 +348,7 @@ const ManageMemberships = () => {
                           .filter((item) => item.status)
                           .map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name} · {Number(item.discountPercentage)}%
+                              {item.name}
                             </option>
                           ))}
                       </Input>
@@ -468,10 +465,6 @@ const ManageMemberships = () => {
                           <strong>Wallet credit</strong>{" "}
                           {formatMoney(selectedPlan.walletCreditAmount)}
                         </span>
-                        <span className="me-3">
-                          <strong>Discount</strong>{" "}
-                          {Number(selectedPlan.discountPercentage)}%
-                        </span>
                         <span>
                           <strong>Validity</strong>{" "}
                           {selectedPlan.durationMonths
@@ -557,7 +550,6 @@ const ManageMemberships = () => {
                       )}
                     </Input>
                   </th>
-                  <th className="align-middle text-end">Discount</th>
                   <th className="align-middle text-end">Wallet value</th>
                   <th className="align-middle text-end">Paid</th>
                   <th style={{ minWidth: "150px" }}>
@@ -640,9 +632,6 @@ const ManageMemberships = () => {
                     </td>
                     <td>{item.membershipNameSnapshot}</td>
                     <td className="text-end">
-                      {Number(item.discountPercentageSnapshot)}%
-                    </td>
-                    <td className="text-end">
                       {formatMoney(item.walletCredited)}
                     </td>
                     <td className="text-end">
@@ -697,7 +686,7 @@ const ManageMemberships = () => {
                 ))}
                 {visibleHistory.length === 0 && (
                   <tr>
-                    <td colSpan="11" className="text-center text-soft py-4">
+                    <td colSpan="10" className="text-center text-soft py-4">
                       {filtered
                         ? "No rows match these filters."
                         : "No membership history yet."}

@@ -12,6 +12,7 @@ import { prisma } from "../../config/prisma.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { reverseUsedPackageUsagesForAppointment } from "../packages/package.service.js";
+import { serviceUsageSchema } from "../stock/serviceUsage.service.js";
 import { checkStaffAvailabilityForSlot, StaffAvailabilityError, } from "../staff-availability/staffAvailability.service.js";
 import { branchFilterFor, isBranchLockedRole, pinnedBranchId, } from "../../utils/branch-scope.js";
 const APPOINTMENT_STATUSES = [
@@ -401,6 +402,17 @@ export const updateAppointmentStatus = async (req, res) => {
                 message: "Valid status is required",
             });
         }
+        // Actual consumable use confirmed on completion; without it the
+        // service defaults are booked.
+        const usage = req.body?.usage === undefined
+            ? undefined
+            : serviceUsageSchema.safeParse(req.body.usage);
+        if (usage && !usage.success) {
+            return res.status(400).json({
+                success: false,
+                message: usage.error.issues[0]?.message || "Invalid product usage",
+            });
+        }
         const existingAppointment = await getExistingAppointmentByAccess(req, id);
         if (!existingAppointment) {
             return res.status(404).json({
@@ -435,6 +447,7 @@ export const updateAppointmentStatus = async (req, res) => {
                 newStatus: status,
                 ...(note ? { note } : {}),
                 ...(req.user?.userId ? { changedById: req.user.userId } : {}),
+                ...(usage?.data ? { usage: usage.data } : {}),
             }, tx);
             await createAuditLog({
                 tx,

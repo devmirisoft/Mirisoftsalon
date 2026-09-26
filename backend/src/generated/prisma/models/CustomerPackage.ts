@@ -3024,7 +3024,7 @@ export type $CustomerPackagePayload<ExtArgs extends runtime.Types.Extensions.Int
 export type CustomerPackageGetPayload<S extends boolean | null | undefined | CustomerPackageDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerPackagePayload, S>
 
 export type CustomerPackageCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerPackageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerPackageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerPackageCountAggregateInputType | true
   }
 
@@ -3495,6 +3495,7 @@ export type CustomerPackageFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    * Filter, which CustomerPackage to fetch.
    */
   where: Prisma.CustomerPackageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3517,6 +3518,7 @@ export type CustomerPackageFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    * Filter, which CustomerPackage to fetch.
    */
   where: Prisma.CustomerPackageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3569,6 +3571,7 @@ export type CustomerPackageFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Filter by unique combinations of CustomerPackages.
    */
   distinct?: Prisma.CustomerPackageScalarFieldEnum | Prisma.CustomerPackageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3621,6 +3624,7 @@ export type CustomerPackageFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    * Filter by unique combinations of CustomerPackages.
    */
   distinct?: Prisma.CustomerPackageScalarFieldEnum | Prisma.CustomerPackageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3673,6 +3677,7 @@ export type CustomerPackageFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Filter by unique combinations of CustomerPackages.
    */
   distinct?: Prisma.CustomerPackageScalarFieldEnum | Prisma.CustomerPackageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3695,6 +3700,7 @@ export type CustomerPackageCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    * The data needed to create a CustomerPackage.
    */
   data: Prisma.XOR<Prisma.CustomerPackageCreateInput, Prisma.CustomerPackageUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3755,6 +3761,7 @@ export type CustomerPackageUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Choose, which CustomerPackage to update.
    */
   where: Prisma.CustomerPackageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3833,6 +3840,7 @@ export type CustomerPackageUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * In case the CustomerPackage was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerPackageUpdateInput, Prisma.CustomerPackageUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3855,6 +3863,7 @@ export type CustomerPackageDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter which CustomerPackage to delete.
    */
   where: Prisma.CustomerPackageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

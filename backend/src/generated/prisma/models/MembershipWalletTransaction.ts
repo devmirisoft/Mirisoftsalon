@@ -2157,7 +2157,7 @@ export type $MembershipWalletTransactionPayload<ExtArgs extends runtime.Types.Ex
 export type MembershipWalletTransactionGetPayload<S extends boolean | null | undefined | MembershipWalletTransactionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$MembershipWalletTransactionPayload, S>
 
 export type MembershipWalletTransactionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<MembershipWalletTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<MembershipWalletTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: MembershipWalletTransactionCountAggregateInputType | true
   }
 
@@ -2620,6 +2620,7 @@ export type MembershipWalletTransactionFindUniqueArgs<ExtArgs extends runtime.Ty
    * Filter, which MembershipWalletTransaction to fetch.
    */
   where: Prisma.MembershipWalletTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2642,6 +2643,7 @@ export type MembershipWalletTransactionFindUniqueOrThrowArgs<ExtArgs extends run
    * Filter, which MembershipWalletTransaction to fetch.
    */
   where: Prisma.MembershipWalletTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2694,6 +2696,7 @@ export type MembershipWalletTransactionFindFirstArgs<ExtArgs extends runtime.Typ
    * Filter by unique combinations of MembershipWalletTransactions.
    */
   distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2746,6 +2749,7 @@ export type MembershipWalletTransactionFindFirstOrThrowArgs<ExtArgs extends runt
    * Filter by unique combinations of MembershipWalletTransactions.
    */
   distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2798,6 +2802,7 @@ export type MembershipWalletTransactionFindManyArgs<ExtArgs extends runtime.Type
    * Filter by unique combinations of MembershipWalletTransactions.
    */
   distinct?: Prisma.MembershipWalletTransactionScalarFieldEnum | Prisma.MembershipWalletTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2820,6 +2825,7 @@ export type MembershipWalletTransactionCreateArgs<ExtArgs extends runtime.Types.
    * The data needed to create a MembershipWalletTransaction.
    */
   data: Prisma.XOR<Prisma.MembershipWalletTransactionCreateInput, Prisma.MembershipWalletTransactionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2880,6 +2886,7 @@ export type MembershipWalletTransactionUpdateArgs<ExtArgs extends runtime.Types.
    * Choose, which MembershipWalletTransaction to update.
    */
   where: Prisma.MembershipWalletTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2958,6 +2965,7 @@ export type MembershipWalletTransactionUpsertArgs<ExtArgs extends runtime.Types.
    * In case the MembershipWalletTransaction was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.MembershipWalletTransactionUpdateInput, Prisma.MembershipWalletTransactionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2980,6 +2988,7 @@ export type MembershipWalletTransactionDeleteArgs<ExtArgs extends runtime.Types.
    * Filter which MembershipWalletTransaction to delete.
    */
   where: Prisma.MembershipWalletTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

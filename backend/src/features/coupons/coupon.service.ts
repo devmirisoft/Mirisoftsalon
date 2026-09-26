@@ -594,6 +594,9 @@ export const applyCouponToInvoice = async (input: {
         gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
         gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount,
+        // The total is rounded to whole rupees, so the round-off has to move
+        // with it or the bill stops adding up.
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount,
         balanceAmount,
       },
@@ -712,6 +715,9 @@ export const removeCouponFromInvoice = async (input: {
         gstStateCodeSnapshot: calculation.gstStateCodeSnapshot,
         gstEnabledSnapshot: calculation.gstEnabledSnapshot,
         taxAmount,
+        // The total is rounded to whole rupees, so the round-off has to move
+        // with it or the bill stops adding up.
+        roundOffAmount: calculation.roundOffAmount,
         totalAmount,
         balanceAmount,
       },

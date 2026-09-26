@@ -7,7 +7,6 @@ import {
   Label,
   Modal,
   ModalBody,
-  ModalHeader,
   Row,
   Spinner,
 } from "reactstrap";
@@ -17,9 +16,44 @@ import { salonApi } from "@/services/salonApi";
 import { formatMoney } from "@/utils/salonFormat";
 import { PAYMENT_METHODS } from "@/utils/paymentMethods";
 
+// Plans in this trade are named by tier, so a card takes its icon and tint from
+// its own name; anything else falls back to the house blue.
+const TIERS = [
+  { match: /platinum|diamond/, icon: "diamond-fill", tone: "violet" },
+  { match: /gold/, icon: "award-fill", tone: "amber" },
+  { match: /silver|basic/, icon: "star-fill", tone: "slate" },
+];
+
+const tierOf = (name) =>
+  TIERS.find((tier) => tier.match.test(String(name).toLowerCase())) || {
+    icon: "award-fill",
+    tone: "blue",
+  };
+
+// Suggestion list under the phone / name fields, styled like the job cart's.
+const CustomerMenu = ({ matches, onPick }) => (
+  <ul className="customer-phone-menu">
+    {matches.map((item) => (
+      <li key={item.id}>
+        <button
+          type="button"
+          className="customer-phone-option"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => onPick(item)}
+        >
+          <span className="customer-phone-name">{item.name}</span>
+          <span className="customer-phone-number">
+            {item.phone || "No mobile"}
+          </span>
+        </button>
+      </li>
+    ))}
+  </ul>
+);
+
 // Quick sell from the header: pick who it is for, pick the plan, take the
-// money. Same picker as the job cart page, but the cart it opens underneath is
-// billed and settled here and never shown.
+// money. Same customer lookup as the job cart page; the cart it opens
+// underneath is billed and settled here and never shown.
 const QuickSell = ({ kind, onClose }) => {
   const isPackage = kind === "PACKAGE";
   const [refs, setRefs] = useState({
@@ -31,11 +65,13 @@ const QuickSell = ({ kind, onClose }) => {
   });
   const [customers, setCustomers] = useState([]);
   const [branchId, setBranchId] = useState("");
-  const [customer, setCustomer] = useState(null);
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [focused, setFocused] = useState("");
   const [staffId, setStaffId] = useState("");
-  const [search, setSearch] = useState("");
-  // The cart created behind this modal, kept only until the bill is confirmed.
-  const [cart, setCart] = useState(null);
+  // The plan being billed. Nothing is written until it is paid, so a new
+  // customer only exists once the sale goes through.
+  const [picked, setPicked] = useState(null);
   const [bill, setBill] = useState({
     invoiceType: "BILL_OF_SUPPLY",
     taxPercent: 0,
@@ -83,35 +119,75 @@ const QuickSell = ({ kind, onClose }) => {
     };
   }, [branchId]);
 
-  const customerOptions = useMemo(
+  // Same lookup as the job cart page: 3+ characters suggest, a full 10-digit
+  // number that is already on file locks the customer in.
+  const digitsOf = (value) => String(value || "").replace(/\D/g, "");
+  const existing = useMemo(
     () =>
-      customers.map((item) => ({
-        value: item.id,
-        label: item.phone ? `${item.name} - ${item.phone}` : item.name,
-        name: item.name,
-        phone: item.phone || "",
-      })),
-    [customers]
+      phone.length === 10
+        ? customers.find((item) => {
+            const stored = digitsOf(item.phone);
+            return stored.length >= 10 && stored.endsWith(phone);
+          }) || null
+        : null,
+    [customers, phone]
+  );
+  const matches = useMemo(() => {
+    if (existing) return [];
+    const query = (focused === "name" ? name : phone).trim().toLowerCase();
+    if (query.length < 3) return [];
+    return customers
+      .filter((item) =>
+        focused === "name"
+          ? item.name.toLowerCase().includes(query)
+          : digitsOf(item.phone).includes(query)
+      )
+      .slice(0, 8);
+  }, [customers, existing, focused, name, phone]);
+
+  const choose = (item) => {
+    setFocused("");
+    setPhone(digitsOf(item.phone).slice(-10));
+    setName(item.name);
+  };
+
+  const customerName = existing ? existing.name : name.trim();
+
+  const staffOptions = useMemo(
+    () =>
+      refs.staff.map((member) => ({ value: member.id, label: member.name })),
+    [refs.staff]
   );
 
-  const visible = useMemo(() => {
-    const term = search.trim().toLowerCase();
-    const list = isPackage ? refs.packages : refs.memberships;
-    return list.filter(
-      (item) => !term || item.name.toLowerCase().includes(term)
-    );
-  }, [isPackage, refs.packages, refs.memberships, search]);
+  // Every plan is in the search dropdown; the cards only show the best sellers.
+  const plans = isPackage ? refs.packages : refs.memberships;
+  const planOptions = useMemo(
+    () => plans.map((item) => ({ value: item.id, label: item.name, item })),
+    [plans]
+  );
+  const topSold = useMemo(
+    () =>
+      plans
+        .filter((item) => item.soldCount > 0)
+        .sort((a, b) => b.soldCount - a.soldCount)
+        .slice(0, 4),
+    [plans]
+  );
+  const planMeta = (item) =>
+    isPackage
+      ? `${formatMoney(item.specialPrice)} - ${
+          item.validityDays || 0
+        } days validity`
+      : [
+          formatMoney(item.price),
+          `${formatMoney(item.walletCreditAmount || 0)} wallet`,
+          item.durationMonths ? `${item.durationMonths} months` : "no expiry",
+        ].join(" - ");
 
-  const invoice = cart?.invoice;
-  const subtotal = Number(invoice?.subtotalAmount || 0);
-  // A membership never discounts itself or a product, and only discounts a
-  // package when the salon opted in - same rule the server bills by.
-  const discount =
-    isPackage && cart?.salon?.membershipDiscountOnPackages
-      ? subtotal *
-        (Number(cart?.customer?.membership?.discountPercentage || 0) / 100)
-      : 0;
-  const taxable = Math.max(subtotal - discount, 0);
+  // An estimate for the till; the server settles against its own total.
+  const taxable = Number(
+    (isPackage ? picked?.specialPrice : picked?.price) || 0
+  );
   const tax =
     bill.invoiceType === "GST_INVOICE"
       ? taxable * (Number(bill.taxPercent || 0) / 100)
@@ -119,64 +195,53 @@ const QuickSell = ({ kind, onClose }) => {
   // Bills settle in whole rupees, same as the server.
   const payable = Math.round(taxable + tax);
 
-  const start = async (item) => {
-    if (!customer) {
-      setError("Pick who this is for.");
+  const start = (item) => {
+    if (phone.length !== 10) {
+      setError("Enter a 10-digit phone number.");
       return;
     }
-    if (!customer.phone) {
-      setError("That customer has no phone number on file.");
+    if (customerName.length < 2) {
+      setError("Enter the customer's name.");
       return;
     }
     if (!branchId) {
       setError("Pick a branch.");
       return;
     }
-    setWorking(true);
     setError("");
-    try {
-      const created = await salonApi.jobCarts.create({
-        branchId,
-        customerName: customer.name,
-        phone: customer.phone,
-      });
-      await salonApi.jobCarts.addItem(created.data.id, {
-        itemType: kind,
-        ...(isPackage ? { packageId: item.id } : { membershipId: item.id }),
-        ...(staffId ? { staffId } : {}),
-      });
-      const loaded = await salonApi.jobCarts.get(created.data.id);
-      setCart(loaded.data);
-      setBill((current) => ({
-        ...current,
-        taxPercent: Number(
-          loaded.data.invoice?.items?.[0]?.taxPercent ||
-            (loaded.data.salon?.gstEnabled
-              ? loaded.data.salon?.serviceGstRate
-              : 0) ||
-            0
-        ),
-      }));
-    } catch (startError) {
-      setError(startError.message);
-    } finally {
-      setWorking(false);
-    }
+    setPicked(item);
+    setBill((current) => ({
+      ...current,
+      taxPercent: Number(
+        (refs.salon?.gstEnabled ? refs.salon?.serviceGstRate : 0) || 0
+      ),
+    }));
   };
 
-  // Backing out leaves an ACTIVE cart nobody asked for, so drop it.
-  const discard = async () => {
-    const id = cart?.id;
-    setCart(null);
+  const discard = () => {
+    setPicked(null);
     setError("");
-    if (id) await salonApi.jobCarts.cancel(id).catch(() => {});
   };
 
+  // Cart, customer and payment go in together, so backing out before paying
+  // leaves nothing behind.
   const confirm = async () => {
     setWorking(true);
     setError("");
+    let cartId;
     try {
-      const result = await salonApi.jobCarts.confirm(cart.id, {
+      const created = await salonApi.jobCarts.create({
+        branchId,
+        customerName,
+        phone: existing?.phone || phone,
+      });
+      cartId = created.data.id;
+      await salonApi.jobCarts.addItem(cartId, {
+        itemType: kind,
+        ...(isPackage ? { packageId: picked.id } : { membershipId: picked.id }),
+        ...(staffId ? { staffId } : {}),
+      });
+      const result = await salonApi.jobCarts.confirm(cartId, {
         invoiceType: bill.invoiceType,
         status: "ISSUED",
         taxPercent: Number(bill.taxPercent || 0),
@@ -191,33 +256,48 @@ const QuickSell = ({ kind, onClose }) => {
         idempotencyKey: globalThis.crypto.randomUUID(),
         confirmedAt: new Date().toISOString(),
       });
-      setPaid(result.data?.invoice || cart.invoice);
-      setCart(null);
+      setPaid(
+        result.data?.invoice ||
+          (await salonApi.jobCarts.get(cartId)).data.invoice
+      );
+      setPicked(null);
     } catch (confirmError) {
+      // Don't leave an ACTIVE cart nobody asked for.
+      if (cartId) salonApi.jobCarts.cancel(cartId).catch(() => {});
       setError(confirmError.message);
     } finally {
       setWorking(false);
     }
   };
 
-  const close = () => {
-    if (cart) discard();
-    onClose();
-  };
+  const close = onClose;
 
   const title = isPackage ? "Sell a Package" : "Sell a Membership";
-  const soldItem = cart?.items?.[0];
 
   return (
-    <Modal
-      isOpen
-      toggle={close}
-      centered
-      size="lg"
-      contentClassName="border-0"
-    >
-      <ModalHeader toggle={close}>{paid ? "Sold" : title}</ModalHeader>
-      <ModalBody>
+    <Modal isOpen toggle={close} centered size="lg" className="quick-sell-modal">
+      <div className="quick-sell-head">
+        <span className="quick-sell-head-icon">
+          <Icon name={isPackage ? "box-view" : "users"} />
+        </span>
+        <div className="quick-sell-head-text">
+          <h5>{paid ? "Sold" : title}</h5>
+          <span>
+            {paid
+              ? `Invoice issued for ${customerName || "your customer"}`
+              : `Add a new ${
+                  isPackage ? "package" : "membership"
+                } for your customer`}
+          </span>
+        </div>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={close}
+        />
+      </div>
+      <ModalBody className="quick-sell-body">
         {error && <Alert color="danger">{error}</Alert>}
 
         {paid ? (
@@ -226,7 +306,7 @@ const QuickSell = ({ kind, onClose }) => {
               <Icon name="check-circle" className="text-success fs-1" />
               <h5 className="mt-2 mb-1">{formatMoney(paid.totalAmount)} paid</h5>
               <p className="text-soft mb-0">
-                Invoice {paid.invoiceNumber || ""} issued for {customer?.name}.
+                Invoice {paid.invoiceNumber || ""} issued for {customerName}.
               </p>
             </div>
             <div className="d-flex justify-content-end gap-2">
@@ -240,25 +320,19 @@ const QuickSell = ({ kind, onClose }) => {
               </Button>
             </div>
           </>
-        ) : cart ? (
+        ) : picked ? (
           <>
             <div className="border rounded p-3 mb-3">
               <div className="d-flex justify-content-between py-1">
-                <span>{soldItem?.serviceName || title}</span>
-                <span>{formatMoney(subtotal)}</span>
+                <span>{picked.name}</span>
+                <span>{formatMoney(taxable)}</span>
               </div>
               <div className="d-flex justify-content-between py-1 text-soft">
                 <span>For</span>
                 <span>
-                  {customer?.name} - {customer?.phone}
+                  {customerName} - {phone}
                 </span>
               </div>
-              {discount > 0 && (
-                <div className="d-flex justify-content-between py-1">
-                  <span className="text-soft">Membership discount</span>
-                  <span>-{formatMoney(discount)}</span>
-                </div>
-              )}
               {tax > 0 && (
                 <div className="d-flex justify-content-between py-1">
                   <span className="text-soft">Tax</span>
@@ -348,20 +422,59 @@ const QuickSell = ({ kind, onClose }) => {
           </>
         ) : (
           <>
-            <Row className="g-3 mb-3">
+            <Row className="g-3">
               <Col md="6">
-                <Label className="mb-1">Sell to</Label>
-                <Select
-                  options={customerOptions}
-                  value={customer}
-                  onChange={setCustomer}
-                  isDisabled={working}
-                  placeholder="Search customer by name or phone"
-                />
+                <Label className="quick-sell-label">
+                  <Icon name="call" /> Phone Number
+                </Label>
+                <div className="position-relative">
+                  <Input
+                    autoComplete="off"
+                    inputMode="numeric"
+                    maxLength={10}
+                    placeholder="10-digit phone number"
+                    value={phone}
+                    disabled={working}
+                    onFocus={() => setFocused("phone")}
+                    onBlur={() => window.setTimeout(() => setFocused(""), 150)}
+                    onChange={(event) => {
+                      // Changing a matched number breaks the match, so the
+                      // name it filled goes too.
+                      if (existing) setName("");
+                      setPhone(digitsOf(event.target.value).slice(0, 10));
+                    }}
+                  />
+                  {focused === "phone" && matches.length > 0 && (
+                    <CustomerMenu matches={matches} onPick={choose} />
+                  )}
+                </div>
+              </Col>
+              <Col md="6">
+                <Label className="quick-sell-label">
+                  <Icon name="user" /> Customer Name
+                </Label>
+                <div className="position-relative">
+                  <Input
+                    autoComplete="off"
+                    placeholder="Customer name"
+                    maxLength={120}
+                    value={existing ? existing.name : name}
+                    readOnly={Boolean(existing)}
+                    disabled={working}
+                    onFocus={() => setFocused("name")}
+                    onBlur={() => window.setTimeout(() => setFocused(""), 150)}
+                    onChange={(event) => setName(event.target.value)}
+                  />
+                  {focused === "name" && matches.length > 0 && (
+                    <CustomerMenu matches={matches} onPick={choose} />
+                  )}
+                </div>
               </Col>
               {refs.branches.length > 1 && (
                 <Col md="6">
-                  <Label className="mb-1">Branch</Label>
+                  <Label className="quick-sell-label">
+                    <Icon name="map-pin" /> Branch
+                  </Label>
                   <Input
                     type="select"
                     value={branchId}
@@ -377,88 +490,107 @@ const QuickSell = ({ kind, onClose }) => {
                 </Col>
               )}
               <Col md="6">
-                <Label className="mb-1">Sold by</Label>
-                <Input
-                  type="select"
-                  value={staffId}
-                  onChange={(event) => setStaffId(event.target.value)}
-                >
-                  <option value="">Not recorded</option>
-                  {refs.staff.map((member) => (
-                    <option key={member.id} value={member.id}>
-                      {member.name}
-                    </option>
-                  ))}
-                </Input>
+                <Label className="quick-sell-label">
+                  <Icon name="tag" /> Sold by
+                </Label>
+                <Select
+                  isClearable
+                  placeholder="Not recorded"
+                  isDisabled={working}
+                  options={staffOptions}
+                  value={
+                    staffOptions.find((option) => option.value === staffId) ||
+                    null
+                  }
+                  onChange={(option) => setStaffId(option?.value || "")}
+                />
               </Col>
               <Col md="6">
-                <Label className="mb-1">Search</Label>
-                <Input
-                  type="search"
-                  placeholder={isPackage ? "Search packages" : "Search plans"}
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                <Label className="quick-sell-label">
+                  <Icon name="search" /> {isPackage ? "Package" : "Plan"}
+                </Label>
+                <Select
+                  isDisabled={working}
+                  isLoading={loading}
+                  placeholder={
+                    isPackage ? "Search packages..." : "Search plans..."
+                  }
+                  noOptionsMessage={() =>
+                    isPackage ? "No packages match" : "No plans match"
+                  }
+                  options={planOptions}
+                  value={null}
+                  onChange={(option) => option && start(option.item)}
+                  formatOptionLabel={({ item }) => (
+                    <div>
+                      <div className="fw-medium">{item.name}</div>
+                      <small className="text-soft">{planMeta(item)}</small>
+                    </div>
+                  )}
                 />
               </Col>
             </Row>
-            <div
-              className="border rounded"
-              style={{ maxHeight: 380, overflowY: "auto" }}
-            >
-              {loading || working ? (
-                <div className="text-center py-4">
-                  <Spinner size="sm" />
-                </div>
-              ) : visible.length === 0 ? (
-                <div className="text-soft text-center py-4">
-                  {isPackage
-                    ? "No packages match - create one from the Packages page"
-                    : "No plans match - add one under Customer Retention > Manage Memberships"}
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                  }}
-                >
-                  {visible.map((item) => (
-                    <div key={item.id} style={{ minWidth: 0 }}>
-                      <button
-                        type="button"
-                        className="btn d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom mb-0 h-100 w-100 text-start bg-transparent"
-                        style={{ cursor: "pointer", minWidth: 0 }}
-                        disabled={working}
-                        onClick={() => start(item)}
-                      >
-                        <span className="text-truncate" style={{ minWidth: 0 }}>
-                          <span className="d-block text-truncate">
-                            {item.name}
-                          </span>
-                          <small className="text-soft">
-                            {isPackage
-                              ? `${formatMoney(item.specialPrice)} - ${
-                                  item.validityDays || 0
-                                } days validity`
-                              : `${formatMoney(item.price)} - ${Number(
-                                  item.discountPercentage || 0
-                                )}% off${
-                                  item.durationMonths
-                                    ? ` - ${item.durationMonths} months`
-                                    : " - no expiry"
-                                }`}
-                          </small>
-                        </span>
-                        <Icon
-                          name="plus-circle"
-                          className="text-primary flex-shrink-0"
-                        />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+
+            <div className="quick-sell-section">
+              <Icon name={isPackage ? "package-fill" : "award-fill"} />
+              <div>
+                <h6>
+                  {isPackage ? "Most sold packages" : "Most sold plans"}
+                </h6>
+                <span>
+                  Pick one here, or search above for any{" "}
+                  {isPackage ? "package" : "plan"}
+                </span>
+              </div>
             </div>
+
+            {loading || working ? (
+              <div className="text-center py-4">
+                <Spinner size="sm" />
+              </div>
+            ) : plans.length === 0 ? (
+              <div className="quick-sell-empty">
+                {isPackage
+                  ? "No packages yet - create one from the Packages page"
+                  : "No plans yet - add one under Customer Retention > Manage Memberships"}
+              </div>
+            ) : topSold.length === 0 ? (
+              <div className="quick-sell-empty">
+                Nothing sold yet - search above to pick one
+              </div>
+            ) : (
+              <div className="quick-sell-plans">
+                {topSold.map((item) => {
+                  const tier = isPackage
+                    ? { icon: "package-fill", tone: "blue" }
+                    : tierOf(item.name);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`quick-sell-plan quick-sell-plan-${tier.tone}`}
+                      disabled={working}
+                      onClick={() => start(item)}
+                    >
+                      <span className="quick-sell-plan-icon">
+                        <Icon name={tier.icon} />
+                      </span>
+                      <span className="quick-sell-plan-body">
+                        <span className="quick-sell-plan-name">
+                          {item.name}
+                        </span>
+                        <span className="quick-sell-plan-meta">
+                          {planMeta(item)}
+                        </span>
+                      </span>
+                      <span className="quick-sell-plan-add">
+                        <Icon name="plus" />
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </ModalBody>

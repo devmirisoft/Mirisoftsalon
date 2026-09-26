@@ -84,6 +84,10 @@ beforeEach(async () => {
   await truncateAll();
 });
 
+// Only disconnect here: with --experimental-vm-modules a worker can share
+// this module between suites, so ending the pool would leave the next suite
+// without one. The small, quickly released test pool in config/prisma.ts is
+// what keeps a whole run inside the server connection limit.
 afterAll(async () => {
   await prisma.$disconnect();
-});
+}, 20_000);

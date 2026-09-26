@@ -115,6 +115,39 @@ export const nextInvoiceCode = async (
   return taken ? `${code}-${taken + 1}` : code;
 };
 
+// Job carts read as SALONJC-0001, or SALONJC-BR-0001 once the salon has more
+// than one branch. Each prefix keeps its own serial.
+export const jobCartCodePrefix = (salonName: string, branchName?: string) =>
+  `${salonInitials(salonName)}JC-${
+    branchName ? `${salonInitials(branchName)}-` : ""
+  }`;
+
+// ponytail: branches whose names share initials share one serial; give them a
+// distinct prefix (e.g. branchCode) if that ever matters.
+export const nextJobCartCode = async (
+  tx: Prisma.TransactionClient,
+  salon: { id: string; name: string },
+  branch: { name: string }
+) => {
+  const branchCount = await tx.branch.count({
+    where: { salonId: salon.id, status: true },
+  });
+  const prefix = jobCartCodePrefix(
+    salon.name,
+    branchCount > 1 ? branch.name : undefined
+  );
+  // Serialise concurrent carts for the same prefix until the transaction ends.
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${salon.id + prefix}))`;
+  // The prefix is only [A-Z0-9-], so it is safe inside the regex.
+  const [row] = await tx.$queryRaw<{ last: number | null }[]>`
+    SELECT max(substring("appointmentCode" from '[0-9]+$')::int) AS "last"
+    FROM "Appointment"
+    WHERE "salonId" = ${salon.id}
+      AND "appointmentCode" ~ ('^' || ${prefix} || '[0-9]+$')`;
+
+  return `${prefix}${pad((row?.last ?? 0) + 1, 4)}`;
+};
+
 export const buildSalonCode = ({
   salonName,
   date = new Date(),

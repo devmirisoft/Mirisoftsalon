@@ -25,6 +25,8 @@ export const salonApi = {
       request("/api/users/branch-manager", { method: "POST", body }),
     createReceptionist: (body) =>
       request("/api/users/receptionist", { method: "POST", body }),
+    createStaffAccount: (body) =>
+      request("/api/users/staff", { method: "POST", body }),
   },
   salons: {
     list: () => request("/api/salons"),
@@ -379,6 +381,7 @@ export const salonApi = {
     list: (query) => request("/api/products", { query }),
     lowStock: () => request("/api/products/low-stock"),
     get: (id) => request(`/api/products/${id}`),
+    activity: (id) => request(`/api/products/${id}/activity`),
     create: (body) => request("/api/products", { method: "POST", body }),
     update: (id, body) => request(`/api/products/${id}`, { method: "PUT", body }),
     setStatus: (id, status) => request(`/api/products/${id}/status`, { method: "PATCH", body: { status } }),
@@ -419,6 +422,20 @@ export const salonApi = {
     list: (query) => request("/api/stock-movements", { query }),
     byProduct: (productId) => request(`/api/stock-movements/product/${productId}`),
     createManual: (body) => request("/api/stock-movements/manual", { method: "POST", body }),
+  },
+  inventory: {
+    product: (productId) => request(`/api/inventory/products/${productId}`),
+    usagePlan: (appointmentId) =>
+      request(`/api/inventory/usage-plan/${appointmentId}`),
+    transfer: (body) =>
+      request("/api/inventory/transfers", { method: "POST", body }),
+    openContainers: (body) =>
+      request("/api/inventory/containers/open", { method: "POST", body }),
+    reconcile: (containerId, body) =>
+      request(`/api/inventory/containers/${containerId}/reconcile`, {
+        method: "POST",
+        body,
+      }),
   },
   stockAlerts: {
     list: (query) => request("/api/stock-alerts", { query }),
@@ -474,6 +491,8 @@ export const salonApi = {
     inventory: (query) => request("/api/reports/inventory", { query }),
     expenses: (query) => request("/api/reports/expenses", { query }),
     salonReport: (query) => request("/api/reports/salon-report", { query }),
+    salesDashboard: (query) => request("/api/reports/sales-dashboard", { query }),
+    eod: (query) => request("/api/reports/eod", { query }),
     staffPerformance: (query) => request("/api/reports/staff-performance", { query }),
     exportFile: (reportType, format, query = {}) =>
       downloadFile(`/api/reports/${reportType}/export`, {

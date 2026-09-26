@@ -707,7 +707,7 @@ export type $AppointmentStatusHistoryPayload<ExtArgs extends runtime.Types.Exten
 export type AppointmentStatusHistoryGetPayload<S extends boolean | null | undefined | AppointmentStatusHistoryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AppointmentStatusHistoryPayload, S>
 
 export type AppointmentStatusHistoryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<AppointmentStatusHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<AppointmentStatusHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: AppointmentStatusHistoryCountAggregateInputType | true
   }
 
@@ -1156,6 +1156,7 @@ export type AppointmentStatusHistoryFindUniqueArgs<ExtArgs extends runtime.Types
    * Filter, which AppointmentStatusHistory to fetch.
    */
   where: Prisma.AppointmentStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1178,6 +1179,7 @@ export type AppointmentStatusHistoryFindUniqueOrThrowArgs<ExtArgs extends runtim
    * Filter, which AppointmentStatusHistory to fetch.
    */
   where: Prisma.AppointmentStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1230,6 +1232,7 @@ export type AppointmentStatusHistoryFindFirstArgs<ExtArgs extends runtime.Types.
    * Filter by unique combinations of AppointmentStatusHistories.
    */
   distinct?: Prisma.AppointmentStatusHistoryScalarFieldEnum | Prisma.AppointmentStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1282,6 +1285,7 @@ export type AppointmentStatusHistoryFindFirstOrThrowArgs<ExtArgs extends runtime
    * Filter by unique combinations of AppointmentStatusHistories.
    */
   distinct?: Prisma.AppointmentStatusHistoryScalarFieldEnum | Prisma.AppointmentStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1334,6 +1338,7 @@ export type AppointmentStatusHistoryFindManyArgs<ExtArgs extends runtime.Types.E
    * Filter by unique combinations of AppointmentStatusHistories.
    */
   distinct?: Prisma.AppointmentStatusHistoryScalarFieldEnum | Prisma.AppointmentStatusHistoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1356,6 +1361,7 @@ export type AppointmentStatusHistoryCreateArgs<ExtArgs extends runtime.Types.Ext
    * The data needed to create a AppointmentStatusHistory.
    */
   data: Prisma.XOR<Prisma.AppointmentStatusHistoryCreateInput, Prisma.AppointmentStatusHistoryUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1416,6 +1422,7 @@ export type AppointmentStatusHistoryUpdateArgs<ExtArgs extends runtime.Types.Ext
    * Choose, which AppointmentStatusHistory to update.
    */
   where: Prisma.AppointmentStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1494,6 +1501,7 @@ export type AppointmentStatusHistoryUpsertArgs<ExtArgs extends runtime.Types.Ext
    * In case the AppointmentStatusHistory was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.AppointmentStatusHistoryUpdateInput, Prisma.AppointmentStatusHistoryUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1516,6 +1524,7 @@ export type AppointmentStatusHistoryDeleteArgs<ExtArgs extends runtime.Types.Ext
    * Filter which AppointmentStatusHistory to delete.
    */
   where: Prisma.AppointmentStatusHistoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

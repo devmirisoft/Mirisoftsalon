@@ -364,6 +364,33 @@ describe("Walk-in job carts", () => {
     ).toBe(1);
   });
 
+  it("bills the price and quantity set on the create form, not the catalogue", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      serviceItems: [
+        { serviceId: f.service.id, price: 100 },
+        { serviceId: f.secondService.id, quantity: 2 },
+      ],
+    });
+    expect(created.status).toBe(201);
+
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .expect(200);
+
+    // 100 x1 + 300 x2. The catalogue (500 x1 + 300 x1) would bill 800.
+    const invoice = confirmed.body.data.invoice;
+    expect(Number(invoice.subtotalAmount)).toBe(700);
+    expect(Number(invoice.totalAmount)).toBe(700);
+    const lines = new Map(
+      invoice.items.map((item: { serviceId: string }) => [item.serviceId, item])
+    );
+    expect(lines.get(f.service.id)).toMatchObject({ quantity: 1 });
+    expect(Number((lines.get(f.service.id) as { unitPrice: string }).unitPrice)).toBe(100);
+    expect(lines.get(f.secondService.id)).toMatchObject({ quantity: 2 });
+  });
+
   it("issues the invoice and marks it paid when payment is collected on confirm", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {
@@ -441,10 +468,9 @@ describe("Walk-in job carts", () => {
       )
     ).toBe(300);
 
-    const overpaid = await createCart(f, f.adminToken, {
-      staffId: f.stylist.id,
-      startTime: "2038-01-02T10:00:00.000Z",
-    });
+    // A walk-in cart always starts now, so the stylist is still busy with the
+    // cart above: this one goes on the books without a stylist.
+    const overpaid = await createCart(f, f.adminToken, {});
     const rejected = await request(app)
       .post(`/api/job-carts/${overpaid.body.data.id}/confirm`)
       .set(auth(f.adminToken))
@@ -463,6 +489,97 @@ describe("Walk-in job carts", () => {
         where: { invoiceId: overpaid.body.data.invoice.id },
       })
     ).toBe(0);
+  });
+
+  // "Make bill" on an appointment hands over to this same confirm. The
+  // appointment is already COMPLETED by then and its consumables are already
+  // booked, so neither may happen a second time.
+  it("bills a completed appointment through the job cart confirm", async () => {
+    const f = await fixture();
+    const customer = await prisma.customer.create({
+      data: {
+        customerCode: `JC-${randomUUID()}`,
+        name: "Appointment Customer",
+        phone: `98${Math.floor(Math.random() * 1e8)}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+      },
+    });
+    const appointment = await prisma.appointment.create({
+      data: {
+        appointmentCode: `APT-${randomUUID()}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: customer.id,
+        staffId: f.stylist.id,
+        startTime: new Date("2038-02-01T10:00:00.000Z"),
+        endTime: new Date("2038-02-01T10:45:00.000Z"),
+        status: "CHECKED_IN",
+        services: {
+          create: [
+            {
+              serviceId: f.service.id,
+              serviceName: f.service.name,
+              price: 500,
+              staffId: f.stylist.id,
+            },
+          ],
+        },
+      },
+    });
+
+    await request(app)
+      .patch(`/api/appointments/${appointment.id}/status`)
+      .set(auth(f.adminToken))
+      .send({ status: "COMPLETED" })
+      .expect(200);
+    const stockAfterCompletion = Number(
+      (await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } }))
+        .currentStock
+    );
+    expect(stockAfterCompletion).toBe(8);
+
+    // What the appointment bill page does before handing over.
+    const seeded = await request(app)
+      .post(`/api/invoices/from-appointment/${appointment.id}`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" });
+    expect(seeded.status).toBe(201);
+
+    const opened = await request(app)
+      .get(`/api/job-carts/${appointment.id}`)
+      .set(auth(f.adminToken));
+    expect(opened.status).toBe(200);
+    // A completed appointment holding a draft is not billed yet.
+    expect(opened.body.data).toMatchObject({
+      status: "ACTIVE",
+      appointmentStatus: "COMPLETED",
+      isJobCart: false,
+    });
+
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${appointment.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH", amount: 500 } });
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body.data.status).toBe("COMPLETED");
+    expect(confirmed.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PAID",
+    });
+    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(500);
+
+    expect(
+      Number(
+        (await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } }))
+          .currentStock
+      )
+    ).toBe(stockAfterCompletion);
+    expect(
+      await prisma.productStockMovement.count({
+        where: { referenceId: appointment.id, type: "USED_IN_SERVICE" },
+      })
+    ).toBe(1);
   });
 
   it("rejects a payment on confirm when the invoice is left as a draft", async () => {
@@ -538,6 +655,135 @@ describe("Walk-in job carts", () => {
         ).walletBalance
       )
     ).toBe(0);
+  });
+
+  it("lets the membership wallet pay for services only", async () => {
+    const f = await fixture();
+    const membership = await prisma.membership.create({
+      data: {
+        name: `Services Wallet ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 0,
+        durationMonths: 12,
+      },
+    });
+    const product = await prisma.product.create({
+      data: {
+        name: `Retail Shampoo ${randomUUID()}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        currentStock: 5,
+        sellingPrice: 200,
+        isRetailProduct: true,
+      },
+    });
+    const cart = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    const id = cart.body.data.id as string;
+    await request(app)
+      .post(`/api/job-carts/${id}/items`)
+      .set(auth(f.adminToken))
+      .send({ itemType: "PRODUCT", productId: product.id, quantity: 1 })
+      .expect(200);
+    await prisma.customerMembership.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: cart.body.data.customerId,
+        membershipId: membership.id,
+        membershipNameSnapshot: membership.name,
+        discountPercentageSnapshot: 0,
+        durationMonthsSnapshot: 12,
+        startsAt: new Date("2020-01-01T00:00:00.000Z"),
+        expiresAt: new Date("2040-01-01T00:00:00.000Z"),
+        status: "ACTIVE",
+        walletCredited: 2000,
+        walletBalance: 2000,
+      },
+    });
+
+    // 500 service + 200 product: the wallet may not touch the product.
+    const all = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "MEMBERSHIP_WALLET", amount: 700 } });
+    expect(all.status).toBe(400);
+    expect(all.body.message).toMatch(/services only/);
+
+    const split = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({
+        payments: [
+          { method: "MEMBERSHIP_WALLET", amount: 500 },
+          { method: "CASH", amount: 200 },
+        ],
+      });
+    expect(split.status).toBe(200);
+    expect(split.body.data.invoice.paymentStatus).toBe("PAID");
+    expect(
+      Number(
+        (
+          await prisma.customerMembership.findFirstOrThrow({
+            where: { customerId: cart.body.data.customerId },
+          })
+        ).walletBalance
+      )
+    ).toBe(1500);
+  });
+
+  it("never discounts a member's bill but still allows manual discounts", async () => {
+    const f = await fixture();
+    const customer = await prisma.customer.create({
+      data: {
+        customerCode: `JC-${randomUUID()}`,
+        name: "Walk-in Customer",
+        phone: "+91 98765 43210",
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+      },
+    });
+    const plan = await prisma.membership.create({
+      data: {
+        name: `Stack Plan ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 15,
+        durationMonths: 12,
+      },
+    });
+    await prisma.customerMembership.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: customer.id,
+        membershipId: plan.id,
+        membershipNameSnapshot: plan.name,
+        discountPercentageSnapshot: 15,
+        durationMonthsSnapshot: 12,
+        startsAt: new Date("2020-01-01T00:00:00.000Z"),
+        expiresAt: new Date("2040-01-01T00:00:00.000Z"),
+        status: "ACTIVE",
+      },
+    });
+    const member = { phone: "+91 98765 43210" };
+    // 50% off the 500 catalogue haircut.
+    const discounted = {
+      ...member,
+      serviceItems: [{ serviceId: f.service.id, price: 250 }],
+    };
+
+    const created = await createCart(f, f.adminToken, discounted);
+    expect(created.status).toBe(201);
+    expect(Number(created.body.data.invoice.discountAmount)).toBe(0);
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ discountAmount: 50 })
+      .expect(200);
+    // 250 less the 50 typed in; the 15% plan takes nothing off.
+    expect(Number(confirmed.body.data.invoice.membershipDiscountAmount)).toBe(0);
+    expect(Number(confirmed.body.data.invoice.totalAmount)).toBe(200);
   });
 
   it("cancels an active cart and blocks edits to cancelled or completed carts", async () => {
@@ -630,7 +876,7 @@ describe("Walk-in job carts", () => {
     ).toBe(true);
   });
 
-  it("applies membership and coupon logic to the draft before issuing", async () => {
+  it("applies coupon logic, but no membership discount, to the draft before issuing", async () => {
     const f = await fixture();
     const membership = await prisma.membership.create({
       data: {
@@ -663,13 +909,13 @@ describe("Walk-in job carts", () => {
       customerName: "Member Walk-in",
       phone: "9876543233",
     });
-    expect(Number(created.body.data.invoice.discountAmount)).toBe(50);
+    expect(Number(created.body.data.invoice.discountAmount)).toBe(0);
     const applied = await request(app)
       .post(`/api/invoices/${created.body.data.invoice.id}/apply-coupon`)
       .set(auth(f.adminToken))
       .send({ couponCode: coupon.couponCode });
     expect(applied.status).toBe(200);
-    expect(Number(applied.body.data.totalAmount)).toBe(405);
+    expect(Number(applied.body.data.totalAmount)).toBe(450);
 
     await request(app)
       .post(`/api/job-carts/${created.body.data.id}/confirm`)

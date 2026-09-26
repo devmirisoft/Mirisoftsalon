@@ -20,6 +20,7 @@ const SHORTCUTS = [
   { to: "/customers", icon: "users", text: "Customers", roles: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"] },
   { sell: "MEMBERSHIP", icon: "award-fill", text: "Sell Membership", roles: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"] },
   { sell: "PACKAGE", icon: "gift", text: "Sell Packages", roles: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"] },
+  { to: "/reports/eod", icon: "reports", text: "EOD Report", roles: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"] },
 ];
 
 const Header = ({ fixed, className, ...props }) => {

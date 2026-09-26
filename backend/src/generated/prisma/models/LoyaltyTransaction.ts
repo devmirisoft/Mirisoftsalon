@@ -1124,7 +1124,7 @@ export type $LoyaltyTransactionPayload<ExtArgs extends runtime.Types.Extensions.
 export type LoyaltyTransactionGetPayload<S extends boolean | null | undefined | LoyaltyTransactionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$LoyaltyTransactionPayload, S>
 
 export type LoyaltyTransactionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<LoyaltyTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<LoyaltyTransactionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: LoyaltyTransactionCountAggregateInputType | true
   }
 
@@ -1579,6 +1579,7 @@ export type LoyaltyTransactionFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which LoyaltyTransaction to fetch.
    */
   where: Prisma.LoyaltyTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1601,6 +1602,7 @@ export type LoyaltyTransactionFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    * Filter, which LoyaltyTransaction to fetch.
    */
   where: Prisma.LoyaltyTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1653,6 +1655,7 @@ export type LoyaltyTransactionFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of LoyaltyTransactions.
    */
   distinct?: Prisma.LoyaltyTransactionScalarFieldEnum | Prisma.LoyaltyTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1705,6 +1708,7 @@ export type LoyaltyTransactionFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of LoyaltyTransactions.
    */
   distinct?: Prisma.LoyaltyTransactionScalarFieldEnum | Prisma.LoyaltyTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1757,6 +1761,7 @@ export type LoyaltyTransactionFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of LoyaltyTransactions.
    */
   distinct?: Prisma.LoyaltyTransactionScalarFieldEnum | Prisma.LoyaltyTransactionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1779,6 +1784,7 @@ export type LoyaltyTransactionCreateArgs<ExtArgs extends runtime.Types.Extension
    * The data needed to create a LoyaltyTransaction.
    */
   data: Prisma.XOR<Prisma.LoyaltyTransactionCreateInput, Prisma.LoyaltyTransactionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1839,6 +1845,7 @@ export type LoyaltyTransactionUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Choose, which LoyaltyTransaction to update.
    */
   where: Prisma.LoyaltyTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1917,6 +1924,7 @@ export type LoyaltyTransactionUpsertArgs<ExtArgs extends runtime.Types.Extension
    * In case the LoyaltyTransaction was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.LoyaltyTransactionUpdateInput, Prisma.LoyaltyTransactionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1939,6 +1947,7 @@ export type LoyaltyTransactionDeleteArgs<ExtArgs extends runtime.Types.Extension
    * Filter which LoyaltyTransaction to delete.
    */
   where: Prisma.LoyaltyTransactionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

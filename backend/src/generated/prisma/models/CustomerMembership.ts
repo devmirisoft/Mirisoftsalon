@@ -3861,7 +3861,7 @@ export type $CustomerMembershipPayload<ExtArgs extends runtime.Types.Extensions.
 export type CustomerMembershipGetPayload<S extends boolean | null | undefined | CustomerMembershipDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerMembershipPayload, S>
 
 export type CustomerMembershipCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerMembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerMembershipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerMembershipCountAggregateInputType | true
   }
 
@@ -4341,6 +4341,7 @@ export type CustomerMembershipFindUniqueArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which CustomerMembership to fetch.
    */
   where: Prisma.CustomerMembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4363,6 +4364,7 @@ export type CustomerMembershipFindUniqueOrThrowArgs<ExtArgs extends runtime.Type
    * Filter, which CustomerMembership to fetch.
    */
   where: Prisma.CustomerMembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4415,6 +4417,7 @@ export type CustomerMembershipFindFirstArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of CustomerMemberships.
    */
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4467,6 +4470,7 @@ export type CustomerMembershipFindFirstOrThrowArgs<ExtArgs extends runtime.Types
    * Filter by unique combinations of CustomerMemberships.
    */
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4519,6 +4523,7 @@ export type CustomerMembershipFindManyArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of CustomerMemberships.
    */
   distinct?: Prisma.CustomerMembershipScalarFieldEnum | Prisma.CustomerMembershipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4541,6 +4546,7 @@ export type CustomerMembershipCreateArgs<ExtArgs extends runtime.Types.Extension
    * The data needed to create a CustomerMembership.
    */
   data: Prisma.XOR<Prisma.CustomerMembershipCreateInput, Prisma.CustomerMembershipUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4601,6 +4607,7 @@ export type CustomerMembershipUpdateArgs<ExtArgs extends runtime.Types.Extension
    * Choose, which CustomerMembership to update.
    */
   where: Prisma.CustomerMembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4679,6 +4686,7 @@ export type CustomerMembershipUpsertArgs<ExtArgs extends runtime.Types.Extension
    * In case the CustomerMembership was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerMembershipUpdateInput, Prisma.CustomerMembershipUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4701,6 +4709,7 @@ export type CustomerMembershipDeleteArgs<ExtArgs extends runtime.Types.Extension
    * Filter which CustomerMembership to delete.
    */
   where: Prisma.CustomerMembershipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

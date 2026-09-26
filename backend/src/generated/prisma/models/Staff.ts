@@ -297,6 +297,9 @@ export type StaffWhereInput = {
   soldCustomerPackages?: Prisma.CustomerPackageListRelationFilter
   packageInvoiceItems?: Prisma.InvoiceItemListRelationFilter
   packageUsageItems?: Prisma.CustomerPackageUsageItemListRelationFilter
+  openedContainers?: Prisma.ProductContainerListRelationFilter
+  stockMovements?: Prisma.ProductStockMovementListRelationFilter
+  receivedStockMovements?: Prisma.ProductStockMovementListRelationFilter
 }
 
 export type StaffOrderByWithRelationInput = {
@@ -336,6 +339,9 @@ export type StaffOrderByWithRelationInput = {
   soldCustomerPackages?: Prisma.CustomerPackageOrderByRelationAggregateInput
   packageInvoiceItems?: Prisma.InvoiceItemOrderByRelationAggregateInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemOrderByRelationAggregateInput
+  openedContainers?: Prisma.ProductContainerOrderByRelationAggregateInput
+  stockMovements?: Prisma.ProductStockMovementOrderByRelationAggregateInput
+  receivedStockMovements?: Prisma.ProductStockMovementOrderByRelationAggregateInput
 }
 
 export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -380,6 +386,9 @@ export type StaffWhereUniqueInput = Prisma.AtLeast<{
   soldCustomerPackages?: Prisma.CustomerPackageListRelationFilter
   packageInvoiceItems?: Prisma.InvoiceItemListRelationFilter
   packageUsageItems?: Prisma.CustomerPackageUsageItemListRelationFilter
+  openedContainers?: Prisma.ProductContainerListRelationFilter
+  stockMovements?: Prisma.ProductStockMovementListRelationFilter
+  receivedStockMovements?: Prisma.ProductStockMovementListRelationFilter
 }, "id" | "userId" | "salonId_email" | "salonId_staffCode">
 
 export type StaffOrderByWithAggregationInput = {
@@ -461,6 +470,9 @@ export type StaffCreateInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateInput = {
@@ -496,6 +508,9 @@ export type StaffUncheckedCreateInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUpdateInput = {
@@ -531,6 +546,9 @@ export type StaffUpdateInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateInput = {
@@ -566,6 +584,9 @@ export type StaffUncheckedUpdateInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateManyInput = {
@@ -1084,6 +1105,54 @@ export type StaffUpdateOneWithoutPackageUsageItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutPackageUsageItemsInput, Prisma.StaffUpdateWithoutPackageUsageItemsInput>, Prisma.StaffUncheckedUpdateWithoutPackageUsageItemsInput>
 }
 
+export type StaffCreateNestedOneWithoutStockMovementsInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutStockMovementsInput, Prisma.StaffUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutStockMovementsInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffCreateNestedOneWithoutReceivedStockMovementsInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedCreateWithoutReceivedStockMovementsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutReceivedStockMovementsInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffUpdateOneWithoutStockMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutStockMovementsInput, Prisma.StaffUncheckedCreateWithoutStockMovementsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutStockMovementsInput
+  upsert?: Prisma.StaffUpsertWithoutStockMovementsInput
+  disconnect?: Prisma.StaffWhereInput | boolean
+  delete?: Prisma.StaffWhereInput | boolean
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutStockMovementsInput, Prisma.StaffUpdateWithoutStockMovementsInput>, Prisma.StaffUncheckedUpdateWithoutStockMovementsInput>
+}
+
+export type StaffUpdateOneWithoutReceivedStockMovementsNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedCreateWithoutReceivedStockMovementsInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutReceivedStockMovementsInput
+  upsert?: Prisma.StaffUpsertWithoutReceivedStockMovementsInput
+  disconnect?: Prisma.StaffWhereInput | boolean
+  delete?: Prisma.StaffWhereInput | boolean
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutReceivedStockMovementsInput, Prisma.StaffUpdateWithoutReceivedStockMovementsInput>, Prisma.StaffUncheckedUpdateWithoutReceivedStockMovementsInput>
+}
+
+export type StaffCreateNestedOneWithoutOpenedContainersInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutOpenedContainersInput, Prisma.StaffUncheckedCreateWithoutOpenedContainersInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutOpenedContainersInput
+  connect?: Prisma.StaffWhereUniqueInput
+}
+
+export type StaffUpdateOneWithoutOpenedContainersNestedInput = {
+  create?: Prisma.XOR<Prisma.StaffCreateWithoutOpenedContainersInput, Prisma.StaffUncheckedCreateWithoutOpenedContainersInput>
+  connectOrCreate?: Prisma.StaffCreateOrConnectWithoutOpenedContainersInput
+  upsert?: Prisma.StaffUpsertWithoutOpenedContainersInput
+  disconnect?: Prisma.StaffWhereInput | boolean
+  delete?: Prisma.StaffWhereInput | boolean
+  connect?: Prisma.StaffWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StaffUpdateToOneWithWhereWithoutOpenedContainersInput, Prisma.StaffUpdateWithoutOpenedContainersInput>, Prisma.StaffUncheckedUpdateWithoutOpenedContainersInput>
+}
+
 export type StaffCreateNestedOneWithoutRetailSalesInput = {
   create?: Prisma.XOR<Prisma.StaffCreateWithoutRetailSalesInput, Prisma.StaffUncheckedCreateWithoutRetailSalesInput>
   connectOrCreate?: Prisma.StaffCreateOrConnectWithoutRetailSalesInput
@@ -1132,6 +1201,9 @@ export type StaffCreateWithoutSalonInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSalonInput = {
@@ -1166,6 +1238,9 @@ export type StaffUncheckedCreateWithoutSalonInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSalonInput = {
@@ -1249,6 +1324,9 @@ export type StaffCreateWithoutUserInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutUserInput = {
@@ -1283,6 +1361,9 @@ export type StaffUncheckedCreateWithoutUserInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutUserInput = {
@@ -1333,6 +1414,9 @@ export type StaffUpdateWithoutUserInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutUserInput = {
@@ -1367,6 +1451,9 @@ export type StaffUncheckedUpdateWithoutUserInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutMembershipSalesInput = {
@@ -1401,6 +1488,9 @@ export type StaffCreateWithoutMembershipSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutMembershipSalesInput = {
@@ -1435,6 +1525,9 @@ export type StaffUncheckedCreateWithoutMembershipSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutMembershipSalesInput = {
@@ -1485,6 +1578,9 @@ export type StaffUpdateWithoutMembershipSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutMembershipSalesInput = {
@@ -1519,6 +1615,9 @@ export type StaffUncheckedUpdateWithoutMembershipSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutBranchInput = {
@@ -1553,6 +1652,9 @@ export type StaffCreateWithoutBranchInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutBranchInput = {
@@ -1587,6 +1689,9 @@ export type StaffUncheckedCreateWithoutBranchInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutBranchInput = {
@@ -1647,6 +1752,9 @@ export type StaffCreateWithoutReporteesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutReporteesInput = {
@@ -1681,6 +1789,9 @@ export type StaffUncheckedCreateWithoutReporteesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutReporteesInput = {
@@ -1720,6 +1831,9 @@ export type StaffCreateWithoutReportingManagerInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutReportingManagerInput = {
@@ -1754,6 +1868,9 @@ export type StaffUncheckedCreateWithoutReportingManagerInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutReportingManagerInput = {
@@ -1809,6 +1926,9 @@ export type StaffUpdateWithoutReporteesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutReporteesInput = {
@@ -1843,6 +1963,9 @@ export type StaffUncheckedUpdateWithoutReporteesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUpsertWithWhereUniqueWithoutReportingManagerInput = {
@@ -1893,6 +2016,9 @@ export type StaffCreateWithoutAttendancesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutAttendancesInput = {
@@ -1927,6 +2053,9 @@ export type StaffUncheckedCreateWithoutAttendancesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutAttendancesInput = {
@@ -1977,6 +2106,9 @@ export type StaffUpdateWithoutAttendancesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutAttendancesInput = {
@@ -2011,6 +2143,9 @@ export type StaffUncheckedUpdateWithoutAttendancesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutLeavesInput = {
@@ -2045,6 +2180,9 @@ export type StaffCreateWithoutLeavesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutLeavesInput = {
@@ -2079,6 +2217,9 @@ export type StaffUncheckedCreateWithoutLeavesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutLeavesInput = {
@@ -2129,6 +2270,9 @@ export type StaffUpdateWithoutLeavesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutLeavesInput = {
@@ -2163,6 +2307,9 @@ export type StaffUncheckedUpdateWithoutLeavesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutAvailabilityRulesInput = {
@@ -2197,6 +2344,9 @@ export type StaffCreateWithoutAvailabilityRulesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutAvailabilityRulesInput = {
@@ -2231,6 +2381,9 @@ export type StaffUncheckedCreateWithoutAvailabilityRulesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutAvailabilityRulesInput = {
@@ -2281,6 +2434,9 @@ export type StaffUpdateWithoutAvailabilityRulesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutAvailabilityRulesInput = {
@@ -2315,6 +2471,9 @@ export type StaffUncheckedUpdateWithoutAvailabilityRulesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutTimeBlocksInput = {
@@ -2349,6 +2508,9 @@ export type StaffCreateWithoutTimeBlocksInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutTimeBlocksInput = {
@@ -2383,6 +2545,9 @@ export type StaffUncheckedCreateWithoutTimeBlocksInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutTimeBlocksInput = {
@@ -2433,6 +2598,9 @@ export type StaffUpdateWithoutTimeBlocksInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutTimeBlocksInput = {
@@ -2467,6 +2635,9 @@ export type StaffUncheckedUpdateWithoutTimeBlocksInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutSalaryConfigsInput = {
@@ -2501,6 +2672,9 @@ export type StaffCreateWithoutSalaryConfigsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSalaryConfigsInput = {
@@ -2535,6 +2709,9 @@ export type StaffUncheckedCreateWithoutSalaryConfigsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSalaryConfigsInput = {
@@ -2585,6 +2762,9 @@ export type StaffUpdateWithoutSalaryConfigsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSalaryConfigsInput = {
@@ -2619,6 +2799,9 @@ export type StaffUncheckedUpdateWithoutSalaryConfigsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutSalarySlipsInput = {
@@ -2653,6 +2836,9 @@ export type StaffCreateWithoutSalarySlipsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSalarySlipsInput = {
@@ -2687,6 +2873,9 @@ export type StaffUncheckedCreateWithoutSalarySlipsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSalarySlipsInput = {
@@ -2737,6 +2926,9 @@ export type StaffUpdateWithoutSalarySlipsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSalarySlipsInput = {
@@ -2771,6 +2963,9 @@ export type StaffUncheckedUpdateWithoutSalarySlipsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutAppointmentsInput = {
@@ -2805,6 +3000,9 @@ export type StaffCreateWithoutAppointmentsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutAppointmentsInput = {
@@ -2839,6 +3037,9 @@ export type StaffUncheckedCreateWithoutAppointmentsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutAppointmentsInput = {
@@ -2889,6 +3090,9 @@ export type StaffUpdateWithoutAppointmentsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutAppointmentsInput = {
@@ -2923,6 +3127,9 @@ export type StaffUncheckedUpdateWithoutAppointmentsInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutAppointmentServicesInput = {
@@ -2957,6 +3164,9 @@ export type StaffCreateWithoutAppointmentServicesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutAppointmentServicesInput = {
@@ -2991,6 +3201,9 @@ export type StaffUncheckedCreateWithoutAppointmentServicesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutAppointmentServicesInput = {
@@ -3041,6 +3254,9 @@ export type StaffUpdateWithoutAppointmentServicesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutAppointmentServicesInput = {
@@ -3075,6 +3291,9 @@ export type StaffUncheckedUpdateWithoutAppointmentServicesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutSalesInput = {
@@ -3109,6 +3328,9 @@ export type StaffCreateWithoutSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSalesInput = {
@@ -3143,6 +3365,9 @@ export type StaffUncheckedCreateWithoutSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSalesInput = {
@@ -3193,6 +3418,9 @@ export type StaffUpdateWithoutSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSalesInput = {
@@ -3227,6 +3455,9 @@ export type StaffUncheckedUpdateWithoutSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutPackageInvoiceItemsInput = {
@@ -3261,6 +3492,9 @@ export type StaffCreateWithoutPackageInvoiceItemsInput = {
   retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutPackageInvoiceItemsInput = {
@@ -3295,6 +3529,9 @@ export type StaffUncheckedCreateWithoutPackageInvoiceItemsInput = {
   retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutPackageInvoiceItemsInput = {
@@ -3345,6 +3582,9 @@ export type StaffUpdateWithoutPackageInvoiceItemsInput = {
   retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutPackageInvoiceItemsInput = {
@@ -3379,6 +3619,9 @@ export type StaffUncheckedUpdateWithoutPackageInvoiceItemsInput = {
   retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutSoldCustomerPackagesInput = {
@@ -3413,6 +3656,9 @@ export type StaffCreateWithoutSoldCustomerPackagesInput = {
   retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutSoldCustomerPackagesInput = {
@@ -3447,6 +3693,9 @@ export type StaffUncheckedCreateWithoutSoldCustomerPackagesInput = {
   retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutSoldCustomerPackagesInput = {
@@ -3497,6 +3746,9 @@ export type StaffUpdateWithoutSoldCustomerPackagesInput = {
   retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSoldCustomerPackagesInput = {
@@ -3531,6 +3783,9 @@ export type StaffUncheckedUpdateWithoutSoldCustomerPackagesInput = {
   retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutPackageUsageItemsInput = {
@@ -3565,6 +3820,9 @@ export type StaffCreateWithoutPackageUsageItemsInput = {
   retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutPackageUsageItemsInput = {
@@ -3599,6 +3857,9 @@ export type StaffUncheckedCreateWithoutPackageUsageItemsInput = {
   retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutPackageUsageItemsInput = {
@@ -3649,6 +3910,9 @@ export type StaffUpdateWithoutPackageUsageItemsInput = {
   retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutPackageUsageItemsInput = {
@@ -3683,6 +3947,501 @@ export type StaffUncheckedUpdateWithoutPackageUsageItemsInput = {
   retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
+}
+
+export type StaffCreateWithoutStockMovementsInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reportingManager?: Prisma.StaffCreateNestedOneWithoutReporteesInput
+  reportees?: Prisma.StaffCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipCreateNestedManyWithoutSoldByStaffInput
+  branch?: Prisma.BranchCreateNestedOneWithoutStaffInput
+  salon: Prisma.SalonCreateNestedOneWithoutStaffInput
+  user?: Prisma.UserCreateNestedOneWithoutStaffProfileInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
+}
+
+export type StaffUncheckedCreateWithoutStockMovementsInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  salonId: string
+  userId?: string | null
+  reportingManagerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branchId?: string | null
+  reportees?: Prisma.StaffUncheckedCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSoldByStaffInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
+}
+
+export type StaffCreateOrConnectWithoutStockMovementsInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutStockMovementsInput, Prisma.StaffUncheckedCreateWithoutStockMovementsInput>
+}
+
+export type StaffCreateWithoutReceivedStockMovementsInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reportingManager?: Prisma.StaffCreateNestedOneWithoutReporteesInput
+  reportees?: Prisma.StaffCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipCreateNestedManyWithoutSoldByStaffInput
+  branch?: Prisma.BranchCreateNestedOneWithoutStaffInput
+  salon: Prisma.SalonCreateNestedOneWithoutStaffInput
+  user?: Prisma.UserCreateNestedOneWithoutStaffProfileInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+}
+
+export type StaffUncheckedCreateWithoutReceivedStockMovementsInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  salonId: string
+  userId?: string | null
+  reportingManagerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branchId?: string | null
+  reportees?: Prisma.StaffUncheckedCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSoldByStaffInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+}
+
+export type StaffCreateOrConnectWithoutReceivedStockMovementsInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedCreateWithoutReceivedStockMovementsInput>
+}
+
+export type StaffUpsertWithoutStockMovementsInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutStockMovementsInput, Prisma.StaffUncheckedUpdateWithoutStockMovementsInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutStockMovementsInput, Prisma.StaffUncheckedCreateWithoutStockMovementsInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutStockMovementsInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutStockMovementsInput, Prisma.StaffUncheckedUpdateWithoutStockMovementsInput>
+}
+
+export type StaffUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reportingManager?: Prisma.StaffUpdateOneWithoutReporteesNestedInput
+  reportees?: Prisma.StaffUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUpdateManyWithoutSoldByStaffNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutStaffNestedInput
+  salon?: Prisma.SalonUpdateOneRequiredWithoutStaffNestedInput
+  user?: Prisma.UserUpdateOneWithoutStaffProfileNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportingManagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportees?: Prisma.StaffUncheckedUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
+}
+
+export type StaffUpsertWithoutReceivedStockMovementsInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedUpdateWithoutReceivedStockMovementsInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedCreateWithoutReceivedStockMovementsInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutReceivedStockMovementsInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutReceivedStockMovementsInput, Prisma.StaffUncheckedUpdateWithoutReceivedStockMovementsInput>
+}
+
+export type StaffUpdateWithoutReceivedStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reportingManager?: Prisma.StaffUpdateOneWithoutReporteesNestedInput
+  reportees?: Prisma.StaffUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUpdateManyWithoutSoldByStaffNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutStaffNestedInput
+  salon?: Prisma.SalonUpdateOneRequiredWithoutStaffNestedInput
+  user?: Prisma.UserUpdateOneWithoutStaffProfileNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutReceivedStockMovementsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportingManagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportees?: Prisma.StaffUncheckedUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+}
+
+export type StaffCreateWithoutOpenedContainersInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  reportingManager?: Prisma.StaffCreateNestedOneWithoutReporteesInput
+  reportees?: Prisma.StaffCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipCreateNestedManyWithoutSoldByStaffInput
+  branch?: Prisma.BranchCreateNestedOneWithoutStaffInput
+  salon: Prisma.SalonCreateNestedOneWithoutStaffInput
+  user?: Prisma.UserCreateNestedOneWithoutStaffProfileInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
+}
+
+export type StaffUncheckedCreateWithoutOpenedContainersInput = {
+  id?: string
+  staffCode?: string | null
+  name: string
+  email: string
+  phone?: string | null
+  jobRole: string
+  workingFrom: string
+  workingTo: string
+  weekOff: string
+  joiningDate?: Date | string
+  status?: boolean
+  salonId: string
+  userId?: string | null
+  reportingManagerId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  branchId?: string | null
+  reportees?: Prisma.StaffUncheckedCreateNestedManyWithoutReportingManagerInput
+  sales?: Prisma.SaleUncheckedCreateNestedManyWithoutStaffInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedCreateNestedManyWithoutSoldByStaffInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutStaffInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedCreateNestedManyWithoutStaffInput
+  attendances?: Prisma.StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+  leaves?: Prisma.StaffLeaveUncheckedCreateNestedManyWithoutStaffInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedCreateNestedManyWithoutStaffInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedCreateNestedManyWithoutStaffInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedCreateNestedManyWithoutStaffInput
+  salarySlips?: Prisma.SalarySlipUncheckedCreateNestedManyWithoutStaffInput
+  retailSales?: Prisma.RetailSaleUncheckedCreateNestedManyWithoutStaffInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
+}
+
+export type StaffCreateOrConnectWithoutOpenedContainersInput = {
+  where: Prisma.StaffWhereUniqueInput
+  create: Prisma.XOR<Prisma.StaffCreateWithoutOpenedContainersInput, Prisma.StaffUncheckedCreateWithoutOpenedContainersInput>
+}
+
+export type StaffUpsertWithoutOpenedContainersInput = {
+  update: Prisma.XOR<Prisma.StaffUpdateWithoutOpenedContainersInput, Prisma.StaffUncheckedUpdateWithoutOpenedContainersInput>
+  create: Prisma.XOR<Prisma.StaffCreateWithoutOpenedContainersInput, Prisma.StaffUncheckedCreateWithoutOpenedContainersInput>
+  where?: Prisma.StaffWhereInput
+}
+
+export type StaffUpdateToOneWithWhereWithoutOpenedContainersInput = {
+  where?: Prisma.StaffWhereInput
+  data: Prisma.XOR<Prisma.StaffUpdateWithoutOpenedContainersInput, Prisma.StaffUncheckedUpdateWithoutOpenedContainersInput>
+}
+
+export type StaffUpdateWithoutOpenedContainersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  reportingManager?: Prisma.StaffUpdateOneWithoutReporteesNestedInput
+  reportees?: Prisma.StaffUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUpdateManyWithoutSoldByStaffNestedInput
+  branch?: Prisma.BranchUpdateOneWithoutStaffNestedInput
+  salon?: Prisma.SalonUpdateOneRequiredWithoutStaffNestedInput
+  user?: Prisma.UserUpdateOneWithoutStaffProfileNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
+}
+
+export type StaffUncheckedUpdateWithoutOpenedContainersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  staffCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  jobRole?: Prisma.StringFieldUpdateOperationsInput | string
+  workingFrom?: Prisma.StringFieldUpdateOperationsInput | string
+  workingTo?: Prisma.StringFieldUpdateOperationsInput | string
+  weekOff?: Prisma.StringFieldUpdateOperationsInput | string
+  joiningDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  salonId?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportingManagerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  branchId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  reportees?: Prisma.StaffUncheckedUpdateManyWithoutReportingManagerNestedInput
+  sales?: Prisma.SaleUncheckedUpdateManyWithoutStaffNestedInput
+  membershipSales?: Prisma.CustomerMembershipUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutStaffNestedInput
+  appointmentServices?: Prisma.AppointmentServiceUncheckedUpdateManyWithoutStaffNestedInput
+  attendances?: Prisma.StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+  leaves?: Prisma.StaffLeaveUncheckedUpdateManyWithoutStaffNestedInput
+  availabilityRules?: Prisma.StaffAvailabilityRuleUncheckedUpdateManyWithoutStaffNestedInput
+  timeBlocks?: Prisma.StaffTimeBlockUncheckedUpdateManyWithoutStaffNestedInput
+  salaryConfigs?: Prisma.StaffSalaryConfigUncheckedUpdateManyWithoutStaffNestedInput
+  salarySlips?: Prisma.SalarySlipUncheckedUpdateManyWithoutStaffNestedInput
+  retailSales?: Prisma.RetailSaleUncheckedUpdateManyWithoutStaffNestedInput
+  soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
+  packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateWithoutRetailSalesInput = {
@@ -3717,6 +4476,9 @@ export type StaffCreateWithoutRetailSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffUncheckedCreateWithoutRetailSalesInput = {
@@ -3751,6 +4513,9 @@ export type StaffUncheckedCreateWithoutRetailSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedCreateNestedManyWithoutSoldByStaffInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedCreateNestedManyWithoutStaffInput
+  openedContainers?: Prisma.ProductContainerUncheckedCreateNestedManyWithoutOpenedByStaffInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutStaffInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedCreateNestedManyWithoutReceivedByStaffInput
 }
 
 export type StaffCreateOrConnectWithoutRetailSalesInput = {
@@ -3801,6 +4566,9 @@ export type StaffUpdateWithoutRetailSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutRetailSalesInput = {
@@ -3835,6 +4603,9 @@ export type StaffUncheckedUpdateWithoutRetailSalesInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffCreateManySalonInput = {
@@ -3888,6 +4659,9 @@ export type StaffUpdateWithoutSalonInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutSalonInput = {
@@ -3922,6 +4696,9 @@ export type StaffUncheckedUpdateWithoutSalonInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateManyWithoutSalonInput = {
@@ -3994,6 +4771,9 @@ export type StaffUpdateWithoutBranchInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutBranchInput = {
@@ -4028,6 +4808,9 @@ export type StaffUncheckedUpdateWithoutBranchInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateManyWithoutBranchInput = {
@@ -4100,6 +4883,9 @@ export type StaffUpdateWithoutReportingManagerInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateWithoutReportingManagerInput = {
@@ -4134,6 +4920,9 @@ export type StaffUncheckedUpdateWithoutReportingManagerInput = {
   soldCustomerPackages?: Prisma.CustomerPackageUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageInvoiceItems?: Prisma.InvoiceItemUncheckedUpdateManyWithoutSoldByStaffNestedInput
   packageUsageItems?: Prisma.CustomerPackageUsageItemUncheckedUpdateManyWithoutStaffNestedInput
+  openedContainers?: Prisma.ProductContainerUncheckedUpdateManyWithoutOpenedByStaffNestedInput
+  stockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutStaffNestedInput
+  receivedStockMovements?: Prisma.ProductStockMovementUncheckedUpdateManyWithoutReceivedByStaffNestedInput
 }
 
 export type StaffUncheckedUpdateManyWithoutReportingManagerInput = {
@@ -4176,6 +4965,9 @@ export type StaffCountOutputType = {
   soldCustomerPackages: number
   packageInvoiceItems: number
   packageUsageItems: number
+  openedContainers: number
+  stockMovements: number
+  receivedStockMovements: number
 }
 
 export type StaffCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4194,6 +4986,9 @@ export type StaffCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   soldCustomerPackages?: boolean | StaffCountOutputTypeCountSoldCustomerPackagesArgs
   packageInvoiceItems?: boolean | StaffCountOutputTypeCountPackageInvoiceItemsArgs
   packageUsageItems?: boolean | StaffCountOutputTypeCountPackageUsageItemsArgs
+  openedContainers?: boolean | StaffCountOutputTypeCountOpenedContainersArgs
+  stockMovements?: boolean | StaffCountOutputTypeCountStockMovementsArgs
+  receivedStockMovements?: boolean | StaffCountOutputTypeCountReceivedStockMovementsArgs
 }
 
 /**
@@ -4311,6 +5106,27 @@ export type StaffCountOutputTypeCountPackageUsageItemsArgs<ExtArgs extends runti
   where?: Prisma.CustomerPackageUsageItemWhereInput
 }
 
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountOpenedContainersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductContainerWhereInput
+}
+
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductStockMovementWhereInput
+}
+
+/**
+ * StaffCountOutputType without action
+ */
+export type StaffCountOutputTypeCountReceivedStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProductStockMovementWhereInput
+}
+
 
 export type StaffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4349,6 +5165,9 @@ export type StaffSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   soldCustomerPackages?: boolean | Prisma.Staff$soldCustomerPackagesArgs<ExtArgs>
   packageInvoiceItems?: boolean | Prisma.Staff$packageInvoiceItemsArgs<ExtArgs>
   packageUsageItems?: boolean | Prisma.Staff$packageUsageItemsArgs<ExtArgs>
+  openedContainers?: boolean | Prisma.Staff$openedContainersArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.Staff$stockMovementsArgs<ExtArgs>
+  receivedStockMovements?: boolean | Prisma.Staff$receivedStockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["staff"]>
 
@@ -4441,6 +5260,9 @@ export type StaffInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   soldCustomerPackages?: boolean | Prisma.Staff$soldCustomerPackagesArgs<ExtArgs>
   packageInvoiceItems?: boolean | Prisma.Staff$packageInvoiceItemsArgs<ExtArgs>
   packageUsageItems?: boolean | Prisma.Staff$packageUsageItemsArgs<ExtArgs>
+  openedContainers?: boolean | Prisma.Staff$openedContainersArgs<ExtArgs>
+  stockMovements?: boolean | Prisma.Staff$stockMovementsArgs<ExtArgs>
+  receivedStockMovements?: boolean | Prisma.Staff$receivedStockMovementsArgs<ExtArgs>
   _count?: boolean | Prisma.StaffCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type StaffIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4478,6 +5300,9 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     soldCustomerPackages: Prisma.$CustomerPackagePayload<ExtArgs>[]
     packageInvoiceItems: Prisma.$InvoiceItemPayload<ExtArgs>[]
     packageUsageItems: Prisma.$CustomerPackageUsageItemPayload<ExtArgs>[]
+    openedContainers: Prisma.$ProductContainerPayload<ExtArgs>[]
+    stockMovements: Prisma.$ProductStockMovementPayload<ExtArgs>[]
+    receivedStockMovements: Prisma.$ProductStockMovementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -4504,7 +5329,7 @@ export type $StaffPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type StaffGetPayload<S extends boolean | null | undefined | StaffDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffPayload, S>
 
 export type StaffCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffCountAggregateInputType | true
   }
 
@@ -4910,6 +5735,9 @@ export interface Prisma__StaffClient<T, Null = never, ExtArgs extends runtime.Ty
   soldCustomerPackages<T extends Prisma.Staff$soldCustomerPackagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$soldCustomerPackagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageInvoiceItems<T extends Prisma.Staff$packageInvoiceItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$packageInvoiceItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   packageUsageItems<T extends Prisma.Staff$packageUsageItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$packageUsageItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPackageUsageItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  openedContainers<T extends Prisma.Staff$openedContainersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$openedContainersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductContainerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  stockMovements<T extends Prisma.Staff$stockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$stockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  receivedStockMovements<T extends Prisma.Staff$receivedStockMovementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Staff$receivedStockMovementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductStockMovementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4980,6 +5808,7 @@ export type StaffFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Filter, which Staff to fetch.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5002,6 +5831,7 @@ export type StaffFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter, which Staff to fetch.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5054,6 +5884,7 @@ export type StaffFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5106,6 +5937,7 @@ export type StaffFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5158,6 +5990,7 @@ export type StaffFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Filter by unique combinations of Staff.
    */
   distinct?: Prisma.StaffScalarFieldEnum | Prisma.StaffScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5180,6 +6013,7 @@ export type StaffCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * The data needed to create a Staff.
    */
   data: Prisma.XOR<Prisma.StaffCreateInput, Prisma.StaffUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5240,6 +6074,7 @@ export type StaffUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Choose, which Staff to update.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5318,6 +6153,7 @@ export type StaffUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * In case the Staff was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffUpdateInput, Prisma.StaffUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5340,6 +6176,7 @@ export type StaffDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Filter which Staff to delete.
    */
   where: Prisma.StaffWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -5771,6 +6608,78 @@ export type Staff$packageUsageItemsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.CustomerPackageUsageItemScalarFieldEnum | Prisma.CustomerPackageUsageItemScalarFieldEnum[]
+}
+
+/**
+ * Staff.openedContainers
+ */
+export type Staff$openedContainersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductContainer
+   */
+  select?: Prisma.ProductContainerSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductContainer
+   */
+  omit?: Prisma.ProductContainerOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductContainerInclude<ExtArgs> | null
+  where?: Prisma.ProductContainerWhereInput
+  orderBy?: Prisma.ProductContainerOrderByWithRelationInput | Prisma.ProductContainerOrderByWithRelationInput[]
+  cursor?: Prisma.ProductContainerWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductContainerScalarFieldEnum | Prisma.ProductContainerScalarFieldEnum[]
+}
+
+/**
+ * Staff.stockMovements
+ */
+export type Staff$stockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductStockMovement
+   */
+  select?: Prisma.ProductStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductStockMovement
+   */
+  omit?: Prisma.ProductStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductStockMovementInclude<ExtArgs> | null
+  where?: Prisma.ProductStockMovementWhereInput
+  orderBy?: Prisma.ProductStockMovementOrderByWithRelationInput | Prisma.ProductStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.ProductStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
+}
+
+/**
+ * Staff.receivedStockMovements
+ */
+export type Staff$receivedStockMovementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProductStockMovement
+   */
+  select?: Prisma.ProductStockMovementSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProductStockMovement
+   */
+  omit?: Prisma.ProductStockMovementOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProductStockMovementInclude<ExtArgs> | null
+  where?: Prisma.ProductStockMovementWhereInput
+  orderBy?: Prisma.ProductStockMovementOrderByWithRelationInput | Prisma.ProductStockMovementOrderByWithRelationInput[]
+  cursor?: Prisma.ProductStockMovementWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProductStockMovementScalarFieldEnum | Prisma.ProductStockMovementScalarFieldEnum[]
 }
 
 /**

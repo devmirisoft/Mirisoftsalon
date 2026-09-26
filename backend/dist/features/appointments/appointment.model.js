@@ -1,7 +1,7 @@
 import { prisma } from "../../config/prisma.js";
 import { Prisma } from "../../generated/prisma/client.js";
 import { transactionError } from "../products/inventory-access.js";
-import { createStockMovement } from "../stock/stockMovement.service.js";
+import { recordServiceUsage, } from "../stock/serviceUsage.service.js";
 // Products sold during the visit live on the appointment's invoice, not on the
 // appointment itself, so the detail views pull those lines in alongside services.
 const soldProductsInclude = {
@@ -40,92 +40,96 @@ export const appointmentListWhere = (filters) => ({
 });
 export const AppointmentModel = {
     create: async (data, tx) => {
-        return (tx ?? prisma).appointment.create({
-            data: {
-                appointmentCode: data.appointmentCode,
-                salonId: data.salonId,
-                customerId: data.customerId,
-                ...(data.staffId ? { staffId: data.staffId } : {}),
-                ...(data.createdById ? { createdById: data.createdById } : {}),
-                startTime: data.startTime,
-                endTime: data.endTime,
-                totalDurationMinutes: data.totalDurationMinutes,
-                estimatedAmount: data.estimatedAmount,
-                status: data.status || "SCHEDULED",
-                source: data.source || "INTERNAL",
-                walkInJobCart: data.walkInJobCart ?? false,
-                ...(data.branchId ? { branchId: data.branchId } : {}),
-                ...(data.bookingNote ? { bookingNote: data.bookingNote } : {}),
-                ...(data.internalNote ? { internalNote: data.internalNote } : {}),
-                services: {
-                    create: data.services.map((service) => ({
-                        service: {
-                            connect: {
-                                id: service.serviceId,
-                            },
-                        },
-                        serviceName: service.serviceName,
-                        price: service.price,
-                        ...(service.quantity ? { quantity: service.quantity } : {}),
-                        ...(service.staffId
-                            ? { staff: { connect: { id: service.staffId } } }
-                            : {}),
-                        ...(service.durationValue !== undefined
-                            ? { durationValue: service.durationValue }
-                            : {}),
-                        ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
-                    })),
+        // Prisma 7.8 nested `services: { create }` drops rows at 7-8 services and
+        // throws a bogus appointmentId FK error at 9+, so insert them separately.
+        const run = async (db) => {
+            const { id } = await db.appointment.create({
+                select: { id: true },
+                data: {
+                    appointmentCode: data.appointmentCode,
+                    salonId: data.salonId,
+                    customerId: data.customerId,
+                    ...(data.staffId ? { staffId: data.staffId } : {}),
+                    ...(data.createdById ? { createdById: data.createdById } : {}),
+                    startTime: data.startTime,
+                    endTime: data.endTime,
+                    totalDurationMinutes: data.totalDurationMinutes,
+                    estimatedAmount: data.estimatedAmount,
+                    status: data.status || "SCHEDULED",
+                    source: data.source || "INTERNAL",
+                    walkInJobCart: data.walkInJobCart ?? false,
+                    ...(data.branchId ? { branchId: data.branchId } : {}),
+                    ...(data.bookingNote ? { bookingNote: data.bookingNote } : {}),
+                    ...(data.internalNote ? { internalNote: data.internalNote } : {}),
                 },
-            },
-            include: {
-                customer: {
-                    select: {
-                        id: true,
-                        name: true,
-                        phone: true,
-                        customerCode: true,
-                    },
-                },
-                staff: {
-                    select: {
-                        id: true,
-                        name: true,
-                        jobRole: true,
-                    },
-                },
-                createdBy: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        role: true,
-                    },
-                },
-                branch: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-                services: {
-                    include: {
-                        service: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                        staff: {
-                            select: {
-                                id: true,
-                                name: true,
-                                jobRole: true,
-                            },
+            });
+            await db.appointmentService.createMany({
+                data: data.services.map((service) => ({
+                    appointmentId: id,
+                    serviceId: service.serviceId,
+                    serviceName: service.serviceName,
+                    price: service.price,
+                    ...(service.quantity ? { quantity: service.quantity } : {}),
+                    ...(service.staffId ? { staffId: service.staffId } : {}),
+                    ...(service.durationValue !== undefined
+                        ? { durationValue: service.durationValue }
+                        : {}),
+                    ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
+                })),
+            });
+            return db.appointment.findUniqueOrThrow({
+                where: { id },
+                include: {
+                    customer: {
+                        select: {
+                            id: true,
+                            name: true,
+                            phone: true,
+                            customerCode: true,
                         },
                     },
+                    staff: {
+                        select: {
+                            id: true,
+                            name: true,
+                            jobRole: true,
+                        },
+                    },
+                    createdBy: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            role: true,
+                        },
+                    },
+                    branch: {
+                        select: {
+                            id: true,
+                            name: true,
+                        },
+                    },
+                    services: {
+                        include: {
+                            service: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                            staff: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    jobRole: true,
+                                },
+                            },
+                        },
+                    },
                 },
-            },
-        });
+            });
+        };
+        return tx ? run(tx) : prisma.$transaction(run);
     },
     findAll: async (filters) => {
         return prisma.appointment.findMany({
@@ -607,10 +611,8 @@ export const AppointmentModel = {
                     id: true,
                     salonId: true,
                     branchId: true,
+                    staffId: true,
                     status: true,
-                    services: {
-                        select: { serviceId: true },
-                    },
                 },
             });
             if (!currentAppointment) {
@@ -622,50 +624,22 @@ export const AppointmentModel = {
                     : "Appointment status changed; refresh and try again");
             }
             if (data.newStatus === "COMPLETED") {
-                const serviceCounts = new Map();
-                for (const appointmentService of currentAppointment.services) {
-                    serviceCounts.set(appointmentService.serviceId, (serviceCounts.get(appointmentService.serviceId) ?? 0) + 1);
+                try {
+                    await recordServiceUsage({
+                        tx: client,
+                        appointment: currentAppointment,
+                        usage: data.usage,
+                        createdById: data.changedById,
+                    });
                 }
-                const consumables = serviceCounts.size
-                    ? await client.serviceConsumable.findMany({
-                        where: {
-                            salonId: currentAppointment.salonId,
-                            serviceId: { in: [...serviceCounts.keys()] },
-                            status: true,
-                        },
-                    })
-                    : [];
-                const quantitiesByProduct = new Map();
-                for (const consumable of consumables) {
-                    const serviceQuantity = serviceCounts.get(consumable.serviceId) ?? 1;
-                    const quantity = consumable.quantity.mul(serviceQuantity);
-                    quantitiesByProduct.set(consumable.productId, (quantitiesByProduct.get(consumable.productId) ??
-                        new Prisma.Decimal(0)).add(quantity));
-                }
-                for (const [productId, quantity] of [...quantitiesByProduct.entries()].sort(([left], [right]) => left.localeCompare(right))) {
-                    try {
-                        await createStockMovement({
-                            tx: client,
-                            salonId: currentAppointment.salonId,
-                            ...(currentAppointment.branchId
-                                ? { branchId: currentAppointment.branchId }
-                                : {}),
-                            productId,
-                            type: "USED_IN_SERVICE",
-                            quantity,
-                            referenceType: "APPOINTMENT",
-                            referenceId: currentAppointment.id,
-                            reason: "Used in completed appointment",
-                            ...(data.changedById ? { createdById: data.changedById } : {}),
-                        });
+                catch (error) {
+                    if (error instanceof Error &&
+                        error.message.toLowerCase().includes("insufficient stock")) {
+                        // Same message as before, plus the stock detail a client needs to
+                        // offer a transfer.
+                        throw Object.assign(transactionError("Insufficient stock for service consumables"), "stock" in error ? { code: "INSUFFICIENT_STOCK", stock: error.stock } : {});
                     }
-                    catch (error) {
-                        if (error instanceof Error &&
-                            error.message.toLowerCase().includes("insufficient stock")) {
-                            throw transactionError("Insufficient stock for service consumables");
-                        }
-                        throw error;
-                    }
+                    throw error;
                 }
             }
             const appointment = await client.appointment.update({

@@ -21,8 +21,6 @@ import {
   removeCouponFromInvoice,
 } from "../coupons/coupon.service.js";
 import { applyCouponSchema } from "../coupons/coupon.validation.js";
-import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.js";
-import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import { sendInventoryError } from "../products/inventory-access.js";
 import {
@@ -30,6 +28,7 @@ import {
   resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
 import { calculateInvoiceGst } from "./invoice-gst.service.js";
+import { cancelInvoiceInTransaction } from "./invoice-cancel.service.js";
 import {
   branchFilterFor,
   pinnedBranchId,
@@ -453,23 +452,16 @@ export const createInvoiceFromAppointment = async (
         : {}),
     };
 
-    const { invoice, membershipDiscountAmount } = await prisma.$transaction(
+    const invoice = await prisma.$transaction(
       async (tx) => {
         const currentMembership = await resolveCurrentCustomerMembership(tx, {
           customerId: appointment.customerId,
           actor: membershipActor,
           audit: auditContext,
         });
-        const membershipDiscountAmount = currentMembership
-          ? Prisma.Decimal.min(
-              subtotalAmount
-                .mul(currentMembership.discountPercentageSnapshot)
-                .div(100),
-              subtotalAmount.minus(manualDiscountAmount)
-            ).toDecimalPlaces(2)
-          : new Prisma.Decimal(0);
+        // A membership never discounts a bill; only the manual discount does.
         const finalDiscountAmount = Prisma.Decimal.min(
-          manualDiscountAmount.plus(membershipDiscountAmount),
+          manualDiscountAmount,
           subtotalAmount
         ).toDecimalPlaces(2);
         const gstSettings =
@@ -738,13 +730,10 @@ export const createInvoiceFromAppointment = async (
             customerMembershipId: currentMembership?.id ?? null,
             membershipName:
               currentMembership?.membershipNameSnapshot ?? null,
-            membershipDiscountPercentage:
-              currentMembership?.discountPercentageSnapshot ?? null,
-            membershipDiscountAmount,
           },
           ...auditContext,
         });
-        return { invoice: created, membershipDiscountAmount };
+        return created;
       }
     );
 
@@ -754,7 +743,6 @@ export const createInvoiceFromAppointment = async (
       data: {
         ...invoice,
         manualDiscountAmount,
-        membershipDiscountAmount,
       },
     });
   } catch (error) {
@@ -1093,89 +1081,12 @@ export const cancelInvoice = async (req: Request, res: Response) => {
       });
     }
 
-    const invoice = await prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT "id" FROM "Invoice" WHERE "id" = ${id} FOR UPDATE`;
-      const current = await tx.invoice.findUniqueOrThrow({
-        where: { id },
-      });
-      if (current.status === "CANCELLED") {
-        throw Object.assign(new Error("Invoice is already cancelled"), {
-          status: 409,
-        });
-      }
-      if (current.paymentStatus !== "UNPAID") {
-        throw Object.assign(
-          new Error("Paid or partially paid invoice cannot be cancelled"),
-          { status: 400 }
-        );
-      }
-      if (current.couponId && current.status === "ISSUED") {
-        await tx.$queryRaw`SELECT "id" FROM "Coupon" WHERE "id" = ${current.couponId} FOR UPDATE`;
-        await tx.coupon.updateMany({
-          where: { id: current.couponId, usedCount: { gt: 0 } },
-          data: { usedCount: { decrement: 1 } },
-        });
-      }
-      if (current.appointmentId) {
-        await reverseAppointmentConsumables({
-          tx,
-          appointmentId: current.appointmentId,
-          salonId: current.salonId,
-          branchId: current.branchId,
-          createdById: req.user?.userId,
-        });
-      }
-      const cancelled = await InvoiceModel.cancel(id, tx);
-      await reverseUsedPackageUsagesForInvoice(tx, {
-        invoiceId: id,
+    const invoice = await prisma.$transaction((tx) =>
+      cancelInvoiceInTransaction(tx, id, {
         userId: req.user?.userId,
         ...requestAuditContext(req),
-      });
-      const customerPackages = await tx.customerPackage.findMany({
-        where: {
-          invoiceId: id,
-          status: { not: "CANCELLED" },
-        },
-      });
-      if (customerPackages.length) {
-        await tx.customerPackage.updateMany({
-          where: { id: { in: customerPackages.map((item) => item.id) } },
-          data: { status: "CANCELLED" },
-        });
-        for (const customerPackage of customerPackages) {
-          await createAuditLog({
-            tx,
-            salonId: customerPackage.salonId,
-            branchId: customerPackage.branchId,
-            userId: req.user?.userId,
-            module: "PACKAGE",
-            action: "CANCEL",
-            entityId: customerPackage.id,
-            entityName: customerPackage.packageNameSnapshot,
-            description: `Customer package ${customerPackage.packageNameSnapshot} cancelled with invoice ${cancelled.invoiceCode}`,
-            oldData: { status: customerPackage.status },
-            newData: { status: "CANCELLED", invoiceId: id },
-            ...requestAuditContext(req),
-          });
-        }
-      }
-      await createAuditLog({
-      tx,
-      salonId: existingInvoice.salonId,
-      branchId: existingInvoice.branchId,
-      userId: req.user?.userId,
-      module: "INVOICE",
-      action: "CANCEL",
-      entityId: cancelled.id,
-      entityCode: cancelled.invoiceCode,
-      entityName: cancelled.customerName,
-      description: `Invoice ${cancelled.invoiceCode} cancelled`,
-      oldData: { status: existingInvoice.status },
-      newData: { status: cancelled.status },
-      ...requestAuditContext(req),
-      });
-      return cancelled;
-    });
+      })
+    );
 
     return res.status(200).json({
       success: true,

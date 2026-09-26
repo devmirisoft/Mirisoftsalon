@@ -1,4 +1,11 @@
-import { localDay, periodBounds, ranker } from "../features/reports/salon-report.controller.js";
+import {
+  eodInvoiceFilters,
+  trendDays,
+  localDay,
+  periodBounds,
+  ranker,
+  trendBucket,
+} from "../features/reports/salon-report.controller.js";
 
 describe("salon report helpers", () => {
   describe("periodBounds", () => {
@@ -25,6 +32,12 @@ describe("salon report helpers", () => {
         start: "2025-12-03",
         end: "2026-01-01",
       });
+    });
+
+    it("spans 90, 182 and 365 days for quarter, half year and year", () => {
+      expect(periodBounds("quarter", "UTC", undefined, undefined, now).start).toBe("2025-10-04");
+      expect(periodBounds("halfyear", "UTC", undefined, undefined, now).start).toBe("2025-07-04");
+      expect(periodBounds("year", "UTC", undefined, undefined, now).start).toBe("2025-01-02");
     });
 
     it("passes custom dates straight through", () => {
@@ -54,11 +67,60 @@ describe("salon report helpers", () => {
     });
   });
 
+  describe("trendBucket", () => {
+    it("buckets by day, then Monday-start week, then month as the span grows", () => {
+      // 2026-01-01 is a Thursday; its week starts Monday 2025-12-29.
+      expect(trendBucket("2026-01-01", 30)).toBe("2026-01-01");
+      expect(trendBucket("2026-01-01", 90)).toBe("2025-12-29");
+      expect(trendBucket("2025-12-29", 90)).toBe("2025-12-29");
+      expect(trendBucket("2026-01-04", 90)).toBe("2025-12-29");
+      expect(trendBucket("2026-01-01", 365)).toBe("2026-01");
+    });
+  });
+
   describe("localDay", () => {
     it("formats in the salon timezone", () => {
       const instant = new Date("2026-03-14T20:30:00Z");
       expect(localDay(instant, "UTC")).toBe("2026-03-14");
       expect(localDay(instant, "Asia/Kolkata")).toBe("2026-03-15");
+    });
+  });
+
+  describe("eodInvoiceFilters", () => {
+    it("builds nothing from blank or whitespace-only search fields", () => {
+      expect(eodInvoiceFilters({})).toEqual({});
+      expect(eodInvoiceFilters({ name: "  ", phone: "", methods: "" })).toEqual({});
+    });
+
+    it("matches name and invoice code case-insensitively, phone exactly", () => {
+      expect(eodInvoiceFilters({ name: " anita ", phone: "9216", invoiceNo: "63365" })).toEqual({
+        customerName: { contains: "anita", mode: "insensitive" },
+        customerPhone: { contains: "9216" },
+        invoiceCode: { contains: "63365", mode: "insensitive" },
+      });
+    });
+
+    it("keeps known payment methods and drops anything else", () => {
+      expect(eodInvoiceFilters({ methods: "cash, upi" })).toEqual({
+        payments: { some: { method: { in: ["CASH", "UPI"] } } },
+      });
+      // An unknown method must not silently filter the report down to nothing.
+      expect(eodInvoiceFilters({ methods: "DROP TABLE" })).toEqual({});
+    });
+  });
+
+  describe("trendDays", () => {
+    it("returns seven days ending on the given day, oldest first", () => {
+      expect(trendDays("2026-09-18")).toEqual([
+        "2026-09-12", "2026-09-13", "2026-09-14", "2026-09-15",
+        "2026-09-16", "2026-09-17", "2026-09-18",
+      ]);
+    });
+
+    it("walks back across a month boundary", () => {
+      expect(trendDays("2026-03-02", 4)).toEqual([
+        "2026-02-27", "2026-02-28", "2026-03-01", "2026-03-02",
+      ]);
     });
   });
 });

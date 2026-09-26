@@ -1433,7 +1433,7 @@ export type $StaffLeavePayload<ExtArgs extends runtime.Types.Extensions.Internal
 export type StaffLeaveGetPayload<S extends boolean | null | undefined | StaffLeaveDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffLeavePayload, S>
 
 export type StaffLeaveCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffLeaveFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffLeaveFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffLeaveCountAggregateInputType | true
   }
 
@@ -1892,6 +1892,7 @@ export type StaffLeaveFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter, which StaffLeave to fetch.
    */
   where: Prisma.StaffLeaveWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1914,6 +1915,7 @@ export type StaffLeaveFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which StaffLeave to fetch.
    */
   where: Prisma.StaffLeaveWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1966,6 +1968,7 @@ export type StaffLeaveFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of StaffLeaves.
    */
   distinct?: Prisma.StaffLeaveScalarFieldEnum | Prisma.StaffLeaveScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2018,6 +2021,7 @@ export type StaffLeaveFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of StaffLeaves.
    */
   distinct?: Prisma.StaffLeaveScalarFieldEnum | Prisma.StaffLeaveScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2070,6 +2074,7 @@ export type StaffLeaveFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter by unique combinations of StaffLeaves.
    */
   distinct?: Prisma.StaffLeaveScalarFieldEnum | Prisma.StaffLeaveScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2092,6 +2097,7 @@ export type StaffLeaveCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data needed to create a StaffLeave.
    */
   data: Prisma.XOR<Prisma.StaffLeaveCreateInput, Prisma.StaffLeaveUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2152,6 +2158,7 @@ export type StaffLeaveUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Choose, which StaffLeave to update.
    */
   where: Prisma.StaffLeaveWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2230,6 +2237,7 @@ export type StaffLeaveUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * In case the StaffLeave was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffLeaveUpdateInput, Prisma.StaffLeaveUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2252,6 +2260,7 @@ export type StaffLeaveDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter which StaffLeave to delete.
    */
   where: Prisma.StaffLeaveWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

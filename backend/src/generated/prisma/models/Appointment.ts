@@ -3281,7 +3281,7 @@ export type $AppointmentPayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type AppointmentGetPayload<S extends boolean | null | undefined | AppointmentDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$AppointmentPayload, S>
 
 export type AppointmentCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<AppointmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<AppointmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: AppointmentCountAggregateInputType | true
   }
 
@@ -3752,6 +3752,7 @@ export type AppointmentFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which Appointment to fetch.
    */
   where: Prisma.AppointmentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3774,6 +3775,7 @@ export type AppointmentFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which Appointment to fetch.
    */
   where: Prisma.AppointmentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3826,6 +3828,7 @@ export type AppointmentFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of Appointments.
    */
   distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3878,6 +3881,7 @@ export type AppointmentFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of Appointments.
    */
   distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3930,6 +3934,7 @@ export type AppointmentFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of Appointments.
    */
   distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3952,6 +3957,7 @@ export type AppointmentCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a Appointment.
    */
   data: Prisma.XOR<Prisma.AppointmentCreateInput, Prisma.AppointmentUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4012,6 +4018,7 @@ export type AppointmentUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which Appointment to update.
    */
   where: Prisma.AppointmentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4090,6 +4097,7 @@ export type AppointmentUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the Appointment was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.AppointmentUpdateInput, Prisma.AppointmentUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -4112,6 +4120,7 @@ export type AppointmentDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which Appointment to delete.
    */
   where: Prisma.AppointmentWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

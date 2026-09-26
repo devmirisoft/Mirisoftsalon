@@ -426,6 +426,8 @@ export const ModelName = {
   ProductBrand: 'ProductBrand',
   Product: 'Product',
   ProductStockMovement: 'ProductStockMovement',
+  ProductLocationStock: 'ProductLocationStock',
+  ProductContainer: 'ProductContainer',
   ProductPurchase: 'ProductPurchase',
   Vendor: 'Vendor',
   VendorPayment: 'VendorPayment',
@@ -457,7 +459,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "membershipWalletTransaction" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "salonAssistantConversation" | "salonAssistantMessage" | "supportTicketStatusHistory"
+    modelProps: "salon" | "user" | "customer" | "membership" | "customerMembership" | "membershipWalletTransaction" | "customerTransaction" | "loyaltyRule" | "loyaltyTransaction" | "coupon" | "branch" | "staff" | "userSession" | "staffAttendance" | "staffLeave" | "staffAvailabilityRule" | "staffTimeBlock" | "staffSalaryConfig" | "salarySlip" | "mainService" | "service" | "serviceConsumable" | "packageCategory" | "servicePackage" | "servicePackageItem" | "appointment" | "publicBookingSetting" | "appointmentStatusHistory" | "appointmentService" | "sale" | "saleItem" | "salePayment" | "invoice" | "invoiceItem" | "customerPackage" | "customerPackageServiceBalance" | "customerPackageUsage" | "customerPackageUsageItem" | "payment" | "productBrand" | "product" | "productStockMovement" | "productLocationStock" | "productContainer" | "productPurchase" | "vendor" | "vendorPayment" | "productPurchaseItem" | "stockAlert" | "reorderSuggestion" | "auditLog" | "retailSale" | "retailSaleItem" | "expense" | "expenseCategoryDefinition" | "supportTicket" | "supportTicketMessage" | "salonAssistantConversation" | "salonAssistantMessage" | "supportTicketStatusHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3569,6 +3571,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProductLocationStock: {
+      payload: Prisma.$ProductLocationStockPayload<ExtArgs>
+      fields: Prisma.ProductLocationStockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductLocationStockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductLocationStockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductLocationStockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductLocationStockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        findMany: {
+          args: Prisma.ProductLocationStockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>[]
+        }
+        create: {
+          args: Prisma.ProductLocationStockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        createMany: {
+          args: Prisma.ProductLocationStockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductLocationStockCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductLocationStockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        update: {
+          args: Prisma.ProductLocationStockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductLocationStockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductLocationStockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductLocationStockUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductLocationStockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductLocationStockPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductLocationStockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductLocationStock>
+        }
+        groupBy: {
+          args: Prisma.ProductLocationStockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductLocationStockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductLocationStockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductLocationStockCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductContainer: {
+      payload: Prisma.$ProductContainerPayload<ExtArgs>
+      fields: Prisma.ProductContainerFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductContainerFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductContainerFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        findFirst: {
+          args: Prisma.ProductContainerFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductContainerFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        findMany: {
+          args: Prisma.ProductContainerFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>[]
+        }
+        create: {
+          args: Prisma.ProductContainerCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        createMany: {
+          args: Prisma.ProductContainerCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductContainerCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>[]
+        }
+        delete: {
+          args: Prisma.ProductContainerDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        update: {
+          args: Prisma.ProductContainerUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductContainerDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductContainerUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductContainerUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductContainerUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductContainerPayload>
+        }
+        aggregate: {
+          args: Prisma.ProductContainerAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductContainer>
+        }
+        groupBy: {
+          args: Prisma.ProductContainerGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductContainerGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductContainerCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductContainerCountAggregateOutputType> | number
+        }
+      }
+    }
     ProductPurchase: {
       payload: Prisma.$ProductPurchasePayload<ExtArgs>
       fields: Prisma.ProductPurchaseFieldRefs
@@ -4807,6 +4957,7 @@ export const SalonScalarFieldEnum = {
   productGstRate: 'productGstRate',
   gstVerifiedAt: 'gstVerifiedAt',
   membershipDiscountOnPackages: 'membershipDiscountOnPackages',
+  stackMembershipDiscount: 'stackMembershipDiscount',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',
@@ -4820,6 +4971,14 @@ export const SalonScalarFieldEnum = {
 } as const
 
 export type SalonScalarFieldEnum = (typeof SalonScalarFieldEnum)[keyof typeof SalonScalarFieldEnum]
+
+
+export const RelationLoadStrategy = {
+  query: 'query',
+  join: 'join'
+} as const
+
+export type RelationLoadStrategy = (typeof RelationLoadStrategy)[keyof typeof RelationLoadStrategy]
 
 
 export const UserScalarFieldEnum = {
@@ -5675,6 +5834,7 @@ export const ProductScalarFieldEnum = {
   description: 'description',
   sku: 'sku',
   barcode: 'barcode',
+  hsnCode: 'hsnCode',
   category: 'category',
   unit: 'unit',
   costPrice: 'costPrice',
@@ -5684,6 +5844,8 @@ export const ProductScalarFieldEnum = {
   isRetailProduct: 'isRetailProduct',
   isServiceConsumable: 'isServiceConsumable',
   status: 'status',
+  packSize: 'packSize',
+  packUnit: 'packUnit',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -5705,10 +5867,57 @@ export const ProductStockMovementScalarFieldEnum = {
   referenceType: 'referenceType',
   referenceId: 'referenceId',
   createdById: 'createdById',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  location: 'location',
+  toLocation: 'toLocation',
+  toBranchId: 'toBranchId',
+  containerId: 'containerId',
+  appointmentServiceId: 'appointmentServiceId',
+  serviceId: 'serviceId',
+  staffId: 'staffId',
+  receivedByStaffId: 'receivedByStaffId',
+  expectedQuantity: 'expectedQuantity',
+  unit: 'unit'
 } as const
 
 export type ProductStockMovementScalarFieldEnum = (typeof ProductStockMovementScalarFieldEnum)[keyof typeof ProductStockMovementScalarFieldEnum]
+
+
+export const ProductLocationStockScalarFieldEnum = {
+  id: 'id',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  siteKey: 'siteKey',
+  productId: 'productId',
+  location: 'location',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductLocationStockScalarFieldEnum = (typeof ProductLocationStockScalarFieldEnum)[keyof typeof ProductLocationStockScalarFieldEnum]
+
+
+export const ProductContainerScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  salonId: 'salonId',
+  branchId: 'branchId',
+  productId: 'productId',
+  location: 'location',
+  originalQuantity: 'originalQuantity',
+  remainingQuantity: 'remainingQuantity',
+  unit: 'unit',
+  status: 'status',
+  openedByStaffId: 'openedByStaffId',
+  openedById: 'openedById',
+  openedAt: 'openedAt',
+  closedAt: 'closedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductContainerScalarFieldEnum = (typeof ProductContainerScalarFieldEnum)[keyof typeof ProductContainerScalarFieldEnum]
 
 
 export const ProductPurchaseScalarFieldEnum = {
@@ -6576,6 +6785,34 @@ export type ListEnumProductStockMovementTypeFieldRefInput<$PrismaModel> = FieldR
 
 
 /**
+ * Reference to a field of type 'InventoryLocation'
+ */
+export type EnumInventoryLocationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InventoryLocation'>
+    
+
+
+/**
+ * Reference to a field of type 'InventoryLocation[]'
+ */
+export type ListEnumInventoryLocationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InventoryLocation[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductContainerStatus'
+ */
+export type EnumProductContainerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductContainerStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProductContainerStatus[]'
+ */
+export type ListEnumProductContainerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProductContainerStatus[]'>
+    
+
+
+/**
  * Reference to a field of type 'StockAlertStatus'
  */
 export type EnumStockAlertStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StockAlertStatus'>
@@ -6894,6 +7131,8 @@ export type GlobalOmitConfig = {
   productBrand?: Prisma.ProductBrandOmit
   product?: Prisma.ProductOmit
   productStockMovement?: Prisma.ProductStockMovementOmit
+  productLocationStock?: Prisma.ProductLocationStockOmit
+  productContainer?: Prisma.ProductContainerOmit
   productPurchase?: Prisma.ProductPurchaseOmit
   vendor?: Prisma.VendorOmit
   vendorPayment?: Prisma.VendorPaymentOmit

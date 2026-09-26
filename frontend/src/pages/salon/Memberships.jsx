@@ -6,6 +6,16 @@ import { formatDate, formatMoney } from "@/utils/salonFormat";
 import { Button } from "@/components/Component";
 import { useAuth } from "@/auth/AuthContext";
 
+const rupees = (value) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(Number(value || 0));
+
+// "₹12,000 wallet for ₹10,000"
+const describe = ({ walletCreditAmount, price }) => {
+  const wallet = Number(walletCreditAmount) > 0 ? `${rupees(walletCreditAmount)} wallet` : "";
+  const cost = Number(price) > 0 ? rupees(price) : "";
+  return wallet && cost ? `${wallet} for ${cost}` : wallet || (cost && `For ${cost}`);
+};
+
 const Memberships = () => {
  const { user } = useAuth(); const manage = ["SUPER_ADMIN","SALON_ADMIN"].includes(user?.role);
  return (
@@ -18,7 +28,6 @@ const Memberships = () => {
       columns={[
         { key: "name", label: "Membership" },
         { key: "description", label: "Description" },
-        { key: "discountPercentage", label: "Discount", render: (v) => `${Number(v)}%` },
         { key: "durationMonths", label: "Validity", render: (v) => (v ? `${v} month${v > 1 ? "s" : ""}` : "No expiry") },
         { key: "price", label: "Price", render: formatMoney },
         { key: "walletCreditAmount", label: "Wallet credit", render: formatMoney },
@@ -28,11 +37,10 @@ const Memberships = () => {
       ]}
       fields={[
         { name: "name", label: "Name", required: true },
-        { name: "discountPercentage", label: "Discount percentage", type: "number", min: 0, max: 100, step: "0.01", required: true },
         { name: "durationMonths", label: "Validity (months)", type: "number", min: 1, max: 600, step: "1", nullable: true, help: "Leave blank for a membership that never expires." },
         { name: "price", label: "Price", type: "number", min: 0, step: "0.01", help: "What the customer pays to buy this membership." },
         { name: "walletCreditAmount", label: "Wallet credit", type: "number", min: 0, step: "0.01", help: "Amount loaded into the membership wallet on purchase. Can exceed the price." },
-        { name: "description", label: "Description", type: "textarea", fullWidth: true, nullable: true },
+        { name: "description", label: "Description", type: "textarea", fullWidth: true, nullable: true, disabled: true, derive: describe, help: "Written from the wallet credit and price." },
       ]}
     />
   </PageShell>

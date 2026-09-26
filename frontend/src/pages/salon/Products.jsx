@@ -1,106 +1,237 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
-import { Col, Input, Label, Row } from "reactstrap";
+import { Link, useMatch, useNavigate } from "react-router-dom";
+import { Alert, Col, Input, Row } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
+import DataGrid from "@/components/salon/DataGrid";
 import PageShell from "@/components/salon/PageShell";
-import ResourcePanel from "@/components/salon/ResourcePanel";
-import StatusBadge from "@/components/salon/StatusBadge";
+import ServerPagination from "@/components/salon/ServerPagination";
+import {
+  AddStockModal,
+  AdjustStockModal,
+  KpiCard,
+  ProductDrawer,
+  StockBadge,
+  canManageProducts,
+  formatQty,
+  stockStatus,
+  useProductRefs,
+} from "@/components/salon/ProductForms";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
-import { formatMoney, roleCanManage } from "@/utils/salonFormat";
+import { allowsRole, formatMoney } from "@/utils/salonFormat";
 
-const units = ["PCS", "ML", "LITER", "GRAM", "KG", "PACK", "BOX", "BOTTLE", "TUBE"];
+const PAGE_SIZE = 10;
+const STOCK_TONE = { low: "text-warning", out: "text-danger" };
 
 const Products = () => {
   const { user } = useAuth();
-  const canManage = roleCanManage(user?.role);
-  const [refs, setRefs] = useState({ brands: [], vendors: [], branches: [], salons: [] });
-  const [filters, setFilters] = useState({ brand: "", vendor: "", category: "", status: "", low: false, retail: false, consumable: false });
+  const navigate = useNavigate();
+  const canManage = canManageProducts(user?.role);
+  const isNew = Boolean(useMatch("/admin/products/new"));
+  const [refs, reloadRefs] = useProductRefs(user?.role);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filters, setFilters] = useState({ q: "", category: "", brand: "", stock: "" });
+  const [page, setPage] = useState(1);
+  const [editProduct, setEditProduct] = useState(null);
+  const [stockModal, setStockModal] = useState({ kind: null, product: null });
 
-  useEffect(() => {
-    Promise.allSettled([
-      salonApi.productBrands.list(),
-      salonApi.vendors.list(),
-      user?.role === "STAFF" ? Promise.resolve({ data: [] }) : salonApi.branches.list(),
-      user?.role === "SUPER_ADMIN" ? salonApi.salons.list() : Promise.resolve({ data: [] }),
-    ]).then(([brands, vendors, branches, salons]) => setRefs({
-      brands: brands.status === "fulfilled" ? brands.value.data || [] : [],
-      vendors: vendors.status === "fulfilled" ? vendors.value.data || [] : [],
-      branches: branches.status === "fulfilled" ? branches.value.data || [] : [],
-      salons: salons.status === "fulfilled" ? salons.value.data || [] : [],
-    }));
-  }, [user?.role]);
+  const load = async () => {
+    setLoading(true);
+    try {
+      setProducts((await salonApi.products.list()).data || []);
+      setError("");
+    } catch (loadError) {
+      setError(loadError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => { load(); }, []);
 
-  const fields = useMemo(() => [
-    { name: "name", label: "Product name", required: true },
-    { name: "description", label: "Description", type: "textarea", fullWidth: true, nullable: true },
-    { name: "brandId", label: "Brand", type: "select", nullable: true, options: refs.brands.map((x) => ({ value: x.id, label: x.name })) },
-    { name: "vendorId", label: "Preferred vendor", type: "select", nullable: true, options: refs.vendors.map((x) => ({ value: x.id, label: x.name })) },
-    { name: "category", label: "Category", nullable: true },
-    { name: "sku", label: "SKU", nullable: true },
-    { name: "barcode", label: "Barcode", nullable: true },
-    { name: "unit", label: "Unit", type: "select", defaultValue: "PCS", options: units.map((x) => ({ value: x, label: x })) },
-    { name: "costPrice", label: "Cost price", type: "number", min: 0, step: "0.01", defaultValue: 0, required: true },
-    { name: "sellingPrice", label: "Selling price", type: "number", min: 0, step: "0.01", defaultValue: 0, required: true },
-    { name: "lowStockAlert", label: "Low stock alert", type: "number", min: 0, step: "0.01", defaultValue: 0, required: true },
-    { name: "branchId", label: "Branch", type: "select", nullable: true, options: refs.branches.map((x) => ({ value: x.id, label: x.name })), help: "Leave empty for all branches." },
-    ...(user?.role === "SUPER_ADMIN" ? [{ name: "salonId", label: "Salon", type: "select", required: true, options: refs.salons.map((x) => ({ value: x.id, label: x.name })) }] : []),
-    { name: "isRetailProduct", label: "Retail product", type: "checkbox", defaultValue: false },
-    { name: "isServiceConsumable", label: "Service consumable", type: "checkbox", defaultValue: false },
-  ], [refs, user?.role]);
+  const categories = useMemo(
+    () => [...new Set(products.map((p) => p.category).filter(Boolean))].sort(),
+    [products]
+  );
+  const brands = useMemo(
+    () => [...new Set(products.map((p) => p.brand?.name).filter(Boolean))].sort(),
+    [products]
+  );
+
+  const summary = useMemo(() => {
+    const active = products.filter((p) => p.status);
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    return {
+      total: products.length,
+      newThisMonth: products.filter((p) => new Date(p.createdAt) >= monthStart).length,
+      value: active.reduce((sum, p) => sum + Math.max(Number(p.currentStock), 0) * Number(p.costPrice), 0),
+      low: active.filter((p) => stockStatus(p).key === "low").length,
+      out: active.filter((p) => stockStatus(p).key === "out").length,
+    };
+  }, [products]);
+
+  const rows = useMemo(() => {
+    const q = filters.q.trim().toLowerCase();
+    return products.filter((p) =>
+      (!q || [p.name, p.sku, p.barcode, p.brand?.name].some((v) => v?.toLowerCase().includes(q))) &&
+      (!filters.category || p.category === filters.category) &&
+      (!filters.brand || p.brand?.name === filters.brand) &&
+      (!filters.stock || (filters.stock === "inactive" ? !p.status : p.status && stockStatus(p).key === filters.stock))
+    );
+  }, [products, filters]);
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageRows = rows.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const setFilter = (key) => (e) => {
+    setFilters((f) => ({ ...f, [key]: e.target.value }));
+    setPage(1);
+  };
+
+  const toggleStatus = async (product) => {
+    try {
+      await salonApi.products.setStatus(product.id, !product.status);
+      await load();
+    } catch (statusError) {
+      setError(statusError.message);
+    }
+  };
 
   return (
-    <PageShell title="Products" description="Product catalog, pricing, branch availability, and live stock.">
-      <div className="card card-bordered mb-4">
-        <div className="card-inner">
-          <Row className="g-3 align-items-end">
-            <Col md="3"><Label>Brand</Label><Input type="select" value={filters.brand} onChange={(e) => setFilters((x) => ({ ...x, brand: e.target.value }))}><option value="">All brands</option>{refs.brands.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Input></Col>
-            <Col md="3"><Label>Vendor</Label><Input type="select" value={filters.vendor} onChange={(e) => setFilters((x) => ({ ...x, vendor: e.target.value }))}><option value="">All vendors</option>{refs.vendors.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</Input></Col>
-            <Col md="3"><Label>Category</Label><Input value={filters.category} placeholder="Filter category" onChange={(e) => setFilters((x) => ({ ...x, category: e.target.value }))} /></Col>
-            <Col md="3"><Label>Status</Label><Input type="select" value={filters.status} onChange={(e) => setFilters((x) => ({ ...x, status: e.target.value }))}><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></Input></Col>
-            <Col md="3"><Label className="d-block">Stock</Label><Input type="checkbox" checked={filters.low} onChange={(e) => setFilters((x) => ({ ...x, low: e.target.checked }))} /> <span className="ms-2">Low stock only</span></Col>
-            <Col md="3"><Label className="d-block">Retail</Label><Input type="checkbox" checked={filters.retail} onChange={(e) => setFilters((x) => ({ ...x, retail: e.target.checked }))} /> <span className="ms-2">Retail products</span></Col>
-            <Col md="3"><Label className="d-block">Service use</Label><Input type="checkbox" checked={filters.consumable} onChange={(e) => setFilters((x) => ({ ...x, consumable: e.target.checked }))} /> <span className="ms-2">Consumables</span></Col>
-          </Row>
-        </div>
-      </div>
-      <ResourcePanel
-        title="Products"
-        api={salonApi.products}
-        canCreate={canManage}
-        canEdit={canManage}
-        canDelete={canManage}
-        fields={fields}
-        filterRows={(rows) => rows.filter((row) =>
-          (!filters.brand || row.brandId === filters.brand) &&
-          (!filters.vendor || row.vendorId === filters.vendor) &&
-          (!filters.category || row.category?.toLowerCase().includes(filters.category.toLowerCase())) &&
-          (!filters.status || row.status === (filters.status === "active")) &&
-          (!filters.low || (Number(row.lowStockAlert) > 0 && Number(row.currentStock) <= Number(row.lowStockAlert))) &&
-          (!filters.retail || row.isRetailProduct) &&
-          (!filters.consumable || row.isServiceConsumable)
-        )}
+    <PageShell
+      title="Products"
+      description="Manage your retail products, pricing, stock and sales."
+      actionLabel={canManage ? "Add Product" : undefined}
+      onAction={() => navigate("/admin/products/new")}
+      tools={
+        <>
+          {allowsRole(["SALON_ADMIN", "RECEPTIONIST"], user?.role) && (
+            <Link to="/admin/retail-products" className="btn btn-light"><Icon name="cart" /><span>Counter Sale</span></Link>
+          )}
+          {canManage && <Link to="/admin/product-brands" className="btn btn-light"><Icon name="tag" /><span>Brands</span></Link>}
+        </>
+      }
+    >
+      {error && <Alert color="danger">{error}</Alert>}
+
+      <Row className="g-3 mb-4">
+        <Col xs="6" lg="3">
+          <KpiCard
+            icon="package"
+            label="Total Products"
+            value={summary.total}
+            hint={summary.newThisMonth > 0 && <span className="text-success"><Icon name="arrow-up" /> +{summary.newThisMonth} this month</span>}
+          />
+        </Col>
+        <Col xs="6" lg="3"><KpiCard icon="coins" iconColor="success" label="Stock Value" value={formatMoney(summary.value)} hint="Current inventory value" /></Col>
+        <Col xs="6" lg="3"><KpiCard icon="alert" iconColor="warning" label="Low Stock" value={summary.low} hint="Needs attention" /></Col>
+        <Col xs="6" lg="3"><KpiCard icon="cross-circle" iconColor="danger" label="Out of Stock" value={summary.out} hint="Reorder soon" /></Col>
+      </Row>
+
+      <DataGrid
+        loading={loading}
+        rows={pageRows}
+        emptyText={products.length ? "No products match these filters." : "No products yet. Add your first product to get started."}
+        header={
+          <div className="card-inner border-bottom">
+            <Row className="g-2">
+              <Col md="6">
+                <div className="form-control-wrap">
+                  <div className="form-icon form-icon-left"><Icon name="search" /></div>
+                  <Input placeholder="Search product, SKU or barcode..." value={filters.q} onChange={setFilter("q")} />
+                </div>
+              </Col>
+              <Col xs="4" md="2">
+                <Input type="select" value={filters.category} onChange={setFilter("category")}>
+                  <option value="">All Categories</option>
+                  {categories.map((c) => <option key={c}>{c}</option>)}
+                </Input>
+              </Col>
+              <Col xs="4" md="2">
+                <Input type="select" value={filters.brand} onChange={setFilter("brand")}>
+                  <option value="">All Brands</option>
+                  {brands.map((b) => <option key={b}>{b}</option>)}
+                </Input>
+              </Col>
+              <Col xs="4" md="2">
+                <Input type="select" value={filters.stock} onChange={setFilter("stock")}>
+                  <option value="">Stock Status</option>
+                  <option value="in">In Stock</option>
+                  <option value="low">Low Stock</option>
+                  <option value="out">Out of Stock</option>
+                  <option value="inactive">Inactive</option>
+                </Input>
+              </Col>
+            </Row>
+          </div>
+        }
         columns={[
-          { key: "name", label: "Product" },
-          { key: "brand", label: "Brand", render: (v) => v?.name || "Generic" },
-          { key: "vendor", label: "Vendor", render: (v) => v?.name || "—" },
+          {
+            key: "name",
+            label: "Product",
+            render: (v, row) => <Link to={`/admin/products/${row.id}`} className="fw-bold text-dark">{v}</Link>,
+          },
+          { key: "sku", label: "SKU", render: (v) => <span className="text-soft">{v || "—"}</span> },
           { key: "category", label: "Category" },
-          { key: "sellingPrice", label: "Retail price", render: formatMoney },
-          { key: "currentStock", label: "Stock", render: (v, row) => <span className={Number(v) <= Number(row.lowStockAlert) ? "badge bg-danger" : ""}>{v} {row.unit}</span> },
-          { key: "branch", label: "Branch", render: (v) => v?.name || "All branches" },
-          { key: "status", label: "Status", render: (v) => <StatusBadge value={v} /> },
+          { key: "brand", label: "Brand", render: (v) => v?.name || "Generic" },
+          {
+            key: "currentStock",
+            label: "Stock",
+            render: (v, row) => (
+              <span className={`fw-bold ${row.status ? STOCK_TONE[stockStatus(row).key] || "" : ""}`}>
+                {formatQty(v)} <small className="fw-normal text-soft">{row.unit}</small>
+              </span>
+            ),
+          },
+          { key: "costPrice", label: "Cost Price", render: formatMoney },
+          { key: "sellingPrice", label: "Selling Price", render: formatMoney },
+          { key: "soldQty", label: "Units Sold", render: formatQty },
+          { key: "revenue", label: "Revenue", render: formatMoney },
+          { key: "status", label: "Status", render: (_, row) => <StockBadge product={row} /> },
         ]}
-        transformCreate={(values) => values}
-        transformUpdate={(values) => {
-          const next = { ...values };
-          delete next.salonId;
-          return next;
-        }}
-        renderActions={canManage ? (row, reload, setError) => (
-          <Button size="sm" color={row.status ? "warning" : "success"} outline onClick={async () => {
-            try { await salonApi.products.setStatus(row.id, !row.status); await reload(); }
-            catch (error) { setError(error.message); }
-          }}><Icon name={row.status ? "pause" : "play"} />{row.status ? "Deactivate" : "Activate"}</Button>
-        ) : undefined}
+        renderActions={(row) => (
+          <>
+            <Button onClick={() => navigate(`/admin/products/${row.id}`)}><Icon name="eye" />View Details</Button>
+            {canManage && <Button onClick={() => setEditProduct(row)}><Icon name="edit" />Edit Product</Button>}
+            {canManage && <Button onClick={() => setStockModal({ kind: "add", product: row })}><Icon name="plus-circle" />Add Stock</Button>}
+            {canManage && <Button onClick={() => setStockModal({ kind: "adjust", product: row })}><Icon name="exchange" />Adjust Stock</Button>}
+            <Button onClick={() => navigate(`/admin/products/${row.id}/sales`)}><Icon name="bar-chart" />View Sales</Button>
+            {canManage && <Button onClick={() => toggleStatus(row)}><Icon name={row.status ? "pause" : "play"} />{row.status ? "Deactivate" : "Activate"}</Button>}
+          </>
+        )}
+      />
+      <ServerPagination
+        pagination={{ page: currentPage, totalPages, total: rows.length, limit: PAGE_SIZE }}
+        onPage={setPage}
+      />
+
+      <ProductDrawer
+        isOpen={isNew || Boolean(editProduct)}
+        toggle={() => { setEditProduct(null); if (isNew) navigate("/admin/products"); }}
+        product={isNew ? null : editProduct}
+        refs={refs}
+        reloadRefs={reloadRefs}
+        categories={categories}
+        role={user?.role}
+        onSaved={load}
+      />
+      <AddStockModal
+        isOpen={stockModal.kind === "add"}
+        toggle={() => setStockModal({ kind: null, product: null })}
+        product={stockModal.product}
+        vendors={refs.vendors}
+        onSaved={load}
+      />
+      <AdjustStockModal
+        isOpen={stockModal.kind === "adjust"}
+        toggle={() => setStockModal({ kind: null, product: null })}
+        product={stockModal.product}
+        onSaved={load}
       />
     </PageShell>
   );

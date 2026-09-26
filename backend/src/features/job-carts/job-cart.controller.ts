@@ -1,6 +1,7 @@
 import { type Request, type Response } from "express";
 import { z } from "zod";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
+import { serviceUsageSchema } from "../stock/serviceUsage.service.js";
 import {
   addJobCartItem,
   addJobCartPackageRedemption,
@@ -44,7 +45,7 @@ const PAYMENT_METHODS = [
   "OTHER",
 ] as const;
 
-const actorFrom = (req: Request): JobCartActor => {
+export const actorFrom = (req: Request): JobCartActor => {
   if (!req.user?.userId) throw new JobCartError(401, "Unauthorized");
   return {
     userId: req.user.userId,
@@ -66,7 +67,22 @@ const sendError = (res: Response, error: unknown) => {
   if (error instanceof JobCartError) {
     return res
       .status(error.status)
-      .json({ success: false, message: error.message });
+      .json({ success: false, message: error.message, ...error.details });
+  }
+  // Inventory errors (stock shortfalls, a container that is empty) carry
+  // their own status and the stock detail.
+  if (
+    error instanceof Error &&
+    "status" in error &&
+    typeof error.status === "number" &&
+    error.status < 500
+  ) {
+    return res.status(error.status).json({
+      success: false,
+      message: error.message,
+      ...("code" in error ? { code: error.code } : {}),
+      ...("stock" in error ? { stock: error.stock } : {}),
+    });
   }
   if (error instanceof z.ZodError) {
     return res.status(400).json({
@@ -407,6 +423,8 @@ export const postConfirmJobCart = async (req: Request, res: Response) => {
         idempotencyKey: z.string().trim().min(8).max(64).optional(),
         /** When the operator pressed Confirm, for confirms queued offline. */
         confirmedAt: z.iso.datetime({ offset: true }).optional(),
+        /** Actual product use per service line, from the usage step. */
+        usage: serviceUsageSchema.optional(),
       })
       .safeParse(req.body || {});
 

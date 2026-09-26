@@ -5,6 +5,10 @@ import { prisma } from "../../config/prisma.js";
 import { createAuditLog, requestAuditContext, } from "../audit-logs/audit-log.service.js";
 import { BranchModel } from "../branches/branch.model.js";
 import { SalonModel } from "../salons/salon.model.js";
+import { UserModel } from "../users/user.model.js";
+import { staffLoginError } from "../users/staff-login.service.js";
+import { hashPass } from "../../utils/password.js";
+import { sendWelcomeEmail } from "../../utils/mailer.js";
 import { isBranchAccessible, isBranchLockedRole, resolveBranchScope, resolveWritableBranchId, } from "../../utils/branch-scope.js";
 const getSalonInitials = (salonName) => {
     const words = salonName
@@ -37,7 +41,7 @@ const getStaffIdParam = (req) => {
 };
 export const createStaff = async (req, res) => {
     try {
-        const { name, email, phone, jobRole, workingFrom, workingTo, weekOff, joiningDate, salonId, branchId, reportingManagerId, } = req.body;
+        const { name, email, phone, jobRole, workingFrom, workingTo, weekOff, joiningDate, salonId, branchId, reportingManagerId, password, } = req.body;
         if (!name ||
             !email ||
             !phone ||
@@ -130,6 +134,20 @@ export const createStaff = async (req, res) => {
                 });
             }
         }
+        // Optional: a login is provisioned with the staff record when a password
+        // comes with the form. Checked and hashed outside the transaction so a
+        // duplicate email never rolls back a valid staff row, and so bcrypt does
+        // not hold the transaction open.
+        const loginError = password
+            ? await staffLoginError({ email, phone: String(phone), branchId: finalBranchId ?? null }, password)
+            : null;
+        if (loginError) {
+            return res.status(loginError.status).json({
+                success: false,
+                message: loginError.message,
+            });
+        }
+        const passwordHash = password ? await hashPass(password) : null;
         const salary = salaryValues(req.body);
         const staff = await prisma.$transaction(async (tx) => {
             const created = await StaffModel.create({
@@ -168,11 +186,27 @@ export const createStaff = async (req, res) => {
                 newData: salaryAuditData(config),
                 ...requestAuditContext(req),
             });
-            return { ...created, salaryConfigs: [config] };
+            const user = passwordHash
+                ? await UserModel.createStaffAccount({
+                    staffId: created.id,
+                    name: created.name,
+                    email: created.email,
+                    phone_number: String(phone),
+                    passwordHash,
+                    salonId: staffSalonId,
+                    ...(finalBranchId ? { branchId: finalBranchId } : {}),
+                }, tx)
+                : null;
+            return { ...created, userId: user?.id ?? null, salaryConfigs: [config], user };
         });
+        if (staff.user) {
+            await sendWelcomeEmail(staff.user);
+        }
         return res.status(201).json({
             success: true,
-            message: "Staff created successfully",
+            message: staff.user
+                ? "Staff and login created successfully"
+                : "Staff created successfully",
             data: staff,
         });
     }

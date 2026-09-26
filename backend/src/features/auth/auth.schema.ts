@@ -69,3 +69,14 @@ export const loginSchema = z.object({
   email: z.email(),
   password: z.string().min(6),
 });
+
+export const forgotPasswordSchema = z.object({
+  email: z.email().transform((value) => value.trim().toLowerCase()),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  password: z
+    .string()
+    .min(6, "Passcode is too short. Use at least 6 characters."),
+});

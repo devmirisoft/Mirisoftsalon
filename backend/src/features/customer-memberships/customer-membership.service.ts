@@ -449,7 +449,8 @@ export const assignCustomerMembershipInTransaction = async (
         customerId: customer.id,
         membershipId: membership.id,
         membershipNameSnapshot: membership.name,
-        discountPercentageSnapshot: membership.discountPercentage,
+        // Memberships no longer discount bills; the column stays for history.
+        discountPercentageSnapshot: 0,
         priceSnapshot: membership.price,
         walletCreditSnapshot: walletCredit,
         durationMonthsSnapshot: membership.durationMonths,

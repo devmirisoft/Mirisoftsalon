@@ -336,6 +336,36 @@ export const spendFromMembershipWallet = async (
 };
 
 /**
+ * Wallet money pays for services only. On a mixed bill it may cover the total
+ * less every product, package and membership line (so round-off and fees ride
+ * with the services), less whatever the wallet has already paid on it.
+ */
+export const walletPayableFor = async (
+  tx: TransactionClient,
+  invoice: { id: string; totalAmount: Prisma.Decimal }
+) => {
+  const [others, paid] = await Promise.all([
+    tx.invoiceItem.aggregate({
+      where: {
+        invoiceId: invoice.id,
+        itemType: { in: ["PRODUCT", "PACKAGE", "MEMBERSHIP"] },
+      },
+      _sum: { lineTotal: true },
+    }),
+    tx.payment.aggregate({
+      where: { invoiceId: invoice.id, method: "MEMBERSHIP_WALLET" },
+      _sum: { amount: true },
+    }),
+  ]);
+  return Prisma.Decimal.max(
+    invoice.totalAmount
+      .minus(others._sum.lineTotal ?? zero)
+      .minus(paid._sum.amount ?? zero),
+    zero
+  ).toDecimalPlaces(2);
+};
+
+/**
  * Settles part or all of an invoice from a membership wallet. The wallet
  * debit, the Payment row, the invoice totals and the customer ledger all move
  * in one transaction, so a failure anywhere leaves the wallet untouched.
@@ -384,16 +414,28 @@ export const payInvoiceFromMembershipWallet = async (
     }
 
     const now = new Date();
+    const walletCap = await walletPayableFor(tx, invoice);
     const requested = input.amount
       ? new Prisma.Decimal(input.amount).toDecimalPlaces(2)
-      : invoice.balanceAmount;
+      : Prisma.Decimal.min(invoice.balanceAmount, walletCap);
     if (requested.lte(zero)) {
-      throw new CustomerMembershipError(400, "Amount must be greater than zero");
+      throw new CustomerMembershipError(
+        400,
+        walletCap.lte(zero)
+          ? "Membership wallet pays for services only, and this bill has none left to pay"
+          : "Amount must be greater than zero"
+      );
     }
     if (requested.gt(invoice.balanceAmount)) {
       throw new CustomerMembershipError(
         400,
         "Payment amount cannot be greater than invoice balance"
+      );
+    }
+    if (requested.gt(walletCap)) {
+      throw new CustomerMembershipError(
+        400,
+        `Membership wallet pays for services only: at most ${walletCap} on this bill`
       );
     }
 

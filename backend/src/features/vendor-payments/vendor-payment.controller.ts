@@ -11,7 +11,7 @@ import {
 } from "../products/inventory-access.js";
 import { VendorPaymentModel } from "./vendor-payment.model.js";
 
-const PAYMENT_METHODS = [
+export const PAYMENT_METHODS = [
   "CASH",
   "UPI",
   "GPAY",
@@ -22,7 +22,7 @@ const PAYMENT_METHODS = [
   "CHEQUE",
   "OTHER",
 ] as const;
-type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 const idParam = (req: Request) =>
   typeof req.params.id === "string" ? req.params.id : "";

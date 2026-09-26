@@ -5,11 +5,11 @@ import { prisma } from "../../config/prisma.js";
 import { createAuditLog, requestAuditContext } from "../audit-logs/audit-log.service.js";
 
 const safeMembership = (value: {
-  id: string; name: string; discountPercentage: unknown; status: boolean;
+  id: string; name: string; status: boolean;
   durationMonths?: number | null; price?: unknown; walletCreditAmount?: unknown;
 }) => ({
   membershipId: value.id, name: value.name,
-  discountPercentage: value.discountPercentage, status: value.status,
+  status: value.status,
   durationMonths: value.durationMonths ?? null,
   price: value.price, walletCreditAmount: value.walletCreditAmount,
 });
@@ -26,22 +26,6 @@ const listSalonId = (req: Request) =>
       ? req.query.salonId
       : undefined
     : req.user?.salonId;
-
-const parseDiscountPercentage = (value: unknown) => {
-  if (
-    (typeof value !== "number" && typeof value !== "string") ||
-    (typeof value === "string" && !value.trim())
-  ) {
-    return null;
-  }
-
-  const discountPercentage = Number(value);
-  return Number.isFinite(discountPercentage) &&
-    discountPercentage >= 0 &&
-    discountPercentage <= 100
-    ? discountPercentage
-    : null;
-};
 
 /**
  * Validity of the plan in whole months. An explicit null (or empty string)
@@ -104,10 +88,6 @@ export const createMembership = async (req: Request, res: Response) => {
     const salonId = getSalonId(req, req.body.salonId);
     const name = cleanText(req.body.name);
     const description = cleanText(req.body.description);
-    const discountPercentage =
-      req.body.discountPercentage === undefined
-        ? 0
-        : parseDiscountPercentage(req.body.discountPercentage);
     const durationMonths = parseDurationMonths(req.body.durationMonths);
     const price = parseAmount(req.body.price);
     const walletCreditAmount = parseAmount(req.body.walletCreditAmount);
@@ -116,13 +96,6 @@ export const createMembership = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "Membership name and salon are required",
-      });
-    }
-
-    if (discountPercentage === null) {
-      return res.status(400).json({
-        success: false,
-        message: "Discount percentage must be between 0 and 100",
       });
     }
 
@@ -157,7 +130,7 @@ export const createMembership = async (req: Request, res: Response) => {
 
     const data = await prisma.$transaction(async (tx) => {
       const created = await MembershipModel.create({
-        salonId, name, discountPercentage,
+        salonId, name,
         ...(description ? { description } : {}),
         ...(durationMonths !== undefined ? { durationMonths } : {}),
         ...(price !== undefined ? { price } : {}),
@@ -165,7 +138,7 @@ export const createMembership = async (req: Request, res: Response) => {
       }, tx);
       await createAuditLog({ tx, salonId, userId: req.user?.userId, module: "MEMBERSHIP", action: "CREATE",
         entityId: created.id, entityName: created.name,
-        description: `Admin created ${created.name} membership with ${Number(created.discountPercentage)}% discount`,
+        description: `Admin created ${created.name} membership`,
         newData: safeMembership(created), ...requestAuditContext(req) });
       return created;
     });
@@ -246,10 +219,6 @@ export const updateMembership = async (req: Request, res: Response) => {
       req.body.description === undefined
         ? undefined
         : cleanText(req.body.description) ?? null;
-    const discountPercentage =
-      req.body.discountPercentage === undefined
-        ? undefined
-        : parseDiscountPercentage(req.body.discountPercentage);
     const durationMonths = parseDurationMonths(req.body.durationMonths);
     const price = parseAmount(req.body.price);
     const walletCreditAmount = parseAmount(req.body.walletCreditAmount);
@@ -258,13 +227,6 @@ export const updateMembership = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         message: "Membership name is required",
-      });
-    }
-
-    if (discountPercentage === null) {
-      return res.status(400).json({
-        success: false,
-        message: "Discount percentage must be between 0 and 100",
       });
     }
 
@@ -297,7 +259,6 @@ export const updateMembership = async (req: Request, res: Response) => {
       const updated = await MembershipModel.update(existing.id, {
       ...(name ? { name } : {}),
       ...(description !== undefined ? { description } : {}),
-      ...(discountPercentage !== undefined ? { discountPercentage } : {}),
       ...(durationMonths !== undefined ? { durationMonths } : {}),
       ...(price !== undefined ? { price } : {}),
       ...(walletCreditAmount !== undefined ? { walletCreditAmount } : {}),

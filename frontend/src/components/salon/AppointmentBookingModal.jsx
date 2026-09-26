@@ -122,7 +122,6 @@ const AppointmentBookingModal = ({
               key: row.id,
               code: row.jobCartId,
               startTime: row.startTime,
-              services: [],
             }))
             .sort((a, b) => new Date(b.startTime) - new Date(a.startTime))
             .slice(0, 15)
@@ -718,43 +717,34 @@ const AppointmentBookingModal = ({
 
                   {form.customerId && (
                     <div className="card card-bordered mt-3">
-                    <div className="card-inner">
-                      <h6 className="booking-section-title">
-                        <Icon name="history" /> Past visits
-                      </h6>
-                      {historyLoading ? (
-                        <Spinner size="sm" />
-                      ) : history.length === 0 ? (
-                        <p className="text-soft small mb-0">
-                          No past job carts.
-                        </p>
-                      ) : (
-                        <div className="booking-history">
-                          {history.map((visit) => (
-                            <div key={visit.key} className="booking-history-item">
-                              <div className="d-flex justify-content-between align-items-center gap-2">
+                      <div className="card-inner">
+                        <h6 className="booking-section-title">
+                          <Icon name="history" /> Past visits
+                        </h6>
+                        {historyLoading ? (
+                          <Spinner size="sm" />
+                        ) : history.length === 0 ? (
+                          <p className="text-soft small mb-0">
+                            No past job carts.
+                          </p>
+                        ) : (
+                          <div className="booking-history">
+                            {history.map((visit) => (
+                              <div
+                                key={visit.key}
+                                className="booking-history-item"
+                              >
                                 <strong className="small">
-                                  {visit.code || "—"}
+                                  {visit.code || "-"}
                                 </strong>
+                                <div className="text-soft small">
+                                  {formatDate(visit.startTime)}
+                                </div>
                               </div>
-                              <div className="text-soft small">
-                                {formatDate(visit.startTime)}
-                              </div>
-                              <div className="small d-none">
-                                {visit.services.filter(Boolean).join(", ") ||
-                                  "—"}
-                              </div>
-                              <div className="text-soft small d-none">
-                                {visit.staff || "Unassigned"}
-                                {visit.amount != null
-                                  ? ` · ${formatMoney(visit.amount)}`
-                                  : ""}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

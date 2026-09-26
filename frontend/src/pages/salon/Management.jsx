@@ -83,6 +83,7 @@ const Management = () => {
   const [userContext, setUserContext] = useState(null);
   const [accountModal, setAccountModal] = useState(null);
   const [accountError, setAccountError] = useState("");
+  const [loginStaff, setLoginStaff] = useState(null);
   const [gstSalonId, setGstSalonId] = useState("");
   const [gstForm, setGstForm] = useState({
     gstEnabled: false,
@@ -130,7 +131,7 @@ const Management = () => {
     ...(isSuper ? [{ id: "salons", label: "Salons" }] : []),
     { id: "branches", label: "Branches" },
     { id: "staff", label: "Staff" },
-    ...(isSalonWide ? [{ id: "gst", label: "GST" }] : []),
+    ...(isSalonWide ? [{ id: "settings", label: "Settings" }] : []),
     ...(isManager ? [{ id: "accounts", label: "User accounts" }] : []),
   ];
 
@@ -215,7 +216,7 @@ const Management = () => {
   );
 
   const staffFields = useMemo(
-    () => [
+    () => (_rows, editing) => [
       { name: "name", label: "Full name", required: true },
       { name: "email", label: "Email", type: "email", required: true },
       { name: "phone", label: "Phone", type: "tel", required: true },
@@ -261,9 +262,30 @@ const Management = () => {
         nullable: true,
         options: refs.staff.map(option),
       },
+      // Creating the login with the staff record is optional; leave it blank
+      // and provision it later with the "Login" action on the row.
+      ...(editing
+        ? []
+        : [
+            {
+              name: "password",
+              label: "Login password (optional)",
+              type: "password",
+              nullable: true,
+              help: "At least 6 characters. Requires a branch. The staff member signs in with their email.",
+            },
+          ]),
       ...SALARY_FIELDS,
     ],
     [isBranchLocked, isSuper, refs]
+  );
+
+  const staffLoginFields = useMemo(
+    () => [
+      { name: "email", label: "Login email", readOnly: true, disabled: true },
+      { name: "password", label: "Password", type: "password", required: true },
+    ],
+    []
   );
 
   const accountFields = useMemo(
@@ -406,33 +428,46 @@ const Management = () => {
             renderActions={
               isManager
                 ? (row, reload, setError) => (
-                    <Button
-                      size="sm"
-                      color={row.status ? "warning" : "success"}
-                      outline
-                      onClick={async () => {
-                        try {
-                          await salonApi.staff.setStatus(row.id, !row.status);
-                          await reload();
-                        } catch (error) {
-                          setError(error.message);
-                        }
-                      }}
-                    >
-                      <Icon name={row.status ? "pause" : "play"} />
-                      {row.status ? "Disable" : "Enable"}
-                    </Button>
+                    <>
+                      <Button
+                        size="sm"
+                        color={row.status ? "warning" : "success"}
+                        outline
+                        onClick={async () => {
+                          try {
+                            await salonApi.staff.setStatus(row.id, !row.status);
+                            await reload();
+                          } catch (error) {
+                            setError(error.message);
+                          }
+                        }}
+                      >
+                        <Icon name={row.status ? "pause" : "play"} />
+                        {row.status ? "Disable" : "Enable"}
+                      </Button>
+                      {!row.userId && (
+                        <Button
+                          size="sm"
+                          color="primary"
+                          outline
+                          onClick={() => setLoginStaff({ ...row, reload })}
+                        >
+                          <Icon name="lock-alt" />
+                          Login
+                        </Button>
+                      )}
+                    </>
                   )
                 : undefined
             }
           />
         </TabPane>
-        <TabPane tabId="gst">
+        <TabPane tabId="settings">
+          {gstError && <Alert color="danger">{gstError}</Alert>}
+          {gstMessage && <Alert color="success">{gstMessage}</Alert>}
           <div className="card card-bordered">
             <div className="card-inner">
               <h5 className="title">GST configuration</h5>
-              {gstError && <Alert color="danger">{gstError}</Alert>}
-              {gstMessage && <Alert color="success">{gstMessage}</Alert>}
               <form onSubmit={saveGstSettings}>
                 {isSuper && (
                   <FormGroup>
@@ -605,6 +640,21 @@ const Management = () => {
         fields={accountFields}
         onSubmit={createAccount}
         submitLabel="Create account"
+      />
+      <SchemaModal
+        isOpen={Boolean(loginStaff)}
+        toggle={() => setLoginStaff(null)}
+        title={`Create login for ${loginStaff?.name || "staff"}`}
+        fields={staffLoginFields}
+        initialValues={loginStaff}
+        onSubmit={async ({ password }) => {
+          await salonApi.users.createStaffAccount({
+            staffId: loginStaff.id,
+            password,
+          });
+          await loginStaff.reload();
+        }}
+        submitLabel="Create login"
       />
     </PageShell>
   );

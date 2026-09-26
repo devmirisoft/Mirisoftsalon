@@ -1985,7 +1985,7 @@ export type $CustomerPackageServiceBalancePayload<ExtArgs extends runtime.Types.
 export type CustomerPackageServiceBalanceGetPayload<S extends boolean | null | undefined | CustomerPackageServiceBalanceDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$CustomerPackageServiceBalancePayload, S>
 
 export type CustomerPackageServiceBalanceCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<CustomerPackageServiceBalanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<CustomerPackageServiceBalanceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: CustomerPackageServiceBalanceCountAggregateInputType | true
   }
 
@@ -2447,6 +2447,7 @@ export type CustomerPackageServiceBalanceFindUniqueArgs<ExtArgs extends runtime.
    * Filter, which CustomerPackageServiceBalance to fetch.
    */
   where: Prisma.CustomerPackageServiceBalanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2469,6 +2470,7 @@ export type CustomerPackageServiceBalanceFindUniqueOrThrowArgs<ExtArgs extends r
    * Filter, which CustomerPackageServiceBalance to fetch.
    */
   where: Prisma.CustomerPackageServiceBalanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2521,6 +2523,7 @@ export type CustomerPackageServiceBalanceFindFirstArgs<ExtArgs extends runtime.T
    * Filter by unique combinations of CustomerPackageServiceBalances.
    */
   distinct?: Prisma.CustomerPackageServiceBalanceScalarFieldEnum | Prisma.CustomerPackageServiceBalanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2573,6 +2576,7 @@ export type CustomerPackageServiceBalanceFindFirstOrThrowArgs<ExtArgs extends ru
    * Filter by unique combinations of CustomerPackageServiceBalances.
    */
   distinct?: Prisma.CustomerPackageServiceBalanceScalarFieldEnum | Prisma.CustomerPackageServiceBalanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2625,6 +2629,7 @@ export type CustomerPackageServiceBalanceFindManyArgs<ExtArgs extends runtime.Ty
    * Filter by unique combinations of CustomerPackageServiceBalances.
    */
   distinct?: Prisma.CustomerPackageServiceBalanceScalarFieldEnum | Prisma.CustomerPackageServiceBalanceScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2647,6 +2652,7 @@ export type CustomerPackageServiceBalanceCreateArgs<ExtArgs extends runtime.Type
    * The data needed to create a CustomerPackageServiceBalance.
    */
   data: Prisma.XOR<Prisma.CustomerPackageServiceBalanceCreateInput, Prisma.CustomerPackageServiceBalanceUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2707,6 +2713,7 @@ export type CustomerPackageServiceBalanceUpdateArgs<ExtArgs extends runtime.Type
    * Choose, which CustomerPackageServiceBalance to update.
    */
   where: Prisma.CustomerPackageServiceBalanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2785,6 +2792,7 @@ export type CustomerPackageServiceBalanceUpsertArgs<ExtArgs extends runtime.Type
    * In case the CustomerPackageServiceBalance was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.CustomerPackageServiceBalanceUpdateInput, Prisma.CustomerPackageServiceBalanceUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2807,6 +2815,7 @@ export type CustomerPackageServiceBalanceDeleteArgs<ExtArgs extends runtime.Type
    * Filter which CustomerPackageServiceBalance to delete.
    */
   where: Prisma.CustomerPackageServiceBalanceWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

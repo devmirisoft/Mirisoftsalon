@@ -700,7 +700,7 @@ export type $ProductBrandPayload<ExtArgs extends runtime.Types.Extensions.Intern
 export type ProductBrandGetPayload<S extends boolean | null | undefined | ProductBrandDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ProductBrandPayload, S>
 
 export type ProductBrandCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ProductBrandFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ProductBrandFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ProductBrandCountAggregateInputType | true
   }
 
@@ -1149,6 +1149,7 @@ export type ProductBrandFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    * Filter, which ProductBrand to fetch.
    */
   where: Prisma.ProductBrandWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1171,6 +1172,7 @@ export type ProductBrandFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    * Filter, which ProductBrand to fetch.
    */
   where: Prisma.ProductBrandWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1223,6 +1225,7 @@ export type ProductBrandFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter by unique combinations of ProductBrands.
    */
   distinct?: Prisma.ProductBrandScalarFieldEnum | Prisma.ProductBrandScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1275,6 +1278,7 @@ export type ProductBrandFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of ProductBrands.
    */
   distinct?: Prisma.ProductBrandScalarFieldEnum | Prisma.ProductBrandScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1327,6 +1331,7 @@ export type ProductBrandFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of ProductBrands.
    */
   distinct?: Prisma.ProductBrandScalarFieldEnum | Prisma.ProductBrandScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1349,6 +1354,7 @@ export type ProductBrandCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * The data needed to create a ProductBrand.
    */
   data: Prisma.XOR<Prisma.ProductBrandCreateInput, Prisma.ProductBrandUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1409,6 +1415,7 @@ export type ProductBrandUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Choose, which ProductBrand to update.
    */
   where: Prisma.ProductBrandWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1487,6 +1494,7 @@ export type ProductBrandUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * In case the ProductBrand was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ProductBrandUpdateInput, Prisma.ProductBrandUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1509,6 +1517,7 @@ export type ProductBrandDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter which ProductBrand to delete.
    */
   where: Prisma.ProductBrandWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

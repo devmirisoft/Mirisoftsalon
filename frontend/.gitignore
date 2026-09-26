@@ -44,3 +44,9 @@ temp/
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright run output and the seeded fixture
+e2e/.results
+e2e/.fixture.json
+e2e/.state-*.json
+e2e/.servers.json

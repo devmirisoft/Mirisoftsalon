@@ -124,7 +124,8 @@ const ServiceConsumablesModal = ({ service, canManage, toggle }) => {
               {
                 key: "quantity",
                 label: "Quantity",
-                render: (value, row) => `${value} ${row.product?.unit || ""}`,
+                // A product opened into containers is measured in its pack unit.
+                render: (value, row) => `${value} ${row.product?.packUnit || row.product?.unit || ""}`,
               },
               {
                 key: "currentStock",

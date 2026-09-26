@@ -1,9 +1,11 @@
 import {} from "express";
-import { loginSchema, registerSchema } from "./auth.schema.js";
+import jwt from "jsonwebtoken";
+import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema, } from "./auth.schema.js";
 import { UserModel } from "../users/user.model.js";
 import { comparePass, hashPass } from "../../utils/password.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
-import { verifyRefreshToken } from "../../utils/jwt.js";
+import { generatePasswordResetToken, verifyPasswordResetToken, verifyRefreshToken, } from "../../utils/jwt.js";
+import { loginUrl, sendMail, sendWelcomeEmail } from "../../utils/mailer.js";
 import { env } from "../../config/env.js";
 import { isValidTimezone } from "../../utils/timezone.js";
 import { buildSalonCode } from "../../utils/business-id.js";
@@ -168,6 +170,7 @@ export const register = async (req, res) => {
         const accessToken = generateAccessToken(tokenPayload);
         const refreshToken = generateRefreshToken(tokenPayload);
         await createRefreshSession(newUser.id, refreshToken);
+        await sendWelcomeEmail(newUser);
         res.cookie("refreshToken", refreshToken, refreshCookieOptions);
         return res.status(201).json({
             success: true,
@@ -323,6 +326,7 @@ export const login = async (req, res) => {
         });
     }
     catch (error) {
+        console.error("Login failed:", error);
         res.status(500).json({
             success: false,
             message: "Internal server Error"
@@ -393,6 +397,95 @@ export const refresh = async (req, res) => {
             message: "Invalid or expired refresh token",
         });
     }
+};
+// The super admin's password is re-synced from env on startup, so it is
+// excluded from email resets.
+const canResetPassword = (user) => user.role !== "SUPER_ADMIN" && user.status === "ACTIVE";
+export const forgotPassword = async (req, res) => {
+    const data = forgotPasswordSchema.safeParse(req.body);
+    if (!data.success) {
+        return res.status(400).json({
+            success: false,
+            message: "Enter a valid email address",
+        });
+    }
+    const user = await UserModel.findByEmail(data.data.email);
+    if (user && canResetPassword(user)) {
+        const token = generatePasswordResetToken(user.id, user.passwordHash);
+        const link = `${env.CLIENT_URLS[0]}/auth-reset?token=${encodeURIComponent(token)}`;
+        await sendMail(user.email, "Reset your MiriSoft passcode", `Hi ${user.name},
+
+We received a request to reset your passcode. Open this link to choose a new one:
+
+${link}
+
+The link expires in 30 minutes and works once. If you didn't ask for this, you can ignore this email.`);
+    }
+    // Same answer whether or not the account exists, so this can't be used to
+    // find out which emails are registered.
+    return res.status(200).json({
+        success: true,
+        message: "If an account exists for that email, a reset link has been sent.",
+    });
+};
+export const resetPassword = async (req, res) => {
+    const data = resetPasswordSchema.safeParse(req.body);
+    if (!data.success) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid input data",
+            errors: data.error.flatten().fieldErrors,
+        });
+    }
+    const { token, password } = data.data;
+    const invalidLink = () => res.status(400).json({
+        success: false,
+        message: "This reset link is invalid or has expired. Request a new one.",
+    });
+    const decoded = jwt.decode(token);
+    const user = typeof decoded?.userId === "string"
+        ? await UserModel.findById(decoded.userId)
+        : null;
+    if (!user || !canResetPassword(user))
+        return invalidLink();
+    try {
+        verifyPasswordResetToken(token, user.passwordHash);
+    }
+    catch {
+        return invalidLink();
+    }
+    const passwordHash = await hashPass(password);
+    await prisma.$transaction(async (tx) => {
+        await tx.user.update({ where: { id: user.id }, data: { passwordHash } });
+        // Sign out every device that was using the old passcode.
+        await tx.userSession.updateMany({
+            where: { userId: user.id, revokedAt: null },
+            data: { revokedAt: new Date() },
+        });
+        await createAuditLog({
+            tx,
+            salonId: user.salonId,
+            branchId: user.branchId,
+            userId: user.id,
+            userName: user.name,
+            userRole: user.role,
+            module: "AUTH",
+            action: "UPDATE",
+            entityId: user.id,
+            entityName: user.name,
+            description: `${user.name} reset their passcode via email link`,
+            ...requestAuditContext(req),
+        });
+    });
+    await sendMail(user.email, "Your MiriSoft passcode was changed", `Hi ${user.name},
+
+Your passcode was just changed and all devices were signed out. Sign in again at ${loginUrl()}
+
+If this wasn't you, contact your salon admin right away.`);
+    return res.status(200).json({
+        success: true,
+        message: "Passcode updated. Sign in with your new passcode.",
+    });
 };
 export const logout = async (req, res) => {
     const refreshToken = typeof req.cookies.refreshToken === "string"

@@ -86,7 +86,9 @@ const SchemaModal = ({
         fields
           .filter((field) => !field.readOnly)
           .map((field) => {
-            let value = values[field.name];
+            let value = field.derive
+              ? field.derive(values)
+              : values[field.name];
             if (field.type === "number" && value !== "") value = Number(value);
             if (field.type === "multiselect") {
               value = Array.from(value || []);

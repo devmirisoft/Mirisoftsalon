@@ -16,6 +16,10 @@ import { Button, Icon } from "@/components/Component";
 import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
 import StatusBadge from "@/components/salon/StatusBadge";
+import {
+  ProductUsageModal,
+  TransferStockModal,
+} from "@/components/salon/InventoryModals";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import { enqueueConfirm, startConfirmQueue } from "@/services/offlineQueue";
@@ -142,6 +146,16 @@ const JobCartDetails = () => {
     { method: "CASH", amount: "", referenceNo: "" },
   ]);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  // Product usage is confirmed first and sent with the bill, so nothing is
+  // booked until the cart is actually confirmed.
+  const [usageOpen, setUsageOpen] = useState(false);
+  const [usage, setUsage] = useState(null);
+  const [shelfTransfer, setShelfTransfer] = useState(false);
+  // "+ Product / Membership / Package" picker: which kind is open, the picked
+  // id and quantity. Reference lists load once, on the first open.
+  const [adding, setAdding] = useState(null);
+  const [addForm, setAddForm] = useState({ id: "", quantity: 1 });
+  const [addRefs, setAddRefs] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
   const [loading, setLoading] = useState(true);
@@ -155,6 +169,7 @@ const JobCartDetails = () => {
       const response = await salonApi.jobCarts.get(id);
       const next = response.data;
       setCart(next);
+      setUsage(null);
       setForm({
         customerName: next.customer?.name || "",
         phone: next.customer?.phone || "",
@@ -195,12 +210,21 @@ const JobCartDetails = () => {
     load();
   }, [load]);
 
+  // Consumables are booked as the job ends: a job cart books them at pay time,
+  // but an appointment billed on this page was completed earlier and already
+  // booked them, so it skips the usage step.
+  const openPayment = () =>
+    cart?.appointmentStatus === "COMPLETED"
+      ? setConfirmOpen(true)
+      : setUsageOpen(true);
+
   // "Make bill" on the job cart list lands here with ?bill=1: open the confirm
   // bill modal straight away instead of making the user find the button.
   useEffect(() => {
     if (!searchParams.get("bill") || !cart) return;
     setSearchParams({}, { replace: true });
-    if (cart.status === "ACTIVE" && cart.items.length) setConfirmOpen(true);
+    if (cart.status === "ACTIVE" && cart.items.length) openPayment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart, searchParams, setSearchParams]);
 
   // Push any bill confirmed while offline as soon as the connection is back.
@@ -249,6 +273,77 @@ const JobCartDetails = () => {
     run(() => salonApi.jobCarts.cancel(id));
   };
 
+  const openAdd = async (kind) => {
+    setAddForm({ id: "", quantity: 1 });
+    setAdding(kind);
+    if (addRefs) return;
+    try {
+      const response = await salonApi.jobCarts.references({
+        salonId: cart.salonId,
+        branchId: cart.branchId,
+      });
+      setAddRefs(response.data);
+    } catch (refError) {
+      setAdding(null);
+      setError(refError.message);
+    }
+  };
+
+  const addOptions = !addRefs
+    ? []
+    : adding === "PRODUCT"
+      ? (addRefs.products || []).map((product) => ({
+          id: product.id,
+          label: `${product.name} - ${formatMoney(product.sellingPrice)} (${Number(product.retailStock || 0)} on the retail shelf)`,
+        }))
+      : adding === "MEMBERSHIP"
+        ? (addRefs.memberships || []).map((membership) => ({
+            id: membership.id,
+            label: `${membership.name} - ${formatMoney(membership.price)}`,
+          }))
+        : (addRefs.packages || []).map((pkg) => ({
+            id: pkg.id,
+            label: `${pkg.name} - ${formatMoney(pkg.specialPrice)}`,
+          }));
+
+  const submitAdd = () => {
+    const idKey = {
+      PRODUCT: "productId",
+      MEMBERSHIP: "membershipId",
+      PACKAGE: "packageId",
+    }[adding];
+    const body = {
+      itemType: adding,
+      [idKey]: addForm.id,
+      ...(adding === "PRODUCT" ? { quantity: Number(addForm.quantity) || 1 } : {}),
+    };
+    setAdding(null);
+    run(() => salonApi.jobCarts.addItem(id, body));
+  };
+
+  // Retail sales leave the retail shelf only; with the shelf short, the
+  // counter can pull stock from the warehouse and carry on adding the line.
+  const addingProduct =
+    adding === "PRODUCT"
+      ? (addRefs?.products || []).find((product) => product.id === addForm.id)
+      : null;
+  const shelfShort =
+    addingProduct &&
+    Number(addingProduct.retailStock || 0) < (Number(addForm.quantity) || 1);
+  const warehouseForShelf = addingProduct
+    ? Number(addingProduct.warehouseStock || 0) +
+      Number(addingProduct.salonWarehouseStock || 0)
+    : 0;
+  const transferAndContinue = async () => {
+    const response = await salonApi.jobCarts.references({
+      salonId: cart.salonId,
+      branchId: cart.branchId,
+    });
+    setAddRefs(response.data);
+    setShelfTransfer(false);
+    submitAdd();
+  };
+
   const canApplyCoupon = ["SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST"].includes(
     user?.role
   );
@@ -264,33 +359,12 @@ const JobCartDetails = () => {
     : discountMode === "PERCENT"
       ? (subtotalAmount * Math.min(Math.max(discountInput, 0), 100)) / 100
       : Math.max(discountInput, 0);
-  const membershipPercent = Number(
-    cart?.customer?.membership?.discountPercentage || 0
-  );
-  // Mirrors isMembershipDiscountable on the server: a membership never reduces
-  // a product, and only reduces a package when the salon has opted in. Keeping
-  // the rule in step here stops the page promising a discount the bill refuses.
-  const membershipDiscountBase = (invoice?.items || [])
-    .filter((item) =>
-      item.itemType === "PRODUCT" || item.itemType === "MEMBERSHIP"
-        ? false
-        : item.itemType === "PACKAGE"
-          ? Boolean(cart?.salon?.membershipDiscountOnPackages)
-          : true
-    )
-    .reduce(
-      (total, item) =>
-        total + Number(item.quantity || 0) * Number(item.unitPrice || 0),
-      0
-    );
-  const membershipDiscount = active
-    ? Math.min(
-        membershipDiscountBase * (membershipPercent / 100),
-        Math.max(membershipDiscountBase - manualDiscount, 0)
-      )
-    : Number(invoice?.discountAmount || 0);
+  // Mirrors isDiscountable on the server: only services take a share of the
+  // overall discount. Memberships never discount anything.
+  const isDiscountableLine = (item) =>
+    !["PRODUCT", "PACKAGE", "MEMBERSHIP"].includes(item.itemType);
   const discountTotal = active
-    ? Math.min(manualDiscount + membershipDiscount, subtotalAmount)
+    ? Math.min(manualDiscount, subtotalAmount)
     : Number(invoice?.discountAmount || 0);
   const processingFee = active
     ? Number(billingForm.processingFeeAmount || 0)
@@ -321,8 +395,56 @@ const JobCartDetails = () => {
     );
   // One rate covers every taxed line in practice, so the column header names it
   // and a row only repeats a rate that differs from it.
+  // While the cart is open, preview how confirming will split the discount and
+  // tax across lines - same pro-rata split as calculateInvoiceGst on the server.
+  const round2 = (value) => Math.round(value * 100) / 100;
+  const previewTaxRate =
+    billingForm.invoiceType === "GST_INVOICE"
+      ? Number(billingForm.taxPercent || 0)
+      : 0;
+  const lineGross = (item) =>
+    Number(item.price || 0) * Number(item.quantity ?? 1);
+  const discountableGross = (cart?.items || [])
+    .filter(isDiscountableLine)
+    .reduce((total, item) => total + lineGross(item), 0);
+  const lineDiscountTotal = Math.min(
+    discountTotal + Number(invoice?.couponDiscountAmount || 0),
+    discountableGross
+  );
+  const lastDiscountableIndex = (cart?.items || [])
+    .map(isDiscountableLine)
+    .lastIndexOf(true);
+  const discountShares = (cart?.items || []).map((item, index) =>
+    !isDiscountableLine(item) ||
+    index === lastDiscountableIndex ||
+    !discountableGross
+      ? 0
+      : round2((lineGross(item) * lineDiscountTotal) / discountableGross)
+  );
+  if (lastDiscountableIndex >= 0) {
+    // The last line takes the rounding remainder so the shares add up exactly.
+    discountShares[lastDiscountableIndex] = round2(
+      lineDiscountTotal -
+        discountShares.reduce((total, share) => total + share, 0)
+    );
+  }
+  const tableItems = (cart?.items || []).map((item, index) => {
+    if (!active) return item;
+    const gross = lineGross(item);
+    const discountAmount = discountShares[index];
+    const taxAmount = round2(
+      (Math.max(gross - discountAmount, 0) * previewTaxRate) / 100
+    );
+    return {
+      ...item,
+      discountAmount,
+      gstPercent: previewTaxRate,
+      taxAmount,
+      lineTotal: round2(Math.max(gross - discountAmount, 0) + taxAmount),
+    };
+  });
   const headerTaxPercent = Number(
-    (cart?.items || []).find((item) => Number(item.gstPercent) > 0)
+    tableItems.find((item) => Number(item.gstPercent) > 0)
       ?.gstPercent || 0
   );
 
@@ -365,10 +487,16 @@ const JobCartDetails = () => {
   );
   const singleFullTender =
     activeTenders.length === 1 && !activeTenders[0].amount;
+  // The wallet pays for services only (walletPayableFor on the server): the
+  // payable less every product, package and membership line.
+  const nonServiceTotal = tableItems
+    .filter((item) => ["PRODUCT", "PACKAGE", "MEMBERSHIP"].includes(item.itemType))
+    .reduce((total, item) => total + Number(item.lineTotal || 0), 0);
+  const walletCap = Math.max(payableAmount - nonServiceTotal, 0);
   const singleFullAmount = !singleFullTender
     ? 0
     : activeTenders[0].method === "MEMBERSHIP_WALLET"
-      ? Math.min(membershipWalletBalance, payableAmount)
+      ? Math.min(membershipWalletBalance, walletCap)
       : payableAmount;
   const collectedAmount = singleFullTender ? singleFullAmount : tenderTotal;
   const outstandingAfter = Math.max(payableAmount - collectedAmount, 0);
@@ -383,6 +511,51 @@ const JobCartDetails = () => {
     walletTender &&
     (singleFullTender ? singleFullAmount : Number(walletTender.amount || 0)) >
       membershipWalletBalance + 0.004;
+  // Split for the pay modal: the wallet settles services; products, packages
+  // and memberships ride on another payment.
+  const walletPaid = walletTender
+    ? singleFullTender
+      ? singleFullAmount
+      : Number(walletTender.amount || 0)
+    : 0;
+  const walletOverCap = Boolean(walletTender) && walletPaid > walletCap + 0.004;
+  const serviceLinesTotal = walletCap;
+  const walletOnServices = Math.min(walletPaid, serviceLinesTotal);
+  const serviceShortfall = serviceLinesTotal - walletOnServices;
+  const restAmount = Math.max(payableAmount - walletOnServices, 0);
+  const hasProducts = nonServiceTotal > 0.004;
+  const restMethods = activeTenders
+    .filter(
+      (tender) =>
+        tender.method !== "MEMBERSHIP_WALLET" || walletPaid > walletOnServices
+    )
+    .map(
+      (tender) =>
+        PAYMENT_METHODS.find((option) => option.value === tender.method)
+          ?.label || tender.method
+    )
+    .join(" + ");
+
+  // The wallet cannot pay products, packages or memberships, so with any on
+  // the bill the rest opens as a ready split row. Keyed on the first method
+  // only, so a row the operator removes stays removed.
+  useEffect(() => {
+    if (
+      !confirmOpen ||
+      !collecting ||
+      !hasProducts ||
+      tenders.length !== 1 ||
+      tenders[0].method !== "MEMBERSHIP_WALLET" ||
+      tenders[0].amount ||
+      outstandingAfter <= 0.004
+    )
+      return;
+    setTenders((current) => [
+      ...current,
+      { method: "CASH", amount: outstandingAfter.toFixed(2), referenceNo: "" },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmOpen, collecting, tenders[0].method]);
 
   const buildConfirmBody = () => ({
     ...billingForm,
@@ -395,6 +568,7 @@ const JobCartDetails = () => {
     // offline queue keeps the time the operator actually ended the job.
     confirmedAt: new Date().toISOString(),
     idempotencyKey: globalThis.crypto.randomUUID(),
+    ...(usage?.length ? { usage } : {}),
     ...(collecting && activeTenders.length
       ? {
           payments: activeTenders
@@ -465,10 +639,12 @@ const JobCartDetails = () => {
               <button
                 type="button"
                 className="jcp-back"
-                onClick={() => navigate("/job-carts")}
+                onClick={() =>
+                  navigate(cart.isJobCart === false ? "/appointments" : "/job-carts")
+                }
               >
                 <Icon name="arrow-left" />
-                <span>Back to Jobs</span>
+                <span>{cart.isJobCart === false ? "Back to Appointments" : "Back to Jobs"}</span>
               </button>
               <div className="jcp-topbar-meta">
                 <span>
@@ -673,10 +849,30 @@ const JobCartDetails = () => {
                       title="Services & Package"
                       subtitle="Review the selected services for this job cart."
                     >
-                      <span className="jcp-chip">
-                        {cart.items.length} Item
-                        {cart.items.length === 1 ? "" : "s"}
-                      </span>
+                      <div className="d-flex flex-wrap align-items-center gap-2">
+                        {active &&
+                          [
+                            ["PRODUCT", "Product"],
+                            ["MEMBERSHIP", "Membership"],
+                            ["PACKAGE", "Package"],
+                          ].map(([kind, label]) => (
+                            <Button
+                              key={kind}
+                              color="primary"
+                              outline
+                              size="sm"
+                              disabled={working}
+                              onClick={() => openAdd(kind)}
+                            >
+                              <Icon name="plus" />
+                              <span>{label}</span>
+                            </Button>
+                          ))}
+                        <span className="jcp-chip">
+                          {cart.items.length} Item
+                          {cart.items.length === 1 ? "" : "s"}
+                        </span>
+                      </div>
                     </SectionHead>
                     <div className="table-responsive">
                       <table className="table jcp-table">
@@ -693,11 +889,12 @@ const JobCartDetails = () => {
                               {headerTaxPercent ? ` (${headerTaxPercent}%)` : ""}
                             </th>
                             <th className="text-end">Total</th>
+                            {active && <th style={{ width: 44 }} />}
                           </tr>
                         </thead>
                         <tbody>
                           {cart.items.length ? (
-                            cart.items.map((item, index) => (
+                            tableItems.map((item, index) => (
                               <tr key={item.id}>
                                 <td className="text-soft">{index + 1}</td>
                                 <td>
@@ -796,12 +993,34 @@ const JobCartDetails = () => {
                                     ? "—"
                                     : formatMoney(item.lineTotal)}
                                 </td>
+                                {active && (
+                                  <td className="text-end">
+                                    {item.itemType !== "SERVICE" && (
+                                      <button
+                                        type="button"
+                                        className="jcp-tender-remove"
+                                        aria-label={`Remove ${item.serviceName}`}
+                                        disabled={working}
+                                        onClick={() =>
+                                          run(() =>
+                                            salonApi.jobCarts.removeItem(
+                                              id,
+                                              item.id
+                                            )
+                                          )
+                                        }
+                                      >
+                                        <Icon name="cross" />
+                                      </button>
+                                    )}
+                                  </td>
+                                )}
                               </tr>
                             ))
                           ) : (
                             <tr>
                               <td
-                                colSpan={8}
+                                colSpan={active ? 9 : 8}
                                 className="text-center text-soft py-4"
                               >
                                 No services or packages on this job cart.
@@ -896,7 +1115,7 @@ const JobCartDetails = () => {
                       }
                     />
                     {active ? (
-                      <Row className="g-3">
+                      <Row className="g-3 jcp-billing-options">
                         <Col md="5">
                           <Label className="jcp-field-label">
                             Overall Discount{" "}
@@ -906,7 +1125,7 @@ const JobCartDetails = () => {
                             <Input
                               type="select"
                               bsSize="sm"
-                              style={{ maxWidth: 150 }}
+                              style={{ flex: "0 0 150px" }}
                               value={discountMode}
                               onChange={(event) =>
                                 setDiscountMode(event.target.value)
@@ -937,12 +1156,6 @@ const JobCartDetails = () => {
                               </span>
                             </div>
                           </div>
-                          {membershipDiscount > 0 && (
-                            <small className="text-soft d-block mt-1">
-                              Membership discount included:{" "}
-                              {formatMoney(membershipDiscount)}
-                            </small>
-                          )}
                         </Col>
 
                         <Col md="7">
@@ -1231,7 +1444,7 @@ const JobCartDetails = () => {
                         <Button
                           className="jcp-pay"
                           disabled={working || !cart.items.length}
-                          onClick={() => setConfirmOpen(true)}
+                          onClick={openPayment}
                         >
                           {working ? (
                             <Spinner size="sm" />
@@ -1240,13 +1453,15 @@ const JobCartDetails = () => {
                           )}
                           <span>Pay Now {formatMoney(payableAmount)}</span>
                         </Button>
-                        <Button
-                          className="jcp-cancel"
-                          disabled={working}
-                          onClick={cancel}
-                        >
-                          Cancel Job Cart
-                        </Button>
+                        {cart.isJobCart !== false && (
+                          <Button
+                            className="jcp-cancel"
+                            disabled={working}
+                            onClick={cancel}
+                          >
+                            Cancel Job Cart
+                          </Button>
+                        )}
                       </div>
                     ) : invoice && canOpenInvoice ? (
                       <Link
@@ -1275,6 +1490,116 @@ const JobCartDetails = () => {
             </Row>
           </>
         )}
+
+        <Modal isOpen={Boolean(adding)} toggle={() => setAdding(null)} centered>
+          <ModalBody>
+            <h5 className="mb-3">
+              Add {adding ? adding.charAt(0) + adding.slice(1).toLowerCase() : ""}
+            </h5>
+            {!addRefs ? (
+              <div className="text-center py-3">
+                <Spinner size="sm" color="primary" />
+              </div>
+            ) : (
+              <>
+                <Input
+                  type="select"
+                  value={addForm.id}
+                  onChange={(event) =>
+                    setAddForm((current) => ({ ...current, id: event.target.value }))
+                  }
+                >
+                  <option value="">
+                    {addOptions.length ? "Select..." : "Nothing available"}
+                  </option>
+                  {addOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Input>
+                {adding === "PRODUCT" && addingProduct && (
+                  <div className="small text-soft mt-2">
+                    Retail stock: <strong>{Number(addingProduct.retailStock || 0)}</strong>
+                    {" · "}Warehouse: <strong>{warehouseForShelf}</strong>
+                  </div>
+                )}
+                {adding === "PRODUCT" && shelfShort && (
+                  <Alert color="warning" className="mt-2 mb-0 py-2 small d-flex align-items-center justify-content-between gap-2">
+                    <span>Retail stock unavailable.</span>
+                    {warehouseForShelf > 0 && (
+                      <Button size="sm" color="primary" onClick={() => setShelfTransfer(true)}>
+                        Transfer From Warehouse
+                      </Button>
+                    )}
+                  </Alert>
+                )}
+                {adding === "PRODUCT" && (
+                  <FormGroup className="mt-2" noMargin>
+                    <Label className="jcp-field-label">Quantity</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="999"
+                      value={addForm.quantity}
+                      onChange={(event) =>
+                        setAddForm((current) => ({
+                          ...current,
+                          quantity: event.target.value,
+                        }))
+                      }
+                    />
+                  </FormGroup>
+                )}
+              </>
+            )}
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <Button color="light" onClick={() => setAdding(null)}>
+                Cancel
+              </Button>
+              <Button
+                color="primary"
+                disabled={!addForm.id || working || Boolean(shelfShort)}
+                onClick={submitAdd}
+              >
+                Add
+              </Button>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <TransferStockModal
+          isOpen={shelfTransfer}
+          toggle={() => setShelfTransfer(false)}
+          product={addingProduct}
+          branchId={cart?.branchId}
+          stock={{
+            WAREHOUSE: addingProduct?.warehouseStock,
+            RETAIL: addingProduct?.retailStock,
+            SERVICE: addingProduct?.serviceStock,
+          }}
+          salonWarehouse={addingProduct?.salonWarehouseStock}
+          staff={addRefs?.staff || []}
+          from={Number(addingProduct?.warehouseStock || 0) > 0 ? "WAREHOUSE" : "SALON:WAREHOUSE"}
+          toLocation="RETAIL"
+          quantity={Math.max(
+            (Number(addForm.quantity) || 1) - Number(addingProduct?.retailStock || 0),
+            1
+          )}
+          submitLabel="Transfer & Continue"
+          onSaved={transferAndContinue}
+        />
+
+        <ProductUsageModal
+          isOpen={usageOpen}
+          appointmentId={id}
+          onCancel={() => setUsageOpen(false)}
+          onConfirm={(entries) => {
+            setUsage(entries);
+            setUsageOpen(false);
+            setConfirmOpen(true);
+          }}
+        />
 
         <Modal
           isOpen={confirmOpen}
@@ -1393,12 +1718,17 @@ const JobCartDetails = () => {
                       />
                     </Col>
                   )}
-                  <Col sm={splitting ? "8" : "4"}>
+                  {splitting && (
+                    <Col sm="3">
+                      <Label className="jcp-field-label">Remaining</Label>
+                      <div className="jcp-tender-fixed">
+                        {formatMoney(firstTenderAmount)}
+                      </div>
+                    </Col>
+                  )}
+                  <Col sm={splitting ? "5" : "4"}>
                     <Label className="jcp-field-label">
                       Reference <span className="text-soft">(Optional)</span>
-                      {splitting
-                        ? " — takes " + formatMoney(firstTenderAmount)
-                        : ""}
                     </Label>
                     <Input
                       placeholder="Enter reference (e.g. txn id)"
@@ -1415,12 +1745,22 @@ const JobCartDetails = () => {
                         color="primary"
                         outline
                         className="w-100 jcp-split-add"
-                        onClick={() =>
+                        // First split opens empty (only a wallet shortfall is
+                        // carried over). Each later row takes the balance the
+                        // first method still holds, so rows chain down.
+                        onClick={() => {
+                          const carry = splitting
+                            ? firstTenderAmount
+                            : outstandingAfter;
                           setTenders((current) => [
                             ...current,
-                            { method: "CASH", amount: "", referenceNo: "" },
-                          ])
-                        }
+                            {
+                              method: "CASH",
+                              amount: carry > 0.004 ? carry.toFixed(2) : "",
+                              referenceNo: "",
+                            },
+                          ]);
+                        }}
                       >
                         <Icon name="plus" />
                         <span>Split payment</span>
@@ -1430,11 +1770,13 @@ const JobCartDetails = () => {
                 </Row>
 
                 {tenders.slice(1).map((tender, offset) => (
-                  <Row className="g-2 mt-1" key={offset + 1}>
+                  <Row className="g-2 align-items-end jcp-tender-row" key={offset + 1}>
                     <Col sm="4">
+                      <Label className="jcp-field-label">
+                        Payment {offset + 2}
+                      </Label>
                       <Input
                         type="select"
-                        bsSize="sm"
                         value={tender.method}
                         onChange={(event) =>
                           setTenderValue(offset + 1, "method", event.target.value)
@@ -1455,9 +1797,9 @@ const JobCartDetails = () => {
                       </Input>
                     </Col>
                     <Col sm="3">
+                      <Label className="jcp-field-label">Amount</Label>
                       <Input
                         type="number"
-                        bsSize="sm"
                         min="0"
                         step="0.01"
                         placeholder="0.00"
@@ -1467,36 +1809,37 @@ const JobCartDetails = () => {
                         }
                       />
                     </Col>
-                    <Col sm="5">
-                      <div className="d-flex gap-1 align-items-center">
-                        <Input
-                          bsSize="sm"
-                          className="jcp-tender-ref"
-                          placeholder="Reference"
-                          value={tender.referenceNo}
-                          onChange={(event) =>
-                            setTenderValue(
-                              offset + 1,
-                              "referenceNo",
-                              event.target.value
+                    <Col>
+                      <Label className="jcp-field-label">
+                        Reference <span className="text-soft">(Optional)</span>
+                      </Label>
+                      <Input
+                        placeholder="Reference"
+                        value={tender.referenceNo}
+                        onChange={(event) =>
+                          setTenderValue(
+                            offset + 1,
+                            "referenceNo",
+                            event.target.value
+                          )
+                        }
+                      />
+                    </Col>
+                    <Col xs="auto">
+                      <button
+                        type="button"
+                        className="jcp-tender-remove"
+                        aria-label="Remove payment method"
+                        onClick={() =>
+                          setTenders((current) =>
+                            current.filter(
+                              (_row, rowIndex) => rowIndex !== offset + 1
                             )
-                          }
-                        />
-                        <button
-                          type="button"
-                          className="jcp-tender-remove"
-                          aria-label="Remove payment method"
-                          onClick={() =>
-                            setTenders((current) =>
-                              current.filter(
-                                (_row, rowIndex) => rowIndex !== offset + 1
-                              )
-                            )
-                          }
-                        >
-                          <Icon name="cross" />
-                        </button>
-                      </div>
+                          )
+                        }
+                      >
+                        <Icon name="cross" />
+                      </button>
                     </Col>
                   </Row>
                 ))}
@@ -1529,6 +1872,12 @@ const JobCartDetails = () => {
                 Wallet has {formatMoney(membershipWalletBalance)}. Reduce this
                 tender and add another method for the rest.
               </Alert>
+            ) : walletOverCap ? (
+              <Alert color="warning" className="py-2">
+                The membership wallet pays for services only, up to{" "}
+                {formatMoney(walletCap)} on this bill. Pay products, packages
+                and memberships with another method.
+              </Alert>
             ) : overpaying ? (
               <Alert color="danger" className="py-2">
                 Collecting {formatMoney(collectedAmount)} exceeds the{" "}
@@ -1548,6 +1897,53 @@ const JobCartDetails = () => {
                       formatMoney(outstandingAfter) +
                       " stays outstanding and the bill is marked partially paid."}
               </small>
+            )}
+
+            {collecting && (walletTender || packageCoveredAmount > 0) && (
+              <div className="jcp-panel mt-2">
+                <div className="jcp-line">
+                  <span>
+                    Services
+                    <span className="d-block small text-soft">
+                      Mode of payment:{" "}
+                      {[
+                        packageCoveredAmount > 0 && "Package",
+                        walletTender && "Membership",
+                      ]
+                        .filter(Boolean)
+                        .join(" + ")}
+                      {walletTender && serviceShortfall > 0.004
+                        ? ` (covers ${formatMoney(walletOnServices)}, ${formatMoney(
+                            serviceShortfall
+                          )} added to ${hasProducts ? "the other items" : "the balance"})`
+                        : ""}
+                    </span>
+                  </span>
+                  <strong>
+                    {formatMoney(serviceLinesTotal + packageCoveredAmount)}
+                  </strong>
+                </div>
+                {restAmount > 0.004 && (
+                  <div className="jcp-line">
+                    <span>
+                      {hasProducts ? "Products, packages & memberships" : "Remaining"}
+                      {hasProducts && serviceShortfall > 0.004
+                        ? " + remaining services"
+                        : ""}
+                      <span className="d-block small text-soft">
+                        Mode of payment: {restMethods || "Outstanding"}
+                      </span>
+                    </span>
+                    <strong>{formatMoney(restAmount)}</strong>
+                  </div>
+                )}
+                <div className="jcp-line">
+                  <span>Total</span>
+                  <strong>
+                    {formatMoney(payableAmount + packageCoveredAmount)}
+                  </strong>
+                </div>
+              </div>
             )}
 
             <div className="jcp-modal-cols">
@@ -1608,6 +2004,7 @@ const JobCartDetails = () => {
                   type="textarea"
                   rows="2"
                   maxLength={BILLING_NOTE_MAX}
+                  style={{ minHeight: 0 }}
                   value={billingForm.billingNote}
                   onChange={(event) =>
                     setBillingForm((current) => ({
@@ -1635,13 +2032,18 @@ const JobCartDetails = () => {
               <Button
                 className="jcp-pay"
                 onClick={confirm}
-                disabled={working || overpaying || walletShort}
+                disabled={working || overpaying || walletShort || walletOverCap}
               >
                 {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
                 <span>
-                  {collecting
-                    ? `Pay ${formatMoney(collectedAmount)}`
-                    : "Issue bill"}
+                  {!collecting
+                    ? "Issue bill"
+                    : walletTender
+                      ? "Pay with membership" +
+                        (collectedAmount - walletPaid > 0.004
+                          ? ` + ${formatMoney(collectedAmount - walletPaid)}`
+                          : "")
+                      : `Pay ${formatMoney(collectedAmount)}`}
                 </span>
               </Button>
             </div>

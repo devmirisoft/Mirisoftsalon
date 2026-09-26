@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import { ProductModel } from "./product.model.js";
+import { ProductModel, productActivity, productSalesStats } from "./product.model.js";
 import { prisma } from "../../config/prisma.js";
 import {
   branchScope,
@@ -27,6 +27,55 @@ const accessWhere = (req: Request, id?: string) => ({
     : { salonId: req.user?.salonId || "__missing__" }),
   ...branchScope(req),
 });
+
+/**
+ * Pack size and unit go together: both set (e.g. 1000 ML per bottle) makes
+ * service stock open into tracked containers; both empty turns it off.
+ */
+const packFields = (body: Record<string, unknown>, stockUnit?: string) => {
+  if (!("packSize" in body) && !("packUnit" in body)) return {};
+  const size = body.packSize === null || body.packSize === "" || body.packSize === undefined
+    ? null
+    : Number(body.packSize);
+  const unit = body.packUnit === null || body.packUnit === "" || body.packUnit === undefined
+    ? null
+    : body.packUnit;
+  if (size !== null && (!Number.isFinite(size) || size <= 0)) {
+    return { error: "Pack size must be a positive number" };
+  }
+  if (unit !== null && !isUnit(unit)) return { error: "Invalid pack unit" };
+  if ((size === null) !== (unit === null)) {
+    return { error: "Set both pack size and pack unit, or neither" };
+  }
+  // Stock is counted in packs and content in the pack unit, so the two must be
+  // different; otherwise a movement cannot say which of them it is in.
+  if (unit !== null && stockUnit && unit === stockUnit) {
+    return { error: "Pack unit must differ from the stock unit" };
+  }
+  return { data: { packSize: size, packUnit: unit as ProductUnit | null } };
+};
+
+/**
+ * Consumable quantities are read in the pack unit once a product has one, so
+ * "50" turns from 50 packs into 50 ml. Existing rows are never reinterpreted
+ * behind the operator's back: the change has to be confirmed.
+ */
+const packChangeNeedsConfirmation = async (
+  existing: { id: string; packSize: unknown; packUnit: unknown },
+  next: { packSize: number | null; packUnit: ProductUnit | null } | undefined,
+  body: Record<string, unknown>
+) => {
+  if (!next || body.confirmConsumableUnits === true) return null;
+  const was = existing.packUnit ?? null;
+  if ((next.packUnit ?? null) === was && Number(existing.packSize ?? 0) === Number(next.packSize ?? 0)) {
+    return null;
+  }
+  const consumables = await prisma.serviceConsumable.count({
+    where: { productId: existing.id, status: true },
+  });
+  if (!consumables) return null;
+  return `This product is used by ${consumables} service consumable${consumables === 1 ? "" : "s"}. Changing the pack size or unit changes what their quantities mean (${was ?? "product unit"} to ${next.packUnit ?? "product unit"}). Re-check those quantities, then send confirmConsumableUnits: true.`;
+};
 
 const checkReferences = async (
   salonId: string,
@@ -62,6 +111,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const description = cleanText(req.body.description);
     const sku = cleanText(req.body.sku);
     const barcode = cleanText(req.body.barcode);
+    const hsnCode = cleanText(req.body.hsnCode);
     const category = cleanText(req.body.category);
     if (!name || !salonId) return res.status(400).json({ success: false, message: "Product name and salon are required" });
     if (![costPrice, sellingPrice, lowStockAlert].every((value) => Number.isFinite(value) && value >= 0)) {
@@ -70,6 +120,8 @@ export const createProduct = async (req: Request, res: Response) => {
     if (req.body.unit && !isUnit(req.body.unit)) {
       return res.status(400).json({ success: false, message: "Invalid product unit" });
     }
+    const pack = packFields(req.body, req.body.unit ?? "PCS");
+    if (pack.error) return res.status(400).json({ success: false, message: pack.error });
     const branchId = writableBranch(req, req.body.branchId);
     const referenceError = await checkReferences(
       salonId,
@@ -90,8 +142,10 @@ export const createProduct = async (req: Request, res: Response) => {
       ...(description ? { description } : {}),
       ...(sku ? { sku } : {}),
       ...(barcode ? { barcode } : {}),
+      ...(hsnCode ? { hsnCode } : {}),
       ...(category ? { category } : {}),
       ...(req.body.unit ? { unit: req.body.unit as ProductUnit } : {}),
+      ...(pack.data ?? {}),
       ...(typeof req.body.isRetailProduct === "boolean" ? { isRetailProduct: req.body.isRetailProduct } : {}),
       ...(typeof req.body.isServiceConsumable === "boolean" ? { isServiceConsumable: req.body.isServiceConsumable } : {}),
       ...(req.body.brandId ? { brand: { connect: { id: req.body.brandId } } } : {}),
@@ -121,7 +175,12 @@ export const getProducts = async (req: Request, res: Response) => {
         ? { isServiceConsumable: req.query.serviceConsumable === "true" }
         : {}),
     };
-    const data = await ProductModel.list(where);
+    const products = await ProductModel.list(where);
+    const stats = await productSalesStats(products.map((product) => product.id));
+    const data = products.map((product) => ({
+      ...product,
+      ...(stats.get(product.id) ?? { soldQty: 0, revenue: 0, saleCount: 0, lastPurchaseAt: null }),
+    }));
     return res.json({ success: true, data });
   } catch (error) {
     return sendInventoryError(res, error);
@@ -159,6 +218,20 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductActivityHandler = async (req: Request, res: Response) => {
+  try {
+    const product = await ProductModel.find(accessWhere(req, idParam(req)));
+    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    const [activity, salon] = await Promise.all([
+      productActivity(product.id),
+      prisma.salon.findUnique({ where: { id: product.salonId }, select: { productGstRate: true } }),
+    ]);
+    return res.json({ success: true, data: { ...activity, productGstRate: Number(salon?.productGstRate ?? 0) } });
+  } catch (error) {
+    return sendInventoryError(res, error);
+  }
+};
+
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const existing = await ProductModel.find(accessWhere(req, idParam(req)));
@@ -172,6 +245,16 @@ export const updateProduct = async (req: Request, res: Response) => {
     }
     if (req.body.unit !== undefined && !isUnit(req.body.unit)) {
       return res.status(400).json({ success: false, message: "Invalid product unit" });
+    }
+    const pack = packFields(req.body, req.body.unit ?? existing.unit);
+    if (pack.error) return res.status(400).json({ success: false, message: pack.error });
+    const confirmation = await packChangeNeedsConfirmation(existing, pack.data, req.body);
+    if (confirmation) {
+      return res.status(409).json({
+        success: false,
+        code: "CONSUMABLE_UNIT_CHANGE",
+        message: confirmation,
+      });
     }
     const canMoveBranch = !isBranchPinned(req.user);
     const referenceError = await checkReferences(
@@ -189,8 +272,10 @@ export const updateProduct = async (req: Request, res: Response) => {
       ...("description" in req.body ? { description: cleanText(req.body.description) ?? null } : {}),
       ...("sku" in req.body ? { sku: cleanText(req.body.sku) ?? null } : {}),
       ...("barcode" in req.body ? { barcode: cleanText(req.body.barcode) ?? null } : {}),
+      ...("hsnCode" in req.body ? { hsnCode: cleanText(req.body.hsnCode) ?? null } : {}),
       ...("category" in req.body ? { category: cleanText(req.body.category) ?? null } : {}),
       ...(req.body.unit ? { unit: req.body.unit as ProductUnit } : {}),
+      ...(pack.data ?? {}),
       ...(req.body.costPrice !== undefined ? { costPrice: Number(req.body.costPrice) } : {}),
       ...(req.body.sellingPrice !== undefined ? { sellingPrice: Number(req.body.sellingPrice) } : {}),
       ...(req.body.lowStockAlert !== undefined ? { lowStockAlert: Number(req.body.lowStockAlert) } : {}),

@@ -1714,7 +1714,7 @@ export type $StaffSalaryConfigPayload<ExtArgs extends runtime.Types.Extensions.I
 export type StaffSalaryConfigGetPayload<S extends boolean | null | undefined | StaffSalaryConfigDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$StaffSalaryConfigPayload, S>
 
 export type StaffSalaryConfigCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<StaffSalaryConfigFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<StaffSalaryConfigFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: StaffSalaryConfigCountAggregateInputType | true
   }
 
@@ -2178,6 +2178,7 @@ export type StaffSalaryConfigFindUniqueArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which StaffSalaryConfig to fetch.
    */
   where: Prisma.StaffSalaryConfigWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2200,6 +2201,7 @@ export type StaffSalaryConfigFindUniqueOrThrowArgs<ExtArgs extends runtime.Types
    * Filter, which StaffSalaryConfig to fetch.
    */
   where: Prisma.StaffSalaryConfigWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2252,6 +2254,7 @@ export type StaffSalaryConfigFindFirstArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of StaffSalaryConfigs.
    */
   distinct?: Prisma.StaffSalaryConfigScalarFieldEnum | Prisma.StaffSalaryConfigScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2304,6 +2307,7 @@ export type StaffSalaryConfigFindFirstOrThrowArgs<ExtArgs extends runtime.Types.
    * Filter by unique combinations of StaffSalaryConfigs.
    */
   distinct?: Prisma.StaffSalaryConfigScalarFieldEnum | Prisma.StaffSalaryConfigScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2356,6 +2360,7 @@ export type StaffSalaryConfigFindManyArgs<ExtArgs extends runtime.Types.Extensio
    * Filter by unique combinations of StaffSalaryConfigs.
    */
   distinct?: Prisma.StaffSalaryConfigScalarFieldEnum | Prisma.StaffSalaryConfigScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2378,6 +2383,7 @@ export type StaffSalaryConfigCreateArgs<ExtArgs extends runtime.Types.Extensions
    * The data needed to create a StaffSalaryConfig.
    */
   data: Prisma.XOR<Prisma.StaffSalaryConfigCreateInput, Prisma.StaffSalaryConfigUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2438,6 +2444,7 @@ export type StaffSalaryConfigUpdateArgs<ExtArgs extends runtime.Types.Extensions
    * Choose, which StaffSalaryConfig to update.
    */
   where: Prisma.StaffSalaryConfigWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2516,6 +2523,7 @@ export type StaffSalaryConfigUpsertArgs<ExtArgs extends runtime.Types.Extensions
    * In case the StaffSalaryConfig was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.StaffSalaryConfigUpdateInput, Prisma.StaffSalaryConfigUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -2538,6 +2546,7 @@ export type StaffSalaryConfigDeleteArgs<ExtArgs extends runtime.Types.Extensions
    * Filter which StaffSalaryConfig to delete.
    */
   where: Prisma.StaffSalaryConfigWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

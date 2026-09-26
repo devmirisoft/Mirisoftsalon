@@ -209,7 +209,23 @@ export const ProductStockMovementType = {
     USED_IN_SERVICE: 'USED_IN_SERVICE',
     DAMAGED: 'DAMAGED',
     ADJUSTMENT: 'ADJUSTMENT',
-    RETURNED: 'RETURNED'
+    RETURNED: 'RETURNED',
+    TRANSFER: 'TRANSFER',
+    OPEN_CONTAINER: 'OPEN_CONTAINER',
+    CONTAINER_CLOSED: 'CONTAINER_CLOSED',
+    WASTAGE: 'WASTAGE',
+    LOST: 'LOST'
+};
+export const InventoryLocation = {
+    WAREHOUSE: 'WAREHOUSE',
+    RETAIL: 'RETAIL',
+    SERVICE: 'SERVICE'
+};
+export const ProductContainerStatus = {
+    OPEN: 'OPEN',
+    EMPTY: 'EMPTY',
+    LOST: 'LOST',
+    DAMAGED: 'DAMAGED'
 };
 export const StockAlertStatus = {
     OPEN: 'OPEN',

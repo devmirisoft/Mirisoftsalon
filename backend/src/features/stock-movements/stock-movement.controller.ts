@@ -4,12 +4,15 @@ import {
   branchScope,
   getSalonId,
   sendInventoryError,
+  writableBranch,
 } from "../products/inventory-access.js";
 import { StockMovementModel } from "./stock-movement.model.js";
-import { createStockMovement } from "../stock/stockMovement.service.js";
+import { createStockMovement, isInventoryLocation } from "../stock/stockMovement.service.js";
 
-const TYPES = ["STOCK_IN", "STOCK_OUT", "RETAIL_SALE", "USED_IN_SERVICE", "DAMAGED", "ADJUSTMENT", "RETURNED"] as const;
+const TYPES = ["STOCK_IN", "STOCK_OUT", "RETAIL_SALE", "USED_IN_SERVICE", "DAMAGED", "ADJUSTMENT", "RETURNED", "TRANSFER", "OPEN_CONTAINER", "WASTAGE", "LOST"] as const;
 type MovementType = (typeof TYPES)[number];
+// Transfers and opened packs have their own endpoints under /api/inventory.
+const MANUAL_TYPES: readonly MovementType[] = TYPES.filter((type) => type !== "TRANSFER" && type !== "OPEN_CONTAINER");
 
 const baseWhere = (req: Request) => ({
   ...(req.user?.role === "SUPER_ADMIN" ? {} : { salonId: req.user?.salonId || "__missing__" }),
@@ -22,8 +25,12 @@ export const createManualStockMovement = async (req: Request, res: Response) => 
     const productId = typeof req.body.productId === "string" ? req.body.productId : "";
     const type = req.body.type as MovementType;
     const quantity = Number(req.body.quantity);
-    if (!salonId || !productId || !TYPES.includes(type)) {
+    if (!salonId || !productId || !MANUAL_TYPES.includes(type)) {
       return res.status(400).json({ success: false, message: "Product, salon and valid movement type are required" });
+    }
+    const location = req.body.location;
+    if (location !== undefined && location !== null && location !== "" && !isInventoryLocation(location)) {
+      return res.status(400).json({ success: false, message: "Location must be WAREHOUSE, RETAIL or SERVICE" });
     }
     if (type === "RETAIL_SALE") {
       return res.status(400).json({ success: false, message: "RETAIL_SALE movements must be created through retail sales" });
@@ -39,6 +46,7 @@ export const createManualStockMovement = async (req: Request, res: Response) => 
     if (!product) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
+    const branchId = writableBranch(req, req.body.branchId);
     const data = await prisma.$transaction(async (tx) => {
       const result = await createStockMovement({
         tx,
@@ -46,6 +54,10 @@ export const createManualStockMovement = async (req: Request, res: Response) => 
         productId,
         type,
         quantity,
+        ...(isInventoryLocation(location) ? { location } : {}),
+        // The branch whose shelf is being corrected: the caller's own branch
+        // when pinned to one, otherwise the product's.
+        ...(branchId ? { branchId } : {}),
         referenceType: "MANUAL",
         ...(typeof req.body.referenceId === "string" && req.body.referenceId.trim()
           ? { referenceId: req.body.referenceId.trim() }

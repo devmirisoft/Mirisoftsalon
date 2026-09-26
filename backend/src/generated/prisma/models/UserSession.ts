@@ -572,7 +572,7 @@ export type $UserSessionPayload<ExtArgs extends runtime.Types.Extensions.Interna
 export type UserSessionGetPayload<S extends boolean | null | undefined | UserSessionDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$UserSessionPayload, S>
 
 export type UserSessionCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<UserSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<UserSessionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: UserSessionCountAggregateInputType | true
   }
 
@@ -1020,6 +1020,7 @@ export type UserSessionFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter, which UserSession to fetch.
    */
   where: Prisma.UserSessionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1042,6 +1043,7 @@ export type UserSessionFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    * Filter, which UserSession to fetch.
    */
   where: Prisma.UserSessionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1094,6 +1096,7 @@ export type UserSessionFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter by unique combinations of UserSessions.
    */
   distinct?: Prisma.UserSessionScalarFieldEnum | Prisma.UserSessionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1146,6 +1149,7 @@ export type UserSessionFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of UserSessions.
    */
   distinct?: Prisma.UserSessionScalarFieldEnum | Prisma.UserSessionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1198,6 +1202,7 @@ export type UserSessionFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of UserSessions.
    */
   distinct?: Prisma.UserSessionScalarFieldEnum | Prisma.UserSessionScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1220,6 +1225,7 @@ export type UserSessionCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * The data needed to create a UserSession.
    */
   data: Prisma.XOR<Prisma.UserSessionCreateInput, Prisma.UserSessionUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1280,6 +1286,7 @@ export type UserSessionUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Choose, which UserSession to update.
    */
   where: Prisma.UserSessionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1358,6 +1365,7 @@ export type UserSessionUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * In case the UserSession was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.UserSessionUpdateInput, Prisma.UserSessionUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1380,6 +1388,7 @@ export type UserSessionDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Filter which UserSession to delete.
    */
   where: Prisma.UserSessionWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

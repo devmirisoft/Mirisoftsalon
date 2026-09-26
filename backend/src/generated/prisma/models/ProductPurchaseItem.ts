@@ -759,7 +759,7 @@ export type $ProductPurchaseItemPayload<ExtArgs extends runtime.Types.Extensions
 export type ProductPurchaseItemGetPayload<S extends boolean | null | undefined | ProductPurchaseItemDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$ProductPurchaseItemPayload, S>
 
 export type ProductPurchaseItemCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<ProductPurchaseItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<ProductPurchaseItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: ProductPurchaseItemCountAggregateInputType | true
   }
 
@@ -1208,6 +1208,7 @@ export type ProductPurchaseItemFindUniqueArgs<ExtArgs extends runtime.Types.Exte
    * Filter, which ProductPurchaseItem to fetch.
    */
   where: Prisma.ProductPurchaseItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1230,6 +1231,7 @@ export type ProductPurchaseItemFindUniqueOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter, which ProductPurchaseItem to fetch.
    */
   where: Prisma.ProductPurchaseItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1282,6 +1284,7 @@ export type ProductPurchaseItemFindFirstArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of ProductPurchaseItems.
    */
   distinct?: Prisma.ProductPurchaseItemScalarFieldEnum | Prisma.ProductPurchaseItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1334,6 +1337,7 @@ export type ProductPurchaseItemFindFirstOrThrowArgs<ExtArgs extends runtime.Type
    * Filter by unique combinations of ProductPurchaseItems.
    */
   distinct?: Prisma.ProductPurchaseItemScalarFieldEnum | Prisma.ProductPurchaseItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1386,6 +1390,7 @@ export type ProductPurchaseItemFindManyArgs<ExtArgs extends runtime.Types.Extens
    * Filter by unique combinations of ProductPurchaseItems.
    */
   distinct?: Prisma.ProductPurchaseItemScalarFieldEnum | Prisma.ProductPurchaseItemScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1408,6 +1413,7 @@ export type ProductPurchaseItemCreateArgs<ExtArgs extends runtime.Types.Extensio
    * The data needed to create a ProductPurchaseItem.
    */
   data: Prisma.XOR<Prisma.ProductPurchaseItemCreateInput, Prisma.ProductPurchaseItemUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1468,6 +1474,7 @@ export type ProductPurchaseItemUpdateArgs<ExtArgs extends runtime.Types.Extensio
    * Choose, which ProductPurchaseItem to update.
    */
   where: Prisma.ProductPurchaseItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1546,6 +1553,7 @@ export type ProductPurchaseItemUpsertArgs<ExtArgs extends runtime.Types.Extensio
    * In case the ProductPurchaseItem was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.ProductPurchaseItemUpdateInput, Prisma.ProductPurchaseItemUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1568,6 +1576,7 @@ export type ProductPurchaseItemDeleteArgs<ExtArgs extends runtime.Types.Extensio
    * Filter which ProductPurchaseItem to delete.
    */
   where: Prisma.ProductPurchaseItemWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

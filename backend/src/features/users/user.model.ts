@@ -1,4 +1,5 @@
 import { prisma } from "../../config/prisma.js"
+import type { Prisma } from "../../generated/prisma/client.js"
 
 export const UserModel = {
   findByEmail: async (email: string) => {
@@ -33,19 +34,22 @@ export const UserModel = {
     });
   },
 
-  createStaffAccount: async (data: {
-    staffId: string;
-    name: string;
-    email: string;
-    phone_number: string;
-    passwordHash: string;
-    salonId: string;
-    branchId?: string;
-  }) => {
+  createStaffAccount: async (
+    data: {
+      staffId: string;
+      name: string;
+      email: string;
+      phone_number: string;
+      passwordHash: string;
+      salonId: string;
+      branchId?: string;
+    },
+    tx?: Prisma.TransactionClient
+  ) => {
     const { staffId, ...userData } = data;
 
-    return prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
+    const run = async (client: Prisma.TransactionClient) => {
+      const user = await client.user.create({
         data: {
           ...userData,
           role: "STAFF",
@@ -63,13 +67,17 @@ export const UserModel = {
         },
       });
 
-      await tx.staff.update({
+      await client.staff.update({
         where: { id: staffId },
         data: { userId: user.id },
       });
 
       return user;
-    });
+    };
+
+    // Called inside the staff-create transaction so a failed login rolls the
+    // staff row back too; standalone it opens its own.
+    return tx ? run(tx) : prisma.$transaction(run);
   },
 
   findByPhoneNumber: async (phone_number: string) => {

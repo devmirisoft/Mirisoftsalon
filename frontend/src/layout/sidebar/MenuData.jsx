@@ -2,13 +2,15 @@ import { allowsRole } from "@/utils/salonFormat";
 
 const hasRole = (role, roles) => allowsRole(roles, role);
 
+const dashboardMenu = { icon: "dashboard-fill", text: "Dashboard", link: "/" };
+
 
 // SUPER_ADMIN is a platform role: it has no salonId, so every salon-scoped page
 // below either 400s or mixes tenants for it. It gets its own menu of the four
 // things the backend actually lets it do (salons, user accounts, GST, support)
 // plus the two reports that take an explicit salonId.
 const superAdminMenu = [
-  { icon: "dashboard-fill", text: "Dashboard", link: "/" },
+  dashboardMenu,
   { heading: "Platform" },
   // /management already tabs Salons / Branches / Staff / GST / User accounts.
   { icon: "building", text: "Salon Management", link: "/management" },
@@ -17,8 +19,10 @@ const superAdminMenu = [
     icon: "reports",
     text: "Reports",
     subMenu: [
-      { text: "Salon Report", link: "/reports/salon-report" },
-      { text: "Audit Trails", link: "/reports/audit-trails" },
+      { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
+      { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+      { icon: "building-fill", text: "Salon Report", link: "/reports/salon-report" },
+      { icon: "shield-check-fill", text: "Audit Trails", link: "/reports/audit-trails" },
     ],
   },
 ];
@@ -34,11 +38,7 @@ const getMenu = (role) => {
   const inventoryRoles = [...operationalRoles, "BRANCH_MANAGER"];
 
   return [
-  {
-    icon: "dashboard-fill",
-    text: "Dashboard",
-    link: "/",
-  },
+  dashboardMenu,
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"])
     ? [
         { heading: "Staff Operations" },
@@ -125,51 +125,11 @@ const getMenu = (role) => {
     : []),
   ...(hasRole(role, inventoryRoles)
     ? [
-        { heading: "Products" },
-        {
-          icon: "package-fill",
-          text: "Product",
-          subMenu: [
-            { text: "Product Brand", link: "/admin/product-brands" },
-            ...(hasRole(role, ["SALON_ADMIN"])
-              ? [{ text: "Purchase Products", link: "/admin/product-purchases" }]
-              : []),
-            ...(hasRole(role, ["SALON_ADMIN", "RECEPTIONIST"])
-              ? [{ text: "Retail Products", link: "/admin/retail-products" }]
-              : []),
-          ],
-        },
-      ]
-    : []),
-  ...(hasRole(role, inventoryRoles)
-    ? [
-        { heading: "Vendors & Stock" },
-        {
-          icon: "truck",
-          text: "Vendors & Stock",
-          subMenu: [
-            { text: "Products", link: "/admin/products" },
-            { text: "Vendors", link: "/admin/vendors" },
-            ...(hasRole(role, ["SALON_ADMIN"])
-              ? [
-                  {
-                    text: "Vendor Payments",
-                    link: "/admin/vendor-payments",
-                  },
-                ]
-              : []),
-            {
-              text: "Stock Movements",
-              link: "/admin/stock-movements",
-            },
-            { text: "Low Stock", link: "/admin/low-stock" },
-            { text: "Stock Alerts", link: "/inventory/stock-alerts" },
-            {
-              text: "Reorder Suggestions",
-              link: "/inventory/reorder-suggestions",
-            },
-          ],
-        },
+        { heading: "Products & Inventory" },
+        // Everything else (low stock, receive, activity, payments, history) is a tab inside these three.
+        { icon: "package-fill", text: "Products", link: "/admin/products" },
+        { icon: "layers-fill", text: "Inventory", link: "/admin/inventory" },
+        { icon: "truck", text: "Vendors", link: "/admin/vendors" },
       ]
     : []),
   ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
@@ -206,12 +166,19 @@ const getMenu = (role) => {
           icon: "reports",
           text: "Reports",
           subMenu: [
-            { text: "Inventory Report", link: "/reports/inventory" },
+            ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"])
+              ? [
+                  { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
+                  { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+                ]
+              : []),
+            { icon: "archive-fill", text: "Inventory Report", link: "/reports/inventory" },
+            { icon: "package-fill", text: "Product Report", link: "/reports/products" },
             ...(hasRole(role, ["SALON_ADMIN", "BRANCH_MANAGER"])
-              ? [{ text: "Audit Trails", link: "/reports/audit-trails" }]
+              ? [{ icon: "shield-check-fill", text: "Audit Trails", link: "/reports/audit-trails" }]
               : []),
             ...(hasRole(role, ["SALON_ADMIN"])
-              ? [{ text: "Salon Report", link: "/reports/salon-report" }]
+              ? [{ icon: "building-fill", text: "Salon Report", link: "/reports/salon-report" }]
               : []),
           ],
         },

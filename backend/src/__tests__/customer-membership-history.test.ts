@@ -408,7 +408,7 @@ describe("Customer membership lifecycle history", () => {
     ).not.toBeNull();
   });
 
-  it("continues applying a non-expired membership discount", async () => {
+  it("never discounts a bill for a non-expired membership", async () => {
     const f = await fixture();
     await assign(f, {
       membershipId: f.silver.id,
@@ -416,7 +416,7 @@ describe("Customer membership lifecycle history", () => {
     });
     const invoice = await createInvoice(f, "12");
     expect(invoice.status).toBe(201);
-    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(100);
+    expect(Number(invoice.body.data.membershipDiscountAmount)).toBe(0);
   });
 
   it("returns membership expiry and status in the Job Cart summary", async () => {

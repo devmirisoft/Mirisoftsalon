@@ -16,7 +16,9 @@ import AppointmentBookingModal from "@/components/salon/AppointmentBookingModal"
 import AppointmentCalendar from "@/components/salon/AppointmentCalendar";
 import AppointmentDayPanel from "@/components/salon/AppointmentDayPanel";
 import AppointmentDetailsModal from "@/components/salon/AppointmentDetailsModal";
+import AppointmentStatusBadge from "@/components/salon/AppointmentStatusBadge";
 import SchemaModal from "@/components/salon/SchemaModal";
+import { ProductUsageModal } from "@/components/salon/InventoryModals";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
@@ -90,6 +92,8 @@ const Appointments = () => {
   const [newCustomerContext, setNewCustomerContext] = useState(null);
   const [newCustomerId, setNewCustomerId] = useState("");
   const [selected, setSelected] = useState(null);
+  // Completing an appointment asks for the product usage first.
+  const [completing, setCompleting] = useState(null);
   const [selectedDay, setSelectedDay] = useState("");
   const [details, setDetails] = useState(null);
   const [tracking, setTracking] = useState(null);
@@ -145,6 +149,11 @@ const Appointments = () => {
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  useEffect(() => {
+    window.addEventListener("appointments:refresh", load);
+    return () => window.removeEventListener("appointments:refresh", load);
   }, [load]);
 
   useEffect(() => {
@@ -373,6 +382,12 @@ const Appointments = () => {
       tools={<ReportExportButtons reportType="appointments" filters={query} />}
     >
       {error && <Alert color="danger">{error}</Alert>}
+      <div className="appt-status-legend" aria-label="Appointment status color code">
+        <span className="appt-status-legend-title">Color code:</span>
+        {STATUSES.map((status) => (
+          <AppointmentStatusBadge key={status} value={status} />
+        ))}
+      </div>
       <div className="card card-bordered appt-filter-card">
         <div className="card-inner">
           <div className="filter-bar">
@@ -533,15 +548,35 @@ const Appointments = () => {
           initialValues={formConfig.initialValues}
           submitLabel={formConfig.submitLabel}
           onSubmit={async (values) => {
-            await formConfig.submit(values);
-            if (action === "status" && values.status === "COMPLETED") {
-              navigate(`/appointments/${selected.id}/bill`);
+            if (
+              action === "status" &&
+              values.status === "COMPLETED" &&
+              selected?.status !== "COMPLETED"
+            ) {
+              setCompleting({ appointment: selected, values });
               return;
             }
+            await formConfig.submit(values);
             await load();
           }}
         />
       )}
+      <ProductUsageModal
+        isOpen={Boolean(completing)}
+        appointmentId={completing?.appointment.id}
+        title={`Complete ${completing?.appointment.appointmentCode || ""} · Record Product Usage`}
+        confirmLabel="Confirm Usage & Complete"
+        onCancel={() => setCompleting(null)}
+        onConfirm={async (usage) => {
+          const { appointment, values } = completing;
+          await salonApi.appointments.setStatus(appointment.id, {
+            ...values,
+            ...(usage.length ? { usage } : {}),
+          });
+          setCompleting(null);
+          navigate(`/appointments/${appointment.id}/bill`);
+        }}
+      />
       <SchemaModal
         isOpen={Boolean(newCustomerContext)}
         toggle={() => setNewCustomerContext(null)}

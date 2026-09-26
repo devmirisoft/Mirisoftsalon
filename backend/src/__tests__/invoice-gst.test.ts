@@ -81,7 +81,10 @@ describe("invoice GST calculator", () => {
     expect(result.productTaxableAmount.toFixed(2)).toBe("90.00");
     expect(result.serviceGstAmount.toFixed(2)).toBe("4.50");
     expect(result.productGstAmount.toFixed(2)).toBe("16.20");
-    expect(result.totalAmount.toFixed(2)).toBe("200.70");
+    // The bill is rounded to whole rupees and the difference is kept as the
+    // round-off, so subtotal + tax + roundOff still equals the total.
+    expect(result.roundOffAmount.toFixed(2)).toBe("0.30");
+    expect(result.totalAmount.toFixed(2)).toBe("201.00");
   });
 
   it("sets GST to zero and clears snapshots when GST is disabled", () => {

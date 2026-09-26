@@ -2,11 +2,14 @@ const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replac
 const SESSION_KEY = "salon.auth.session";
 
 export class ApiError extends Error {
-  constructor(message, status = 0, errors = null) {
+  constructor(message, status = 0, errors = null, payload = null) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.errors = errors;
+    // e.g. code INSUFFICIENT_STOCK with the stock a transfer could cover.
+    this.code = payload?.code || null;
+    this.stock = payload?.stock || null;
   }
 }
 
@@ -93,7 +96,8 @@ export const request = async (path, options = {}, retrying = false) => {
     throw new ApiError(
       payload?.message || `Request failed with status ${response.status}`,
       response.status,
-      payload?.errors || null
+      payload?.errors || null,
+      payload
     );
   }
 

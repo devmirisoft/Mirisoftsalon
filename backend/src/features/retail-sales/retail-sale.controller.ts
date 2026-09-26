@@ -12,8 +12,6 @@ import {
 import { RetailSaleModel } from "./retail-sale.model.js";
 import { createStockMovement } from "../stock/stockMovement.service.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
-import { requestAuditContext } from "../audit-logs/audit-log.service.js";
-import { resolveCurrentCustomerMembership } from "../customer-memberships/customer-membership.service.js";
 import { actorBranchWhere } from "../../utils/branch-scope.js";
 
 const PAYMENT_METHODS = ["CASH", "UPI", "GPAY", "PAYTM", "PHONEPE", "CARD", "BANK_TRANSFER", "CHEQUE", "OTHER"] as const;
@@ -97,35 +95,8 @@ export const createRetailSale = async (req: Request, res: Response) => {
         items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
       ).toDecimalPlaces(2);
       if (new Prisma.Decimal(discount).gt(subtotal)) throw transactionError("Discount cannot exceed subtotal");
-      const customerMembership =
-        req.body.customerId && req.user?.userId
-          ? await resolveCurrentCustomerMembership(tx, {
-              customerId: req.body.customerId,
-              actor: {
-                userId: req.user.userId,
-                role: req.user.role,
-                ...(req.user.salonId ? { salonId: req.user.salonId } : {}),
-                ...(req.user.branchId
-                  ? { branchId: req.user.branchId }
-                  : {}),
-                ...(req.user.activeBranchId
-                  ? { activeBranchId: req.user.activeBranchId }
-                  : {}),
-              },
-              audit: requestAuditContext(req),
-            })
-          : null;
-      const manualDiscount = new Prisma.Decimal(discount).toDecimalPlaces(2);
-      const membershipDiscount = customerMembership
-        ? Prisma.Decimal.min(
-            subtotal.mul(customerMembership.discountPercentageSnapshot).div(100),
-            subtotal.minus(manualDiscount)
-          ).toDecimalPlaces(2)
-        : new Prisma.Decimal(0);
-      const totalDiscount = Prisma.Decimal.min(
-        manualDiscount.plus(membershipDiscount),
-        subtotal
-      ).toDecimalPlaces(2);
+      // A membership never discounts a sale; only the manual discount does.
+      const totalDiscount = new Prisma.Decimal(discount).toDecimalPlaces(2);
       const taxableAmount = subtotal.minus(totalDiscount);
       const taxAmount = taxableAmount
         .mul(taxPercent)

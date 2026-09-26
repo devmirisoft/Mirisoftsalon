@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware.js";
-import { register, login, me, refresh, logout } from "./auth.controller.js";
-import { loginRateLimiter } from "../../middlewares/rate-limit.middleware.js";
+import { register, login, me, refresh, logout, forgotPassword, resetPassword, } from "./auth.controller.js";
+import { loginRateLimiter, passwordResetRateLimiter, } from "../../middlewares/rate-limit.middleware.js";
 const router = Router();
 router.post("/register", loginRateLimiter, register);
 router.post("/login", loginRateLimiter, login);
+router.post("/forgot-password", passwordResetRateLimiter, forgotPassword);
+router.post("/reset-password", passwordResetRateLimiter, resetPassword);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.use(authenticate);

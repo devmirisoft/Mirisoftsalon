@@ -72,6 +72,14 @@ export function detectToolPlan(
   }
 
   if (
+    /\b(how many|count|total|number of|list|show|all)\b/.test(text) &&
+    /\b(product|products|inventory)\b/.test(text) &&
+    !text.includes("low stock")
+  ) {
+    toolNames.push("getProductSummary");
+  }
+
+  if (
     text.includes("revenue") ||
     text.includes("sales") ||
     text.includes("doing today") ||

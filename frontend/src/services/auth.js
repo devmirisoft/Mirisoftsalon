@@ -82,7 +82,7 @@ const createSessionFromResponse = (body) => {
     throw new ApiError("The server returned an incomplete authentication response.");
   }
 
-  return saveSession({ user, accessToken, branch: body.data?.branch || null });
+  return saveSession({ user, accessToken, branch: body.data?.branch || null, loggedInAt: Date.now() });
 };
 
 export const login = async ({ email, password }) => {
@@ -97,6 +97,20 @@ export const login = async ({ email, password }) => {
 
   return createSessionFromResponse(body);
 };
+
+export const forgotPassword = (email) =>
+  apiRequest("/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: email.trim().toLowerCase() }),
+  });
+
+export const resetPassword = (token, password) =>
+  apiRequest("/api/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  });
 
 const verifySession = (accessToken, activeBranchId) =>
   apiRequest("/api/auth/me", {

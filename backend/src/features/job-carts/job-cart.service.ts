@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { prisma } from "../../config/prisma.js";
 import { Prisma, type PaymentMethod } from "../../generated/prisma/client.js";
 import {
-  buildBusinessCode,
+  nextJobCartCode,
   nextInvoiceCode,
 } from "../../utils/business-id.js";
 import { AppointmentModel } from "../appointments/appointment.model.js";
@@ -13,13 +13,16 @@ import { reverseUsedPackageUsagesForInvoice } from "../packages/package.service.
 import { normalizePhone } from "../public-booking/public-booking.service.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { calculateInvoiceGst } from "../Invoices/invoice-gst.service.js";
-import { createStockMovement } from "../stock/stockMovement.service.js";
+import {
+  createStockMovement,
+  locationStock,
+} from "../stock/stockMovement.service.js";
+import type { ServiceUsageEntry } from "../stock/serviceUsage.service.js";
 import {
   assignCustomerMembershipInTransaction,
   CustomerMembershipError,
   getCurrentMembershipForCustomer,
   getCustomerMembershipHistory,
-  resolveCurrentCustomerMembership,
 } from "../customer-memberships/customer-membership.service.js";
 import {
   checkStaffAvailabilityForSlot,
@@ -75,6 +78,8 @@ type JobCartBillingInput = {
     | undefined;
   idempotencyKey?: string | undefined;
   confirmedAt?: string | undefined;
+  /** Actual consumable use confirmed before billing; defaults otherwise. */
+  usage?: ServiceUsageEntry[] | undefined;
 };
 
 type AuditContext = {
@@ -85,12 +90,46 @@ type AuditContext = {
 export class JobCartError extends Error {
   constructor(
     public readonly status: number,
-    message: string
+    message: string,
+    /** Extra response fields, e.g. the stock a client can offer to transfer. */
+    public readonly details?: Record<string, unknown>
   ) {
     super(message);
     this.name = "JobCartError";
   }
 }
+
+/**
+ * A retail line can only be sold from the retail shelf of the cart's branch.
+ * The answer carries the warehouse stock so the counter can offer a transfer.
+ */
+const retailShortage = (
+  product: { id: string; name: string },
+  branchId: string | null,
+  stock: Awaited<ReturnType<typeof locationStock>>,
+  needed: number
+) => {
+  const retail = stock.at(product.id, branchId, "RETAIL");
+  if (retail.gte(needed)) return null;
+  return new JobCartError(
+    409,
+    `Only ${Number(retail)} of ${product.name} on the retail shelf`,
+    {
+      code: "INSUFFICIENT_STOCK",
+      stock: {
+        productId: product.id,
+        branchId,
+        location: "RETAIL",
+        available: Number(retail),
+        needed,
+        warehouse: Number(stock.at(product.id, branchId, "WAREHOUSE")),
+        salonWarehouse: branchId
+          ? Number(stock.at(product.id, null, "WAREHOUSE"))
+          : 0,
+      },
+    }
+  );
+};
 
 const branchScopedRoles = new Set(["BRANCH_MANAGER", "RECEPTIONIST"]);
 
@@ -120,7 +159,6 @@ const jobCartInclude = {
       gstStateCode: true,
       serviceGstRate: true,
       productGstRate: true,
-      membershipDiscountOnPackages: true,
     },
   },
   branch: { select: { id: true, name: true } },
@@ -153,6 +191,7 @@ const jobCartInclude = {
           id: true,
           name: true,
           status: true,
+          price: true,
           durationValue: true,
           durationUnit: true,
         },
@@ -234,7 +273,11 @@ const mappedStatus = (cart: JobCartRecord) => {
   if (
     cart.status === "COMPLETED" &&
     cart.invoice &&
-    ["DRAFT", "ISSUED"].includes(cart.invoice.status)
+    ["DRAFT", "ISSUED"].includes(cart.invoice.status) &&
+    // A job cart is completed *by* its confirm, so COMPLETED means billed. A
+    // regular appointment billed on this same page is already COMPLETED before
+    // its draft exists, so only an issued invoice means it is done.
+    (cart.walkInJobCart || cart.invoice.status === "ISSUED")
   ) {
     return "COMPLETED" as const;
   }
@@ -256,6 +299,7 @@ const present = (cart: JobCartRecord) => ({
   estimatedAmount: cart.estimatedAmount,
   status: mappedStatus(cart),
   appointmentStatus: cart.status,
+  isJobCart: cart.walkInJobCart,
   source: cart.source,
   bookingNote: cart.bookingNote,
   internalNote: cart.internalNote,
@@ -566,8 +610,9 @@ const loadCart = async (
   client.appointment.findFirst({
     where: {
       id,
-      walkInJobCart: true,
-      source: "WALK_IN",
+      // Not filtered to walk-ins: a regular appointment is billed through this
+      // same page. requireMutable still gates every mutation on a DRAFT
+      // invoice, and listJobCarts keeps its own walk-in-only filter.
       ...accessWhere(actor),
     },
     include: jobCartInclude,
@@ -610,29 +655,22 @@ const decimalOrZero = (value: unknown) => {
 };
 
 /**
- * Which invoice lines a membership percentage is allowed to reduce.
- *
- * Services: always. Products: never - a product is sold at its own price even
- * to a member. Packages: only when the salon opts in, because a package is
- * already sold at a discounted price and stacking is usually double-dipping.
- * Memberships: never - a plan costs what it costs.
+ * Which invoice lines a bill-level discount may reduce: services only.
+ * Products, packages and memberships are always sold at their own price.
+ * A membership itself never discounts anything; it only loads a wallet.
  */
-const isMembershipDiscountable = (
-  itemType: string,
-  salon: { membershipDiscountOnPackages: boolean }
-) => {
-  if (itemType === "PRODUCT") return false;
-  // Buying a plan is never cheaper because you already hold one.
-  if (itemType === "MEMBERSHIP") return false;
-  if (itemType === "PACKAGE") return salon.membershipDiscountOnPackages;
-  return true;
-};
+const isDiscountable = (itemType: string) => itemType === "SERVICE";
 
 const recalculateCart = async (
   tx: TransactionClient,
   appointmentId: string,
   actor: JobCartActor,
-  audit: AuditContext
+  audit: AuditContext,
+  // The staff conflict + overtime sweep is ~9 round trips per staff member.
+  // Only services move the appointment window or the staff on it, so adding or
+  // removing a product, package or membership can skip it - the answer cannot
+  // have changed.
+  options: { skipStaffCheck?: boolean } = {}
 ) => {
   const cart = await tx.appointment.findUnique({
     where: { id: appointmentId },
@@ -645,7 +683,6 @@ const recalculateCart = async (
           gstStateCode: true,
           serviceGstRate: true,
           productGstRate: true,
-          membershipDiscountOnPackages: true,
         },
       },
       services: { orderBy: { createdAt: "asc" } },
@@ -701,13 +738,13 @@ const recalculateCart = async (
       itemType: "SERVICE",
       quantity: item.quantity,
       unitPrice: item.price,
-      discountable: isMembershipDiscountable("SERVICE", cart.salon),
+      discountable: isDiscountable("SERVICE"),
     })),
     ...keptItems.map((item) => ({
       itemType: item.itemType,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
-      discountable: isMembershipDiscountable(item.itemType, cart.salon),
+      discountable: isDiscountable(item.itemType),
     })),
   ];
   const subtotal = gstLines.reduce(
@@ -715,32 +752,12 @@ const recalculateCart = async (
       sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice)),
     new Prisma.Decimal(0)
   );
-  const currentMembership = await resolveCurrentCustomerMembership(tx, {
-    customerId: cart.customerId,
-    actor,
-    audit,
-  });
-  const membershipPercentage =
-    currentMembership?.discountPercentageSnapshot ?? new Prisma.Decimal(0);
-  // The percentage applies only to the lines it is allowed to touch, so a
-  // member never gets money off a product.
-  const discountableSubtotal = gstLines.reduce(
-    (sum, line) =>
-      line.discountable
-        ? sum.add(new Prisma.Decimal(line.quantity).mul(line.unitPrice))
-        : sum,
-    new Prisma.Decimal(0)
-  );
-  const membershipDiscount = Prisma.Decimal.min(
-    discountableSubtotal.mul(membershipPercentage).div(100).toDecimalPlaces(2),
-    discountableSubtotal
-  );
   // Tax is computed live so the running total on the job card matches the bill
   // the customer will actually be asked to pay.
   const draftCalculation = calculateInvoiceGst(
     {
       invoiceType: cart.invoice.invoiceType,
-      discountAmount: membershipDiscount,
+      discountAmount: new Prisma.Decimal(0),
       couponDiscountAmount: new Prisma.Decimal(0),
       processingFeeAmount: new Prisma.Decimal(0),
       items: gstLines,
@@ -761,17 +778,19 @@ const recalculateCart = async (
     cart.startTime.getTime() +
       Math.max(totalDurationMinutes, 30) * 60_000
   );
-  await assertNoStaffConflicts(tx, {
-    salonId: cart.salonId,
-    branchId: cart.branchId!,
-    staffIds: [
-      cart.staffId,
-      ...cart.services.map((item) => item.staffId),
-    ],
-    startTime: cart.startTime,
-    endTime,
-    excludeAppointmentId: cart.id,
-  });
+  if (!options.skipStaffCheck) {
+    await assertNoStaffConflicts(tx, {
+      salonId: cart.salonId,
+      branchId: cart.branchId!,
+      staffIds: [
+        cart.staffId,
+        ...cart.services.map((item) => item.staffId),
+      ],
+      startTime: cart.startTime,
+      endTime,
+      excludeAppointmentId: cart.id,
+    });
+  }
 
   await tx.invoiceItem.deleteMany({
     where: { invoiceId: cart.invoice.id, itemType: "SERVICE" },
@@ -780,8 +799,8 @@ const recalculateCart = async (
     where: { id: cart.invoice.id },
     data: {
       subtotalAmount: subtotal,
-      discountAmount: membershipDiscount,
-      membershipDiscountAmount: membershipDiscount,
+      discountAmount: 0,
+      membershipDiscountAmount: 0,
       couponDiscountAmount: 0,
       processingFeeAmount: 0,
       serviceTaxableAmount: draftCalculation.serviceTaxableAmount,
@@ -1109,9 +1128,15 @@ export const getJobCartReferences = async (
       sellingPrice: true,
       currentStock: true,
       unit: true,
+      branchId: true,
+      isRetailProduct: true,
+      isServiceConsumable: true,
     },
     orderBy: { name: "asc" },
   });
+  // What the counter can sell now (retail shelf) and what a transfer could
+  // bring onto it (warehouse), for the branch being billed.
+  const shelf = await locationStock(prisma, products);
   const memberships = await prisma.membership.findMany({
     where: { salonId, status: true },
     select: {
@@ -1124,15 +1149,46 @@ export const getJobCartReferences = async (
     },
     orderBy: { name: "asc" },
   });
+  // How often each plan / package has been billed, so the quick sell can lead
+  // with the best sellers.
+  const sold = await prisma.invoiceItem.groupBy({
+    by: ["membershipId", "packageId"],
+    where: {
+      itemType: { in: ["MEMBERSHIP", "PACKAGE"] },
+      invoice: { salonId, status: "ISSUED" },
+    },
+    _count: { _all: true },
+  });
+  const soldCount = (key: "membershipId" | "packageId", id: string) =>
+    sold
+      .filter((row) => row[key] === id)
+      .reduce((total, row) => total + row._count._all, 0);
   return {
     salons,
     salon,
     branches,
     staff,
     services,
-    packages,
-    products,
-    memberships,
+    packages: packages.map((item) => ({
+      ...item,
+      soldCount: soldCount("packageId", item.id),
+    })),
+    products: products.map((product) => {
+      const site = branchId ?? product.branchId;
+      return {
+        ...product,
+        retailStock: shelf.at(product.id, site, "RETAIL"),
+        warehouseStock: shelf.at(product.id, site, "WAREHOUSE"),
+        serviceStock: shelf.at(product.id, site, "SERVICE"),
+        salonWarehouseStock: site
+          ? shelf.at(product.id, null, "WAREHOUSE")
+          : new Prisma.Decimal(0),
+      };
+    }),
+    memberships: memberships.map((item) => ({
+      ...item,
+      soldCount: soldCount("membershipId", item.id),
+    })),
   };
 };
 
@@ -1363,10 +1419,6 @@ export const getJobCartCustomerSummary = async (
     membershipStatus:
       currentMembership?.status ?? latestMembership?.status ?? null,
     currentCustomerMembershipId: currentMembership?.id ?? null,
-    // Only the membership in force discounts a bill, so an expired one in the
-    // history contributes nothing here.
-    membershipDiscountPercentage:
-      currentMembership?.discountPercentageSnapshot ?? 0,
     // What the counter may put on the bill from membership wallets right now,
     // summed across every spendable membership the customer holds.
     membershipWalletBalance: spendableWallet.total,
@@ -1545,12 +1597,7 @@ export const createJobCart = async (
     const codeDate = new Date();
     const appointment = await AppointmentModel.create(
       {
-        appointmentCode: buildBusinessCode({
-          salonName: salon.name,
-          type: "JC",
-          date: codeDate,
-          timezone: salon.timezone,
-        }),
+        appointmentCode: await nextJobCartCode(tx, salon, branch),
         salonId,
         branchId,
         customerId: customer.id,
@@ -1586,24 +1633,11 @@ export const createJobCart = async (
       },
       tx
     );
-    const membership = await resolveCurrentCustomerMembership(tx, {
-      customerId: customer.id,
-      actor,
-      audit,
-    });
     const subtotal = services.reduce(
       (sum, service) => sum.add(lineOf(service).lineTotal),
       new Prisma.Decimal(0)
     );
-    const discount = membership
-      ? Prisma.Decimal.min(
-          subtotal
-            .mul(membership.discountPercentageSnapshot)
-            .div(100)
-            .toDecimalPlaces(2),
-          subtotal
-        )
-      : new Prisma.Decimal(0);
+    const discount = new Prisma.Decimal(0);
     // A GST-registered salon bills GST by default; without this every job cart
     // opened as a bill of supply and the running total showed no tax at all.
     const invoiceType = salon.gstEnabled ? "GST_INVOICE" : "BILL_OF_SUPPLY";
@@ -1619,7 +1653,7 @@ export const createJobCart = async (
             itemType: "SERVICE" as const,
             quantity: line.quantity,
             unitPrice: line.price,
-            discountable: isMembershipDiscountable("SERVICE", salon),
+            discountable: isDiscountable("SERVICE"),
           };
         }),
       },
@@ -1679,6 +1713,10 @@ export const createJobCart = async (
         items: services.map((service, index) => {
           const serviceStaffId = staffByServiceId.get(service.id);
           const line = calculation.lines[index]!;
+          // Same override the cart line and subtotal use. Confirm re-prices the
+          // bill from these rows, so the catalogue price here overcharged any
+          // service whose price was changed on the form.
+          const priced = lineOf(service);
           return {
             itemType: "SERVICE" as const,
             serviceId: service.id,
@@ -1686,8 +1724,8 @@ export const createJobCart = async (
             itemCode: service.id.slice(0, 8),
             description: service.name,
             serviceName: service.name,
-            quantity: 1,
-            unitPrice: Number(service.price),
+            quantity: priced.quantity,
+            unitPrice: priced.price,
             discountAmount: line.discountAmount,
             taxableAmount: line.taxableAmount,
             gstRateSnapshot: line.gstRateSnapshot,
@@ -1867,21 +1905,22 @@ export const addJobCartItem = async (
           sku: true,
           sellingPrice: true,
           currentStock: true,
+          branchId: true,
+          isRetailProduct: true,
+          isServiceConsumable: true,
         },
       });
       if (!product) {
         throw new JobCartError(400, "Product is unavailable");
       }
       const quantity = input.quantity ?? 1;
-      // Stock leaves the shelf at confirm, not here, so the cart can still be
-      // edited. The check is repeated there under a row lock, which is what
-      // actually prevents overselling.
-      if (product.currentStock.lt(quantity)) {
-        throw new JobCartError(
-          409,
-          `Only ${product.currentStock} of ${product.name} in stock`
-        );
-      }
+      // Stock leaves the retail shelf at confirm, not here, so the cart can
+      // still be edited. The check is repeated there under a row lock, which
+      // is what actually prevents overselling.
+      const stock = await locationStock(tx, [product]);
+      const shelfBranchId = existing.branchId ?? product.branchId;
+      const shortage = retailShortage(product, shelfBranchId, stock, quantity);
+      if (shortage) throw shortage;
       if (input.staffId) {
         await validateStaff(
           tx,
@@ -1896,12 +1935,13 @@ export const addJobCartItem = async (
       if (existingLine) {
         // Same product twice is a quantity change, not a second line.
         const newQuantity = existingLine.quantity + quantity;
-        if (product.currentStock.lt(newQuantity)) {
-          throw new JobCartError(
-            409,
-            `Only ${product.currentStock} of ${product.name} in stock`
-          );
-        }
+        const lineShortage = retailShortage(
+          product,
+          shelfBranchId,
+          stock,
+          newQuantity
+        );
+        if (lineShortage) throw lineShortage;
         await tx.invoiceItem.update({
           where: { id: existingLine.id },
           data: {
@@ -1928,7 +1968,9 @@ export const addJobCartItem = async (
           },
         });
       }
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2024,7 +2066,9 @@ export const addJobCartItem = async (
           lineTotal: servicePackage.specialPrice,
         },
       });
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2093,7 +2137,9 @@ export const addJobCartItem = async (
           lineTotal: membership.price,
         },
       });
-      await recalculateCart(tx, id, actor, audit);
+      await recalculateCart(tx, id, actor, audit, {
+        skipStaffCheck: true,
+      });
       await createAuditLog({
         tx,
         salonId: existing.salonId,
@@ -2286,7 +2332,9 @@ export const removeJobCartItem = async (
     } else {
       await tx.invoiceItem.delete({ where: { id: packageItem!.id } });
     }
-    await recalculateCart(tx, id, actor, audit);
+    await recalculateCart(tx, id, actor, audit, {
+      skipStaffCheck: !serviceItem,
+    });
     await createAuditLog({
       tx,
       salonId: existing.salonId,
@@ -2707,35 +2755,7 @@ export const confirmJobCart = async (
       existing.invoice.subtotalAmount
     ).toDecimalPlaces(2);
     const processingFee = decimalOrZero(billing.processingFeeAmount);
-    const currentMembership = await resolveCurrentCustomerMembership(tx, {
-      customerId: existing.customerId,
-      actor,
-      audit,
-    });
-    // Only the lines a membership may touch form the base, so products (and
-    // packages, unless the salon opted in) are billed at full price.
-    const membershipDiscountableSubtotal = existing.invoice.items.reduce(
-      (sum, item) =>
-        isMembershipDiscountable(item.itemType, existing.salon)
-          ? sum.plus(new Prisma.Decimal(item.quantity).mul(item.unitPrice))
-          : sum,
-      new Prisma.Decimal(0)
-    ).toDecimalPlaces(2);
-    const membershipDiscount = currentMembership
-      ? Prisma.Decimal.min(
-          membershipDiscountableSubtotal
-            .mul(currentMembership.discountPercentageSnapshot)
-            .div(100),
-          Prisma.Decimal.max(
-            membershipDiscountableSubtotal.minus(manualDiscount),
-            new Prisma.Decimal(0)
-          )
-        ).toDecimalPlaces(2)
-      : new Prisma.Decimal(0);
-    const discountAmount = Prisma.Decimal.min(
-      manualDiscount.plus(membershipDiscount),
-      existing.invoice.subtotalAmount
-    ).toDecimalPlaces(2);
+    const discountAmount = manualDiscount;
     const taxPercent =
       billing.taxPercent === undefined ? null : decimalOrZero(billing.taxPercent);
     const gstSettings =
@@ -2755,7 +2775,7 @@ export const confirmJobCart = async (
         processingFeeAmount: processingFee,
         items: existing.invoice.items.map((item) => ({
           ...item,
-          discountable: isMembershipDiscountable(item.itemType, existing.salon),
+          discountable: isDiscountable(item.itemType),
         })),
       },
       gstSettings
@@ -2782,7 +2802,7 @@ export const confirmJobCart = async (
       data: {
         invoiceType,
         discountAmount,
-        membershipDiscountAmount: membershipDiscount,
+        membershipDiscountAmount: 0,
         processingFeeAmount: processingFee,
         serviceTaxableAmount: calculation.serviceTaxableAmount,
         productTaxableAmount: calculation.productTaxableAmount,
@@ -2808,16 +2828,24 @@ export const confirmJobCart = async (
           : {}),
       },
     });
-    await AppointmentModel.updateStatusWithHistory(
-      id,
-      {
-        oldStatus: existing.status,
-        newStatus: "COMPLETED",
-        note: "Walk-in job cart confirmed",
-        changedById: actor.userId,
-      },
-      tx
-    );
+    // Consumables are booked here, with the quantities confirmed on the usage
+    // step, so a failure anywhere below rolls them back with the bill.
+    // A job cart is always still open here, so this both completes it and
+    // books its consumables. An appointment reaching this page was completed
+    // earlier and already booked them, so the step must not run twice.
+    if (existing.status !== "COMPLETED") {
+      await AppointmentModel.updateStatusWithHistory(
+        id,
+        {
+          oldStatus: existing.status,
+          newStatus: "COMPLETED",
+          note: "Walk-in job cart confirmed",
+          changedById: actor.userId,
+          usage: billing.usage,
+        },
+        tx
+      );
+    }
     if (billing.status !== "DRAFT") {
       const issued = await issueInvoice({
         invoiceId: existing.invoice.id,
@@ -2892,7 +2920,10 @@ export const confirmJobCart = async (
           409,
           error instanceof Error
             ? error.message
-            : "Product stock could not be updated"
+            : "Product stock could not be updated",
+          typeof error === "object" && error !== null && "stock" in error
+            ? { code: "INSUFFICIENT_STOCK", stock: error.stock }
+            : undefined
         );
       }
     }
@@ -2962,8 +2993,7 @@ export const confirmJobCart = async (
       });
     }
     // Enrollment happens last, after the bill is settled, so the wallet it
-    // credits cannot be spent on the very bill that bought it, and so the
-    // membership discount above is the one the customer walked in with.
+    // credits cannot be spent on the very bill that bought it.
     for (const [index, item] of existing.invoice.items.entries()) {
       if (item.itemType !== "MEMBERSHIP" || !item.membershipId) continue;
       try {
@@ -3014,7 +3044,6 @@ export const confirmJobCart = async (
         appointmentStatus: "COMPLETED",
         invoiceStatus: billing.status === "DRAFT" ? "DRAFT" : "ISSUED",
         manualDiscountAmount: manualDiscount,
-        membershipDiscountAmount: membershipDiscount,
         ...(billing.payment
           ? { paymentMethod: billing.payment.method }
           : {}),

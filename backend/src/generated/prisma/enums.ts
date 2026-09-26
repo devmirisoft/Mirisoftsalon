@@ -339,10 +339,34 @@ export const ProductStockMovementType = {
   USED_IN_SERVICE: 'USED_IN_SERVICE',
   DAMAGED: 'DAMAGED',
   ADJUSTMENT: 'ADJUSTMENT',
-  RETURNED: 'RETURNED'
+  RETURNED: 'RETURNED',
+  TRANSFER: 'TRANSFER',
+  OPEN_CONTAINER: 'OPEN_CONTAINER',
+  CONTAINER_CLOSED: 'CONTAINER_CLOSED',
+  WASTAGE: 'WASTAGE',
+  LOST: 'LOST'
 } as const
 
 export type ProductStockMovementType = (typeof ProductStockMovementType)[keyof typeof ProductStockMovementType]
+
+
+export const InventoryLocation = {
+  WAREHOUSE: 'WAREHOUSE',
+  RETAIL: 'RETAIL',
+  SERVICE: 'SERVICE'
+} as const
+
+export type InventoryLocation = (typeof InventoryLocation)[keyof typeof InventoryLocation]
+
+
+export const ProductContainerStatus = {
+  OPEN: 'OPEN',
+  EMPTY: 'EMPTY',
+  LOST: 'LOST',
+  DAMAGED: 'DAMAGED'
+} as const
+
+export type ProductContainerStatus = (typeof ProductContainerStatus)[keyof typeof ProductContainerStatus]
 
 
 export const StockAlertStatus = {

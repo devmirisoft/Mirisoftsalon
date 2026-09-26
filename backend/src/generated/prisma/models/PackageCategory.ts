@@ -1022,7 +1022,7 @@ export type $PackageCategoryPayload<ExtArgs extends runtime.Types.Extensions.Int
 export type PackageCategoryGetPayload<S extends boolean | null | undefined | PackageCategoryDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$PackageCategoryPayload, S>
 
 export type PackageCategoryCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<PackageCategoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<PackageCategoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: PackageCategoryCountAggregateInputType | true
   }
 
@@ -1474,6 +1474,7 @@ export type PackageCategoryFindUniqueArgs<ExtArgs extends runtime.Types.Extensio
    * Filter, which PackageCategory to fetch.
    */
   where: Prisma.PackageCategoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1496,6 +1497,7 @@ export type PackageCategoryFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.E
    * Filter, which PackageCategory to fetch.
    */
   where: Prisma.PackageCategoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1548,6 +1550,7 @@ export type PackageCategoryFindFirstArgs<ExtArgs extends runtime.Types.Extension
    * Filter by unique combinations of PackageCategories.
    */
   distinct?: Prisma.PackageCategoryScalarFieldEnum | Prisma.PackageCategoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1600,6 +1603,7 @@ export type PackageCategoryFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Ex
    * Filter by unique combinations of PackageCategories.
    */
   distinct?: Prisma.PackageCategoryScalarFieldEnum | Prisma.PackageCategoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1652,6 +1656,7 @@ export type PackageCategoryFindManyArgs<ExtArgs extends runtime.Types.Extensions
    * Filter by unique combinations of PackageCategories.
    */
   distinct?: Prisma.PackageCategoryScalarFieldEnum | Prisma.PackageCategoryScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1674,6 +1679,7 @@ export type PackageCategoryCreateArgs<ExtArgs extends runtime.Types.Extensions.I
    * The data needed to create a PackageCategory.
    */
   data: Prisma.XOR<Prisma.PackageCategoryCreateInput, Prisma.PackageCategoryUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1734,6 +1740,7 @@ export type PackageCategoryUpdateArgs<ExtArgs extends runtime.Types.Extensions.I
    * Choose, which PackageCategory to update.
    */
   where: Prisma.PackageCategoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1812,6 +1819,7 @@ export type PackageCategoryUpsertArgs<ExtArgs extends runtime.Types.Extensions.I
    * In case the PackageCategory was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.PackageCategoryUpdateInput, Prisma.PackageCategoryUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1834,6 +1842,7 @@ export type PackageCategoryDeleteArgs<ExtArgs extends runtime.Types.Extensions.I
    * Filter which PackageCategory to delete.
    */
   where: Prisma.PackageCategoryWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

@@ -430,32 +430,38 @@ describe("Staff availability and shift roster", () => {
     ).toContain(`${date}T09:00:00.000Z`);
   });
 
-  it("validates scheduled Job Carts but allows carts without staff", async () => {
+  // A walk-in cart is always served now, so a roster window does not bind it;
+  // leave, time blocks and a clashing appointment still do.
+  it("validates Job Cart staff against leave but allows carts without staff", async () => {
     const f = await fixture();
-    const date = dateAfter(23);
-    await createRule(f, date).expect(201);
+    const today = dateAfter(0);
+    await prisma.staffLeave.create({
+      data: {
+        staffId: f.staff.id,
+        salonId: f.salon.id,
+        startDate: new Date(`${today}T00:00:00.000Z`),
+        endDate: new Date(`${today}T00:00:00.000Z`),
+        status: "APPROVED",
+        leaveType: "CASUAL_LEAVE",
+        totalDays: 1,
+      },
+    });
     const base = {
       branchId: f.branch.id,
       customerName: "Roster Walk In",
       phone: "9876543210",
       serviceIds: [f.service.id],
     };
+    const onLeave = await request(app)
+      .post("/api/job-carts")
+      .set(auth(f.managerToken))
+      .send({ ...base, staffId: f.staff.id });
+    expect(onLeave.status).toBe(400);
+    expect(onLeave.body.message).toMatch(/leave/i);
     await request(app)
       .post("/api/job-carts")
       .set(auth(f.managerToken))
-      .send({
-        ...base,
-        staffId: f.staff.id,
-        startTime: `${date}T09:00:00.000Z`,
-      })
-      .expect(400);
-    await request(app)
-      .post("/api/job-carts")
-      .set(auth(f.managerToken))
-      .send({
-        ...base,
-        startTime: `${date}T09:00:00.000Z`,
-      })
+      .send(base)
       .expect(201);
   });
 

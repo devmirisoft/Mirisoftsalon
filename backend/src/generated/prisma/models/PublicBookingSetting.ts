@@ -1125,7 +1125,7 @@ export type $PublicBookingSettingPayload<ExtArgs extends runtime.Types.Extension
 export type PublicBookingSettingGetPayload<S extends boolean | null | undefined | PublicBookingSettingDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$PublicBookingSettingPayload, S>
 
 export type PublicBookingSettingCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<PublicBookingSettingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<PublicBookingSettingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: PublicBookingSettingCountAggregateInputType | true
   }
 
@@ -1583,6 +1583,7 @@ export type PublicBookingSettingFindUniqueArgs<ExtArgs extends runtime.Types.Ext
    * Filter, which PublicBookingSetting to fetch.
    */
   where: Prisma.PublicBookingSettingWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1605,6 +1606,7 @@ export type PublicBookingSettingFindUniqueOrThrowArgs<ExtArgs extends runtime.Ty
    * Filter, which PublicBookingSetting to fetch.
    */
   where: Prisma.PublicBookingSettingWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1657,6 +1659,7 @@ export type PublicBookingSettingFindFirstArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of PublicBookingSettings.
    */
   distinct?: Prisma.PublicBookingSettingScalarFieldEnum | Prisma.PublicBookingSettingScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1709,6 +1712,7 @@ export type PublicBookingSettingFindFirstOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter by unique combinations of PublicBookingSettings.
    */
   distinct?: Prisma.PublicBookingSettingScalarFieldEnum | Prisma.PublicBookingSettingScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1761,6 +1765,7 @@ export type PublicBookingSettingFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of PublicBookingSettings.
    */
   distinct?: Prisma.PublicBookingSettingScalarFieldEnum | Prisma.PublicBookingSettingScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1783,6 +1788,7 @@ export type PublicBookingSettingCreateArgs<ExtArgs extends runtime.Types.Extensi
    * The data needed to create a PublicBookingSetting.
    */
   data: Prisma.XOR<Prisma.PublicBookingSettingCreateInput, Prisma.PublicBookingSettingUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1843,6 +1849,7 @@ export type PublicBookingSettingUpdateArgs<ExtArgs extends runtime.Types.Extensi
    * Choose, which PublicBookingSetting to update.
    */
   where: Prisma.PublicBookingSettingWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1921,6 +1928,7 @@ export type PublicBookingSettingUpsertArgs<ExtArgs extends runtime.Types.Extensi
    * In case the PublicBookingSetting was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.PublicBookingSettingUpdateInput, Prisma.PublicBookingSettingUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1943,6 +1951,7 @@ export type PublicBookingSettingDeleteArgs<ExtArgs extends runtime.Types.Extensi
    * Filter which PublicBookingSetting to delete.
    */
   where: Prisma.PublicBookingSettingWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

@@ -703,7 +703,7 @@ export type $SupportTicketMessagePayload<ExtArgs extends runtime.Types.Extension
 export type SupportTicketMessageGetPayload<S extends boolean | null | undefined | SupportTicketMessageDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SupportTicketMessagePayload, S>
 
 export type SupportTicketMessageCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SupportTicketMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SupportTicketMessageFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SupportTicketMessageCountAggregateInputType | true
   }
 
@@ -1152,6 +1152,7 @@ export type SupportTicketMessageFindUniqueArgs<ExtArgs extends runtime.Types.Ext
    * Filter, which SupportTicketMessage to fetch.
    */
   where: Prisma.SupportTicketMessageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1174,6 +1175,7 @@ export type SupportTicketMessageFindUniqueOrThrowArgs<ExtArgs extends runtime.Ty
    * Filter, which SupportTicketMessage to fetch.
    */
   where: Prisma.SupportTicketMessageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1226,6 +1228,7 @@ export type SupportTicketMessageFindFirstArgs<ExtArgs extends runtime.Types.Exte
    * Filter by unique combinations of SupportTicketMessages.
    */
   distinct?: Prisma.SupportTicketMessageScalarFieldEnum | Prisma.SupportTicketMessageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1278,6 +1281,7 @@ export type SupportTicketMessageFindFirstOrThrowArgs<ExtArgs extends runtime.Typ
    * Filter by unique combinations of SupportTicketMessages.
    */
   distinct?: Prisma.SupportTicketMessageScalarFieldEnum | Prisma.SupportTicketMessageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1330,6 +1334,7 @@ export type SupportTicketMessageFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Filter by unique combinations of SupportTicketMessages.
    */
   distinct?: Prisma.SupportTicketMessageScalarFieldEnum | Prisma.SupportTicketMessageScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1352,6 +1357,7 @@ export type SupportTicketMessageCreateArgs<ExtArgs extends runtime.Types.Extensi
    * The data needed to create a SupportTicketMessage.
    */
   data: Prisma.XOR<Prisma.SupportTicketMessageCreateInput, Prisma.SupportTicketMessageUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1412,6 +1418,7 @@ export type SupportTicketMessageUpdateArgs<ExtArgs extends runtime.Types.Extensi
    * Choose, which SupportTicketMessage to update.
    */
   where: Prisma.SupportTicketMessageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1490,6 +1497,7 @@ export type SupportTicketMessageUpsertArgs<ExtArgs extends runtime.Types.Extensi
    * In case the SupportTicketMessage was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SupportTicketMessageUpdateInput, Prisma.SupportTicketMessageUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -1512,6 +1520,7 @@ export type SupportTicketMessageDeleteArgs<ExtArgs extends runtime.Types.Extensi
    * Filter which SupportTicketMessage to delete.
    */
   where: Prisma.SupportTicketMessageWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

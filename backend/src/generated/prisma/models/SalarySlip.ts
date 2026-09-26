@@ -3100,7 +3100,7 @@ export type $SalarySlipPayload<ExtArgs extends runtime.Types.Extensions.Internal
 export type SalarySlipGetPayload<S extends boolean | null | undefined | SalarySlipDefaultArgs> = runtime.Types.Result.GetResult<Prisma.$SalarySlipPayload, S>
 
 export type SalarySlipCountArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> =
-  Omit<SalarySlipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+  Omit<SalarySlipFindManyArgs, 'select' | 'include' | 'distinct' | 'omit' | 'relationLoadStrategy'> & {
     select?: SalarySlipCountAggregateInputType | true
   }
 
@@ -3583,6 +3583,7 @@ export type SalarySlipFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    * Filter, which SalarySlip to fetch.
    */
   where: Prisma.SalarySlipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3605,6 +3606,7 @@ export type SalarySlipFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    * Filter, which SalarySlip to fetch.
    */
   where: Prisma.SalarySlipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3657,6 +3659,7 @@ export type SalarySlipFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Filter by unique combinations of SalarySlips.
    */
   distinct?: Prisma.SalarySlipScalarFieldEnum | Prisma.SalarySlipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3709,6 +3712,7 @@ export type SalarySlipFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    * Filter by unique combinations of SalarySlips.
    */
   distinct?: Prisma.SalarySlipScalarFieldEnum | Prisma.SalarySlipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3761,6 +3765,7 @@ export type SalarySlipFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Filter by unique combinations of SalarySlips.
    */
   distinct?: Prisma.SalarySlipScalarFieldEnum | Prisma.SalarySlipScalarFieldEnum[]
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3783,6 +3788,7 @@ export type SalarySlipCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * The data needed to create a SalarySlip.
    */
   data: Prisma.XOR<Prisma.SalarySlipCreateInput, Prisma.SalarySlipUncheckedCreateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3843,6 +3849,7 @@ export type SalarySlipUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Choose, which SalarySlip to update.
    */
   where: Prisma.SalarySlipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3921,6 +3928,7 @@ export type SalarySlipUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * In case the SalarySlip was found with the provided `where` argument, update it with this data.
    */
   update: Prisma.XOR<Prisma.SalarySlipUpdateInput, Prisma.SalarySlipUncheckedUpdateInput>
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**
@@ -3943,6 +3951,7 @@ export type SalarySlipDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Filter which SalarySlip to delete.
    */
   where: Prisma.SalarySlipWhereUniqueInput
+  relationLoadStrategy?: Prisma.RelationLoadStrategy
 }
 
 /**

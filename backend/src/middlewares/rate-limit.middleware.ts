@@ -19,6 +19,17 @@ export const loginRateLimiter = rateLimit({
   handler,
 });
 
+// Separate from login so resetting a passcode doesn't burn the login attempts
+// needed to sign in with the new one.
+export const passwordResetRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipDuringNormalTests,
+  handler,
+});
+
 export const publicSupportRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 3,

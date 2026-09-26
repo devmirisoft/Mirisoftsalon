@@ -943,6 +943,7 @@ const JobCartCreate = () => {
                               date: event.target.value,
                             }))
                           }
+                          readOnly
                         />
                       </div>
                     </FormGroup>

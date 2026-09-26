@@ -38,6 +38,7 @@ const STATUSES = [
 ];
 
 const EMPTY_FILTERS = { from: "", to: "", status: "", staffId: "", q: "" };
+const BRANCH_LOCKED_ROLES = ["BRANCH_MANAGER", "RECEPTIONIST", "STAFF"];
 
 const toISODate = (date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
@@ -94,6 +95,7 @@ const Appointments = () => {
   const [tracking, setTracking] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
   const isSuper = user?.role === "SUPER_ADMIN";
+  const isBranchLocked = BRANCH_LOCKED_ROLES.includes(user?.role);
 
   const query = useMemo(
     () => ({
@@ -155,12 +157,9 @@ const Appointments = () => {
     setAction(type);
   };
 
-  // Month cells pick a day for the side panel; the time grids book the slot.
+  // Every empty calendar box opens the booking flow. Existing appointment
+  // events keep their separate details action.
   const onCalendarDate = (dateInfo) => {
-    if (dateInfo.view.type === "dayGridMonth") {
-      setSelectedDay(toISODate(dateInfo.date));
-      return;
-    }
     openCalendarBooking(dateInfo);
   };
 
@@ -505,6 +504,8 @@ const Appointments = () => {
         isOpen={action === "create"}
         toggle={() => setAction(null)}
         isSuper={isSuper}
+        lockBranch={isBranchLocked}
+        defaultBranchId={isBranchLocked ? user?.branchId || "" : ""}
         statuses={STATUSES}
         refs={{ ...refs, staff: availableStaff }}
         defaults={appointmentDefaults}
@@ -512,6 +513,7 @@ const Appointments = () => {
         onCreateCustomer={(customerName, values) =>
           setNewCustomerContext({
             name: customerName,
+            phone: values.customerPhone || "",
             salonId: values.salonId || "",
             branchId: values.branchId || "",
             status: "REGULAR",

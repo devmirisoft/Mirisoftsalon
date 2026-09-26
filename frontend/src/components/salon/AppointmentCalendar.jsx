@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useEffect, useMemo, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import bootstrapPlugin from "@fullcalendar/bootstrap5";
@@ -230,11 +229,12 @@ const AppointmentCalendar = ({
             slotLabelFormat={TIME_FORMAT}
             eventTimeFormat={TIME_FORMAT}
             dateClick={(info) => onDateSelect?.(info)}
-            dayCellClassNames={(info) =>
-              toISODate(info.date) === selectedDate
+            dayCellClassNames={(info) => {
+              if (info.isPast) return ["appointment-calendar-past-day"];
+              return toISODate(info.date) === selectedDate
                 ? ["appointment-calendar-selected-day"]
-                : ["appointment-calendar-bookable-day"]
-            }
+                : ["appointment-calendar-bookable-day"];
+            }}
             eventContent={(arg) => (
               <div className="appt-ev">
                 <span className="appt-ev-time">

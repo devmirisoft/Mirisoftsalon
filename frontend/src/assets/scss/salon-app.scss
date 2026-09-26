@@ -41,6 +41,17 @@
   background: rgba(33, 46, 107, 0.06);
 }
 
+.appointment-calendar .appointment-calendar-past-day {
+  cursor: default;
+  background: #f3f5f7;
+}
+
+.appointment-calendar
+  .appointment-calendar-past-day
+  .fc-daygrid-day-number {
+  color: #a7b0bf;
+}
+
 .appointment-calendar .appointment-calendar-selected-day {
   cursor: pointer;
   background: rgba(33, 46, 107, 0.06);
@@ -1696,8 +1707,14 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 }
 
 /* ---------- Book appointment modal ---------- */
+.appointment-booking-modal-wrap.modal {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
 .appointment-booking-modal {
-  max-width: 1100px;
+  width: calc(100% - 2rem);
+  max-width: 1120px;
 }
 
 .appointment-booking-modal .modal-content {
@@ -1716,6 +1733,75 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 .appointment-booking-modal .modal-body {
   padding: 1.5rem;
   background: #f8f9fc;
+}
+
+.appointment-booking-modal--empty {
+  max-height: calc(100vh - 1rem);
+}
+
+.appointment-booking-modal--empty .modal-content {
+  max-height: calc(100vh - 1rem);
+}
+
+.appointment-booking-modal--empty .modal-body {
+  overflow: visible;
+}
+
+.appointment-booking-modal--empty .modal-header {
+  padding: 0.65rem 1.25rem;
+}
+
+.appointment-booking-modal--empty .modal-body {
+  padding: 0.75rem;
+}
+
+.appointment-booking-modal--empty .modal-body > .row > .col-lg-8 {
+  padding: 0.875rem;
+}
+
+.appointment-booking-modal--empty .booking-cart-empty {
+  padding-block: 0.6rem;
+}
+
+.appointment-booking-modal--empty .booking-details-grid {
+  gap: 0.75rem;
+}
+
+.appointment-booking-modal--empty .booking-details-grid + .mt-4,
+.appointment-booking-modal--empty .booking-section-title.mt-4 {
+  margin-top: 1rem !important;
+}
+
+.appointment-booking-modal--empty .booking-summary .card-inner {
+  padding: 1rem;
+}
+
+.appointment-booking-modal--empty .booking-summary-row {
+  padding-block: 0.35rem;
+}
+
+.appointment-booking-modal--filled .modal-content {
+  max-height: calc(100vh - 1rem);
+}
+
+.appointment-booking-modal--filled .modal-content > form {
+  display: flex;
+  min-height: 0;
+  max-height: calc(100vh - 1rem);
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.appointment-booking-modal--filled .modal-header {
+  flex: 0 0 auto;
+}
+
+.appointment-booking-modal--filled .modal-body {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .booking-head {
@@ -1749,6 +1835,26 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 .appointment-booking-modal .form-control,
 .appointment-booking-modal .form-select {
   background-color: #fff;
+}
+
+.booking-details-grid .form-control,
+.booking-details-grid .form-select,
+.booking-details-grid .react-select__control {
+  height: 44px;
+  min-height: 44px !important;
+}
+
+.booking-details-grid .react-select__value-container {
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.booking-details-grid .react-select__placeholder,
+.booking-details-grid .react-select__single-value {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .booking-section-title {
@@ -1794,11 +1900,44 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
   padding: 1.25rem;
 }
 
+@media (min-width: 992px) {
+  .booking-details-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 0;
+  }
+
+  .booking-details-grid > [class*="col-"] {
+    width: auto;
+    padding: 0;
+    grid-column: span 2;
+  }
+
+  .booking-details-grid--five > [class*="col-"]:nth-last-child(-n + 2) {
+    grid-column: span 3;
+  }
+
+  .booking-details-grid--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .booking-details-grid--four > [class*="col-"] {
+    grid-column: span 1;
+  }
+}
+
 /* services cart */
 .booking-cart table {
+  width: 100%;
+  table-layout: fixed;
   border: 1px solid #e5e9f2;
   border-radius: 0.375rem;
   overflow: hidden;
+}
+
+.appointment-booking-modal--filled .booking-cart {
+  overflow-x: hidden;
 }
 
 .booking-cart thead th {
@@ -1828,6 +1967,12 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
 .booking-service-name {
   font-weight: 600;
   color: #364a63;
+}
+
+.booking-price-input {
+  width: 100%;
+  min-width: 0;
+  text-align: right;
 }
 
 .booking-cart-empty {
@@ -1952,9 +2097,6 @@ body.dark-mode .jobcarts-page .table-tranx thead th {
     min-width: 0;
   }
 
-  .booking-cart table {
-    min-width: 640px;
-  }
 }
 
 /* ---------- Appointments page header + filter bar ----------

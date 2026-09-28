@@ -349,30 +349,40 @@ const JobCarts = () => {
             label: <span className="d-block text-end">Actions</span>,
             render: (_value, row) => {
               const active = row.status === "ACTIVE";
-              const icons = [
-                ["edit", "Edit job cart", () => navigate(`/job-carts/${row.id}/edit`)],
-                ["file-text", "View job cart", () => navigate(`/job-carts/${row.id}/view`)],
-                ["file-plus", "Make bill", () => navigate(`/job-carts/${row.id}?bill=1`), !active],
-                ["cross-circle", "Cancel job", () => cancelJob(row), !active, "text-danger"],
+              const links = [
+                ["edit", "Edit job cart", `/job-carts/${row.id}/edit`],
+                ["file-text", "View job cart", `/job-carts/${row.id}/view`],
+                ["file-plus", "Make bill", `/job-carts/${row.id}?bill=1`],
               ];
               return (
                 <div className="d-flex justify-content-end gap-1 text-nowrap">
-                  {icons.map(([icon, label, onClick, disabled, tone]) => (
-                    <button
+                  {links.map(([icon, label, to], index) => (
+                    <Link
                       key={icon}
-                      type="button"
-                      className={`btn btn-sm btn-icon btn-trigger ${tone || ""}`}
+                      to={to}
+                      className={`btn btn-sm btn-icon btn-trigger${!active && index === 2 ? " disabled" : ""}`}
                       title={label}
                       aria-label={label}
-                      disabled={disabled}
-                      onClick={onClick}
+                      aria-disabled={!active && index === 2}
+                      onClick={(event) => {
+                        if (!active && index === 2) event.preventDefault();
+                      }}
                     >
                       <Icon name={icon} />
-                    </button>
+                    </Link>
                   ))}
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-icon btn-trigger text-danger"
+                    title="Cancel job"
+                    aria-label="Cancel job"
+                    disabled={!active}
+                    onClick={() => cancelJob(row)}
+                  >
+                    <Icon name="cross-circle" />
+                  </button>
                 </div>
-              );
-            },
+              );            },
           },
         ]}
       />

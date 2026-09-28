@@ -178,6 +178,7 @@ const JobCartDetails = () => {
   const [pickerStaffId, setPickerStaffId] = useState("");
   const [serviceEdits, setServiceEdits] = useState({});
   const serviceSaveTimers = useRef({});
+  const serviceSaveRequests = useRef({});
   const [confirmingJobOnly, setConfirmingJobOnly] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
@@ -448,15 +449,30 @@ const JobCartDetails = () => {
       return { ...current, [itemId]: nextEdit };
     });
 
-  const saveServiceEdit = (item, edit) => {
+  const saveServiceEdit = async (item, edit) => {
     const discount = cappedDiscount(edit.price, edit.discount, edit.discountType);
-    run(() =>
-      salonApi.jobCarts.updateItem(id, item.id, {
-        price: netServicePrice(edit.price, discount, edit.discountType),
-        quantity: Math.max(1, Math.floor(Number(edit.quantity) || 1)),
-        staffId: edit.staffId || null,
-      })
-    );
+    const request = salonApi.jobCarts.updateItem(id, item.id, {
+      price: netServicePrice(edit.price, discount, edit.discountType),
+      quantity: Math.max(1, Math.floor(Number(edit.quantity) || 1)),
+      staffId: edit.staffId || null,
+    });
+    serviceSaveRequests.current[item.id] = request;
+    setWorking(true);
+    try {
+      const response = await request;
+      if (serviceSaveRequests.current[item.id] !== request) return;
+      setCart(response.data);
+      setError("");
+    } catch (saveError) {
+      if (serviceSaveRequests.current[item.id] === request) {
+        setError(saveError.message);
+      }
+    } finally {
+      if (serviceSaveRequests.current[item.id] === request) {
+        delete serviceSaveRequests.current[item.id];
+        setWorking(false);
+      }
+    }
   };
 
   const togglePickedService = (serviceId) => {
@@ -781,6 +797,7 @@ const JobCartDetails = () => {
     <>
       <Head title={cart ? `Job Cart ${cart.jobCartId}` : "Job Cart"} />
       <Content className="is-wide jcp">
+        {error && !cart && <Alert color="danger">{error}</Alert>}
         {loading && !cart ? (
           <div className="text-center py-5">
             <Spinner color="primary" />

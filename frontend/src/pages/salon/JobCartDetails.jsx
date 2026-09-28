@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   Alert,
   Col,
@@ -16,6 +16,7 @@ import { Button, Icon } from "@/components/Component";
 import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
 import StatusBadge from "@/components/salon/StatusBadge";
+import ServicePickerModal from "@/components/salon/ServicePickerModal";
 import {
   ProductUsageModal,
   TransferStockModal,
@@ -40,6 +41,22 @@ const TAX_OPTIONS = [
 ];
 
 const BILLING_NOTE_MAX = 500;
+
+const round2 = (value) => Math.round(Number(value || 0) * 100) / 100;
+const cappedDiscount = (price, discount, type) => {
+  if (discount === "") return "";
+  const amount = Math.max(0, Number(discount) || 0);
+  const maximum = type === "PCT" ? 100 : Math.max(0, Number(price) || 0);
+  return String(round2(Math.min(amount, maximum)));
+};
+const netServicePrice = (price, discount, type) => {
+  const base = Math.max(0, Number(price) || 0);
+  const reduction =
+    type === "PCT"
+      ? (base * Math.min(100, Math.max(0, Number(discount) || 0))) / 100
+      : Number(cappedDiscount(base, discount, type) || 0);
+  return round2(Math.max(0, base - reduction));
+};
 
 // The four tiles a walk-in counter actually taps; everything else in
 // PAYMENT_METHODS hides behind "Other" so the modal stays one row.
@@ -107,6 +124,7 @@ const daysAgo = (value) => {
 
 const JobCartDetails = () => {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [cart, setCart] = useState(null);
@@ -156,6 +174,11 @@ const JobCartDetails = () => {
   const [adding, setAdding] = useState(null);
   const [addForm, setAddForm] = useState({ id: "", quantity: 1 });
   const [addRefs, setAddRefs] = useState(null);
+  const [servicePickerOpen, setServicePickerOpen] = useState(false);
+  const [pickerStaffId, setPickerStaffId] = useState("");
+  const [serviceEdits, setServiceEdits] = useState({});
+  const serviceSaveTimers = useRef({});
+  const [confirmingJobOnly, setConfirmingJobOnly] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
   const [loading, setLoading] = useState(true);
@@ -273,18 +296,33 @@ const JobCartDetails = () => {
     run(() => salonApi.jobCarts.cancel(id));
   };
 
+  const loadAddReferences = async () => {
+    if (addRefs) return addRefs;
+    const response = await salonApi.jobCarts.references({
+      salonId: cart.salonId,
+      branchId: cart.branchId,
+    });
+    setAddRefs(response.data);
+    return response.data;
+  };
+
   const openAdd = async (kind) => {
     setAddForm({ id: "", quantity: 1 });
     setAdding(kind);
-    if (addRefs) return;
     try {
-      const response = await salonApi.jobCarts.references({
-        salonId: cart.salonId,
-        branchId: cart.branchId,
-      });
-      setAddRefs(response.data);
+      await loadAddReferences();
     } catch (refError) {
       setAdding(null);
+      setError(refError.message);
+    }
+  };
+
+  const openServicePicker = async () => {
+    try {
+      await loadAddReferences();
+      setPickerStaffId(cart.staffId || "");
+      setServicePickerOpen(true);
+    } catch (refError) {
       setError(refError.message);
     }
   };
@@ -351,6 +389,92 @@ const JobCartDetails = () => {
     user?.role
   );
   const active = cart?.status === "ACTIVE";
+  const editingCart = active && (searchParams.get("edit") === "1" || location.pathname.endsWith("/edit"));
+  const serviceAssignments = useMemo(
+    () =>
+      new Map(
+        (cart?.items || [])
+          .filter((item) => item.itemType === "SERVICE")
+          .map((item) => [item.serviceId, item.staffId || ""])
+      ),
+    [cart?.items]
+  );
+
+  useEffect(() => {
+    if (!editingCart || addRefs) return;
+    salonApi.jobCarts
+      .references({ salonId: cart.salonId, branchId: cart.branchId })
+      .then((response) => setAddRefs(response.data))
+      .catch((refError) => setError(refError.message));
+  }, [addRefs, cart?.branchId, cart?.salonId, editingCart]);
+
+  useEffect(() => {
+    if (!cart) return;
+    setServiceEdits(
+      Object.fromEntries(
+        (cart.items || [])
+          .filter((item) => item.itemType === "SERVICE")
+          .map((item) => [
+            item.id,
+            {
+              price: String(item.price ?? ""),
+              quantity: String(item.quantity ?? 1),
+              staffId: item.staffId || "",
+              discount: "",
+              discountType: "AMT",
+            },
+          ])
+      )
+    );
+  }, [cart]);
+
+  const serviceEditFor = (item) =>
+    serviceEdits[item.id] || {
+      price: String(item.price ?? ""),
+      quantity: String(item.quantity ?? 1),
+      staffId: item.staffId || "",
+      discount: "",
+      discountType: "AMT",
+    };
+
+  const updateServiceEdit = (itemId, updates) =>
+    setServiceEdits((current) => {
+      const nextEdit = { ...current[itemId], ...updates };
+      clearTimeout(serviceSaveTimers.current[itemId]);
+      serviceSaveTimers.current[itemId] = setTimeout(() => {
+        const item = (cart?.items || []).find((row) => row.id === itemId);
+        if (item) saveServiceEdit(item, nextEdit);
+      }, 500);
+      return { ...current, [itemId]: nextEdit };
+    });
+
+  const saveServiceEdit = (item, edit) => {
+    const discount = cappedDiscount(edit.price, edit.discount, edit.discountType);
+    run(() =>
+      salonApi.jobCarts.updateItem(id, item.id, {
+        price: netServicePrice(edit.price, discount, edit.discountType),
+        quantity: Math.max(1, Math.floor(Number(edit.quantity) || 1)),
+        staffId: edit.staffId || null,
+      })
+    );
+  };
+
+  const togglePickedService = (serviceId) => {
+    const existing = (cart.items || []).find(
+      (item) => item.itemType === "SERVICE" && item.serviceId === serviceId
+    );
+    if (existing) {
+      run(() => salonApi.jobCarts.removeItem(id, existing.id));
+      return;
+    }
+    run(() =>
+      salonApi.jobCarts.addItem(id, {
+        itemType: "SERVICE",
+        serviceId,
+        ...(pickerStaffId ? { staffId: pickerStaffId } : {}),
+      })
+    );
+  };
   const invoice = cart?.invoice;
   const subtotalAmount = Number(invoice?.subtotalAmount || 0);
   const discountInput = Number(billingForm.discountAmount || 0);
@@ -618,6 +742,34 @@ const JobCartDetails = () => {
     }
   };
 
+  const confirmJobCartOnly = async (confirmedUsage = []) => {
+    const { payments, payment, ...draftBody } = buildConfirmBody();
+    setWorking(true);
+    setError("");
+    try {
+      await salonApi.jobCarts.confirm(id, {
+        ...draftBody,
+        status: "DRAFT",
+        ...(confirmedUsage.length ? { usage: confirmedUsage } : {}),
+      });
+      setSearchParams({}, { replace: true });
+      await load();
+    } catch (actionError) {
+      setError(actionError.message);
+    } finally {
+      setWorking(false);
+    }
+  };
+
+  const completeEditedCart = () => {
+    if (cart?.appointmentStatus === "COMPLETED") {
+      confirmJobCartOnly();
+      return;
+    }
+    setConfirmingJobOnly(true);
+    setUsageOpen(true);
+  };
+
   const setTenderValue = (index, key, value) =>
     setTenders((current) =>
       current.map((row, rowIndex) =>
@@ -691,10 +843,11 @@ const JobCartDetails = () => {
                     <Icon name="cc-alt" />
                   </span>
                   <div className="jcp-hero-text">
-                    <h4>Complete Your Payment</h4>
+                    <h4>{editingCart ? "Edit Job Cart" : "Complete Your Payment"}</h4>
                     <p>
-                      Review your services and details, apply any discounts and
-                      proceed to payment.
+                      {editingCart
+                        ? "Update services, prices, staff, and discounts before completing this job."
+                        : "Review your services and details, apply any discounts and proceed to payment."}
                     </p>
                   </div>
                   <span className="jcp-hero-art">Self Care Looks Good On You</span>
@@ -850,6 +1003,17 @@ const JobCartDetails = () => {
                       subtitle="Review the selected services for this job cart."
                     >
                       <div className="d-flex flex-wrap align-items-center gap-2">
+                        {editingCart && (
+                          <Button
+                            color="primary"
+                            size="sm"
+                            disabled={working}
+                            onClick={openServicePicker}
+                          >
+                            <Icon name="plus" />
+                            <span>Service</span>
+                          </Button>
+                        )}
                         {active &&
                           [
                             ["PRODUCT", "Product"],
@@ -902,11 +1066,31 @@ const JobCartDetails = () => {
                                     {item.serviceName}
                                   </span>
                                   {item.itemType === "SERVICE" &&
-                                    item.staff?.name && (
+                                    (editingCart ? (
+                                      <Input
+                                        type="select"
+                                        bsSize="sm"
+                                        className="mt-1"
+                                        value={serviceEditFor(item).staffId}
+                                        disabled={working}
+                                        onChange={(event) =>
+                                          updateServiceEdit(item.id, {
+                                            staffId: event.target.value,
+                                          })
+                                        }
+                                      >
+                                        <option value="">Assign staff</option>
+                                        {(addRefs?.staff || []).map((member) => (
+                                          <option key={member.id} value={member.id}>
+                                            {member.name}
+                                          </option>
+                                        ))}
+                                      </Input>
+                                    ) : item.staff?.name ? (
                                       <span className="jcp-item-sub">
                                         {item.staff.name}
                                       </span>
-                                    )}
+                                    ) : null)}
                                   {item.itemType === "PACKAGE" && (
                                     <span className="jcp-item-sub text-primary">
                                       Package
@@ -947,27 +1131,110 @@ const JobCartDetails = () => {
                                           item.durationUnit || "MINUTES"
                                         ).toLowerCase()}`}
                                 </td>
-                                <td className="text-end">{item.quantity ?? 1}</td>
                                 <td className="text-end">
-                                  {formatMoney(
-                                    item.itemType === "PRODUCT"
-                                      ? item.lineTotal
-                                      : item.price
+                                  {editingCart && item.itemType === "SERVICE" ? (
+                                    <Input
+                                      type="number"
+                                      bsSize="sm"
+                                      min="1"
+                                      step="1"
+                                      value={serviceEditFor(item).quantity}
+                                      disabled={working}
+                                      onChange={(event) =>
+                                        updateServiceEdit(item.id, {
+                                          quantity: event.target.value,
+                                        })
+                                      }
+                                    />
+                                  ) : (
+                                    item.quantity ?? 1
                                   )}
-                                  {item.itemType === "PRODUCT" &&
-                                  item.quantity > 1 ? (
-                                    <span className="jcp-item-sub">
-                                      {item.quantity} x {formatMoney(item.price)}
-                                    </span>
-                                  ) : null}
                                 </td>
                                 <td className="text-end">
-                                  {Number(item.discountAmount || 0) > 0 ? (
+                                  {editingCart && item.itemType === "SERVICE" ? (
+                                    <Input
+                                      type="number"
+                                      bsSize="sm"
+                                      min="0"
+                                      step="0.01"
+                                      value={serviceEditFor(item).price}
+                                      disabled={working}
+                                      onChange={(event) =>
+                                        updateServiceEdit(item.id, {
+                                          price: event.target.value,
+                                          discount: cappedDiscount(
+                                            event.target.value,
+                                            serviceEditFor(item).discount,
+                                            serviceEditFor(item).discountType
+                                          ),
+                                        })
+                                      }
+                                    />
+                                  ) : (
+                                    <>
+                                      {formatMoney(
+                                        item.itemType === "PRODUCT"
+                                          ? item.lineTotal
+                                          : item.price
+                                      )}
+                                      {item.itemType === "PRODUCT" &&
+                                      item.quantity > 1 ? (
+                                        <span className="jcp-item-sub">
+                                          {item.quantity} x {formatMoney(item.price)}
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  )}
+                                </td>
+                                <td className="text-end">
+                                  {editingCart && item.itemType === "SERVICE" ? (
+                                    <div className="input-group input-group-sm">
+                                      <Input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={serviceEditFor(item).discount}
+                                        disabled={working}
+                                        onChange={(event) =>
+                                          updateServiceEdit(item.id, {
+                                            discount: cappedDiscount(
+                                              serviceEditFor(item).price,
+                                              event.target.value,
+                                              serviceEditFor(item).discountType
+                                            ),
+                                          })
+                                        }
+                                      />
+                                      <button
+                                        type="button"
+                                        className="input-group-text"
+                                        disabled={working}
+                                        title="Switch discount type"
+                                        onClick={() => {
+                                          const edit = serviceEditFor(item);
+                                          const discountType =
+                                            edit.discountType === "PCT" ? "AMT" : "PCT";
+                                          updateServiceEdit(item.id, {
+                                            discountType,
+                                            discount: cappedDiscount(
+                                              edit.price,
+                                              edit.discount,
+                                              discountType
+                                            ),
+                                          });
+                                        }}
+                                      >
+                                        {serviceEditFor(item).discountType === "PCT"
+                                          ? "%"
+                                          : "Rs"}
+                                      </button>
+                                    </div>
+                                  ) : Number(item.discountAmount || 0) > 0 ? (
                                     <span className="text-success">
                                       - {formatMoney(item.discountAmount)}
                                     </span>
                                   ) : (
-                                    "—"
+                                    "-"
                                   )}
                                 </td>
                                 <td className="text-end">
@@ -993,29 +1260,7 @@ const JobCartDetails = () => {
                                     ? "—"
                                     : formatMoney(item.lineTotal)}
                                 </td>
-                                {active && (
-                                  <td className="text-end">
-                                    {item.itemType !== "SERVICE" && (
-                                      <button
-                                        type="button"
-                                        className="jcp-tender-remove"
-                                        aria-label={`Remove ${item.serviceName}`}
-                                        disabled={working}
-                                        onClick={() =>
-                                          run(() =>
-                                            salonApi.jobCarts.removeItem(
-                                              id,
-                                              item.id
-                                            )
-                                          )
-                                        }
-                                      >
-                                        <Icon name="cross" />
-                                      </button>
-                                    )}
-                                  </td>
-                                )}
-                              </tr>
+                                </tr>
                             ))
                           ) : (
                             <tr>
@@ -1441,18 +1686,25 @@ const JobCartDetails = () => {
 
                     {active ? (
                       <div className="jcp-cta">
-                        <Button
-                          className="jcp-pay"
-                          disabled={working || !cart.items.length}
-                          onClick={openPayment}
-                        >
-                          {working ? (
-                            <Spinner size="sm" />
-                          ) : (
-                            <Icon name="lock-alt" />
-                          )}
-                          <span>Pay Now {formatMoney(payableAmount)}</span>
-                        </Button>
+                        {editingCart ? (
+                          <Button
+                            className="jcp-pay"
+                            disabled={working || !cart.items.length}
+                            onClick={completeEditedCart}
+                          >
+                            {working ? <Spinner size="sm" /> : <Icon name="check" />}
+                            <span>Confirm Job Cart</span>
+                          </Button>
+                        ) : (
+                          <Button
+                            className="jcp-pay"
+                            disabled={working || !cart.items.length}
+                            onClick={openPayment}
+                          >
+                            {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
+                            <span>Pay Now {formatMoney(payableAmount)}</span>
+                          </Button>
+                        )}
                         {cart.isJobCart !== false && (
                           <Button
                             className="jcp-cancel"
@@ -1590,13 +1842,35 @@ const JobCartDetails = () => {
           onSaved={transferAndContinue}
         />
 
+        <ServicePickerModal
+          isOpen={servicePickerOpen}
+          toggle={() => setServicePickerOpen(false)}
+          services={addRefs?.services || []}
+          staff={addRefs?.staff || []}
+          staffId={pickerStaffId}
+          onStaffChange={setPickerStaffId}
+          assignedById={serviceAssignments}
+          onToggleService={togglePickedService}
+          disabled={working}
+          requireStaff
+          staffPlaceholder="Select staff first"
+        />
+
         <ProductUsageModal
           isOpen={usageOpen}
           appointmentId={id}
-          onCancel={() => setUsageOpen(false)}
+          onCancel={() => {
+            setUsageOpen(false);
+            setConfirmingJobOnly(false);
+          }}
           onConfirm={(entries) => {
             setUsage(entries);
             setUsageOpen(false);
+            if (confirmingJobOnly) {
+              setConfirmingJobOnly(false);
+              confirmJobCartOnly(entries);
+              return;
+            }
             setConfirmOpen(true);
           }}
         />

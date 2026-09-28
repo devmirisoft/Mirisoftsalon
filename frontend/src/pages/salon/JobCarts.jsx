@@ -16,6 +16,11 @@ const STATUS_TABS = [
   { value: "", label: "All" },
 ];
 
+const ORIGIN_TABS = [
+  { value: "ALL", label: "All job carts" },
+  { value: "APPOINTMENT", label: "From appointments" },
+];
+
 const timeOnly = (value) =>
   value
     ? new Intl.DateTimeFormat("en-IN", {
@@ -67,6 +72,7 @@ const JobCarts = () => {
   const [limit, setLimit] = useState(10);
   const [filters, setFilters] = useState({
     status: "ACTIVE",
+    origin: "ALL",
     search: "",
     startDate: "",
     endDate: "",
@@ -89,6 +95,7 @@ const JobCarts = () => {
           page,
           limit,
           ...(filters.status ? { status: filters.status } : {}),
+          ...(filters.origin !== "ALL" ? { origin: filters.origin } : {}),
           ...(normalizedSearch ? { search: normalizedSearch } : {}),
           ...(filters.startDate ? { startDate: filters.startDate } : {}),
           ...(filters.endDate ? { endDate: filters.endDate } : {}),
@@ -114,6 +121,7 @@ const JobCarts = () => {
   const reset = () =>
     setFilters({
       status: "ACTIVE",
+      origin: "ALL",
       search: "",
       startDate: "",
       endDate: "",
@@ -144,6 +152,19 @@ const JobCarts = () => {
       <div className="card card-bordered jc-panel mb-4">
         <div className="card-inner">
           <div className="filter-bar">
+            <div className="filter-bar-item jc-origin-tabs">
+              <Label className="jc-label">Job cart source</Label>
+              <div className="jc-tabs">
+                {ORIGIN_TABS.map((tab) => (
+                  <button key={tab.value} type="button"
+                    className={"jc-tab " + (filters.origin === tab.value ? "is-active" : "")}
+                    onClick={() => setFilters((current) => ({ ...current, origin: tab.value }))}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="filter-bar-item is-grow">
               <Label className="jc-label" for="jc-search">
                 Search by phone or job
@@ -329,7 +350,7 @@ const JobCarts = () => {
             render: (_value, row) => {
               const active = row.status === "ACTIVE";
               const icons = [
-                ["edit", "Edit details", () => navigate(`/job-carts/${row.id}`)],
+                ["edit", "Edit job cart", () => navigate(`/job-carts/${row.id}/edit`)],
                 ["file-text", "View job cart", () => navigate(`/job-carts/${row.id}/view`)],
                 ["file-plus", "Make bill", () => navigate(`/job-carts/${row.id}?bill=1`), !active],
                 ["cross-circle", "Cancel job", () => cancelJob(row), !active, "text-danger"],

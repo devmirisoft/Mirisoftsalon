@@ -486,7 +486,7 @@ const ManageMemberships = () => {
                     </FormGroup>
                   </Col>
                   <Col md="3" className="d-flex align-items-end pb-3">
-                    <Button color="primary" type="submit" block disabled={saving}>
+                    <Button color="primary" type="submit" className="btn-block" disabled={saving}>
                       {saving && <Spinner size="sm" className="me-1" />}
                       Assign / Renew
                     </Button>

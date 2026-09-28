@@ -40,6 +40,7 @@ const SlipRow = ({ label, value }) => (
   </div>
 );
 
+
 // Read-only job view: who the job is for, who works it and which services it
 // covers. Prices live on the bill, not here. Printing swaps the cards for a
 // receipt-width slip.
@@ -115,13 +116,14 @@ const JobCartView = () => {
             {cart?.status === "ACTIVE" && (
               <Button
                 className="jcv-btn-dark"
-                onClick={() => navigate(`/job-carts/${cart.id}`)}
+                onClick={() => navigate("/job-carts/" + cart.id + "/edit")}
               >
                 <Icon name="edit" /> <span>Edit</span>
               </Button>
             )}
           </div>
         </div>
+
       </div>
 
       {error && <Alert color="danger">{error}</Alert>}
@@ -133,7 +135,7 @@ const JobCartView = () => {
       ) : cart ? (
         <>
         <div className="d-print-none">
-          <Section icon="file-text" title="Job Details">
+            <Section icon="file-text" title="Job Details">
             <div className="jcv-fields">
               <Field icon="tag" label="Job Cart ID">
                 {cart.jobCartId}
@@ -202,6 +204,7 @@ const JobCartView = () => {
               </div>
             )}
           </Section>
+
         </div>
 
         <div className="jc-slip d-none d-print-block">

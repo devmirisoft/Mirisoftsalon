@@ -54,7 +54,7 @@ export const prisma =
     adapter,
     // Job cart confirm still runs dozens of queries in one transaction; against
     // a remote DB (~300ms/query from a dev machine) the 5s default times out.
-    transactionOptions: { timeout: 30_000, maxWait: 10_000 },
+    transactionOptions: { timeout: 60_000, maxWait: 20_000 },
   });
 
 globalDatabase.pgPool = pool;

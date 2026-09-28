@@ -133,6 +133,7 @@ const Router = () => (
                 <Route path="job-carts" element={<JobCarts />} />
                 <Route path="job-carts/create" element={<JobCartCreate />} />
                 <Route path="job-carts/:id" element={<JobCartDetails />} />
+                <Route path="job-carts/:id/edit" element={<JobCartDetails />} />
                 <Route path="job-carts/:id/view" element={<JobCartView />} />
                 <Route
                   path="packages/categories"

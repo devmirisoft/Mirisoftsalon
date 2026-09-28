@@ -35,9 +35,17 @@ const AppointmentDetailsModal = ({
   onTracking,
   onMakeBill,
   onDelete,
+  onCreateJobCart,
+  jobCartId,
+  onViewJobCart,
 }) => {
+  const resolvedJobCartId =
+    jobCartId || (appointment?.walkInJobCart ? appointment.id : "");
   if (!appointment) return null;
 
+  const isCompleted = appointment.status === "COMPLETED";
+  const jobCartPaymentComplete =
+    appointment.generatedJobCart?.invoice?.paymentStatus === "PAID";
   const services = appointment.services || [];
   const serviceTotal = services.reduce(
     (total, item) => total + Number(item.price || 0),
@@ -301,21 +309,31 @@ const AppointmentDetailsModal = ({
           <Button color="light" onClick={() => onNotes(appointment)}>
             <Icon name="edit" /> Notes
           </Button>
-          <Button color="info" outline onClick={() => onStatus(appointment)}>
-            Update status
-          </Button>
-          <Button color="primary" onClick={() => onReschedule(appointment)}>
-            <Icon name="calender-date" /> Reschedule
-          </Button>
-          {onDelete && (
-            <Button color="danger" outline onClick={() => onDelete(appointment)}>
-              <Icon name="trash" /> Delete
-            </Button>
+          {!isCompleted && (
+            <>
+              <Button color="info" outline onClick={() => onStatus(appointment)}>
+                Update status
+              </Button>
+              <Button color="primary" onClick={() => onReschedule(appointment)}>
+                <Icon name="calender-date" /> Reschedule
+              </Button>
+            </>
           )}
-          {appointment.status === "COMPLETED" && onMakeBill && (
+          {isCompleted && !jobCartPaymentComplete && onMakeBill && (
             <Button color="success" onClick={() => onMakeBill(appointment)}>
               <Icon name="file-plus" /> Make bill
             </Button>
+          )}
+          {appointment.status !== "CANCELLED" && appointment.status !== "COMPLETED" && new Date(appointment.startTime) <= new Date() && (
+            resolvedJobCartId && onViewJobCart ? (
+              <Button color="primary" onClick={() => onViewJobCart(resolvedJobCartId)}>
+                <Icon name="eye" /> View Job Cart
+              </Button>
+            ) : !appointment.walkInJobCart && onCreateJobCart ? (
+              <Button color="primary" onClick={() => onCreateJobCart(appointment)}>
+                <Icon name="file-text" /> Create Job Cart
+              </Button>
+            ) : null
           )}
         </div>
       </ModalFooter>

@@ -1176,6 +1176,10 @@ model Appointment {
   bookingNote  String?
   internalNote String?
 
+  sourceAppointmentId String? @unique
+  sourceAppointment   Appointment? @relation("AppointmentGeneratedJobCart", fields: [sourceAppointmentId], references: [id], onDelete: SetNull)
+  generatedJobCart    Appointment? @relation("AppointmentGeneratedJobCart")
+
   services AppointmentService[]
 
   createdAt DateTime @default(now())
@@ -1200,6 +1204,7 @@ model Appointment {
   @@index([salonId, startTime])
   @@index([staffId, startTime, endTime])
   @@index([salonId, walkInJobCart, createdAt])
+  @@index([sourceAppointmentId])
 }
 
 model PublicBookingSetting {

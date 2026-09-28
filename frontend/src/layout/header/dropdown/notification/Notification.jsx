@@ -16,7 +16,7 @@ import {
 import Icon from "@/components/icon/Icon";
 import { salonApi } from "@/services/salonApi";
 
-const LATE_STATUSES = new Set(["SCHEDULED", "CONFIRMED"]);
+const LATE_STATUSES = new Set(["SCHEDULED", "CONFIRMED", "NO_SHOW"]);
 const LATE_AFTER_MS = 60 * 60 * 1000;
 const READ_ALERTS_KEY = "salon.notifications.readLateAppointments";
 
@@ -73,7 +73,16 @@ const Notification = () => {
     setError("");
     try {
       const response = await salonApi.appointments.list({ from: today, to: today });
-      setAppointments(response.data || []);
+      const rows = response.data || [];
+      const cutoff = Date.now() - LATE_AFTER_MS;
+      const overdue = rows.filter((appointment) => {
+        const start = new Date(appointment.startTime).getTime();
+        return LATE_STATUSES.has(appointment.status) && appointment.status !== "NO_SHOW" && Number.isFinite(start) && start <= cutoff;
+      });
+      if (overdue.length) {
+        await Promise.allSettled(overdue.map((appointment) => salonApi.appointments.setStatus(appointment.id, { status: "NO_SHOW", note: "Automatically marked as no-show after the one-hour grace period." })));
+      }
+      setAppointments(rows.map((appointment) => overdue.some((item) => item.id === appointment.id) ? { ...appointment, status: "NO_SHOW" } : appointment));
     } catch (loadError) {
       setError(loadError.message);
     } finally {

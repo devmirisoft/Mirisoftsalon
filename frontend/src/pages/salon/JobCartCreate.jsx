@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Select } from "@/components/select/PortalSelect";
 import {
   Alert,
@@ -93,6 +93,8 @@ const CustomerProfileLink = ({ customerId }) =>
 
 const JobCartCreate = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const sourceAppointment = location.state?.appointment || null;
   const { user } = useAuth();
   const [form, setForm] = useState({
     salonId: "",
@@ -131,6 +133,13 @@ const JobCartCreate = () => {
   const [packageModalOpen, setPackageModalOpen] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+
+  useEffect(() => {
+    if (!sourceAppointment) return;
+    const appointmentServices = sourceAppointment.services || [];
+    setForm((current) => ({ ...current, salonId: sourceAppointment.salonId || current.salonId, branchId: sourceAppointment.branchId || sourceAppointment.branch?.id || current.branchId, customerName: sourceAppointment.customer?.name || current.customerName, phone: sourceAppointment.customer?.phone || current.phone, date: sourceAppointment.startTime ? toLocalInput(sourceAppointment.startTime).slice(0, 10) : current.date }));
+    setServiceRows(appointmentServices.map((item) => ({ ...newServiceRow(), rowId: "appointment-service-" + (item.id || item.serviceId), serviceId: item.serviceId, mainServiceId: item.mainServiceId || "", staffId: item.staffId || item.staff?.id || sourceAppointment.staffId || sourceAppointment.staff?.id || "", qty: String(item.quantity || 1), price: String(item.price ?? ""), total: String(item.price ?? "") })));
+  }, [sourceAppointment]);
 
   const loadCustomerSummary = useCallback(async (query, options = {}) => {
     const suppressNotFound = options.suppressNotFound ?? false;

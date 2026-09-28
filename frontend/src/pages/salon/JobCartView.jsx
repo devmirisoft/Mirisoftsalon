@@ -8,7 +8,6 @@ import Content from "@/layout/content/Content";
 import StatusBadge from "@/components/salon/StatusBadge";
 import { salonApi } from "@/services/salonApi";
 import { formatDate } from "@/utils/salonFormat";
-import AppointmentStatusBadge from "@/components/salon/AppointmentStatusBadge";
 
 const Field = ({ icon, label, children }) => (
   <div className="jcv-field">
@@ -41,93 +40,6 @@ const SlipRow = ({ label, value }) => (
   </div>
 );
 
-// Appointments tab: fetches appointments for the same customer
-const AppointmentsTab = ({ customerId }) => {
-  const navigate = useNavigate();
-  const [appointments, setAppointments] = useState([]);
-  const [apptLoading, setApptLoading] = useState(false);
-  const [apptError, setApptError] = useState("");
-
-  useEffect(() => {
-    if (!customerId) return;
-    let cancelled = false;
-    setApptLoading(true);
-    setApptError("");
-    salonApi.appointments
-      .list({ customerId, limit: 50 })
-      .then((res) => {
-        if (!cancelled) setAppointments(res.data?.items || res.data || []);
-      })
-      .catch((err) => {
-        if (!cancelled) setApptError(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setApptLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [customerId]);
-
-  if (!customerId) {
-    return (
-      <p className="text-soft py-4 mb-0">
-        No customer linked \u2014 appointments are only shown for named customers.
-      </p>
-    );
-  }
-  if (apptLoading) {
-    return <div className="text-center py-5"><Spinner color="primary" /></div>;
-  }
-  if (apptError) {
-    return <Alert color="danger">{apptError}</Alert>;
-  }
-  if (appointments.length === 0) {
-    return <p className="text-soft py-4 mb-0">No appointments found for this customer.</p>;
-  }
-  return (
-    <div className="table-responsive">
-      <table className="table jcv-table mb-0">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Code</th>
-            <th>Date &amp; Time</th>
-            <th>Staff</th>
-            <th>Status</th>
-            <th className="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((appt, index) => (
-            <tr key={appt.id}>
-              <td>{index + 1}</td>
-              <td className="fw-bold">{appt.appointmentCode || "\u2014"}</td>
-              <td>{formatDate(appt.startTime, true)}</td>
-              <td>{appt.staff?.name || "\u2014"}</td>
-              <td><AppointmentStatusBadge value={appt.status} /></td>
-              <td className="text-end">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-icon btn-trigger"
-                  title="Go to Appointments"
-                  onClick={() => navigate("/appointments")}
-                >
-                  <Icon name="eye" />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-const TABS = [
-  { key: "job", label: "Job", icon: "file-docs" },
-  { key: "appointments", label: "Appointments", icon: "calendar" },
-];
 
 // Read-only job view: who the job is for, who works it and which services it
 // covers. Prices live on the bill, not here. Printing swaps the cards for a
@@ -138,7 +50,6 @@ const JobCartView = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("job");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -205,7 +116,7 @@ const JobCartView = () => {
             {cart?.status === "ACTIVE" && (
               <Button
                 className="jcv-btn-dark"
-                onClick={() => navigate(`/job-carts/${cart.id}`)}
+                onClick={() => navigate("/job-carts/" + cart.id + "/edit")}
               >
                 <Icon name="edit" /> <span>Edit</span>
               </Button>
@@ -213,21 +124,6 @@ const JobCartView = () => {
           </div>
         </div>
 
-        {cart && (
-          <div className="jcv-tabs d-print-none">
-            {TABS.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                className={`jcv-tab${activeTab === tab.key ? " is-active" : ""}`}
-                onClick={() => setActiveTab(tab.key)}
-              >
-                <Icon name={tab.icon} />
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {error && <Alert color="danger">{error}</Alert>}
@@ -239,8 +135,6 @@ const JobCartView = () => {
       ) : cart ? (
         <>
         <div className="d-print-none">
-          {activeTab === "job" && (
-            <>
             <Section icon="file-text" title="Job Details">
             <div className="jcv-fields">
               <Field icon="tag" label="Job Cart ID">
@@ -310,16 +204,7 @@ const JobCartView = () => {
               </div>
             )}
           </Section>
-            </>
-          )}
 
-          {activeTab === "appointments" && (
-            <Section icon="calendar" title="Appointments">
-              <div className="px-3 pb-3">
-                <AppointmentsTab customerId={cart.customer?.id} />
-              </div>
-            </Section>
-          )}
         </div>
 
         <div className="jc-slip d-none d-print-block">

@@ -124,6 +124,7 @@ export const getJobCarts = async (req: Request, res: Response) => {
         : {}),
       ...(parsed.phone ? { phone: parsed.phone } : {}),
       ...(parsed.status ? { status: parsed.status } : {}),
+      ...(parsed.origin ? { origin: parsed.origin } : {}),
       ...(parsed.createdById ? { createdById: parsed.createdById } : {}),
       ...(parsed.startDate
         ? { startDate: new Date(`${parsed.startDate}T00:00:00.000Z`) }

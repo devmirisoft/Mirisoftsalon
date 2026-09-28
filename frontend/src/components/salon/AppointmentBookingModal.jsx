@@ -7,6 +7,7 @@ import {
   Form,
   FormGroup,
   Input,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -17,10 +18,15 @@ import {
 import { Button, Icon } from "@/components/Component";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
 import { salonApi } from "@/services/salonApi";
+import { serviceMinutes } from "@/utils/appointmentTotals";
 import {
-  appointmentTotals,
-  serviceMinutes,
-} from "@/utils/appointmentTotals";
+  cappedDiscount,
+  netPrice,
+  priceToTotal,
+  qtyOf,
+  round2,
+  totalToPrice,
+} from "@/utils/lineItemPricing";
 import {
   formatDate,
   formatMoney,
@@ -39,8 +45,174 @@ const emptyForm = {
   internalNote: "",
 };
 
-// Booking cart: services are checked off in the picker and land as rows with
-// their own stylist, price and tax, with a running summary beside them.
+const digitsOf = (value) => String(value || "").replace(/\D/g, "");
+
+// One place that keeps price / discount / qty / total consistent.
+// Editing total back-solves price; editing anything else re-derives total.
+const reprice = (row, patch, gstPercent) => {
+  const next = { ...row, ...patch };
+  if ("total" in patch) {
+    next.price = totalToPrice(
+      next.total,
+      next.qty,
+      gstPercent,
+      next.discount,
+      next.discountType
+    );
+    return next;
+  }
+  next.discount = cappedDiscount(next.price, next.discount, next.discountType);
+  next.total = priceToTotal(
+    next.price,
+    next.qty,
+    gstPercent,
+    next.discount,
+    next.discountType
+  );
+  return next;
+};
+
+const newRow = (service, staffId, gstPercent) =>
+  reprice(
+    {
+      serviceId: service.id,
+      staffId,
+      qty: "1",
+      price: String(service.price ?? ""),
+      discount: "",
+      discountType: "AMT",
+      total: "",
+    },
+    {},
+    gstPercent
+  );
+
+// One line of the booking cart. `item` is the row plus derived display values.
+const CartRow = ({ item, gstPercent, staff, saving, onEdit, onRemove }) => {
+  const discounted = Number(item.discount) > 0 ? item.unit : null;
+  return (
+    <tr>
+      <td>
+        <span className="booking-service-name">{item.name}</span>
+        <small className="d-block text-soft">
+          <Icon name="clock" />{" "}
+          {item.minutes ? `${item.minutes} min` : "Duration not set"}
+        </small>
+      </td>
+      <td>
+        <Input
+          type="select"
+          bsSize="sm"
+          value={item.staffId}
+          disabled={saving}
+          onChange={(e) => onEdit({ staffId: e.target.value })}
+        >
+          <option value="">Use primary staff</option>
+          {staff.map((member) => (
+            <option key={member.id} value={member.id}>
+              {member.name}
+              {member.jobRole ? ` - ${member.jobRole}` : ""}
+            </option>
+          ))}
+        </Input>
+      </td>
+      <td>
+        <Input
+          type="number"
+          bsSize="sm"
+          min="1"
+          step="1"
+          aria-label={`Quantity for ${item.name}`}
+          value={item.qty}
+          disabled={saving}
+          onChange={(e) => onEdit({ qty: e.target.value })}
+        />
+      </td>
+      <td>
+        <div className="jobcart-price-field">
+          <Input
+            type="number"
+            bsSize="sm"
+            min="0"
+            step="0.01"
+            aria-label={`Price for ${item.name}`}
+            value={item.price}
+            disabled={saving}
+            style={discounted === null ? undefined : { paddingRight: 82 }}
+            onChange={(e) => onEdit({ price: e.target.value })}
+          />
+          {discounted !== null && (
+            <span className="jobcart-net-price" title="Price after discount">
+              {formatMoney(discounted)}
+            </span>
+          )}
+        </div>
+      </td>
+      <td>
+        <InputGroup size="sm" className="flex-nowrap">
+          <Input
+            type="number"
+            min="0"
+            step="0.01"
+            max={
+              item.discountType === "PCT"
+                ? "100"
+                : String(Math.max(0, Number(item.price || 0)))
+            }
+            aria-label={`Discount for ${item.name}`}
+            value={item.discount}
+            disabled={saving}
+            style={{ minWidth: 0 }}
+            onChange={(e) => onEdit({ discount: e.target.value })}
+          />
+          <button
+            type="button"
+            className="input-group-text jobcart-discount-unit"
+            disabled={saving}
+            title="Switch discount type"
+            onClick={() =>
+              onEdit({ discountType: item.discountType === "PCT" ? "AMT" : "PCT" })
+            }
+          >
+            {item.discountType === "PCT" ? "%" : <>&#8377;</>}
+          </button>
+        </InputGroup>
+      </td>
+      <td className="text-end text-soft">{gstPercent}%</td>
+      <td>
+        <Input
+          type="number"
+          bsSize="sm"
+          min="0"
+          step="0.01"
+          aria-label={`Total for ${item.name}`}
+          value={item.total}
+          disabled={saving}
+          onChange={(e) => onEdit({ total: e.target.value })}
+        />
+      </td>
+      <td className="text-end">
+        <button
+          type="button"
+          className="booking-row-remove"
+          title="Remove service"
+          disabled={saving}
+          onClick={onRemove}
+        >
+          <Icon name="trash" />
+        </button>
+      </td>
+    </tr>
+  );
+};
+
+const SummaryRow = ({ label, children }) => (
+  <div className="booking-summary-row">
+    <span>{label}</span>
+    <strong>{children}</strong>
+  </div>
+);
+
 const AppointmentBookingModal = ({
   isOpen,
   toggle,
@@ -48,7 +220,7 @@ const AppointmentBookingModal = ({
   lockBranch = false,
   defaultBranchId = "",
   statuses = [],
-  refs,
+  refs = {},
   defaults,
   newCustomerId,
   onCreateCustomer,
@@ -64,6 +236,12 @@ const AppointmentBookingModal = ({
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
+  const gstPercent =
+    gst?.gstEnabled === false ? 0 : Number(gst?.serviceGstRate ?? 0);
+
+  // ---- lifecycle -----------------------------------------------------------
+
+  // Reset everything whenever the modal opens.
   useEffect(() => {
     if (!isOpen) return;
     setForm({
@@ -79,23 +257,18 @@ const AppointmentBookingModal = ({
     setError("");
   }, [isOpen, defaults, defaultBranchId, lockBranch]);
 
-  // A customer added from the inline "create" option drops straight into the
-  // form; the cart built so far is left untouched.
+  // A customer created inline drops into the form; the cart is untouched.
   useEffect(() => {
-    if (newCustomerId) {
-      const customer = (refs.customers || []).find(
-        (item) => item.id === newCustomerId
-      );
-      setForm((current) => ({
-        ...current,
-        customerId: newCustomerId,
-        customerPhone: customer?.phone || current.customerPhone,
-      }));
-    }
+    if (!newCustomerId) return;
+    const customer = (refs.customers || []).find((c) => c.id === newCustomerId);
+    setForm((current) => ({
+      ...current,
+      customerId: newCustomerId,
+      customerPhone: customer?.phone || current.customerPhone,
+    }));
   }, [newCustomerId, refs.customers]);
 
-  // Tax rate comes from the salon GST settings. A super admin picks the salon
-  // in this form, so the rate is refetched when that changes.
+  // GST rate follows the salon (super admins pick the salon in this form).
   useEffect(() => {
     if (!isOpen || (isSuper && !form.salonId)) return;
     salonApi.profile
@@ -104,7 +277,12 @@ const AppointmentBookingModal = ({
       .catch(() => setGst(null));
   }, [isOpen, isSuper, form.salonId]);
 
-  // Past visits show job-cart records only, newest first.
+  // The rate arrives async; re-derive totals so early rows are not stale.
+  useEffect(() => {
+    setRows((current) => current.map((row) => reprice(row, {}, gstPercent)));
+  }, [gstPercent]);
+
+  // Past visits: job-cart records only, newest first.
   useEffect(() => {
     if (!isOpen || !form.customerId) {
       setHistory([]);
@@ -127,33 +305,36 @@ const AppointmentBookingModal = ({
             .slice(0, 15)
         );
       })
-      .catch(() => {
-        if (!cancelled) setHistory([]);
-      })
-      .finally(() => {
-        if (!cancelled) setHistoryLoading(false);
-      });
+      .catch(() => !cancelled && setHistory([]))
+      .finally(() => !cancelled && setHistoryLoading(false));
     return () => {
       cancelled = true;
     };
   }, [isOpen, form.customerId]);
 
-  const gstPercent =
-    gst?.gstEnabled === false ? 0 : Number(gst?.serviceGstRate ?? 0);
+  // ---- derived data --------------------------------------------------------
 
   const activeServices = useMemo(
     () => (refs.services || []).filter((service) => service.status),
     [refs.services]
   );
-
   const serviceById = useMemo(
     () => new Map(activeServices.map((service) => [service.id, service])),
     [activeServices]
   );
-
   const assignedById = useMemo(
     () => new Map(rows.map((row) => [row.serviceId, row.staffId])),
     [rows]
+  );
+
+  // Staff scoped to the picked branch; "All branches" shows everyone and
+  // records without a branchId always show.
+  const branchStaff = useMemo(
+    () =>
+      (refs.staff || []).filter(
+        (m) => !form.branchId || !m.branchId || m.branchId === form.branchId
+      ),
+    [refs.staff, form.branchId]
   );
 
   const cart = useMemo(
@@ -162,23 +343,36 @@ const AppointmentBookingModal = ({
         .map((row) => {
           const service = serviceById.get(row.serviceId);
           if (!service) return null;
-          const price = Number(row.price ?? service.price ?? 0);
+          const qty = qtyOf(row.qty);
+          const unit = netPrice(row.price, row.discount, row.discountType);
+          const base = unit * qty;
           return {
             ...row,
             name: service.name,
-            price,
-            minutes: serviceMinutes(service),
-            tax: (price * gstPercent) / 100,
+            qty,
+            unit,
+            base,
+            tax: (base * gstPercent) / 100,
+            discountAmount: round2((Number(row.price || 0) - unit) * qty),
+            minutes: serviceMinutes(service) * qty,
           };
         })
         .filter(Boolean),
     [rows, serviceById, gstPercent]
   );
 
-  const totals = useMemo(
-    () => appointmentTotals(cart, gstPercent),
-    [cart, gstPercent]
-  );
+  const totals = useMemo(() => {
+    const sum = (key) => cart.reduce((acc, item) => acc + item[key], 0);
+    const subtotal = sum("base");
+    const tax = sum("tax");
+    return {
+      minutes: sum("minutes"),
+      discount: sum("discountAmount"),
+      subtotal,
+      tax,
+      total: subtotal + tax,
+    };
+  }, [cart]);
 
   const endTime = useMemo(() => {
     const start = new Date(form.startTime);
@@ -186,55 +380,53 @@ const AppointmentBookingModal = ({
     return new Date(start.getTime() + totals.minutes * 60000);
   }, [form.startTime, totals.minutes]);
 
-  // The API takes one primary staff plus per-service assignments; the first
-  // assigned row is the primary, and unassigned rows inherit it server-side.
+  // API takes one primary staff plus per-service assignments; the first
+  // assigned row is primary and unassigned rows inherit it server-side.
   const primaryStaffId = rows.find((row) => row.staffId)?.staffId || "";
-  const primaryStaffName = refs.staff?.find(
-    (member) => member.id === primaryStaffId
-  )?.name;
+  const primaryStaffName = refs.staff?.find((m) => m.id === primaryStaffId)?.name;
 
-  // Staff are scoped to the picked branch. "All branches" shows everyone, and
-  // records with no branchId (the staff-role fallback list) always show.
-  const branchStaff = useMemo(
+  const customerOptions = useMemo(
     () =>
-      (refs.staff || []).filter(
-        (member) =>
-          !form.branchId || !member.branchId || member.branchId === form.branchId
-      ),
-    [refs.staff, form.branchId]
+      (refs.customers || []).map((item) => ({
+        value: item.id,
+        phone: item.phone || "",
+        label: `${item.name}${item.phone ? ` · ${item.phone}` : ""}`,
+      })),
+    [refs.customers]
   );
+
+  const hasRows = cart.length > 0;
+  const hasScrollableContent = hasRows || Boolean(form.customerId);
+
+  // ---- actions -------------------------------------------------------------
 
   const setField = (name, value) =>
     setForm((current) => ({ ...current, [name]: value }));
 
-  const toggleService = (serviceId) =>
+  const editRow = (serviceId, patch) =>
     setRows((current) =>
-      current.some((row) => row.serviceId === serviceId)
-        ? current.filter((row) => row.serviceId !== serviceId)
-        : [
-            ...current,
-            {
-              serviceId,
-              staffId: pickerStaffId,
-              price: Number(serviceById.get(serviceId)?.price || 0),
-            },
-          ]
+      current.map((row) =>
+        row.serviceId === serviceId ? reprice(row, patch, gstPercent) : row
+      )
     );
 
-  // Label carries name and phone so react-select's default filter matches
-  // either, and the picked customer shows both.
-  const customerOptions = (refs.customers || []).map((item) => ({
-    value: item.id,
-    phone: item.phone || "",
-    label: `${item.name}${item.phone ? ` · ${item.phone}` : ""}`,
-  }));
+  const toggleService = (serviceId) =>
+    setRows((current) => {
+      if (current.some((row) => row.serviceId === serviceId)) {
+        return current.filter((row) => row.serviceId !== serviceId);
+      }
+      const service = serviceById.get(serviceId);
+      return service
+        ? [...current, newRow(service, pickerStaffId, gstPercent)]
+        : current;
+    });
 
   const selectCustomerByPhone = (value) => {
-    const digits = value.replace(/\D/g, "");
+    const digits = digitsOf(value);
     const match =
       digits.length >= 10
         ? (refs.customers || []).find((customer) => {
-            const stored = String(customer.phone || "").replace(/\D/g, "");
+            const stored = digitsOf(customer.phone);
             return stored.length >= 10 && stored.endsWith(digits.slice(-10));
           })
         : null;
@@ -245,14 +437,29 @@ const AppointmentBookingModal = ({
     }));
   };
 
-  const hasAppointmentRows = cart.length > 0;
-  const hasScrollableContent = hasAppointmentRows || Boolean(form.customerId);
+  const changeBranch = (branchId) => {
+    setField("branchId", branchId);
+    setPickerStaffId("");
+    const allowed = new Set(
+      (refs.staff || [])
+        .filter((m) => !branchId || !m.branchId || m.branchId === branchId)
+        .map((m) => m.id)
+    );
+    // Staff outside the new branch are cleared from rows, not the rows.
+    setRows((current) =>
+      current.map((row) =>
+        allowed.has(row.staffId) ? row : { ...row, staffId: "" }
+      )
+    );
+  };
 
   const submit = async (event) => {
     event.preventDefault();
     setError("");
     if (!form.customerId) return setError("Select a customer.");
     if (!cart.length) return setError("Add at least one service.");
+    const unpriced = cart.find((item) => item.price === "");
+    if (unpriced) return setError(`Enter a price for ${unpriced.name}.`);
     if (!primaryStaffId) {
       return setError("Assign staff to at least one service.");
     }
@@ -270,9 +477,11 @@ const AppointmentBookingModal = ({
         customerId: form.customerId,
         staffId: primaryStaffId,
         serviceIds: cart.map((item) => item.serviceId),
+        // price = discounted, pre-GST unit price (same contract as job carts)
         serviceItems: cart.map((item) => ({
           serviceId: item.serviceId,
-          price: item.price,
+          price: item.unit,
+          quantity: item.qty,
           ...(item.staffId ? { staffId: item.staffId } : {}),
         })),
         startTime: startTime.toISOString(),
@@ -288,12 +497,15 @@ const AppointmentBookingModal = ({
     }
   };
 
+  // ---- render --------------------------------------------------------------
+
   return (
     <>
       <Modal
         isOpen={isOpen}
         toggle={toggle}
         centered
+        size="xl"
         scrollable={hasScrollableContent}
         wrapClassName="appointment-booking-modal-wrap"
         className={`appointment-booking-modal ${
@@ -336,8 +548,8 @@ const AppointmentBookingModal = ({
                           type="select"
                           required
                           value={form.salonId}
-                          onChange={(event) => {
-                            setField("salonId", event.target.value);
+                          onChange={(e) => {
+                            setField("salonId", e.target.value);
                             setRows([]);
                           }}
                         >
@@ -361,9 +573,7 @@ const AppointmentBookingModal = ({
                         autoComplete="off"
                         placeholder="Search by phone"
                         value={form.customerPhone}
-                        onChange={(event) =>
-                          selectCustomerByPhone(event.target.value)
-                        }
+                        onChange={(e) => selectCustomerByPhone(e.target.value)}
                       />
                       <datalist id="appointment-customer-phones">
                         {customerOptions
@@ -401,7 +611,6 @@ const AppointmentBookingModal = ({
                       />
                     </FormGroup>
                   </Col>
-                  
                   <Col md="6">
                     <FormGroup className="mb-0">
                       <Label>Start time</Label>
@@ -410,9 +619,7 @@ const AppointmentBookingModal = ({
                         required
                         min={minDateTimeInput()}
                         value={form.startTime}
-                        onChange={(event) =>
-                          setField("startTime", event.target.value)
-                        }
+                        onChange={(e) => setField("startTime", e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -422,9 +629,7 @@ const AppointmentBookingModal = ({
                       <Input
                         type="select"
                         value={form.status}
-                        onChange={(event) =>
-                          setField("status", event.target.value)
-                        }
+                        onChange={(e) => setField("status", e.target.value)}
                       >
                         {statuses.map((status) => (
                           <option key={status} value={status}>
@@ -441,28 +646,7 @@ const AppointmentBookingModal = ({
                         <Input
                           type="select"
                           value={form.branchId}
-                          onChange={(event) => {
-                            const branchId = event.target.value;
-                            setField("branchId", branchId);
-                            setPickerStaffId("");
-                            const allowed = new Set(
-                              (refs.staff || [])
-                                .filter(
-                                  (member) =>
-                                    !branchId ||
-                                    !member.branchId ||
-                                    member.branchId === branchId
-                                )
-                                .map((member) => member.id)
-                            );
-                            setRows((current) =>
-                              current.map((row) =>
-                                allowed.has(row.staffId)
-                                  ? row
-                                  : { ...row, staffId: "" }
-                              )
-                            );
-                          }}
+                          onChange={(e) => changeBranch(e.target.value)}
                         >
                           <option value="">All branches</option>
                           {(refs.branches || []).map((item) => (
@@ -480,49 +664,47 @@ const AppointmentBookingModal = ({
                   <div className="booking-section-head">
                     <h6 className="booking-section-title mb-0">
                       <Icon name="cart-fill" /> Services
-                      {hasAppointmentRows && (
+                      {hasRows && (
                         <span className="booking-count">{cart.length}</span>
                       )}
                     </h6>
                     <Button
-  color="primary"
-  type="button"
-  className="text-nowrap"
-  disabled={saving || (isSuper && !form.salonId)}
-  onClick={() => {
-    setPickerStaffId("");
-    setPickerOpen(true);
-  }}
->
+                      color="primary"
+                      type="button"
+                      className="text-nowrap"
+                      disabled={saving || (isSuper && !form.salonId)}
+                      onClick={() => {
+                        setPickerStaffId("");
+                        setPickerOpen(true);
+                      }}
+                    >
                       <Icon name="plus" /> <span>Add service</span>
                     </Button>
                   </div>
                   <div
-                    className={`booking-cart${
-                      hasAppointmentRows ? " booking-cart--filled" : ""
+                    className={`booking-cart table-responsive${
+                      hasRows ? " booking-cart--filled" : ""
                     }`}
                   >
-                    <table className="table table-sm mb-2">
+                    <table className="table table-sm mb-2" style={{ minWidth: 820 }}>
                       <thead>
                         <tr>
-                          <th>Service</th>
-                          <th style={{ width: 200 }}>Staff</th>
-                          <th style={{ width: 110 }} className="text-end">
-                            Price
+                          <th style={{ minWidth: 150 }}>Service</th>
+                          <th style={{ width: 170 }}>Staff</th>
+                          <th style={{ width: 70 }}>Qty</th>
+                          <th style={{ width: 120 }}>Price</th>
+                          <th style={{ width: 120 }}>Discount</th>
+                          <th style={{ width: 60 }} className="text-end">
+                            GST %
                           </th>
-                          <th style={{ width: 80 }} className="text-end">
-                            GST
-                          </th>
-                          <th style={{ width: 120 }} className="text-end">
-                            Total
-                          </th>
-                          <th style={{ width: 56 }} />
+                          <th style={{ width: 110 }}>Total</th>
+                          <th style={{ width: 48 }} />
                         </tr>
                       </thead>
                       <tbody>
-                        {!hasAppointmentRows && (
+                        {!hasRows && (
                           <tr>
-                            <td colSpan="6">
+                            <td colSpan="8">
                               <div className="booking-cart-empty">
                                 <Icon name="cart-fill" />
                                 <span>No services added yet</span>
@@ -534,92 +716,25 @@ const AppointmentBookingModal = ({
                           </tr>
                         )}
                         {cart.map((item) => (
-                          <tr key={item.serviceId}>
-                            <td>
-                              <span className="booking-service-name">
-                                {item.name}
-                              </span>
-                              <small className="d-block text-soft">
-                                <Icon name="clock" />{" "}
-                                {item.minutes
-                                  ? `${item.minutes} min`
-                                  : "Duration not set"}
-                              </small>
-                            </td>
-                            <td>
-                              <Input
-                                type="select"
-                                bsSize="sm"
-                                value={item.staffId}
-                                disabled={saving}
-                                onChange={(event) =>
-                                  setRows((current) =>
-                                    current.map((row) =>
-                                      row.serviceId === item.serviceId
-                                        ? { ...row, staffId: event.target.value }
-                                        : row
-                                    )
-                                  )
-                                }
-                              >
-                                <option value="">Use primary staff</option>
-                                {branchStaff.map((member) => (
-                                  <option key={member.id} value={member.id}>
-                                    {member.name}
-                                    {member.jobRole ? ` - ${member.jobRole}` : ""}
-                                  </option>
-                                ))}
-                              </Input>
-                            </td>
-                            <td>
-                              <Input
-                                type="number"
-                                bsSize="sm"
-                                min="0"
-                                step="0.01"
-                                className="booking-price-input"
-                                aria-label={`Price for ${item.name}`}
-                                value={item.price}
-                                disabled={saving}
-                                onChange={(event) => {
-                                  const price = event.target.value;
-                                  setRows((current) =>
-                                    current.map((row) =>
-                                      row.serviceId === item.serviceId
-                                        ? { ...row, price }
-                                        : row
-                                    )
-                                  );
-                                }}
-                              />
-                            </td>
-                            <td className="text-end text-soft">
-                              {gstPercent}%
-                            </td>
-                            <td className="text-end fw-bold">
-                              {formatMoney(item.price + item.tax)}
-                            </td>
-                            <td className="text-end">
-                              <button
-                                type="button"
-                                className="booking-row-remove"
-                                title="Remove service"
-                                disabled={saving}
-                                onClick={() => toggleService(item.serviceId)}
-                              >
-                                <Icon name="trash" />
-                              </button>
-                            </td>
-                          </tr>
+                          <CartRow
+                            key={item.serviceId}
+                            item={item}
+                            gstPercent={gstPercent}
+                            staff={branchStaff}
+                            saving={saving}
+                            onEdit={(patch) => editRow(item.serviceId, patch)}
+                            onRemove={() => toggleService(item.serviceId)}
+                          />
                         ))}
                       </tbody>
                     </table>
                   </div>
-                  {hasAppointmentRows && (
+                  {hasRows && (
                     <small className="text-soft">
-                      Prices come from the service catalog. Rows left on
-                      &quot;primary staff&quot; are booked with the first assigned
-                      stylist.
+                      Price is the pre-GST unit price; Total is the post-GST line
+                      total. Edit either and the other follows. Rows left on
+                      &quot;primary staff&quot; are booked with the first
+                      assigned stylist.
                     </small>
                   )}
                 </FormGroup>
@@ -635,9 +750,7 @@ const AppointmentBookingModal = ({
                         type="textarea"
                         rows="2"
                         value={form.bookingNote}
-                        onChange={(event) =>
-                          setField("bookingNote", event.target.value)
-                        }
+                        onChange={(e) => setField("bookingNote", e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -648,9 +761,7 @@ const AppointmentBookingModal = ({
                         type="textarea"
                         rows="2"
                         value={form.internalNote}
-                        onChange={(event) =>
-                          setField("internalNote", event.target.value)
-                        }
+                        onChange={(e) => setField("internalNote", e.target.value)}
                       />
                     </FormGroup>
                   </Col>
@@ -664,39 +775,36 @@ const AppointmentBookingModal = ({
                       <h6 className="booking-section-title">
                         <Icon name="calendar-booking" /> Appointment summary
                       </h6>
-                      <div className="booking-summary-row">
-                        <span>Services</span>
-                        <strong>{cart.length}</strong>
-                      </div>
-                      <div className="booking-summary-row">
-                        <span>Primary staff</span>
-                        <strong>{primaryStaffName || "—"}</strong>
-                      </div>
-                      <div className="booking-summary-row">
-                        <span>Duration</span>
-                        <strong>{totals.minutes} min</strong>
-                      </div>
-                      <div className="booking-summary-row">
-                        <span>Ends at</span>
-                        <strong>
-                          {endTime ? formatDate(endTime, true) : "—"}
-                        </strong>
-                      </div>
-                      <div className="booking-summary-row">
-                        <span>Subtotal</span>
-                        <strong>{formatMoney(totals.subtotal)}</strong>
-                      </div>
-                      <div className="booking-summary-row">
-                        <span>
-                          GST {gstPercent ? `(${gstPercent}%)` : "(not enabled)"}
-                        </span>
-                        <strong>{formatMoney(totals.tax)}</strong>
-                      </div>
+                      <SummaryRow label="Services">{cart.length}</SummaryRow>
+                      <SummaryRow label="Primary staff">
+                        {primaryStaffName || "—"}
+                      </SummaryRow>
+                      <SummaryRow label="Duration">{totals.minutes} min</SummaryRow>
+                      <SummaryRow label="Ends at">
+                        {endTime ? formatDate(endTime, true) : "—"}
+                      </SummaryRow>
+                      {totals.discount > 0 && (
+                        <SummaryRow label="Discount">
+                          <span className="text-danger">
+                            - {formatMoney(totals.discount)}
+                          </span>
+                        </SummaryRow>
+                      )}
+                      <SummaryRow label="Subtotal">
+                        {formatMoney(totals.subtotal)}
+                      </SummaryRow>
+                      <SummaryRow
+                        label={`GST ${
+                          gstPercent ? `(${gstPercent}%)` : "(not enabled)"
+                        }`}
+                      >
+                        {formatMoney(totals.tax)}
+                      </SummaryRow>
                       <div className="booking-summary-total">
                         <span>Estimated total</span>
                         <strong>{formatMoney(totals.total)}</strong>
                       </div>
-                      {hasAppointmentRows && (
+                      {hasRows && (
                         <p className="text-soft small">
                           Tax is an estimate at the salon service GST rate. The
                           final invoice is raised from the bill screen.
@@ -728,19 +836,12 @@ const AppointmentBookingModal = ({
                         {historyLoading ? (
                           <Spinner size="sm" />
                         ) : history.length === 0 ? (
-                          <p className="text-soft small mb-0">
-                            No past job carts.
-                          </p>
+                          <p className="text-soft small mb-0">No past job carts.</p>
                         ) : (
                           <div className="booking-history">
                             {history.map((visit) => (
-                              <div
-                                key={visit.key}
-                                className="booking-history-item"
-                              >
-                                <strong className="small">
-                                  {visit.code || "-"}
-                                </strong>
+                              <div key={visit.key} className="booking-history-item">
+                                <strong className="small">{visit.code || "-"}</strong>
                                 <div className="text-soft small">
                                   {formatDate(visit.startTime)}
                                 </div>
@@ -758,18 +859,18 @@ const AppointmentBookingModal = ({
         </Form>
       </Modal>
       <ServicePickerModal
-  isOpen={pickerOpen}
-  toggle={() => setPickerOpen(false)}
-  services={activeServices}
-  staff={branchStaff}
-  staffId={pickerStaffId}
-  onStaffChange={setPickerStaffId}
-  assignedById={assignedById}
-  onToggleService={toggleService}
-  disabled={saving}
-  requireStaff
-  staffPlaceholder="Select staff"
-/>
+        isOpen={pickerOpen}
+        toggle={() => setPickerOpen(false)}
+        services={activeServices}
+        staff={branchStaff}
+        staffId={pickerStaffId}
+        onStaffChange={setPickerStaffId}
+        assignedById={assignedById}
+        onToggleService={toggleService}
+        disabled={saving}
+        requireStaff
+        staffPlaceholder="Select staff"
+      />
     </>
   );
 };

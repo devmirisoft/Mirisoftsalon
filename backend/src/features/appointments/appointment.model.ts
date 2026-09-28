@@ -191,7 +191,13 @@ export const AppointmentModel = {
     return prisma.appointment.findMany({
       where: appointmentListWhere(filters),
       include: {
-        generatedJobCart: { select: { id: true, status: true } },
+        generatedJobCart: {
+          select: {
+            id: true,
+            status: true,
+            invoice: { select: { paymentStatus: true } },
+          },
+        },
         salon: {
           select: {
             id: true,
@@ -239,7 +245,13 @@ export const AppointmentModel = {
     return prisma.appointment.findMany({
       where: { salonId, ...appointmentListWhere(filters) },
       include: {
-        generatedJobCart: { select: { id: true, status: true } },
+        generatedJobCart: {
+          select: {
+            id: true,
+            status: true,
+            invoice: { select: { paymentStatus: true } },
+          },
+        },
         ...soldProductsInclude,
         branch: {
           select: {
@@ -284,7 +296,13 @@ export const AppointmentModel = {
         id,
       },
       include: {
-        generatedJobCart: { select: { id: true, status: true } },
+        generatedJobCart: {
+          select: {
+            id: true,
+            status: true,
+            invoice: { select: { paymentStatus: true } },
+          },
+        },
         ...soldProductsInclude,
         salon: {
           select: {

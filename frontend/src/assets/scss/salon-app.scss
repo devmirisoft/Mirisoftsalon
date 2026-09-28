@@ -5870,6 +5870,15 @@ body.dark-mode .dash-action {
   font-size: 0.75rem;
   color: #526484;
 }
+// Appointment booking modal — compact layout.
+
+// ---- dialog ----------------------------------------------------------------
+// Bootstrap's .modal-xl only applies >=1200px; below that the dialog caps near
+// 800px and the service table overflows. Own the width here instead.
+.appointment-booking-modal.modal-dialog {
+  width: 96vw;
+  max-width: min(1400px, 96vw);
+}
 
 /* header: title only */
 .booking-head { font-size: 0.95rem; }
@@ -5892,10 +5901,64 @@ body.dark-mode .dash-action {
 
 /* cart */
 .booking-cart thead th,
-.booking-cart tbody td { padding: 0.35rem 0.5rem; }
+.booking-cart tbody td {
+  padding: 0.35rem 0.5rem;
+  vertical-align: middle;
+}
+.booking-cart thead th {
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
 .booking-cart-empty { padding: 0.75rem; }
 .booking-cart-empty .icon,
 .booking-cart-empty small { display: none; }
+
+// Row inputs: one height, tight padding, no spinner arrows (Qty is ~7% wide).
+.booking-cart .form-control,
+.booking-cart .form-select {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 0.5rem;
+  font-size: 0.8125rem;
+}
+.booking-cart .form-select { padding-right: 1.75rem; }
+.booking-cart input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+// Price: the discounted unit price sits under the input, not over it, so the
+// narrow column keeps its full typing width.
+.booking-price-field { display: flex; flex-direction: column; gap: 2px; }
+.booking-net-price {
+  font-size: 0.6875rem;
+  line-height: 1;
+  opacity: 0.65;
+  text-align: right;
+  white-space: nowrap;
+}
+
+// Discount: value + ₹/% toggle.
+.booking-cart .input-group { flex-wrap: nowrap; }
+.booking-cart .input-group .form-control { min-width: 0; }
+.booking-discount-unit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.5rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  &:disabled { cursor: not-allowed; opacity: 0.6; }
+}
 
 /* summary */
 .booking-summary .card-inner { padding: 0.875rem; }

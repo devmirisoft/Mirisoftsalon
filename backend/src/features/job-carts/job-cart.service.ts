@@ -890,6 +890,7 @@ export const listJobCarts = async (
     customerName?: string;
     phone?: string;
     status?: "ACTIVE" | "COMPLETED" | "CANCELLED";
+    origin?: "ALL" | "APPOINTMENT";
     startDate?: Date;
     endDate?: Date;
     createdById?: string;
@@ -919,7 +920,9 @@ export const listJobCarts = async (
   const search = filters.search?.trim();
   const where: Prisma.AppointmentWhereInput = {
     walkInJobCart: true,
-    source: "WALK_IN",
+    ...(filters.origin === "APPOINTMENT"
+      ? { sourceAppointmentId: { not: null } }
+      : {}),
     ...scope,
     ...(actor.role === "SUPER_ADMIN" && filters.salonId
       ? { salonId: filters.salonId }

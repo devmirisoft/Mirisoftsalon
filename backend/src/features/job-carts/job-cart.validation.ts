@@ -155,6 +155,7 @@ export const listJobCartsSchema = z.object({
   customerName: z.string().trim().max(120).optional(),
   phone: z.string().trim().max(24).optional(),
   status: z.enum(["ACTIVE", "COMPLETED", "CANCELLED"]).optional(),
+  origin: z.enum(["ALL", "APPOINTMENT"]).optional(),
   startDate: z.string().date().optional(),
   endDate: z.string().date().optional(),
   createdById: uuid.optional(),

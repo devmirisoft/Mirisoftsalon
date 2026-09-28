@@ -656,6 +656,22 @@ export const updateAppointmentStatus = async (
               ...(req.user?.userId ? { changedById: req.user.userId } : {}),
               ...(usage?.data ? { usage: usage.data } : {}),
           }, tx);
+          // A no-show is terminal for the original slot only. Rescheduling it
+          // opens the appointment again so the new visit can create a job cart.
+          const rescheduled =
+            existingAppointment.status === "NO_SHOW"
+              ? await AppointmentModel.updateStatusWithHistory(
+                  id,
+                  {
+                    oldStatus: "NO_SHOW",
+                    newStatus: "SCHEDULED",
+                    note: "Appointment rescheduled",
+                    ...(req.user?.userId ? { changedById: req.user.userId } : {}),
+                  },
+                  tx
+                )
+              : updated;
+
           await createAuditLog({
             tx,
             salonId: existingAppointment.salonId,
@@ -668,10 +684,10 @@ export const updateAppointmentStatus = async (
                     : status === "CANCELLED"
                       ? "CANCEL"
                       : "STATUS_CHANGE",
-            entityId: updated.id,
-            entityCode: updated.appointmentCode,
-            entityName: updated.customer.name,
-            description: `Appointment ${updated.appointmentCode} changed from ${existingAppointment.status} to ${status}`,
+            entityId: rescheduled.id,
+            entityCode: rescheduled.appointmentCode,
+            entityName: rescheduled.customer.name,
+            description: "Appointment " + rescheduled.appointmentCode + " rescheduled",
             oldData: { status: existingAppointment.status },
             newData: { status },
             ...requestAuditContext(req),
@@ -814,12 +830,11 @@ export const rescheduleAppointment = async (
 
         if (
             existingAppointment.status === "COMPLETED" ||
-            existingAppointment.status === "CANCELLED" ||
-            existingAppointment.status === "NO_SHOW"
+            existingAppointment.status === "CANCELLED"
         ) {
             return res.status(400).json({
                 success: false,
-                message: "Completed, cancelled or no-show appointments cannot be rescheduled",
+                message: "Completed or cancelled appointments cannot be rescheduled",
             });
         }
 
@@ -877,6 +892,22 @@ export const rescheduleAppointment = async (
             endTime: finalEndTime,
           }, tx);
 
+          // A no-show is terminal for the original slot only. Rescheduling it
+          // opens the appointment again so the new visit can create a job cart.
+          const rescheduled =
+            existingAppointment.status === "NO_SHOW"
+              ? await AppointmentModel.updateStatusWithHistory(
+                  id,
+                  {
+                    oldStatus: "NO_SHOW",
+                    newStatus: "SCHEDULED",
+                    note: "Appointment rescheduled",
+                    ...(req.user?.userId ? { changedById: req.user.userId } : {}),
+                  },
+                  tx
+                )
+              : updated;
+
           await createAuditLog({
             tx,
             salonId: existingAppointment.salonId,
@@ -884,21 +915,22 @@ export const rescheduleAppointment = async (
             userId: req.user?.userId,
             module: "APPOINTMENT",
             action: "UPDATE",
-            entityId: updated.id,
-            entityCode: updated.appointmentCode,
-            entityName: updated.customer.name,
-            description: `Appointment ${updated.appointmentCode} rescheduled`,
+            entityId: rescheduled.id,
+            entityCode: rescheduled.appointmentCode,
+            entityName: rescheduled.customer.name,
+            description: "Appointment " + rescheduled.appointmentCode + " rescheduled",
             oldData: {
                 startTime: existingAppointment.startTime,
                 endTime: existingAppointment.endTime,
             },
             newData: {
-                startTime: updated.startTime,
-                endTime: updated.endTime,
+                startTime: rescheduled.startTime,
+                endTime: rescheduled.endTime,
+                status: rescheduled.status,
             },
             ...requestAuditContext(req),
           });
-          return updated;
+          return rescheduled;
         });
 
         return res.status(200).json({

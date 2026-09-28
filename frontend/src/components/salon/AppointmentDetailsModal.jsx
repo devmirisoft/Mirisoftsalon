@@ -35,7 +35,12 @@ const AppointmentDetailsModal = ({
   onTracking,
   onMakeBill,
   onDelete,
+  onCreateJobCart,
+  jobCartId,
+  onViewJobCart,
 }) => {
+  const resolvedJobCartId =
+    jobCartId || (appointment?.walkInJobCart ? appointment.id : "");
   if (!appointment) return null;
 
   const services = appointment.services || [];
@@ -316,6 +321,17 @@ const AppointmentDetailsModal = ({
             <Button color="success" onClick={() => onMakeBill(appointment)}>
               <Icon name="file-plus" /> Make bill
             </Button>
+          )}
+          {appointment.status !== "CANCELLED" && appointment.status !== "COMPLETED" && new Date(appointment.startTime) <= new Date() && (
+            resolvedJobCartId && onViewJobCart ? (
+              <Button color="primary" onClick={() => onViewJobCart(resolvedJobCartId)}>
+                <Icon name="eye" /> View Job Cart
+              </Button>
+            ) : !appointment.walkInJobCart && onCreateJobCart ? (
+              <Button color="primary" onClick={() => onCreateJobCart(appointment)}>
+                <Icon name="file-text" /> Create Job Cart
+              </Button>
+            ) : null
           )}
         </div>
       </ModalFooter>

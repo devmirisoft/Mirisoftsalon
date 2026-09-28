@@ -401,6 +401,7 @@ const AppointmentBookingModal = ({
                       />
                     </FormGroup>
                   </Col>
+                  
                   <Col md="6">
                     <FormGroup className="mb-0">
                       <Label>Start time</Label>
@@ -484,12 +485,15 @@ const AppointmentBookingModal = ({
                       )}
                     </h6>
                     <Button
-                      color="primary"
-                      type="button"
-                      className="text-nowrap"
-                      disabled={saving || (isSuper && !form.salonId)}
-                      onClick={() => setPickerOpen(true)}
-                    >
+  color="primary"
+  type="button"
+  className="text-nowrap"
+  disabled={saving || (isSuper && !form.salonId)}
+  onClick={() => {
+    setPickerStaffId("");
+    setPickerOpen(true);
+  }}
+>
                       <Icon name="plus" /> <span>Add service</span>
                     </Button>
                   </div>
@@ -754,17 +758,18 @@ const AppointmentBookingModal = ({
         </Form>
       </Modal>
       <ServicePickerModal
-        isOpen={pickerOpen}
-        toggle={() => setPickerOpen(false)}
-        services={activeServices}
-        staff={branchStaff}
-        staffId={pickerStaffId}
-        onStaffChange={setPickerStaffId}
-        assignedById={assignedById}
-        onToggleService={toggleService}
-        disabled={saving}
-        staffPlaceholder="Use primary staff"
-      />
+  isOpen={pickerOpen}
+  toggle={() => setPickerOpen(false)}
+  services={activeServices}
+  staff={branchStaff}
+  staffId={pickerStaffId}
+  onStaffChange={setPickerStaffId}
+  assignedById={assignedById}
+  onToggleService={toggleService}
+  disabled={saving}
+  requireStaff
+  staffPlaceholder="Select staff"
+/>
     </>
   );
 };

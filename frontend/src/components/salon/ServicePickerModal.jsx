@@ -51,6 +51,8 @@ const ServicePickerModal = ({
     return [...seen.entries()].map(([id, name]) => ({ id, name }));
   }, [options]);
 
+  
+
   const visible = useMemo(() => {
     const term = search.trim().toLowerCase();
     return options.filter((option) => {

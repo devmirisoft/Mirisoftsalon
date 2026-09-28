@@ -4401,6 +4401,48 @@ body.dark-mode .jcp-pay-code {
   border-bottom: 0;
 }
 
+
+// Tab bar on the JobCartView page
+.jcv-tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 1rem;
+  padding-bottom: 0;
+  border-bottom: 2px solid var(--jcp-line, #e5e9f2);
+}
+
+.jcv-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.1rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  border-radius: 0.375rem 0.375rem 0 0;
+  background: none;
+  color: var(--jcp-soft, #8094ae);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  .icon {
+    font-size: 1rem;
+  }
+}
+
+.jcv-tab:hover {
+  color: var(--jcp-ink, #1c2b46);
+  background: var(--jcp-panel, #f5f6fa);
+}
+
+.jcv-tab.is-active {
+  color: var(--jcp-navy, #364a63);
+  border-bottom-color: var(--jcp-navy, #364a63);
+  font-weight: 600;
+}
+
 // Job slip: print-only, receipt-width copy of the job cart view.
 .jc-slip {
   max-width: 72mm;
@@ -5653,6 +5695,10 @@ body.dark-mode .retail-remove {
 .dash-gap-3 {
   gap: 1rem;
 }
+/* Dashlite's .gap-N are height spacers; on flex containers make them real gaps */
+.d-flex.gap-1 { gap: 0.25rem; height: auto; }
+.d-flex.gap-2 { gap: 0.5rem;  height: auto; }
+.d-flex.gap-3 { gap: 1rem;    height: auto; }
 .dash-card-head {
   display: flex;
   justify-content: space-between;
@@ -5810,3 +5856,49 @@ body.dark-mode .dash-action {
     color: #fff;
   }
 }
+
+/* Booking modal: compact */
+.appointment-booking-modal { max-width: 940px; }
+
+.appointment-booking-modal .modal-header { padding: 0.6rem 1rem; }
+.appointment-booking-modal .modal-body { padding: 0.75rem; }
+.appointment-booking-modal .modal-body > .row > .col-lg-8 { padding: 0.875rem; }
+
+.appointment-booking-modal .form-label,
+.appointment-booking-modal label {
+  margin-bottom: 0.2rem;
+  font-size: 0.75rem;
+  color: #526484;
+}
+
+/* header: title only */
+.booking-head { font-size: 0.95rem; }
+.booking-head small,
+.booking-head-icon { display: none; }
+
+/* fields: 44px -> 36px */
+.booking-details-grid { gap: 0.625rem; }
+.booking-details-grid .form-control,
+.booking-details-grid .form-select,
+.booking-details-grid .react-select__control {
+  height: 36px;
+  min-height: 36px !important;
+  font-size: 0.8125rem;
+}
+
+/* sections */
+.booking-section-title { margin-bottom: 0.5rem; }
+.appointment-booking-modal .modal-body .mt-4 { margin-top: 0.875rem !important; }
+
+/* cart */
+.booking-cart thead th,
+.booking-cart tbody td { padding: 0.35rem 0.5rem; }
+.booking-cart-empty { padding: 0.75rem; }
+.booking-cart-empty .icon,
+.booking-cart-empty small { display: none; }
+
+/* summary */
+.booking-summary .card-inner { padding: 0.875rem; }
+.booking-summary-row { padding: 0.25rem 0; }
+.booking-summary-total { margin: 0.5rem 0 0.75rem; padding: 0.5rem 0.75rem; }
+.booking-history { max-height: 130px; }

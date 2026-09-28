@@ -556,6 +556,7 @@ export const AppointmentScalarFieldEnum = {
     walkInJobCart: 'walkInJobCart',
     bookingNote: 'bookingNote',
     internalNote: 'internalNote',
+    sourceAppointmentId: 'sourceAppointmentId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };

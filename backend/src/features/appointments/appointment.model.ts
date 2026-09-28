@@ -83,6 +83,7 @@ export const AppointmentModel = {
     walkInJobCart?: boolean;
     bookingNote?: string;
     internalNote?: string;
+    sourceAppointmentId?: string;
     services: {
       serviceId: string;
       serviceName: string;
@@ -111,6 +112,7 @@ export const AppointmentModel = {
           status: data.status || "SCHEDULED",
           source: data.source || "INTERNAL",
           walkInJobCart: data.walkInJobCart ?? false,
+          ...(data.sourceAppointmentId ? { sourceAppointmentId: data.sourceAppointmentId } : {}),
           ...(data.branchId ? { branchId: data.branchId } : {}),
           ...(data.bookingNote ? { bookingNote: data.bookingNote } : {}),
           ...(data.internalNote ? { internalNote: data.internalNote } : {}),
@@ -189,6 +191,7 @@ export const AppointmentModel = {
     return prisma.appointment.findMany({
       where: appointmentListWhere(filters),
       include: {
+        generatedJobCart: { select: { id: true, status: true } },
         salon: {
           select: {
             id: true,
@@ -236,6 +239,7 @@ export const AppointmentModel = {
     return prisma.appointment.findMany({
       where: { salonId, ...appointmentListWhere(filters) },
       include: {
+        generatedJobCart: { select: { id: true, status: true } },
         ...soldProductsInclude,
         branch: {
           select: {
@@ -280,6 +284,7 @@ export const AppointmentModel = {
         id,
       },
       include: {
+        generatedJobCart: { select: { id: true, status: true } },
         ...soldProductsInclude,
         salon: {
           select: {

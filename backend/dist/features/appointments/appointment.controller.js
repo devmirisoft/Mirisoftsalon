@@ -56,6 +56,22 @@ const getDateRange = (from, to, timezone) => {
         ...(range.end ? { dateTo: range.end } : {}),
     };
 };
+const cancelStaleAppointments = async (input) => {
+    const dateParts = new Intl.DateTimeFormat("en-US", { timeZone: input.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).reduce((parts, part) => ({ ...parts, [part.type]: part.value }), {});
+    const today = dateParts.year + "-" + dateParts.month + "-" + dateParts.day;
+    const startOfToday = getDateRange(today, today, input.timezone).dateFrom;
+    if (!startOfToday)
+        return;
+    await prisma.appointment.updateMany({
+        where: {
+            ...(input.salonId ? { salonId: input.salonId } : {}),
+            ...(input.branchId ? { branchId: input.branchId } : {}),
+            status: { in: ["SCHEDULED", "CONFIRMED"] },
+            startTime: { lt: startOfToday },
+        },
+        data: { status: "CANCELLED" },
+    });
+};
 const getExistingAppointmentByAccess = async (req, appointmentId) => {
     if (req.user?.role === "SUPER_ADMIN") {
         return AppointmentModel.findById(appointmentId);
@@ -151,12 +167,27 @@ export const createAppointment = async (req, res) => {
         // The booking cart assigns a stylist per service. Anything left
         // unassigned falls back to the appointment's primary staff.
         const staffByServiceId = new Map();
+        const priceByServiceId = new Map();
         for (const item of Array.isArray(serviceItems) ? serviceItems : []) {
             if (item?.serviceId && item?.staffId) {
                 staffByServiceId.set(String(item.serviceId), String(item.staffId));
             }
+            if (item?.serviceId && item?.price !== undefined) {
+                const price = Number(item.price);
+                if (!Number.isFinite(price) || price < 0) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Service prices must be valid non-negative numbers",
+                    });
+                }
+                priceByServiceId.set(String(item.serviceId), price);
+            }
         }
-        if ([...staffByServiceId.keys()].some((id) => !serviceIds.includes(id))) {
+        const itemServiceIds = new Set([
+            ...staffByServiceId.keys(),
+            ...priceByServiceId.keys(),
+        ]);
+        if ([...itemServiceIds].some((id) => !serviceIds.includes(id))) {
             return res.status(400).json({
                 success: false,
                 message: "serviceItems must reference the booked services",
@@ -175,7 +206,7 @@ export const createAppointment = async (req, res) => {
                 durationToMinutes(service.durationValue, service.durationUnit));
         }, 0);
         const estimatedAmount = services.reduce((total, service) => {
-            return total + Number(service.price);
+            return total + (priceByServiceId.get(service.id) ?? Number(service.price));
         }, 0);
         const finalStartTime = new Date(startTime);
         if (Number.isNaN(finalStartTime.getTime())) {
@@ -230,7 +261,7 @@ export const createAppointment = async (req, res) => {
                 services: services.map((service) => ({
                     serviceId: service.id,
                     serviceName: service.name,
-                    price: Number(service.price),
+                    price: priceByServiceId.get(service.id) ?? Number(service.price),
                     staffId: staffByServiceId.get(service.id) ?? staffId,
                     ...(service.durationValue !== null && service.durationValue !== undefined
                         ? { durationValue: service.durationValue }
@@ -306,6 +337,7 @@ export const getAppointments = async (req, res) => {
             to: to ? String(to) : date ? String(date) : undefined,
         };
         if (req.user?.role === "SUPER_ADMIN") {
+            await cancelStaleAppointments({ timezone: "Asia/Kolkata", ...(branchId ? { branchId: String(branchId) } : {}) });
             const appointments = await AppointmentModel.findAll({
                 ...listFilters,
                 ...(branchId ? { branchId: String(branchId) } : {}),
@@ -335,6 +367,11 @@ export const getAppointments = async (req, res) => {
             });
         }
         const salon = await SalonModel.findById(req.user.salonId);
+        await cancelStaleAppointments({
+            salonId: req.user.salonId,
+            ...(listBranchId ? { branchId: listBranchId } : branchId ? { branchId: String(branchId) } : {}),
+            timezone: salon?.timezone ?? "Asia/Kolkata",
+        });
         const appointments = await AppointmentModel.findBySalon(req.user.salonId, {
             ...(listBranchId
                 ? { branchId: listBranchId }
@@ -503,7 +540,7 @@ export const updateAppointmentBasicDetails = async (req, res) => {
                 message: "Appointment not found",
             });
         }
-        if (["COMPLETED", "CANCELLED", "NO_SHOW"].includes(existingAppointment.status)) {
+        if (["COMPLETED", "CANCELLED"].includes(existingAppointment.status)) {
             return res.status(400).json({
                 success: false,
                 message: "Completed, cancelled or no-show appointments cannot be edited",

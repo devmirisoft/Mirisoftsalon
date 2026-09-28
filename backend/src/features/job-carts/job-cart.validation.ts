@@ -19,6 +19,7 @@ export const createJobCartSchema = z.object({
   phone,
   startTime: z.iso.datetime({ offset: true }).optional(),
   staffId: uuid.optional(),
+  sourceAppointmentId: uuid.optional(),
   serviceIds: z.array(uuid).max(30).default([]),
   serviceItems: z
     .array(

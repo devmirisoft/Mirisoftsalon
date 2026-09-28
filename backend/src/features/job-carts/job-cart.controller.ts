@@ -190,6 +190,7 @@ export const postJobCart = async (req: Request, res: Response) => {
           : {}),
         ...(parsed.salonId ? { salonId: parsed.salonId } : {}),
         ...(parsed.staffId ? { staffId: parsed.staffId } : {}),
+        ...(parsed.sourceAppointmentId ? { sourceAppointmentId: parsed.sourceAppointmentId } : {}),
         ...(parsed.bookingNote
           ? { bookingNote: parsed.bookingNote }
           : {}),

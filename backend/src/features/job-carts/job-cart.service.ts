@@ -183,6 +183,7 @@ const jobCartInclude = {
     },
   },
   staff: { select: { id: true, name: true, jobRole: true } },
+  sourceAppointment: { select: { id: true, appointmentCode: true, status: true } },
   createdBy: { select: { id: true, name: true, email: true, role: true } },
   services: {
     include: {
@@ -1510,6 +1511,7 @@ export const createJobCart = async (
     customerName: string;
     phone: string;
     staffId?: string;
+    sourceAppointmentId?: string;
     serviceIds: string[];
     serviceItems?: Array<{
       serviceId: string;
@@ -1528,6 +1530,22 @@ export const createJobCart = async (
       input.salonId,
       input.branchId
     );
+    let sourceAppointment: { id: string; status: string } | null = null;
+    if (input.sourceAppointmentId) {
+      sourceAppointment = await tx.appointment.findFirst({
+        where: { id: input.sourceAppointmentId, salonId, branchId, walkInJobCart: false },
+        select: { id: true, status: true },
+      });
+      if (!sourceAppointment) throw new JobCartError(404, "Source appointment not found");
+      if (["CANCELLED", "COMPLETED", "NO_SHOW"].includes(sourceAppointment.status)) {
+        throw new JobCartError(409, "This appointment cannot create a job cart");
+      }
+      const existingCart = await tx.appointment.findFirst({
+        where: { sourceAppointmentId: sourceAppointment.id },
+        select: { id: true },
+      });
+      if (existingCart) throw new JobCartError(409, "A job cart already exists for this appointment");
+    }
     const [branch, salon] = await Promise.all([
       validateBranch(tx, salonId, branchId),
       tx.salon.findFirst({
@@ -1613,6 +1631,7 @@ export const createJobCart = async (
         status: "SCHEDULED",
         source: "WALK_IN",
         walkInJobCart: true,
+        ...(sourceAppointment ? { sourceAppointmentId: sourceAppointment.id } : {}),
         ...(input.bookingNote ? { bookingNote: input.bookingNote } : {}),
         ...(input.internalNote ? { internalNote: input.internalNote } : {}),
         services: services.map((service) => {
@@ -1633,6 +1652,9 @@ export const createJobCart = async (
       },
       tx
     );
+    if (sourceAppointment && sourceAppointment.status !== "CHECKED_IN") {
+      await AppointmentModel.updateStatusWithHistory(sourceAppointment.id, { oldStatus: sourceAppointment.status as any, newStatus: "CHECKED_IN", note: "Job cart created from appointment", changedById: actor.userId }, tx);
+    }
     const subtotal = services.reduce(
       (sum, service) => sum.add(lineOf(service).lineTotal),
       new Prisma.Decimal(0)
@@ -2845,6 +2867,9 @@ export const confirmJobCart = async (
         },
         tx
       );
+    }
+    if (existing.sourceAppointment && existing.sourceAppointment.status !== "COMPLETED") {
+      await AppointmentModel.updateStatusWithHistory(existing.sourceAppointment.id, { oldStatus: existing.sourceAppointment.status as any, newStatus: "COMPLETED", note: "Source appointment completed with job cart", changedById: actor.userId }, tx);
     }
     if (billing.status !== "DRAFT") {
       const issued = await issueInvoice({

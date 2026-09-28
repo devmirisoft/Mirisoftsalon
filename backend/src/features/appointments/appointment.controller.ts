@@ -92,6 +92,22 @@ const getDateRange = (
     };
 };
 
+const cancelStaleAppointments = async (input: { salonId?: string; branchId?: string; timezone: string }) => {
+    const dateParts = new Intl.DateTimeFormat("en-US", { timeZone: input.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).reduce<Record<string, string>>((parts, part) => ({ ...parts, [part.type]: part.value }), {});
+    const today = dateParts.year + "-" + dateParts.month + "-" + dateParts.day;
+    const startOfToday = getDateRange(today, today, input.timezone).dateFrom;
+    if (!startOfToday) return;
+    await prisma.appointment.updateMany({
+        where: {
+            ...(input.salonId ? { salonId: input.salonId } : {}),
+            ...(input.branchId ? { branchId: input.branchId } : {}),
+            status: { in: ["SCHEDULED", "CONFIRMED"] },
+            startTime: { lt: startOfToday },
+        },
+        data: { status: "CANCELLED" },
+    });
+};
+
 const getExistingAppointmentByAccess = async (
     req: Request,
     appointmentId: string
@@ -458,6 +474,7 @@ export const getAppointments = async (req: Request, res: Response) => {
         };
 
         if (req.user?.role === "SUPER_ADMIN") {
+            await cancelStaleAppointments({ timezone: "Asia/Kolkata", ...(branchId ? { branchId: String(branchId) } : {}) });
             const appointments = await AppointmentModel.findAll({
                 ...listFilters,
                 ...(branchId ? { branchId: String(branchId) } : {}),
@@ -494,6 +511,11 @@ export const getAppointments = async (req: Request, res: Response) => {
         }
 
         const salon = await SalonModel.findById(req.user.salonId);
+        await cancelStaleAppointments({
+            salonId: req.user.salonId,
+            ...(listBranchId ? { branchId: listBranchId } : branchId ? { branchId: String(branchId) } : {}),
+            timezone: salon?.timezone ?? "Asia/Kolkata",
+        });
         const appointments = await AppointmentModel.findBySalon(req.user.salonId, {
             ...(listBranchId
                 ? { branchId: listBranchId }
@@ -699,7 +721,7 @@ export const updateAppointmentBasicDetails = async (
             });
         }
 
-        if (["COMPLETED", "CANCELLED", "NO_SHOW"].includes(existingAppointment.status)) {
+        if (["COMPLETED", "CANCELLED"].includes(existingAppointment.status)) {
             return res.status(400).json({
                 success: false,
                 message: "Completed, cancelled or no-show appointments cannot be edited",

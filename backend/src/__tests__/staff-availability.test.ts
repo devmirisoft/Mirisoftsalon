@@ -411,6 +411,83 @@ describe("Staff availability and shift roster", () => {
     expect(starts).toContain(`${date}T11:00:00.000Z`);
   });
 
+  it("blocks service-row staff while active and releases them on completion", async () => {
+    const f = await fixture();
+    const date = dateAfter(23);
+    const serviceStaff = await prisma.staff.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        name: "Service Row Stylist",
+        email: `service-row-${randomUUID()}@test.com`,
+        jobRole: "Stylist",
+        workingFrom: "09:00",
+        workingTo: "18:00",
+        weekOff: "NEVER",
+      },
+    });
+    const appointment = await request(app)
+      .post("/api/appointments")
+      .set(auth(f.adminToken))
+      .send({
+        branchId: f.branch.id,
+        customerId: f.customer.id,
+        staffId: f.staff.id,
+        serviceIds: [f.service.id],
+        serviceItems: [{ serviceId: f.service.id, staffId: serviceStaff.id }],
+        startTime: `${date}T10:00:00.000Z`,
+      })
+      .expect(201);
+
+    const slotStarts = async () => {
+      const response = await request(app)
+        .get(`/api/public-booking/${f.setting.slug}/available-slots`)
+        .query({
+          branchId: f.branch.id,
+          serviceIds: f.service.id,
+          staffId: serviceStaff.id,
+          date,
+        })
+        .expect(200);
+      return response.body.data.slots.map(
+        (slot: { startTime: string }) => slot.startTime
+      );
+    };
+
+    expect(await slotStarts()).not.toContain(`${date}T10:00:00.000Z`);
+    await request(app)
+      .post("/api/appointments")
+      .set(auth(f.adminToken))
+      .send({
+        branchId: f.branch.id,
+        customerId: f.customer.id,
+        staffId: serviceStaff.id,
+        serviceIds: [f.service.id],
+        startTime: `${date}T10:00:00.000Z`,
+      })
+      .expect(409);
+
+    for (const status of ["CONFIRMED", "CHECKED_IN", "COMPLETED"]) {
+      await request(app)
+        .patch(`/api/appointments/${appointment.body.data.id}/status`)
+        .set(auth(f.adminToken))
+        .send({ status })
+        .expect(200);
+    }
+
+    expect(await slotStarts()).toContain(`${date}T10:00:00.000Z`);
+    await request(app)
+      .post("/api/appointments")
+      .set(auth(f.adminToken))
+      .send({
+        branchId: f.branch.id,
+        customerId: f.customer.id,
+        staffId: serviceStaff.id,
+        serviceIds: [f.service.id],
+        startTime: `${date}T10:00:00.000Z`,
+      })
+      .expect(201);
+  });
   it("public slots fall back to legacy working hours without rules", async () => {
     const f = await fixture();
     const date = dateAfter(22);

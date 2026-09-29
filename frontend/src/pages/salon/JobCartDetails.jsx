@@ -247,7 +247,13 @@ const JobCartDetails = () => {
   useEffect(() => {
     if (!searchParams.get("bill") || !cart) return;
     setSearchParams({}, { replace: true });
-    if (cart.status === "ACTIVE" && cart.items.length) openPayment();
+    if (
+      cart.status !== "CANCELLED" &&
+      cart.invoice?.paymentStatus !== "PAID" &&
+      cart.items.length
+    ) {
+      openPayment();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart, searchParams, setSearchParams]);
 
@@ -758,7 +764,7 @@ const JobCartDetails = () => {
     }
   };
 
-  const confirmJobCartOnly = async (confirmedUsage = []) => {
+  const confirmJobCartOnly = async (confirmedUsage = [], openPaymentAfter = false) => {
     const { payments, payment, ...draftBody } = buildConfirmBody();
     setWorking(true);
     setError("");
@@ -770,6 +776,9 @@ const JobCartDetails = () => {
       });
       setSearchParams({}, { replace: true });
       await load();
+      if (openPaymentAfter) {
+        setConfirmOpen(true);
+      }
     } catch (actionError) {
       setError(actionError.message);
     } finally {
@@ -779,7 +788,7 @@ const JobCartDetails = () => {
 
   const completeEditedCart = () => {
     if (cart?.appointmentStatus === "COMPLETED") {
-      confirmJobCartOnly();
+      setConfirmOpen(true);
       return;
     }
     setConfirmingJobOnly(true);
@@ -1733,20 +1742,28 @@ const JobCartDetails = () => {
                         )}
                       </div>
                     ) : invoice && canOpenInvoice ? (
-                      <Link
-                        to={`/billing/invoices/${invoice.id}`}
-                        className="d-block mt-3"
-                      >
-                        <Button className="jcp-pay w-100">
-                          <span>
-                            {cart.status === "CANCELLED" ||
-                            invoice.paymentStatus === "PAID"
-                              ? "Open Invoice"
-                              : "Open Invoice / Payment"}
-                          </span>
-                          <Icon name="arrow-long-right" />
-                        </Button>
-                      </Link>
+                      <>
+                        {cart.status !== "CANCELLED" &&
+                          invoice.paymentStatus !== "PAID" && (
+                            <Button
+                              className="jcp-pay w-100 mt-3"
+                              onClick={() => setConfirmOpen(true)}
+                              disabled={working}
+                            >
+                              {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
+                              <span>Pay Now {formatMoney(payableAmount)}</span>
+                            </Button>
+                          )}
+                        <Link
+                          to={`/billing/invoices/${invoice.id}`}
+                          className="d-block mt-2"
+                        >
+                          <Button className="jcp-ghost w-100" color="light">
+                            <span>Open Invoice</span>
+                            <Icon name="arrow-long-right" />
+                          </Button>
+                        </Link>
+                      </>
                     ) : invoice ? (
                       <p className="text-soft small mt-3 mb-0">
                         Invoice issued. Payment access follows the existing
@@ -1885,7 +1902,7 @@ const JobCartDetails = () => {
             setUsageOpen(false);
             if (confirmingJobOnly) {
               setConfirmingJobOnly(false);
-              confirmJobCartOnly(entries);
+              confirmJobCartOnly(entries, true);
               return;
             }
             setConfirmOpen(true);

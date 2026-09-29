@@ -226,6 +226,26 @@ describe("Walk-in job carts", () => {
     ).toBe(1);
   });
 
+  it("releases assigned staff as soon as a walk-in job cart is completed", async () => {
+    const f = await fixture();
+    const assigned = {
+      serviceItems: [{ serviceId: f.service.id, staffId: f.stylist.id }],
+    };
+    const active = await createCart(f, f.adminToken, assigned);
+    expect(active.status).toBe(201);
+
+    const blocked = await createCart(f, f.adminToken, assigned);
+    expect(blocked.status).toBe(409);
+    expect(blocked.body.message).toMatch(/already booked/i);
+
+    await request(app)
+      .post(`/api/job-carts/${active.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "ISSUED", invoiceType: "BILL_OF_SUPPLY" })
+      .expect(200);
+
+    await createCart(f, f.adminToken, assigned).expect(201);
+  });
   it("adds and removes services while keeping appointment and draft invoice totals synchronized", async () => {
     const f = await fixture();
     const created = await createCart(f);
@@ -318,6 +338,113 @@ describe("Walk-in job carts", () => {
     expect(
       active.body.data.map((cart: { id: string }) => cart.id)
     ).not.toContain(id);
+  });
+
+  it("links an appointment and keeps its status in sync with the job cart", async () => {
+    const f = await fixture();
+    const phone = `97${Math.floor(Math.random() * 1e8)}`;
+    const customer = await prisma.customer.create({
+      data: {
+        customerCode: `JC-${randomUUID()}`,
+        name: "Booked Customer",
+        phone,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+      },
+    });
+    const sourceStart = new Date();
+    const sourceEnd = new Date(sourceStart.getTime() + 45 * 60_000);
+    const sourceAppointment = await prisma.appointment.create({
+      data: {
+        appointmentCode: `APT-${randomUUID()}`,
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        customerId: customer.id,
+        staffId: f.stylist.id,
+        startTime: sourceStart,
+        endTime: sourceEnd,
+        totalDurationMinutes: 45,
+        estimatedAmount: 500,
+        status: "CONFIRMED",
+      },
+    });
+
+    const created = await createCart(f, f.adminToken, {
+      customerName: customer.name,
+      phone,
+      staffId: f.stylist.id,
+      sourceAppointmentId: sourceAppointment.id,
+    });
+
+    expect(created.status).toBe(201);
+    expect(created.body.data.sourceAppointment).toMatchObject({
+      id: sourceAppointment.id,
+      status: "CHECKED_IN",
+    });
+    expect(
+      await prisma.appointment.findUniqueOrThrow({
+        where: { id: sourceAppointment.id },
+        select: { status: true },
+      })
+    ).toEqual({ status: "CHECKED_IN" });
+
+    await request(app)
+      .post(`/api/job-carts/${created.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" })
+      .expect(200);
+
+    expect(
+      await prisma.appointment.findUniqueOrThrow({
+        where: { id: sourceAppointment.id },
+        select: { status: true },
+      })
+    ).toEqual({ status: "COMPLETED" });
+  });
+
+  it("completes first, then issues and pays without fulfilling twice", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+    });
+    const id = created.body.data.id as string;
+
+    const completed = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" });
+
+    expect(completed.status).toBe(200);
+    expect(completed.body.data).toMatchObject({
+      status: "COMPLETED",
+      appointmentStatus: "COMPLETED",
+      invoice: { status: "DRAFT", paymentStatus: "UNPAID" },
+    });
+    expect(
+      Number(
+        (
+          await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } })
+        ).currentStock
+      )
+    ).toBe(8);
+
+    const paid = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "GPAY", referenceNo: "AFTER-COMPLETE" } });
+
+    expect(paid.status).toBe(200);
+    expect(paid.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PAID",
+    });
+    expect(
+      Number(
+        (
+          await prisma.product.findUniqueOrThrow({ where: { id: f.product.id } })
+        ).currentStock
+      )
+    ).toBe(8);
   });
 
   it("confirms transactionally through appointment completion and invoice issue", async () => {

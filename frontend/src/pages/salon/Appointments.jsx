@@ -94,6 +94,7 @@ const Appointments = () => {
   const [details, setDetails] = useState(null);
   const [tracking, setTracking] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
+  const [creatingJobCart, setCreatingJobCart] = useState(false);
   const isSuper = user?.role === "SUPER_ADMIN";
   const isBranchLocked = BRANCH_LOCKED_ROLES.includes(user?.role);
 
@@ -183,6 +184,47 @@ const Appointments = () => {
       setDetails(response.data);
     } catch (viewError) {
       setError(viewError.message);
+    }
+  };
+
+  const createJobCartFromAppointment = async (appointment) => {
+    const services = appointment.services || [];
+    const branchId = appointment.branchId || appointment.branch?.id;
+    const phone = appointment.customer?.phone;
+    if (!branchId || !phone || !services.length) {
+      setError(
+        "This appointment needs a branch, customer phone, and at least one service before starting a job cart."
+      );
+      return;
+    }
+
+    setCreatingJobCart(true);
+    setError("");
+    try {
+      const response = await salonApi.jobCarts.create({
+        ...(appointment.salonId ? { salonId: appointment.salonId } : {}),
+        branchId,
+        customerName: appointment.customer?.name || "Walk-in customer",
+        phone,
+        sourceAppointmentId: appointment.id,
+        serviceIds: services.map((service) => service.serviceId),
+        serviceItems: services.map((service) => ({
+          serviceId: service.serviceId,
+          ...(service.staffId || service.staff?.id || appointment.staffId
+            ? { staffId: service.staffId || service.staff?.id || appointment.staffId }
+            : {}),
+          ...(service.price === undefined
+            ? {}
+            : { price: Number(service.price) }),
+          ...(service.quantity ? { quantity: Number(service.quantity) } : {}),
+        })),
+      });
+      setDetails(null);
+      navigate(`/job-carts/${response.data.id}`);
+    } catch (createError) {
+      setError(createError.message);
+    } finally {
+      setCreatingJobCart(false);
     }
   };
 
@@ -534,11 +576,12 @@ const Appointments = () => {
           submitLabel={formConfig.submitLabel}
           onSubmit={async (values) => {
             await formConfig.submit(values);
+            await load();
+            setAction(null);
             if (action === "status" && values.status === "COMPLETED") {
-              navigate(`/appointments/${selected.id}/bill`);
+              await viewDetails(selected);
               return;
             }
-            await load();
           }}
         />
       )}
@@ -584,6 +627,14 @@ const Appointments = () => {
         onMakeBill={(appointment) => {
           setDetails(null);
           navigate(`/appointments/${appointment.id}/bill`);
+        }}
+        onCreateJobCart={createJobCartFromAppointment}
+        creatingJobCart={creatingJobCart}
+        onViewJobCart={(jobCartId, options = {}) => {
+          setDetails(null);
+          navigate(
+            `/job-carts/${jobCartId}${options.openPayment ? "?bill=1" : ""}`
+          );
         }}
       />
       <Modal isOpen={Boolean(tracking)} toggle={() => setTracking(null)} centered>

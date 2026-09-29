@@ -11,6 +11,7 @@ import {
 } from "../../utils/timezone.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 import { actorBranchWhere } from "../../utils/branch-scope.js";
+import { BOOKING_BLOCKING_APPOINTMENT_STATUSES } from "../appointments/appointment.model.js";
 
 type DbClient = typeof prisma | Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -509,8 +510,11 @@ export const checkStaffAvailabilityForSlot = async (input: {
     }),
     client.appointment.findFirst({
       where: {
-        staffId: staff.id,
-        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+        OR: [
+          { staffId: staff.id },
+          { services: { some: { staffId: staff.id } } },
+        ],
         startTime: { lt: input.endTime },
         endTime: { gt: input.startTime },
         ...(input.excludeAppointmentId
@@ -693,8 +697,11 @@ export const getStaffAvailabilityForDate = async (
       }),
       client.appointment.findMany({
         where: {
-          staffId,
-          status: { notIn: ["CANCELLED", "NO_SHOW"] },
+          status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+          OR: [
+            { staffId },
+            { services: { some: { staffId } } },
+          ],
           ...(range.start && range.end
             ? {
                 startTime: { lt: range.end },
@@ -786,12 +793,23 @@ export const calculateAvailableSlots = async (input: {
     }),
     client.appointment.findMany({
       where: {
-        staffId: { in: staffIds },
-        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+        OR: [
+          { staffId: { in: staffIds } },
+          { services: { some: { staffId: { in: staffIds } } } },
+        ],
         startTime: { lt: range.end },
         endTime: { gt: range.start },
       },
-      select: { staffId: true, startTime: true, endTime: true },
+      select: {
+        staffId: true,
+        startTime: true,
+        endTime: true,
+        services: {
+          where: { staffId: { in: staffIds } },
+          select: { staffId: true },
+        },
+      },
     }),
   ]);
   const leaveStaff = new Set(leaves.map((leave) => leave.staffId));
@@ -844,7 +862,10 @@ export const calculateAvailableSlots = async (input: {
         );
         const occupied = appointments.some(
           (appointment) =>
-            appointment.staffId === member.id &&
+            (appointment.staffId === member.id ||
+              appointment.services.some(
+                (service) => service.staffId === member.id
+              )) &&
             appointment.startTime < endTime &&
             appointment.endTime > startTime
         );

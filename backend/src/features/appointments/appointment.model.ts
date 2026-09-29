@@ -14,6 +14,12 @@ type AppointmentStatus =
   | "CANCELLED"
   | "NO_SHOW";
 
+export const BOOKING_BLOCKING_APPOINTMENT_STATUSES: AppointmentStatus[] = [
+  "SCHEDULED",
+  "CONFIRMED",
+  "CHECKED_IN",
+];
+
 type DurationUnit = "MINUTES" | "HOURS";
 type TransactionClient = Prisma.TransactionClient;
 
@@ -435,10 +441,11 @@ export const AppointmentModel = {
    }) => {
   return prisma.appointment.findFirst({
     where: {
-      staffId: data.staffId,
-      status: {
-        notIn: ["CANCELLED", "NO_SHOW"],
-      },
+      status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+      OR: [
+        { staffId: data.staffId },
+        { services: { some: { staffId: data.staffId } } },
+      ],
       startTime: {
         lt: data.endTime,
       },

@@ -671,6 +671,9 @@ const JobCartCreate = () => {
         }));
       const response = await salonApi.jobCarts.create({
         ...(form.salonId ? { salonId: form.salonId } : {}),
+        ...(sourceAppointment?.id
+          ? { sourceAppointmentId: sourceAppointment.id }
+          : {}),
         branchId: form.branchId,
         customerName: form.customerName,
         phone: form.phone,

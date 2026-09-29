@@ -310,6 +310,7 @@ const present = (cart: JobCartRecord) => ({
   branch: cart.branch,
   customer: cart.customer,
   staff: cart.staff,
+  sourceAppointment: cart.sourceAppointment,
   createdBy: cart.createdBy,
   editedBy: null,
   items: [
@@ -1608,6 +1609,7 @@ export const createJobCart = async (
       ],
       startTime,
       endTime,
+      ...(sourceAppointment ? { excludeAppointmentId: sourceAppointment.id } : {}),
     });
     const customer = await resolveCustomer(tx, {
       salonId,
@@ -2750,25 +2752,35 @@ export const confirmJobCart = async (
   prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
     const existing = await requireCart(tx, id, actor);
-    requireMutable(existing);
+    // Completing the work leaves its invoice in DRAFT. The next confirmation
+    // is the normal payment/issue step and must remain available even though
+    // the appointment itself is already COMPLETED.
+    const finalizingCompletedDraft =
+      existing.walkInJobCart &&
+      existing.status === "COMPLETED" &&
+      existing.invoice?.status === "DRAFT" &&
+      existing.invoice.paymentStatus === "UNPAID";
+    if (!finalizingCompletedDraft) requireMutable(existing);
     if (!existing.invoice?.items.length) {
       throw new JobCartError(
         400,
         "Add at least one service or package before confirming"
       );
     }
-    await assertNoStaffConflicts(tx, {
-      salonId: existing.salonId,
-      branchId: existing.branchId!,
-      staffIds: [
-        existing.staffId,
-        ...existing.services.map((item) => item.staffId),
-      ],
-      startTime: existing.startTime,
-      endTime: existing.endTime,
-      excludeAppointmentId: existing.id,
-    });
-    await useReservedPackageRedemptions(tx, existing, actor, audit);
+    if (!finalizingCompletedDraft) {
+      await assertNoStaffConflicts(tx, {
+        salonId: existing.salonId,
+        branchId: existing.branchId!,
+        staffIds: [
+          existing.staffId,
+          ...existing.services.map((item) => item.staffId),
+        ],
+        startTime: existing.startTime,
+        endTime: existing.endTime,
+        excludeAppointmentId: existing.id,
+      });
+      await useReservedPackageRedemptions(tx, existing, actor, audit);
+    }
     // Recorded on the enrollment below. A wallet redemption is never how a
     // membership was bought, so that tender is left off.
     const tenderMethod = (
@@ -2923,6 +2935,9 @@ export const confirmJobCart = async (
         400,
         "Issue the invoice to record a payment; a draft cannot be paid"
       );
+    }
+    if (finalizingCompletedDraft) {
+      return present(await requireCart(tx, id, actor));
     }
     // Stock leaves the shelf here, inside the confirm transaction, so a
     // shortfall or any later failure rolls the whole bill back. Ordered by id

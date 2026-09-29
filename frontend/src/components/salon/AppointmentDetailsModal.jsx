@@ -9,7 +9,13 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import AppointmentStatusBadge from "./AppointmentStatusBadge";
-import { formatDate, formatMoney, labelize } from "@/utils/salonFormat";
+import {
+  formatDate,
+  formatMoney,
+  labelize,
+  todayInputDate,
+  toLocalInput,
+} from "@/utils/salonFormat";
 
 const InfoItem = ({ icon, label, children }) => (
   <div className="appointment-detail-info">
@@ -36,14 +42,21 @@ const AppointmentDetailsModal = ({
   onMakeBill,
   onDelete,
   onCreateJobCart,
+  creatingJobCart,
   jobCartId,
   onViewJobCart,
 }) => {
   const resolvedJobCartId =
-    jobCartId || (appointment?.walkInJobCart ? appointment.id : "");
+    jobCartId ||
+    appointment?.generatedJobCart?.id ||
+    (appointment?.walkInJobCart ? appointment.id : "");
   if (!appointment) return null;
 
   const isCompleted = appointment.status === "COMPLETED";
+  // Use the same local date conversion as the appointment form. This avoids
+  // hiding the action when a UTC timestamp crosses a browser timezone boundary.
+  const isAppointmentToday =
+    toLocalInput(appointment.startTime).slice(0, 10) === todayInputDate();
   const jobCartPaymentComplete =
     appointment.generatedJobCart?.invoice?.paymentStatus === "PAID";
   const services = appointment.services || [];
@@ -319,19 +332,35 @@ const AppointmentDetailsModal = ({
               </Button>
             </>
           )}
-          {isCompleted && !jobCartPaymentComplete && onMakeBill && (
+          {isCompleted && !resolvedJobCartId && onMakeBill && (
             <Button color="success" onClick={() => onMakeBill(appointment)}>
               <Icon name="file-plus" /> Make bill
             </Button>
           )}
-          {appointment.status !== "CANCELLED" && appointment.status !== "COMPLETED" && new Date(appointment.startTime) <= new Date() && (
+          {appointment.status !== "CANCELLED" &&
+            appointment.status !== "NO_SHOW" &&
+            ((isAppointmentToday && !isCompleted) || resolvedJobCartId) && (
             resolvedJobCartId && onViewJobCart ? (
-              <Button color="primary" onClick={() => onViewJobCart(resolvedJobCartId)}>
-                <Icon name="eye" /> View Job Cart
+              <Button
+                color={isCompleted && !jobCartPaymentComplete ? "success" : "primary"}
+                onClick={() =>
+                  onViewJobCart(resolvedJobCartId, {
+                    openPayment: isCompleted && !jobCartPaymentComplete,
+                  })
+                }
+              >
+                <Icon name={isCompleted && !jobCartPaymentComplete ? "wallet" : "eye"} />{" "}
+                {isCompleted && !jobCartPaymentComplete
+                  ? "Make Payment"
+                  : "View Job Cart"}
               </Button>
             ) : !appointment.walkInJobCart && onCreateJobCart ? (
-              <Button color="primary" onClick={() => onCreateJobCart(appointment)}>
-                <Icon name="file-text" /> Create Job Cart
+              <Button
+                color="primary"
+                disabled={creatingJobCart}
+                onClick={() => onCreateJobCart(appointment)}
+              >
+                <Icon name="file-text" /> {creatingJobCart ? "Starting..." : "Start Job Cart"}
               </Button>
             ) : null
           )}

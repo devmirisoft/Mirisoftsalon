@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Alert,
   Col,
@@ -764,7 +765,9 @@ const JobCartDetails = () => {
     }
   };
 
-  const confirmJobCartOnly = async (confirmedUsage = [], openPaymentAfter = false) => {
+  // Completes the job only: status and product usage, no bill issued and no
+  // payment taken. The payment page is where billing happens.
+  const confirmJobCartOnly = async (confirmedUsage = []) => {
     const { payments, payment, ...draftBody } = buildConfirmBody();
     setWorking(true);
     setError("");
@@ -774,11 +777,9 @@ const JobCartDetails = () => {
         status: "DRAFT",
         ...(confirmedUsage.length ? { usage: confirmedUsage } : {}),
       });
-      setSearchParams({}, { replace: true });
+      toast.success("Job completed. Complete the payment below.");
+      navigate(`/job-carts/${id}`, { replace: true });
       await load();
-      if (openPaymentAfter) {
-        setConfirmOpen(true);
-      }
     } catch (actionError) {
       setError(actionError.message);
     } finally {
@@ -1902,7 +1903,7 @@ const JobCartDetails = () => {
             setUsageOpen(false);
             if (confirmingJobOnly) {
               setConfirmingJobOnly(false);
-              confirmJobCartOnly(entries, true);
+              confirmJobCartOnly(entries);
               return;
             }
             setConfirmOpen(true);

@@ -11,7 +11,7 @@ import {
 } from "../../utils/timezone.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 import { actorBranchWhere } from "../../utils/branch-scope.js";
-import { BOOKING_BLOCKING_APPOINTMENT_STATUSES } from "../appointments/appointment.model.js";
+import { staffBlockingAppointmentWhere } from "../appointments/appointment.model.js";
 
 type DbClient = typeof prisma | Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -510,7 +510,7 @@ export const checkStaffAvailabilityForSlot = async (input: {
     }),
     client.appointment.findFirst({
       where: {
-        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+        ...staffBlockingAppointmentWhere(),
         OR: [
           { staffId: staff.id },
           { services: { some: { staffId: staff.id } } },
@@ -697,7 +697,7 @@ export const getStaffAvailabilityForDate = async (
       }),
       client.appointment.findMany({
         where: {
-          status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+          ...staffBlockingAppointmentWhere(),
           OR: [
             { staffId },
             { services: { some: { staffId } } },
@@ -793,7 +793,7 @@ export const calculateAvailableSlots = async (input: {
     }),
     client.appointment.findMany({
       where: {
-        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+        ...staffBlockingAppointmentWhere(),
         OR: [
           { staffId: { in: staffIds } },
           { services: { some: { staffId: { in: staffIds } } } },

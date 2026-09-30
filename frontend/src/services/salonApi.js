@@ -262,6 +262,8 @@ export const salonApi = {
     create: (body) => request("/api/appointments", { method: "POST", body }),
     update: (id, body) =>
       request(`/api/appointments/${id}`, { method: "PUT", body }),
+    updateServices: (id, body) =>
+      request(`/api/appointments/${id}/services`, { method: "PUT", body }),
     setStatus: (id, body) =>
       request(`/api/appointments/${id}/status`, { method: "PATCH", body }),
     reschedule: (id, startTime) =>

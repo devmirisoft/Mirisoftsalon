@@ -2883,8 +2883,10 @@ export const confirmJobCart = async (
         tx
       );
     }
+    // The cart booked the consumables above; the appointment only follows its
+    // status, or the same usage would leave the shelf twice.
     if (existing.sourceAppointment && existing.sourceAppointment.status !== "COMPLETED") {
-      await AppointmentModel.updateStatusWithHistory(existing.sourceAppointment.id, { oldStatus: existing.sourceAppointment.status as any, newStatus: "COMPLETED", note: "Source appointment completed with job cart", changedById: actor.userId }, tx);
+      await AppointmentModel.updateStatusWithHistory(existing.sourceAppointment.id, { oldStatus: existing.sourceAppointment.status as any, newStatus: "COMPLETED", note: "Source appointment completed with job cart", changedById: actor.userId, bookUsage: false }, tx);
     }
     if (billing.status !== "DRAFT") {
       const issued = await issueInvoice({
@@ -3259,6 +3261,25 @@ export const cancelJobCart = async (
       },
       tx
     );
+    // Hand the appointment back so a fresh job cart can be started for it.
+    if (existing.sourceAppointment) {
+      await tx.appointment.update({
+        where: { id },
+        data: { sourceAppointmentId: null },
+      });
+      if (existing.sourceAppointment.status === "CHECKED_IN") {
+        await AppointmentModel.updateStatusWithHistory(
+          existing.sourceAppointment.id,
+          {
+            oldStatus: "CHECKED_IN",
+            newStatus: "SCHEDULED",
+            note: `Job cart ${existing.appointmentCode} cancelled`,
+            changedById: actor.userId,
+          },
+          tx
+        );
+      }
+    }
     await InvoiceModel.cancel(existing.invoice!.id, tx);
     await createAuditLog({
       tx,

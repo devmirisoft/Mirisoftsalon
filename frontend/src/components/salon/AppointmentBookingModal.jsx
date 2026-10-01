@@ -374,10 +374,11 @@ const AppointmentBookingModal = ({
     [refs.staff, form.branchId]
   );
 
-  // Free/booked label per staff member at the appointment's start time.
+  // Free/booked label per staff member at the appointment's start time, or
+  // what they are doing now until a time is picked.
   const staffStatus = useStaffStatus(
-    form.startTime ? form.branchId : "",
-    form.startTime,
+    form.branchId,
+    form.startTime || undefined,
     pickerOpen
   );
 

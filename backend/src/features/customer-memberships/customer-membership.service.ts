@@ -769,3 +769,97 @@ export const synchronizeCustomerMembershipExpiry = async (
       }),
     MEMBERSHIP_TRANSACTION_OPTIONS
   );
+
+/** Memberships expiring within this many days show as "about to expire". */
+export const MEMBERSHIP_EXPIRY_WARNING_DAYS = 10;
+
+type SaleMethodSource = {
+  paymentMethod: PaymentMethod | null;
+  invoice: { payments: { method: PaymentMethod }[] } | null;
+};
+
+/**
+ * How a membership was paid. Direct sales record it on the row; sales on a
+ * bill leave it null, so fall back to the bill's payment methods.
+ */
+export const membershipSaleMethod = (row: SaleMethodSource) => {
+  if (row.paymentMethod) return row.paymentMethod;
+  const methods = [
+    ...new Set((row.invoice?.payments ?? []).map((p) => p.method)),
+  ];
+  return methods.length ? methods.join(" + ") : "UNPAID";
+};
+
+export const membershipPaymentBreakdown = (
+  rows: { method: string; amount: number }[]
+) => {
+  const totals = new Map<string, { count: number; amount: number }>();
+  for (const { method, amount } of rows) {
+    const current = totals.get(method) ?? { count: 0, amount: 0 };
+    totals.set(method, {
+      count: current.count + 1,
+      amount: current.amount + amount,
+    });
+  }
+  return Array.from(totals, ([method, value]) => ({ method, ...value })).sort(
+    (a, b) => b.amount - a.amount
+  );
+};
+
+export const getMembershipReport = async (
+  actor: CustomerMembershipActor,
+  soldRange: { gte?: Date; lt?: Date } | undefined,
+  audit: AuditContext
+) =>
+  prisma.$transaction(async (tx) => {
+    const scope = historyScope(actor);
+    // Flip lapsed ACTIVE rows to EXPIRED first so both lists are current.
+    await expireMembershipRows(tx, { where: scope, actor, audit });
+    const now = new Date();
+    const warnUntil = new Date(now);
+    warnUntil.setDate(warnUntil.getDate() + MEMBERSHIP_EXPIRY_WARNING_DAYS);
+
+    // ponytail: unpaginated lists, add paging if a salon reaches thousands of rows
+    const [sold, expiringSoon, expired] = await Promise.all([
+      tx.customerMembership.findMany({
+        where: { ...scope, ...(soldRange ? { createdAt: soldRange } : {}) },
+        include: {
+          ...historyInclude,
+          invoice: {
+            select: { invoiceCode: true, payments: { select: { method: true } } },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+      tx.customerMembership.findMany({
+        where: { ...scope, status: "ACTIVE", expiresAt: { gte: now, lte: warnUntil } },
+        include: historyInclude,
+        orderBy: { expiresAt: "asc" },
+      }),
+      tx.customerMembership.findMany({
+        where: { ...scope, status: "EXPIRED" },
+        include: historyInclude,
+        orderBy: { expiresAt: "desc" },
+      }),
+    ]);
+
+    const soldRows = sold.map(({ invoice, ...row }) => ({
+      ...row,
+      invoiceCode: invoice?.invoiceCode ?? null,
+      method: membershipSaleMethod({ paymentMethod: row.paymentMethod, invoice }),
+      amount: Number(row.amountPaid ?? row.priceSnapshot),
+    }));
+    const dayMs = 24 * 60 * 60 * 1000;
+    return {
+      warningDays: MEMBERSHIP_EXPIRY_WARNING_DAYS,
+      totalSold: soldRows.length,
+      totalAmount: soldRows.reduce((sum, row) => sum + row.amount, 0),
+      byPaymentMethod: membershipPaymentBreakdown(soldRows),
+      sold: soldRows,
+      expiringSoon: expiringSoon.map((row) => ({
+        ...row,
+        daysLeft: Math.ceil((row.expiresAt!.getTime() - now.getTime()) / dayMs),
+      })),
+      expired,
+    };
+  }, MEMBERSHIP_TRANSACTION_OPTIONS);

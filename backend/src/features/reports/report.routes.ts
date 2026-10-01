@@ -12,6 +12,7 @@ import {
   getSalonReport,
 } from "./salon-report.controller.js";
 import { exportReport } from "./report-export.controller.js";
+import { getMembershipReportHandler } from "../customer-memberships/customer-membership.controller.js";
 
 const router = Router();
 router.use(authenticate);
@@ -50,6 +51,11 @@ router.get(
   "/eod",
   requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"),
   getEodReport
+);
+router.get(
+  "/memberships",
+  requireRole("SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"),
+  getMembershipReportHandler
 );
 router.get(
   "/:reportType/export",

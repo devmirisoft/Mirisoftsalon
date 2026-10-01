@@ -12,7 +12,7 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import { Button, Icon } from "@/components/Component";
+import { Button, Icon, RSelect } from "@/components/Component";
 import SchemaModal from "./SchemaModal";
 import { salonApi } from "@/services/salonApi";
 import { allocateUsage, isValidQuantity } from "@/utils/usageAllocation";
@@ -302,10 +302,12 @@ export const ReconcileContainerModal = ({ isOpen, toggle, container, onSaved }) 
 const rowKey = (line, productId) => `${line.appointmentServiceId}:${productId}`;
 
 /**
- * The usage step before a service is completed: the service consumables with
- * their expected quantity prefilled, the actual quantity editable, and the
- * container it comes from. Calls onConfirm(usage) with one entry per line,
- * product and container; nothing is booked until the caller completes.
+ * The usage step before a service is completed: every service with its set-up
+ * consumables (expected quantity prefilled) plus any service product picked
+ * for it, products used on that service before offered first; the actual
+ * quantity editable, and the container it comes from. Calls onConfirm(usage)
+ * with one entry per line, product and container; nothing is booked until the
+ * caller completes.
  */
 export const ProductUsageModal = ({
   isOpen,
@@ -317,6 +319,9 @@ export const ProductUsageModal = ({
 }) => {
   const [plan, setPlan] = useState(null);
   const [values, setValues] = useState({});
+  // Products picked on a line beyond its set-up consumables:
+  // [{ appointmentServiceId, productId }].
+  const [added, setAdded] = useState([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -330,14 +335,11 @@ export const ProductUsageModal = ({
         const { data } = await salonApi.inventory.usagePlan(appointmentId);
         setPlan(data);
         setValues((current) => {
-          const next = {};
+          const next = keepEntries ? { ...current } : {};
           for (const line of data.lines) {
             for (const consumable of line.consumables) {
               const key = rowKey(line, consumable.productId);
-              next[key] =
-                keepEntries && current[key]
-                  ? current[key]
-                  : { actual: String(num(consumable.expectedQuantity)), containerId: "" };
+              next[key] ||= { actual: String(num(consumable.expectedQuantity)), containerId: "" };
             }
           }
           return next;
@@ -355,6 +357,7 @@ export const ProductUsageModal = ({
     if (!isOpen || !appointmentId) return;
     setPlan(null);
     setValues({});
+    setAdded([]);
     load(false);
   }, [isOpen, appointmentId, load]);
 
@@ -362,10 +365,19 @@ export const ProductUsageModal = ({
     () => Object.fromEntries((plan?.products || []).map((product) => [product.id, product])),
     [plan]
   );
+  const lineItems = useCallback(
+    (line) => [
+      ...line.consumables,
+      ...added
+        .filter((item) => item.appointmentServiceId === line.appointmentServiceId)
+        .map((item) => ({ productId: item.productId, expectedQuantity: null, added: true })),
+    ],
+    [added]
+  );
   const rows = useMemo(
     () =>
       (plan?.lines || []).flatMap((line) =>
-        line.consumables.map((consumable) => {
+        lineItems(line).map((consumable) => {
           const key = rowKey(line, consumable.productId);
           return {
             key,
@@ -377,7 +389,7 @@ export const ProductUsageModal = ({
           };
         })
       ),
-    [plan, values]
+    [plan, values, lineItems]
   );
   const allocation = useMemo(
     () =>
@@ -397,6 +409,33 @@ export const ProductUsageModal = ({
 
   const setValue = (key, patch) =>
     setValues((current) => ({ ...current, [key]: { ...current[key], ...patch } }));
+
+  const addProduct = (line, productId) => {
+    setAdded((current) => [...current, { appointmentServiceId: line.appointmentServiceId, productId }]);
+    setValue(rowKey(line, productId), { actual: "", containerId: "" });
+  };
+  const removeProduct = (line, productId) =>
+    setAdded((current) =>
+      current.filter(
+        (item) =>
+          item.appointmentServiceId !== line.appointmentServiceId || item.productId !== productId
+      )
+    );
+  // Products used on this service before come first, as suggestions.
+  const productOptions = (line) => {
+    const taken = new Set(lineItems(line).map((item) => item.productId));
+    const option = (product) => ({ value: product.id, label: product.name });
+    const suggested = (line.suggestedProductIds || []).filter((id) => !taken.has(id) && products[id]);
+    return [
+      { label: "Used before for this service", options: suggested.map((id) => option(products[id])) },
+      {
+        label: "All products",
+        options: (plan?.products || [])
+          .filter((product) => !taken.has(product.id) && !suggested.includes(product.id))
+          .map(option),
+      },
+    ].filter((group) => group.options.length);
+  };
 
   const confirm = async () => {
     // The shared Button only styles itself as disabled, so the guard lives
@@ -458,7 +497,7 @@ export const ProductUsageModal = ({
                 {line.serviceName}
                 {line.staff ? <span className="text-soft small fw-normal"> · {line.staff.name}</span> : null}
               </h6>
-              {line.consumables.map((consumable) => {
+              {lineItems(line).map((consumable) => {
                 const key = rowKey(line, consumable.productId);
                 const product = products[consumable.productId];
                 const part = allocation[key];
@@ -469,9 +508,23 @@ export const ProductUsageModal = ({
                   <div key={key} className="border rounded p-3 mb-2" data-usage-row={product.name}>
                     <div className="d-flex justify-content-between flex-wrap gap-2">
                       <strong>{product.name}</strong>
-                      <span className="text-soft small">
-                        Expected <strong>{formatAmount(consumable.expectedQuantity, product.unit)}</strong>
-                      </span>
+                      {consumable.added ? (
+                        <Button
+                          size="sm"
+                          color="light"
+                          type="button"
+                          className="btn-icon"
+                          disabled={saving}
+                          title="Remove"
+                          onClick={() => removeProduct(line, product.id)}
+                        >
+                          <Icon name="cross" />
+                        </Button>
+                      ) : (
+                        <span className="text-soft small">
+                          Expected <strong>{formatAmount(consumable.expectedQuantity, product.unit)}</strong>
+                        </span>
+                      )}
                     </div>
                     <Row className="g-2 mt-1 align-items-end">
                       <Col sm="4">
@@ -578,6 +631,15 @@ export const ProductUsageModal = ({
                   </div>
                 );
               })}
+              <RSelect
+                aria-label={`Add product to ${line.serviceName}`}
+                placeholder="Search product to add..."
+                isDisabled={saving}
+                options={productOptions(line)}
+                value={null}
+                onChange={(option) => option && addProduct(line, option.value)}
+                noOptionsMessage={() => "No service products"}
+              />
             </div>
           ))
         )}

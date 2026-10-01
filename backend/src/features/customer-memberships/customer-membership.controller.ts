@@ -1,12 +1,15 @@
 import { type Request, type Response } from "express";
 import { z } from "zod";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
+import { prisma } from "../../config/prisma.js";
+import { parseSalonDateRange } from "../../utils/timezone.js";
 import {
   assignCustomerMembershipHistory,
   CustomerMembershipError,
   endCustomerMembership,
   getCustomerMembershipById,
   getCustomerMembershipHistory,
+  getMembershipReport,
   listCustomerMembershipHistory,
   type CustomerMembershipActor,
 } from "./customer-membership.service.js";
@@ -269,3 +272,35 @@ const end = (status: "CANCELLED" | "REMOVED" | "EXPIRED") =>
 export const cancelCustomerMembership = end("CANCELLED");
 export const removeCustomerMembership = end("REMOVED");
 export const expireCustomerMembership = end("EXPIRED");
+
+export const getMembershipReportHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const actor = actorFrom(req);
+    const from = typeof req.query.from === "string" && req.query.from ? req.query.from : undefined;
+    const to = typeof req.query.to === "string" && req.query.to ? req.query.to : undefined;
+    let soldRange: { gte?: Date; lt?: Date } | undefined;
+    if (from || to) {
+      const salon = actor.salonId
+        ? await prisma.salon.findUnique({ where: { id: actor.salonId }, select: { timezone: true } })
+        : null;
+      try {
+        const range = parseSalonDateRange(from, to, salon?.timezone ?? "Asia/Kolkata");
+        soldRange = {
+          ...(range.start ? { gte: range.start } : {}),
+          ...(range.end ? { lt: range.end } : {}),
+        };
+      } catch {
+        throw new CustomerMembershipError(400, "Invalid date range");
+      }
+    }
+    return res.json({
+      success: true,
+      data: await getMembershipReport(actor, soldRange, requestAuditContext(req)),
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};

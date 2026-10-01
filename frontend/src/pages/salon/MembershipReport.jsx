@@ -20,7 +20,7 @@ import ServerPagination from "@/components/salon/ServerPagination";
 import { CardTitle } from "@/pages/salon/SalonReport";
 import { StatCard } from "@/pages/salon/SalesReport";
 import { salonApi } from "@/services/salonApi";
-import { formatDate, formatMoney, labelize, toLocalInput, todayInputDate } from "@/utils/salonFormat";
+import { formatDate, formatMoney, labelize, toLocalInput } from "@/utils/salonFormat";
 
 Chart.register(ArcElement, BarElement, CategoryScale, Filler, LinearScale, LineElement, PointElement, Tooltip);
 
@@ -126,10 +126,8 @@ const CustomerCell = ({ customer }) => (
   </>
 );
 
-const monthStart = () => `${todayInputDate().slice(0, 8)}01`;
-
 const MembershipReport = () => {
-  const [draft, setDraft] = useState({ from: monthStart(), to: todayInputDate(), plan: "", method: "" });
+  const [draft, setDraft] = useState({ from: "", to: "", plan: "", method: "" });
   const [filters, setFilters] = useState(draft);
   const [data, setData] = useState(null);
   const [previous, setPrevious] = useState(null);

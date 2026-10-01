@@ -17,6 +17,7 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
+import { useStaffStatus } from "@/components/salon/StaffAvailabilityLabel";
 import { salonApi } from "@/services/salonApi";
 import { serviceMinutes } from "@/utils/appointmentTotals";
 import {
@@ -32,6 +33,7 @@ import {
   formatMoney,
   labelize,
   minDateTimeInput,
+  toLocalInput,
 } from "@/utils/salonFormat";
 
 const emptyForm = {
@@ -225,7 +227,10 @@ const AppointmentBookingModal = ({
   newCustomerId,
   onCreateCustomer,
   onSubmit,
+  // Set to edit a booked appointment's services; everything else stays locked.
+  appointment = null,
 }) => {
+  const editing = Boolean(appointment);
   const [form, setForm] = useState(emptyForm);
   const [rows, setRows] = useState([]);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -244,18 +249,50 @@ const AppointmentBookingModal = ({
   // Reset everything whenever the modal opens.
   useEffect(() => {
     if (!isOpen) return;
-    setForm({
-      ...emptyForm,
-      ...defaults,
-      ...(lockBranch
-        ? { branchId: defaultBranchId || defaults?.branchId || "" }
-        : {}),
-    });
-    setRows([]);
-    setPickerStaffId(defaults?.staffId || "");
+    if (appointment) {
+      setForm({
+        ...emptyForm,
+        salonId: appointment.salonId || "",
+        branchId: appointment.branchId || "",
+        customerId: appointment.customerId || "",
+        customerPhone: appointment.customer?.phone || "",
+        startTime: toLocalInput(appointment.startTime),
+        status: appointment.status,
+      });
+      // Saved prices are already net of any discount, so they load as-is.
+      setRows(
+        (appointment.services || []).map((item) =>
+          reprice(
+            {
+              serviceId: item.serviceId,
+              staffId: item.staffId || appointment.staffId || "",
+              qty: String(item.quantity || 1),
+              price: String(item.price ?? ""),
+              discount: "",
+              discountType: "AMT",
+              total: "",
+            },
+            {},
+            gstPercent
+          )
+        )
+      );
+    } else {
+      setForm({
+        ...emptyForm,
+        ...defaults,
+        ...(lockBranch
+          ? { branchId: defaultBranchId || defaults?.branchId || "" }
+          : {}),
+      });
+      setRows([]);
+    }
+    setPickerStaffId(appointment ? "" : defaults?.staffId || "");
     setPickerOpen(false);
     setError("");
-  }, [isOpen, defaults, defaultBranchId, lockBranch]);
+    // gstPercent is left out on purpose: its own effect reprices the rows.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, appointment, defaults, defaultBranchId, lockBranch]);
 
   // A customer created inline drops into the form; the cart is untouched.
   useEffect(() => {
@@ -335,6 +372,14 @@ const AppointmentBookingModal = ({
         (m) => !form.branchId || !m.branchId || m.branchId === form.branchId
       ),
     [refs.staff, form.branchId]
+  );
+
+  // Free/booked label per staff member at the appointment's start time, or
+  // what they are doing now until a time is picked.
+  const staffStatus = useStaffStatus(
+    form.branchId,
+    form.startTime || undefined,
+    pickerOpen
   );
 
   const cart = useMemo(
@@ -464,7 +509,11 @@ const AppointmentBookingModal = ({
       return setError("Assign staff to at least one service.");
     }
     const startTime = new Date(form.startTime);
-    if (Number.isNaN(startTime.getTime()) || startTime < new Date()) {
+    // An edit keeps the booked slot, which may already have begun today.
+    if (
+      Number.isNaN(startTime.getTime()) ||
+      (!editing && startTime < new Date())
+    ) {
       return setError(
         "Choose a start time from now onward. Past appointments are not allowed."
       );
@@ -491,7 +540,10 @@ const AppointmentBookingModal = ({
       });
       toggle();
     } catch (submitError) {
-      setError(submitError.message || "Unable to book appointment.");
+      setError(
+        submitError.message ||
+          (editing ? "Unable to update services." : "Unable to book appointment.")
+      );
     } finally {
       setSaving(false);
     }
@@ -521,8 +573,14 @@ const AppointmentBookingModal = ({
                 <Icon name="calendar-booking" />
               </span>
               <span>
-                Book appointment
-                <small>Pick the customer, slot and services</small>
+                {editing
+                  ? `Edit services · ${appointment.appointmentCode}`
+                  : "Book appointment"}
+                <small>
+                  {editing
+                    ? "Add or remove services; customer and slot stay as booked"
+                    : "Pick the customer, slot and services"}
+                </small>
               </span>
             </span>
           </ModalHeader>
@@ -535,6 +593,7 @@ const AppointmentBookingModal = ({
             )}
             <Row className="g-4">
               <Col lg="8">
+                <fieldset disabled={editing}>
                 <Row
                   className={`g-3 booking-details-grid booking-details-grid--${
                     isSuper ? "six" : lockBranch ? "four" : "five"
@@ -600,6 +659,7 @@ const AppointmentBookingModal = ({
                           ) || null
                         }
                         placeholder="Search by name or phone"
+                        isDisabled={editing}
                         onChange={(option) =>
                           setForm((current) => ({
                             ...current,
@@ -659,6 +719,7 @@ const AppointmentBookingModal = ({
                     </Col>
                   )}
                 </Row>
+                </fieldset>
 
                 <FormGroup className="mt-4">
                   <div className="booking-section-head">
@@ -822,7 +883,7 @@ const AppointmentBookingModal = ({
                         ) : (
                           <Icon name="check-circle" className="me-1" />
                         )}
-                        Book appointment
+                        {editing ? "Save services" : "Book appointment"}
                       </Button>
                     </div>
                   </div>
@@ -870,6 +931,7 @@ const AppointmentBookingModal = ({
         disabled={saving}
         requireStaff
         staffPlaceholder="Select staff"
+        staffStatus={staffStatus}
       />
     </>
   );

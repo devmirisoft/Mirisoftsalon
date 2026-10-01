@@ -1,6 +1,6 @@
 import { type Request, type Response } from "express";
 
-import { AppointmentModel } from "./appointment.model.js";
+import { AppointmentModel, LATE_NO_SHOW_MS, resolveStaffIdFilter } from "./appointment.model.js";
 import { CustomerModel } from "../customers/customer.model.js";
 import { StaffModel } from "../staff/staff.model.js";
 import { BranchModel } from "../branches/branch.model.js";
@@ -13,6 +13,7 @@ import {
   requestAuditContext,
 } from "../audit-logs/audit-log.service.js";
 import { prisma } from "../../config/prisma.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { buildBusinessCode } from "../../utils/business-id.js";
 import { reverseAppointmentConsumables } from "../stock/appointmentConsumableReversal.service.js";
 import { reverseUsedPackageUsagesForAppointment } from "../packages/package.service.js";
@@ -92,20 +93,204 @@ const getDateRange = (
     };
 };
 
-const cancelStaleAppointments = async (input: { salonId?: string; branchId?: string; timezone: string }) => {
+// Late bookings move on by themselves: an hour past the start with nobody in
+// is a no-show, and by the next salon day it is cancelled. Job carts are
+// walk-ins with their own lifecycle, so they are never touched here.
+// Staff checks apply the same hour on their own (staffBlockingAppointmentWhere),
+// so a stylist is freed even before this runs.
+const sweepLateAppointments = async (input: { salonId?: string; branchId?: string; timezone: string }) => {
     const dateParts = new Intl.DateTimeFormat("en-US", { timeZone: input.timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date()).reduce<Record<string, string>>((parts, part) => ({ ...parts, [part.type]: part.value }), {});
     const today = dateParts.year + "-" + dateParts.month + "-" + dateParts.day;
     const startOfToday = getDateRange(today, today, input.timezone).dateFrom;
     if (!startOfToday) return;
-    await prisma.appointment.updateMany({
-        where: {
-            ...(input.salonId ? { salonId: input.salonId } : {}),
+    const moves: Array<{ from: AppointmentStatus[]; to: AppointmentStatus; before: Date; note: string }> = [
+        { from: ["SCHEDULED", "CONFIRMED", "NO_SHOW"], to: "CANCELLED", before: startOfToday, note: "Auto-cancelled: not attended by the next day" },
+        { from: ["SCHEDULED", "CONFIRMED"], to: "NO_SHOW", before: new Date(Date.now() - LATE_NO_SHOW_MS), note: "Auto no-show: an hour past the start time" },
+    ];
+    for (const move of moves) {
+        await prisma.$transaction(async (tx) => {
+            // One statement picks and moves the rows, skipping any another
+            // request holds, so overlapping list loads never log a move twice.
+            const moved = await tx.$queryRaw<Array<{ id: string; oldStatus: AppointmentStatus }>>`
+                WITH due AS (
+                    SELECT "id", "status" FROM "Appointment"
+                    WHERE "walkInJobCart" = false
+                      AND "status"::text IN (${Prisma.join(move.from)})
+                      AND "startTime" < ${move.before}
+                      ${input.salonId ? Prisma.sql`AND "salonId" = ${input.salonId}` : Prisma.empty}
+                      ${input.branchId ? Prisma.sql`AND "branchId" = ${input.branchId}` : Prisma.empty}
+                    FOR UPDATE SKIP LOCKED
+                )
+                UPDATE "Appointment" AS a
+                SET "status" = ${move.to}::"AppointmentStatus", "updatedAt" = NOW()
+                FROM due
+                WHERE a."id" = due."id"
+                RETURNING a."id", due."status"::text AS "oldStatus"`;
+            if (!moved.length) return;
+            await tx.appointmentStatusHistory.createMany({
+                data: moved.map((row) => ({
+                    appointmentId: row.id,
+                    oldStatus: row.oldStatus,
+                    newStatus: move.to,
+                    note: move.note,
+                })),
+            });
+        });
+    }
+};
+
+class AppointmentInputError extends Error {
+    constructor(public status: number, message: string) {
+        super(message);
+    }
+}
+
+// Validates a booking cart: the primary stylist, the services, and any
+// per-service stylist, price or quantity. Booking and editing share it.
+const resolveBookingServices = async (
+    req: Request,
+    input: { salonId: string; staffId: string; serviceIds: string[]; serviceItems: unknown }
+) => {
+    const { salonId, staffId, serviceIds } = input;
+    const staff = await StaffModel.findByIdAndSalon(staffId, salonId, branchFilterFor(req));
+    if (!staff) throw new AppointmentInputError(400, "Invalid staff for this salon");
+
+    const services = await ServiceModel.findManyByIdsAndSalon(serviceIds, salonId);
+    if (services.length !== serviceIds.length) {
+        throw new AppointmentInputError(400, "One or more services are invalid for this salon");
+    }
+
+    if (
+        isBranchLockedRole(req.user?.role) &&
+        req.user?.branchId &&
+        services.some(
+            (service) =>
+                service.branchId !== null &&
+                service.branchId !== req.user?.branchId
+        )
+    ) {
+        throw new AppointmentInputError(403, "You do not have access to this branch");
+    }
+
+    if (!staff.status) throw new AppointmentInputError(400, "Inactive staff cannot be booked");
+
+    // The booking cart assigns a stylist per service. Anything left
+    // unassigned falls back to the appointment's primary staff.
+    const staffByServiceId = new Map<string, string>();
+    const priceByServiceId = new Map<string, number>();
+    const quantityByServiceId = new Map<string, number>();
+    const items = (Array.isArray(input.serviceItems) ? input.serviceItems : []) as Array<{
+        serviceId?: unknown;
+        staffId?: unknown;
+        price?: unknown;
+        quantity?: unknown;
+    } | null>;
+    for (const item of items) {
+        if (item?.serviceId && item?.staffId) {
+            staffByServiceId.set(String(item.serviceId), String(item.staffId));
+        }
+        if (item?.serviceId && item?.price !== undefined) {
+            const price = Number(item.price);
+            if (!Number.isFinite(price) || price < 0) {
+                throw new AppointmentInputError(400, "Service prices must be valid non-negative numbers");
+            }
+            priceByServiceId.set(String(item.serviceId), price);
+        }
+        if (item?.serviceId && item?.quantity !== undefined) {
+            const quantity = Number(item.quantity);
+            if (!Number.isInteger(quantity) || quantity < 1) {
+                throw new AppointmentInputError(400, "Service quantities must be whole numbers of at least 1");
+            }
+            quantityByServiceId.set(String(item.serviceId), quantity);
+        }
+    }
+
+    const itemServiceIds = new Set([
+        ...staffByServiceId.keys(),
+        ...priceByServiceId.keys(),
+        ...quantityByServiceId.keys(),
+    ]);
+    if ([...itemServiceIds].some((id) => !serviceIds.includes(id))) {
+        throw new AppointmentInputError(400, "serviceItems must reference the booked services");
+    }
+
+    const extraStaffIds = [...new Set(staffByServiceId.values())].filter(
+        (id) => id !== staffId
+    );
+    const extraStaff = await Promise.all(
+        extraStaffIds.map((id) =>
+            StaffModel.findByIdAndSalon(id, salonId, branchFilterFor(req))
+        )
+    );
+    if (extraStaff.some((member) => !member || !member.status)) {
+        throw new AppointmentInputError(
+            400,
+            "One or more assigned staff are invalid or inactive for this salon"
+        );
+    }
+
+    const lines = services.map((service) => ({
+        serviceId: service.id,
+        serviceName: service.name,
+        price: priceByServiceId.get(service.id) ?? Number(service.price),
+        quantity: quantityByServiceId.get(service.id) ?? 1,
+        staffId: staffByServiceId.get(service.id) ?? staffId,
+        ...(service.durationValue !== null && service.durationValue !== undefined
+            ? { durationValue: service.durationValue }
+            : {}),
+        ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
+    }));
+
+    return {
+        // Sorted so two concurrent bookings lock stylists in the same order.
+        staffIds: [staff.id, ...extraStaffIds].sort(),
+        lines,
+        totalDurationMinutes: services.reduce(
+            (total, service) =>
+                total + durationToMinutes(service.durationValue, service.durationUnit),
+            0
+        ),
+        estimatedAmount: lines.reduce(
+            (total, line) => total + line.price * line.quantity,
+            0
+        ),
+    };
+};
+
+// Every stylist on the cart is checked, not just the primary one, or a
+// per-service assignment could quietly double-book someone.
+const assertStaffFree = async (
+    tx: Prisma.TransactionClient,
+    input: {
+        staffIds: string[];
+        startTime: Date;
+        endTime: Date;
+        salonId: string;
+        branchId?: string | null;
+        excludeAppointmentId?: string;
+    }
+) => {
+    for (const bookedStaffId of input.staffIds) {
+        await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${bookedStaffId} FOR UPDATE`;
+        const availability = await checkStaffAvailabilityForSlot({
+            client: tx,
+            staffId: bookedStaffId,
+            startTime: input.startTime,
+            endTime: input.endTime,
+            salonId: input.salonId,
+            shiftRule: "START_IN_SHIFT",
             ...(input.branchId ? { branchId: input.branchId } : {}),
-            status: { in: ["SCHEDULED", "CONFIRMED"] },
-            startTime: { lt: startOfToday },
-        },
-        data: { status: "CANCELLED" },
-    });
+            ...(input.excludeAppointmentId
+                ? { excludeAppointmentId: input.excludeAppointmentId }
+                : {}),
+        });
+        if (!availability.available) {
+            throw new StaffAvailabilityError(
+                availability.reason === "APPOINTMENT_CONFLICT" ? 409 : 400,
+                availability.message
+            );
+        }
+    }
 };
 
 const getExistingAppointmentByAccess = async (
@@ -201,19 +386,6 @@ export const createAppointment = async (req: Request, res: Response) => {
             });
         }
 
-        const staff = await StaffModel.findByIdAndSalon(
-            staffId,
-            finalSalonId,
-            branchFilterFor(req)
-        );
-
-        if (!staff) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid staff for this salon",
-            });
-        }
-
         if (finalBranchId) {
             const branch = await BranchModel.findByIdAndSalon(
                 finalBranchId,
@@ -228,103 +400,13 @@ export const createAppointment = async (req: Request, res: Response) => {
             }
         }
 
-        const services = await ServiceModel.findManyByIdsAndSalon(
+        const booking = await resolveBookingServices(req, {
+            salonId: finalSalonId,
+            staffId,
             serviceIds,
-            finalSalonId
-        );
-
-        if (services.length !== serviceIds.length) {
-            return res.status(400).json({
-                success: false,
-                message: "One or more services are invalid for this salon",
-            });
-        }
-
-        if (
-            isBranchLockedRole(req.user?.role) &&
-            req.user?.branchId &&
-            services.some(
-                (service) =>
-                    service.branchId !== null &&
-                    service.branchId !== req.user?.branchId
-            )
-        ) {
-            return res.status(403).json({
-                success: false,
-                message: "You do not have access to this branch",
-            });
-        }
-
-        if (!staff.status) {
-            return res.status(400).json({
-                success: false,
-                message: "Inactive staff cannot be booked",
-            });
-        }
-
-        // The booking cart assigns a stylist per service. Anything left
-        // unassigned falls back to the appointment's primary staff.
-        const staffByServiceId = new Map<string, string>();
-        const priceByServiceId = new Map<string, number>();
-        for (const item of Array.isArray(serviceItems) ? serviceItems : []) {
-            if (item?.serviceId && item?.staffId) {
-                staffByServiceId.set(String(item.serviceId), String(item.staffId));
-            }
-            if (item?.serviceId && item?.price !== undefined) {
-                const price = Number(item.price);
-                if (!Number.isFinite(price) || price < 0) {
-                    return res.status(400).json({
-                        success: false,
-                        message: "Service prices must be valid non-negative numbers",
-                    });
-                }
-                priceByServiceId.set(String(item.serviceId), price);
-            }
-        }
-
-        const itemServiceIds = new Set([
-            ...staffByServiceId.keys(),
-            ...priceByServiceId.keys(),
-        ]);
-        if ([...itemServiceIds].some((id) => !serviceIds.includes(id))) {
-            return res.status(400).json({
-                success: false,
-                message: "serviceItems must reference the booked services",
-            });
-        }
-
-        const extraStaffIds = [...new Set(staffByServiceId.values())].filter(
-            (id) => id !== staffId
-        );
-
-        const extraStaff = await Promise.all(
-            extraStaffIds.map((id) =>
-                StaffModel.findByIdAndSalon(
-                    id,
-                    finalSalonId,
-                    branchFilterFor(req)
-                )
-            )
-        );
-
-        if (extraStaff.some((member) => !member || !member.status)) {
-            return res.status(400).json({
-                success: false,
-                message:
-                    "One or more assigned staff are invalid or inactive for this salon",
-            });
-        }
-
-        const totalDurationMinutes = services.reduce((total, service) => {
-            return (
-                total +
-                durationToMinutes(service.durationValue, service.durationUnit)
-            );
-        }, 0);
-
-        const estimatedAmount = services.reduce((total, service) => {
-            return total + (priceByServiceId.get(service.id) ?? Number(service.price));
-        }, 0);
+            serviceItems,
+        });
+        const { totalDurationMinutes, estimatedAmount } = booking;
 
         const finalStartTime = new Date(startTime);
 
@@ -351,26 +433,13 @@ export const createAppointment = async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, message: "Salon not found" });
         }
         const appointment = await prisma.$transaction(async (tx) => {
-          // Every stylist on the cart is checked, not just the primary one, or
-          // a per-service assignment could quietly double-book someone. Locked
-          // in id order so two concurrent bookings cannot deadlock.
-          for (const bookedStaffId of [staff.id, ...extraStaffIds].sort()) {
-            await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${bookedStaffId} FOR UPDATE`;
-            const availability = await checkStaffAvailabilityForSlot({
-                client: tx,
-                staffId: bookedStaffId,
-                startTime: finalStartTime,
-                endTime: finalEndTime,
-                salonId: finalSalonId,
-                ...(finalBranchId ? { branchId: finalBranchId } : {}),
-            });
-            if (!availability.available) {
-                throw new StaffAvailabilityError(
-                    availability.reason === "APPOINTMENT_CONFLICT" ? 409 : 400,
-                    availability.message
-                );
-            }
-          }
+          await assertStaffFree(tx, {
+            staffIds: booking.staffIds,
+            startTime: finalStartTime,
+            endTime: finalEndTime,
+            salonId: finalSalonId,
+            branchId: finalBranchId ?? null,
+          });
           const created = await AppointmentModel.create({
             appointmentCode: generateAppointmentCode(salon.name, salon.timezone),
             salonId: finalSalonId,
@@ -385,20 +454,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             ...(status ? { status } : {}),
             ...(bookingNote ? { bookingNote } : {}),
             ...(internalNote ? { internalNote } : {}),
-            services: services.map((service) => ({
-                serviceId: service.id,
-                serviceName: service.name,
-                price: priceByServiceId.get(service.id) ?? Number(service.price),
-                staffId: staffByServiceId.get(service.id) ?? staffId,
-
-                ...(service.durationValue !== null && service.durationValue !== undefined
-                    ? { durationValue: service.durationValue }
-                    : {}),
-
-                ...(service.durationUnit
-                    ? { durationUnit: service.durationUnit }
-                    : {}),
-            })),
+            services: booking.lines,
           }, tx);
 
           await createAuditLog({
@@ -430,7 +486,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             data: appointment,
         });
     } catch (error) {
-        if (error instanceof StaffAvailabilityError) {
+        if (error instanceof StaffAvailabilityError || error instanceof AppointmentInputError) {
             return res.status(error.status).json({
                 success: false,
                 message: error.message,
@@ -462,8 +518,12 @@ export const getAppointments = async (req: Request, res: Response) => {
             });
         }
 
+        const listStaffId = await resolveStaffIdFilter(
+            staffId ? String(staffId) : undefined,
+            req.user?.userId
+        );
         const listFilters = {
-            ...(staffId ? { staffId: String(staffId) } : {}),
+            ...(listStaffId ? { staffId: listStaffId } : {}),
             ...(customerId ? { customerId: String(customerId) } : {}),
             ...(status ? { status: String(status) as AppointmentStatus } : {}),
         };
@@ -474,7 +534,7 @@ export const getAppointments = async (req: Request, res: Response) => {
         };
 
         if (req.user?.role === "SUPER_ADMIN") {
-            await cancelStaleAppointments({ timezone: "Asia/Kolkata", ...(branchId ? { branchId: String(branchId) } : {}) });
+            await sweepLateAppointments({ timezone: "Asia/Kolkata", ...(branchId ? { branchId: String(branchId) } : {}) });
             const appointments = await AppointmentModel.findAll({
                 ...listFilters,
                 ...(branchId ? { branchId: String(branchId) } : {}),
@@ -511,7 +571,7 @@ export const getAppointments = async (req: Request, res: Response) => {
         }
 
         const salon = await SalonModel.findById(req.user.salonId);
-        await cancelStaleAppointments({
+        await sweepLateAppointments({
             salonId: req.user.salonId,
             ...(listBranchId ? { branchId: listBranchId } : branchId ? { branchId: String(branchId) } : {}),
             timezone: salon?.timezone ?? "Asia/Kolkata",
@@ -631,6 +691,21 @@ export const updateAppointmentStatus = async (
             });
         }
 
+        // The job cart books what the visit used and completes this
+        // appointment with it; completing it here as well would book it twice.
+        if (
+            status === "COMPLETED" &&
+            (await prisma.appointment.findUnique({
+                where: { sourceAppointmentId: id },
+                select: { id: true },
+            }))
+        ) {
+            return res.status(409).json({
+                success: false,
+                message: "Complete this appointment from its job cart",
+            });
+        }
+
         const appointment = await prisma.$transaction(async (tx) => {
           if (
             existingAppointment.status === "COMPLETED" &&
@@ -656,22 +731,6 @@ export const updateAppointmentStatus = async (
               ...(req.user?.userId ? { changedById: req.user.userId } : {}),
               ...(usage?.data ? { usage: usage.data } : {}),
           }, tx);
-          // A no-show is terminal for the original slot only. Rescheduling it
-          // opens the appointment again so the new visit can create a job cart.
-          const rescheduled =
-            existingAppointment.status === "NO_SHOW"
-              ? await AppointmentModel.updateStatusWithHistory(
-                  id,
-                  {
-                    oldStatus: "NO_SHOW",
-                    newStatus: "SCHEDULED",
-                    note: "Appointment rescheduled",
-                    ...(req.user?.userId ? { changedById: req.user.userId } : {}),
-                  },
-                  tx
-                )
-              : updated;
-
           await createAuditLog({
             tx,
             salonId: existingAppointment.salonId,
@@ -684,10 +743,10 @@ export const updateAppointmentStatus = async (
                     : status === "CANCELLED"
                       ? "CANCEL"
                       : "STATUS_CHANGE",
-            entityId: rescheduled.id,
-            entityCode: rescheduled.appointmentCode,
-            entityName: rescheduled.customer.name,
-            description: "Appointment " + rescheduled.appointmentCode + " rescheduled",
+            entityId: updated.id,
+            entityCode: updated.appointmentCode,
+            entityName: updated.customer.name,
+            description: `Appointment ${updated.appointmentCode} changed from ${existingAppointment.status} to ${status}`,
             oldData: { status: existingAppointment.status },
             newData: { status },
             ...requestAuditContext(req),
@@ -874,6 +933,7 @@ export const rescheduleAppointment = async (
                 staffId: existingAppointment.staffId,
                 startTime: finalStartTime,
                 endTime: finalEndTime,
+                shiftRule: "START_IN_SHIFT",
                 excludeAppointmentId: id,
                 salonId: existingAppointment.salonId,
                 ...(existingAppointment.branchId
@@ -940,6 +1000,130 @@ export const rescheduleAppointment = async (
         });
     } catch (error) {
         if (error instanceof StaffAvailabilityError) {
+            return res.status(error.status).json({
+                success: false,
+                message: error.message,
+            });
+        }
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+// Services on a booking can change until the visit starts; after that the
+// job cart owns them.
+const EDITABLE_SERVICE_STATUSES = ["SCHEDULED", "CONFIRMED"];
+
+export const updateAppointmentServices = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const id = getAppointmentIdParam(req);
+        const { staffId, serviceIds, serviceItems } = req.body as {
+            staffId?: string;
+            serviceIds?: string[];
+            serviceItems?: unknown;
+        };
+
+        if (!id) {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment ID is required",
+            });
+        }
+
+        if (!staffId || !Array.isArray(serviceIds) || !serviceIds.length) {
+            return res.status(400).json({
+                success: false,
+                message: "staffId and serviceIds are required",
+            });
+        }
+
+        const existingAppointment = await getExistingAppointmentByAccess(req, id);
+
+        if (!existingAppointment || existingAppointment.walkInJobCart) {
+            return res.status(404).json({
+                success: false,
+                message: "Appointment not found",
+            });
+        }
+
+        const booking = await resolveBookingServices(req, {
+            salonId: existingAppointment.salonId,
+            staffId,
+            serviceIds,
+            serviceItems,
+        });
+        const endTime = new Date(
+            existingAppointment.startTime.getTime() +
+            booking.totalDurationMinutes * 60 * 1000
+        );
+
+        const updatedAppointment = await prisma.$transaction(async (tx) => {
+          await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
+          const current = await tx.appointment.findUniqueOrThrow({
+            where: { id },
+            select: { status: true, generatedJobCart: { select: { id: true } } },
+          });
+          if (
+            !EDITABLE_SERVICE_STATUSES.includes(current.status) ||
+            current.generatedJobCart
+          ) {
+            throw new AppointmentInputError(
+              409,
+              "Services can only change before the job cart is started"
+            );
+          }
+          await assertStaffFree(tx, {
+            staffIds: booking.staffIds,
+            startTime: existingAppointment.startTime,
+            endTime,
+            salonId: existingAppointment.salonId,
+            branchId: existingAppointment.branchId,
+            excludeAppointmentId: id,
+          });
+          const updated = await AppointmentModel.replaceServices(id, {
+            startTime: existingAppointment.startTime,
+            endTime,
+            staffId,
+            totalDurationMinutes: booking.totalDurationMinutes,
+            estimatedAmount: booking.estimatedAmount,
+            services: booking.lines,
+          }, tx);
+          await createAuditLog({
+            tx,
+            salonId: existingAppointment.salonId,
+            branchId: existingAppointment.branchId,
+            userId: req.user?.userId,
+            module: "APPOINTMENT",
+            action: "UPDATE",
+            entityId: updated.id,
+            entityCode: updated.appointmentCode,
+            entityName: updated.customer.name,
+            description: `Appointment ${updated.appointmentCode} services updated`,
+            oldData: {
+                serviceIds: existingAppointment.services.map((item) => item.serviceId),
+                estimatedAmount: existingAppointment.estimatedAmount,
+            },
+            newData: {
+                serviceIds,
+                estimatedAmount: booking.estimatedAmount,
+            },
+            ...requestAuditContext(req),
+          });
+          return updated;
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Appointment services updated successfully",
+            data: updatedAppointment,
+        });
+    } catch (error) {
+        if (error instanceof StaffAvailabilityError || error instanceof AppointmentInputError) {
             return res.status(error.status).json({
                 success: false,
                 message: error.message,

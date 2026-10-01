@@ -8,6 +8,7 @@ import {
   updateAppointmentStatus,
   deleteAppointment,
   rescheduleAppointment,
+  updateAppointmentServices,
   getAppointmentTracking,
 } from "./appointment.controller.js";
 
@@ -27,6 +28,8 @@ router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF
 router.patch("/:id/status", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), updateAppointmentStatus);
 
 router.patch("/:id/reschedule", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), rescheduleAppointment);
+
+router.put("/:id/services", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), updateAppointmentServices);
 
 router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), getAppointmentById);
 

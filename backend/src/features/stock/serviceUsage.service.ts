@@ -18,6 +18,8 @@ type ReadClient = Pick<
   TransactionClient,
   | "appointmentService"
   | "serviceConsumable"
+  | "product"
+  | "productStockMovement"
   | "productLocationStock"
   | "productContainer"
   | "staff"
@@ -56,7 +58,10 @@ const productSelect = {
   isServiceConsumable: true,
 } as const;
 
-/** Each service line of an appointment paired with what its service is set up to use. */
+/**
+ * The service lines of an appointment, and each line paired with what its
+ * service is set up to use.
+ */
 const expectedUsage = async (
   client: ReadClient,
   appointmentId: string,
@@ -88,22 +93,32 @@ const expectedUsage = async (
         orderBy: { createdAt: "asc" },
       })
     : [];
-  return lines.flatMap((line) =>
+  const expected = lines.flatMap((line) =>
     consumables
       .filter((consumable) => consumable.serviceId === line.serviceId)
       .map((consumable) => ({
         line,
         product: consumable.product,
-        expected: consumable.quantity,
+        expected: consumable.quantity as Prisma.Decimal | null,
       }))
   );
+  return { lines, expected };
 };
+
+/** Active service products a usage at this branch can be drawn from. */
+const serviceProductsWhere = (salonId: string, branchId: string | null) => ({
+  salonId,
+  status: true,
+  isServiceConsumable: true,
+  ...(branchId ? { OR: [{ branchId }, { branchId: null }] } : {}),
+});
 
 /**
  * Books what the services of a completed appointment used. Every line gets its
  * own movement, linked to the service line, the service, the staff who did it
- * and the container it came from. Lines the caller does not mention use the
- * service defaults.
+ * and the container it came from. Set-up consumables the caller does not
+ * mention use the service defaults; any other service product the caller
+ * names on a line is booked as given.
  */
 export const recordServiceUsage = async (input: {
   tx: TransactionClient;
@@ -117,23 +132,42 @@ export const recordServiceUsage = async (input: {
   createdById?: string | undefined;
 }) => {
   const { tx, appointment } = input;
-  const expected = await expectedUsage(tx, appointment.id, appointment.salonId);
+  const { lines, expected } = await expectedUsage(
+    tx,
+    appointment.id,
+    appointment.salonId
+  );
   const usage = input.usage ?? [];
-  for (const entry of usage) {
-    if (
+  const extraEntries = usage.filter(
+    (entry) =>
       !expected.some(
         (item) =>
           item.line.id === entry.appointmentServiceId &&
           item.product.id === entry.productId
       )
-    ) {
+  );
+  const extraProducts = extraEntries.length
+    ? await tx.product.findMany({
+        where: {
+          id: { in: [...new Set(extraEntries.map((entry) => entry.productId))] },
+          ...serviceProductsWhere(appointment.salonId, appointment.branchId),
+        },
+        select: productSelect,
+      })
+    : [];
+  const extras = new Map<string, (typeof expected)[number]>();
+  for (const entry of extraEntries) {
+    const line = lines.find((row) => row.id === entry.appointmentServiceId);
+    const product = extraProducts.find((row) => row.id === entry.productId);
+    if (!line || !product) {
       throw transactionError(
-        "Usage can only be recorded for consumables set up on the services of this appointment"
+        "Usage can only be recorded for service products on the services of this appointment"
       );
     }
+    extras.set(`${line.id}:${product.id}`, { line, product, expected: null });
   }
 
-  const work = expected
+  const work = [...expected, ...extras.values()]
     .flatMap((item) => {
       const entries = usage.filter(
         (entry) =>
@@ -146,7 +180,7 @@ export const recordServiceUsage = async (input: {
             quantity: exactQuantity(entry.quantity),
             containerId: entry.containerId,
           }))
-        : [{ ...item, quantity: item.expected, containerId: undefined }];
+        : [{ ...item, quantity: item.expected ?? zero, containerId: undefined }];
     })
     // Product id order keeps the row-lock order stable between concurrent
     // completions.
@@ -164,7 +198,7 @@ export const recordServiceUsage = async (input: {
       referenceId: appointment.id,
       appointmentServiceId: item.line.id,
       serviceId: item.line.serviceId,
-      expectedQuantity: item.expected,
+      ...(item.expected ? { expectedQuantity: item.expected } : {}),
       reason: "Used in completed appointment",
       ...(staffId ? { staffId } : {}),
       ...(input.createdById ? { createdById: input.createdById } : {}),
@@ -211,18 +245,51 @@ export const recordServiceUsage = async (input: {
 const zero = new Prisma.Decimal(0);
 
 /**
- * Everything the usage confirmation needs in one read: the expected quantity
- * per service line and consumable, and for each product the open containers
- * and sealed stock it could come from.
+ * Everything the usage confirmation needs in one read: every service line with
+ * the expected quantity per set-up consumable and the products used on that
+ * service before, and for each service product the open containers and sealed
+ * stock it could come from.
  */
 export const buildUsagePlan = async (
   client: ReadClient,
   appointment: { id: string; salonId: string; branchId: string | null }
 ) => {
-  const expected = await expectedUsage(client, appointment.id, appointment.salonId);
+  const { lines: serviceLines, expected } = await expectedUsage(
+    client,
+    appointment.id,
+    appointment.salonId
+  );
+  const catalog = serviceLines.length
+    ? await client.product.findMany({
+        where: serviceProductsWhere(appointment.salonId, appointment.branchId),
+        select: productSelect,
+        orderBy: { name: "asc" },
+      })
+    : [];
   const products = [
-    ...new Map(expected.map((item) => [item.product.id, item.product])).values(),
+    ...new Map(
+      [...expected.map((item) => item.product), ...catalog].map((product) => [
+        product.id,
+        product,
+      ])
+    ).values(),
   ];
+  // Products booked on a service before are suggested on it, latest first.
+  const history = serviceLines.length
+    ? await client.productStockMovement.groupBy({
+        by: ["serviceId", "productId"],
+        where: {
+          salonId: appointment.salonId,
+          type: "USED_IN_SERVICE",
+          serviceId: { in: [...new Set(serviceLines.map((line) => line.serviceId))] },
+        },
+        _max: { createdAt: true },
+      })
+    : [];
+  history.sort(
+    (left, right) =>
+      (right._max.createdAt?.getTime() ?? 0) - (left._max.createdAt?.getTime() ?? 0)
+  );
   const stock = await locationStock(client, products);
   const openPacks = products.length
     ? await client.productContainer.groupBy({
@@ -270,36 +337,28 @@ export const buildUsagePlan = async (
     orderBy: { name: "asc" },
   });
 
-  const lines = new Map<
-    string,
-    {
-      appointmentServiceId: string;
-      serviceId: string;
-      serviceName: string;
-      staff: { id: string; name: string } | null;
-      consumables: Array<{ productId: string; expectedQuantity: Prisma.Decimal }>;
-    }
-  >();
-  for (const item of expected) {
-    const line = lines.get(item.line.id) ?? {
-      appointmentServiceId: item.line.id,
-      serviceId: item.line.serviceId,
-      serviceName: item.line.serviceName,
-      staff: item.line.staff,
-      consumables: [],
-    };
-    line.consumables.push({
-      productId: item.product.id,
-      expectedQuantity: item.expected,
-    });
-    lines.set(item.line.id, line);
-  }
+  const lines = serviceLines.map((line) => ({
+    appointmentServiceId: line.id,
+    serviceId: line.serviceId,
+    serviceName: line.serviceName,
+    staff: line.staff,
+    consumables: expected
+      .filter((item) => item.line.id === line.id)
+      .map((item) => ({ productId: item.product.id, expectedQuantity: item.expected })),
+    suggestedProductIds: history
+      .filter(
+        (row) =>
+          row.serviceId === line.serviceId &&
+          catalog.some((product) => product.id === row.productId)
+      )
+      .map((row) => row.productId),
+  }));
 
   return {
     appointmentId: appointment.id,
     branchId: appointment.branchId,
     staff,
-    lines: [...lines.values()],
+    lines,
     products: products.map((product) => {
       const branchId = appointment.branchId ?? product.branchId;
       const tracked = isContainerTracked(product);

@@ -81,9 +81,11 @@ const fixture = async () => {
       name: "Package Seller",
       email: `package-seller-${marker}@test.com`,
       jobRole: "Stylist",
-      workingFrom: "09:00",
-      workingTo: "18:00",
-      weekOff: "Sunday",
+      // Carts start "now" and must start inside the shift, so the suite
+      // passes whatever time it runs.
+      workingFrom: "00:00",
+      workingTo: "23:59",
+      weekOff: "NEVER",
       salonId: salon.id,
       branchId: branch.id,
     },

@@ -26,6 +26,8 @@ import {
 } from "../customer-memberships/customer-membership.service.js";
 import {
   checkStaffAvailabilityForSlot,
+  holdsStaff,
+  staffBusyIntervals,
   syncStaffOvertime,
 } from "../staff-availability/staffAvailability.service.js";
 import {
@@ -557,7 +559,7 @@ const assertNoConflict = async (
     staffId: input.staffId,
     startTime: input.startTime,
     endTime: input.endTime,
-    allowOutsideAvailability: true,
+    shiftRule: "START_IN_SHIFT",
     ...(input.excludeAppointmentId
       ? { excludeAppointmentId: input.excludeAppointmentId }
       : {}),
@@ -577,6 +579,16 @@ const assertNoConflict = async (
       : {}),
   });
 };
+
+// Staff still working on this cart. Anyone whose services on it are all
+// marked done has moved on, so the cart no longer checks them for clashes.
+const heldStaffIds = (cart: {
+  staffId: string | null;
+  services: Array<{ staffId: string | null; doneAt: Date | null }>;
+}) =>
+  [cart.staffId, ...cart.services.map((item) => item.staffId)].filter(
+    (staffId): staffId is string => !!staffId && holdsStaff(cart, staffId)
+  );
 
 const assertNoStaffConflicts = async (
   tx: TransactionClient,
@@ -784,10 +796,7 @@ const recalculateCart = async (
     await assertNoStaffConflicts(tx, {
       salonId: cart.salonId,
       branchId: cart.branchId!,
-      staffIds: [
-        cart.staffId,
-        ...cart.services.map((item) => item.staffId),
-      ],
+      staffIds: heldStaffIds(cart),
       startTime: cart.startTime,
       endTime,
       excludeAppointmentId: cart.id,
@@ -1842,10 +1851,7 @@ export const updateJobCart = async (
     await assertNoStaffConflicts(tx, {
       salonId: existing.salonId,
       branchId: existing.branchId!,
-      staffIds: [
-        staffId,
-        ...existing.services.map((item) => item.staffId),
-      ],
+      staffIds: heldStaffIds({ staffId, services: existing.services }),
       startTime,
       endTime,
       excludeAppointmentId: existing.id,
@@ -2299,7 +2305,13 @@ export const updateJobCartItem = async (
           ? {}
           : { price: new Prisma.Decimal(input.price) }),
         ...(input.quantity === undefined ? {} : { quantity: input.quantity }),
-        ...(input.staffId === undefined ? {} : { staffId: input.staffId }),
+        ...(input.staffId === undefined
+          ? {}
+          : {
+              staffId: input.staffId,
+              // "Done" belonged to the previous stylist.
+              ...(input.staffId !== serviceItem.staffId ? { doneAt: null } : {}),
+            }),
       },
     });
     await recalculateCart(tx, id, actor, audit);
@@ -2326,6 +2338,93 @@ export const updateJobCartItem = async (
         quantity: input.quantity,
         staffId: input.staffId,
       },
+      ...audit,
+    });
+    return present(await requireCart(tx, id, actor));
+  });
+
+/**
+ * Marks one service done (or undoes it). Once all of a stylist's services on
+ * an open cart are done they are free for other work, even though the cart
+ * stays open for billing. Works on paid carts too: it changes no money.
+ */
+export const setJobCartServiceDone = async (
+  actor: JobCartActor,
+  id: string,
+  itemId: string,
+  done: boolean,
+  audit: AuditContext
+) =>
+  prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
+    const existing = await requireCart(tx, id, actor);
+    if (
+      !(activeAppointmentStatuses as readonly string[]).includes(existing.status)
+    ) {
+      throw new JobCartError(
+        409,
+        "Services can only be marked done on an open job cart"
+      );
+    }
+    const serviceItem = existing.services.find((item) => item.id === itemId);
+    if (!serviceItem) {
+      throw new JobCartError(404, "Job cart service not found");
+    }
+    const staffId = serviceItem.staffId;
+    if (!staffId) {
+      throw new JobCartError(
+        400,
+        "Assign a staff member before marking this service done"
+      );
+    }
+    if (done === Boolean(serviceItem.doneAt)) {
+      return present(existing);
+    }
+    if (!done) {
+      // The cart holds them again, so it must not clash with work they took
+      // on after being marked done.
+      await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${staffId} FOR UPDATE`;
+      const busy = await staffBusyIntervals(tx, {
+        staffIds: [staffId],
+        from: existing.startTime,
+        to: new Date(Math.max(existing.endTime.getTime(), Date.now())),
+        timezone: existing.salon.timezone,
+        excludeAppointmentId: existing.id,
+      });
+      const clash = busy.get(staffId)![0];
+      if (clash) {
+        throw new JobCartError(
+          409,
+          `${serviceItem.staff?.name ?? "Staff"} is already booked on ${
+            clash.kind === "JOB_CART" ? "job cart" : "appointment"
+          } ${clash.appointmentCode}`
+        );
+      }
+    }
+    await tx.appointmentService.update({
+      where: { id: serviceItem.id },
+      data: { doneAt: done ? new Date() : null },
+    });
+    await syncStaffOvertime(tx, {
+      staffId,
+      startTime: existing.startTime,
+      endTime: existing.startTime,
+    });
+    await createAuditLog({
+      tx,
+      salonId: existing.salonId,
+      branchId: existing.branchId,
+      userId: actor.userId,
+      module: "JOB_CART",
+      action: "UPDATE",
+      entityId: id,
+      entityCode: existing.appointmentCode,
+      entityName: existing.customer.name,
+      description: `Service ${serviceItem.serviceName} ${
+        done ? "marked done" : "reopened"
+      } on job cart ${existing.appointmentCode}`,
+      oldData: { itemId, doneAt: serviceItem.doneAt },
+      newData: { itemId, done },
       ...audit,
     });
     return present(await requireCart(tx, id, actor));
@@ -2771,10 +2870,7 @@ export const confirmJobCart = async (
       await assertNoStaffConflicts(tx, {
         salonId: existing.salonId,
         branchId: existing.branchId!,
-        staffIds: [
-          existing.staffId,
-          ...existing.services.map((item) => item.staffId),
-        ],
+        staffIds: heldStaffIds(existing),
         startTime: existing.startTime,
         endTime: existing.endTime,
         excludeAppointmentId: existing.id,
@@ -2883,8 +2979,10 @@ export const confirmJobCart = async (
         tx
       );
     }
+    // The cart booked the consumables above; the appointment only follows its
+    // status, or the same usage would leave the shelf twice.
     if (existing.sourceAppointment && existing.sourceAppointment.status !== "COMPLETED") {
-      await AppointmentModel.updateStatusWithHistory(existing.sourceAppointment.id, { oldStatus: existing.sourceAppointment.status as any, newStatus: "COMPLETED", note: "Source appointment completed with job cart", changedById: actor.userId }, tx);
+      await AppointmentModel.updateStatusWithHistory(existing.sourceAppointment.id, { oldStatus: existing.sourceAppointment.status as any, newStatus: "COMPLETED", note: "Source appointment completed with job cart", changedById: actor.userId, bookUsage: false }, tx);
     }
     if (billing.status !== "DRAFT") {
       const issued = await issueInvoice({
@@ -3259,6 +3357,25 @@ export const cancelJobCart = async (
       },
       tx
     );
+    // Hand the appointment back so a fresh job cart can be started for it.
+    if (existing.sourceAppointment) {
+      await tx.appointment.update({
+        where: { id },
+        data: { sourceAppointmentId: null },
+      });
+      if (existing.sourceAppointment.status === "CHECKED_IN") {
+        await AppointmentModel.updateStatusWithHistory(
+          existing.sourceAppointment.id,
+          {
+            oldStatus: "CHECKED_IN",
+            newStatus: "SCHEDULED",
+            note: `Job cart ${existing.appointmentCode} cancelled`,
+            changedById: actor.userId,
+          },
+          tx
+        );
+      }
+    }
     await InvoiceModel.cancel(existing.invoice!.id, tx);
     await createAuditLog({
       tx,

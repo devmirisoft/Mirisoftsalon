@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Col, Input, Label, Modal, ModalBody, Row } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
+import { Select } from "@/components/select/PortalSelect";
+import { StaffOptionLabel } from "@/components/salon/StaffAvailabilityLabel";
 import { serviceMinutes } from "@/utils/appointmentTotals";
 import { formatMoney } from "@/utils/salonFormat";
 
@@ -34,6 +36,8 @@ const ServicePickerModal = ({
   // When set, services stay locked until a staff member is chosen, so every
   // service added is attributed to someone.
   requireStaff = false,
+  // Optional staffId -> { available, text } map shown beside each name.
+  staffStatus = null,
 }) => {
   const [categoryId, setCategoryId] = useState("");
   const [search, setSearch] = useState("");
@@ -61,6 +65,11 @@ const ServicePickerModal = ({
     });
   }, [options, categoryId, search]);
 
+  const staffOptions = staff.map((member) => ({
+    value: member.id,
+    label: member.jobRole ? `${member.name} - ${member.jobRole}` : member.name,
+    status: staffStatus?.get(member.id) ?? null,
+  }));
   const staffMemberFor = (id) => staff.find((member) => member.id === id);
   const staffNameFor = (id) => staffMemberFor(id)?.name;
   // A branch with nobody on it cannot satisfy requireStaff, so say that
@@ -98,28 +107,33 @@ const ServicePickerModal = ({
         </button>
       </div>
       <ModalBody>
-        <Row className="g-2">
+        <Row className="g-2 svc-picker-filters">
           <Col md="4">
             <Label className="svc-picker-label">
               <Icon name="user" />
               Assign next to{requireStaff ? " *" : ""}
             </Label>
-            <Input
-              type="select"
-              value={staffId}
-              disabled={disabled}
-              onChange={(event) => onStaffChange?.(event.target.value)}
-            >
-              <option value="" disabled={requireStaff && !noStaffAvailable}>
-                {noStaffAvailable ? "No staff at this branch" : staffPlaceholder}
-              </option>
-              {staff.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.name}
-                  {member.jobRole ? ` - ${member.jobRole}` : ""}
-                </option>
-              ))}
-            </Input>
+            <Select
+              className="react-select-container"
+              classNamePrefix="react-select"
+              isClearable={!requireStaff}
+              isDisabled={disabled}
+              options={staffOptions}
+              value={
+                staffOptions.find((option) => option.value === staffId) || null
+              }
+              placeholder={
+                noStaffAvailable ? "No staff at this branch" : staffPlaceholder
+              }
+              formatOptionLabel={(option, { context }) => (
+                <StaffOptionLabel
+                  name={option.label}
+                  status={option.status}
+                  compact={context === "value"}
+                />
+              )}
+              onChange={(option) => onStaffChange?.(option?.value || "")}
+            />
           </Col>
           <Col md="4">
             <Label className="svc-picker-label">

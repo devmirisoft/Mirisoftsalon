@@ -7,6 +7,7 @@ import {
   getAvailabilityRules,
   getRoster,
   getSlots,
+  getStatuses,
   getTimeBlockById,
   getTimeBlocks,
   patchAvailabilityRuleStatus,
@@ -34,6 +35,11 @@ staffAvailabilityRouter.get(
   "/slots",
   requireRole(...viewRoles),
   getSlots
+);
+staffAvailabilityRouter.get(
+  "/status",
+  requireRole(...viewRoles),
+  getStatuses
 );
 staffAvailabilityRouter.get(
   "/",

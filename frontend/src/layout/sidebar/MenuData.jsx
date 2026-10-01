@@ -21,6 +21,7 @@ const superAdminMenu = [
     subMenu: [
       { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
       { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+      { icon: "user-check-fill", text: "Membership Report", link: "/reports/memberships" },
       { icon: "building-fill", text: "Salon Report", link: "/reports/salon-report" },
       { icon: "shield-check-fill", text: "Audit Trails", link: "/reports/audit-trails" },
     ],
@@ -170,6 +171,7 @@ const getMenu = (role) => {
               ? [
                   { icon: "bar-chart-fill", text: "Sales Report", link: "/reports/sales" },
                   { icon: "calendar-check-fill", text: "EOD Report", link: "/reports/eod" },
+                  { icon: "user-check-fill", text: "Membership Report", link: "/reports/memberships" },
                 ]
               : []),
             { icon: "archive-fill", text: "Inventory Report", link: "/reports/inventory" },

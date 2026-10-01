@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import {
   Alert,
@@ -113,7 +114,8 @@ const Appointments = () => {
     setError("");
     try {
       const response = await salonApi.appointments.list(query);
-      setAppointments(response.data || []);
+      // Job carts share the appointment table but live on their own pages.
+      setAppointments((response.data || []).filter((row) => !row.walkInJobCart));
     } catch (loadError) {
       setError(loadError.message);
     } finally {
@@ -219,8 +221,15 @@ const Appointments = () => {
           ...(service.quantity ? { quantity: Number(service.quantity) } : {}),
         })),
       });
-      setDetails(null);
-      navigate(`/job-carts/${response.data.id}`);
+      toast.success(
+        `Job cart ${response.data.jobCartId || ""} created. Appointment checked in.`
+      );
+      // Stay here: the details swap to View / Edit Job Cart once refreshed.
+      const [fresh] = await Promise.all([
+        salonApi.appointments.get(appointment.id),
+        load(),
+      ]);
+      setDetails(fresh.data);
     } catch (createError) {
       setError(createError.message);
     } finally {
@@ -275,7 +284,8 @@ const Appointments = () => {
   // The toolbar's staff filter doubles as the staff board's column picker.
   const boardStaff = useMemo(
     () =>
-      filters.staffId
+      // "My jobs" has already narrowed the fetch; show whoever leads those.
+      filters.staffId && filters.staffId !== "me"
         ? availableStaff.filter((member) => member.id === filters.staffId)
         : availableStaff,
     [availableStaff, filters.staffId]
@@ -471,7 +481,8 @@ const Appointments = () => {
               <Input
                 id="appt-filter-staff"
                 type="select"
-                value={filters.staffId}
+                value={filters.staffId === "me" ? "" : filters.staffId}
+                disabled={filters.staffId === "me"}
                 onChange={(event) =>
                   setFilters((current) => ({ ...current, staffId: event.target.value }))
                 }
@@ -482,6 +493,21 @@ const Appointments = () => {
                 ))}
               </Input>
             </div>
+            {user?.role === "STAFF" && (
+              <Button
+                color={filters.staffId === "me" ? "primary" : "light"}
+                aria-pressed={filters.staffId === "me"}
+                onClick={() =>
+                  setFilters((current) => ({
+                    ...current,
+                    staffId: current.staffId === "me" ? "" : "me",
+                  }))
+                }
+              >
+                <Icon name="user-check" />
+                <span>My jobs</span>
+              </Button>
+            )}
             <div className="filter-bar-item is-grow">
               <div className="form-control-wrap">
                 <div className="form-icon form-icon-left">
@@ -543,7 +569,8 @@ const Appointments = () => {
       )}
 
       <AppointmentBookingModal
-        isOpen={action === "create"}
+        isOpen={action === "create" || action === "services"}
+        appointment={action === "services" ? selected : null}
         toggle={() => setAction(null)}
         isSuper={isSuper}
         lockBranch={isBranchLocked}
@@ -562,7 +589,16 @@ const Appointments = () => {
           })
         }
         onSubmit={async (payload) => {
-          await salonApi.appointments.create(payload);
+          if (action === "services") {
+            await salonApi.appointments.updateServices(selected.id, {
+              staffId: payload.staffId,
+              serviceIds: payload.serviceIds,
+              serviceItems: payload.serviceItems,
+            });
+            toast.success("Appointment services updated.");
+          } else {
+            await salonApi.appointments.create(payload);
+          }
           await load();
         }}
       />
@@ -630,11 +666,19 @@ const Appointments = () => {
         }}
         onCreateJobCart={createJobCartFromAppointment}
         creatingJobCart={creatingJobCart}
-        onViewJobCart={(jobCartId, options = {}) => {
+        onViewJobCart={(jobCartId, mode) => {
           setDetails(null);
           navigate(
-            `/job-carts/${jobCartId}${options.openPayment ? "?bill=1" : ""}`
+            mode === "edit"
+              ? `/job-carts/${jobCartId}/edit`
+              : mode === "pay"
+                ? `/job-carts/${jobCartId}?bill=1`
+                : `/job-carts/${jobCartId}/view`
           );
+        }}
+        onEditServices={(appointment) => {
+          setDetails(null);
+          openAction("services", appointment);
         }}
       />
       <Modal isOpen={Boolean(tracking)} toggle={() => setTracking(null)} centered>

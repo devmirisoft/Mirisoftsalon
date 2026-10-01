@@ -725,13 +725,33 @@ describe("job cart usage confirmation", () => {
     expect((await prisma.appointment.findUniqueOrThrow({ where: { id } })).status).toBe("SCHEDULED");
   }, LONG);
 
-  it("rejects usage for a product the service does not use", async () => {
+  it("rejects usage for a product that is not a service product", async () => {
     const w = await world();
     await stocked(w);
+    const retailOnly = await prisma.product.create({ data: { name: `Serum ${randomUUID().slice(0, 8)}`, salonId: w.salon.id, unit: "PCS", isRetailProduct: true } });
     const id = await cartWithWash(w);
     const lineId = (await prisma.appointmentService.findFirstOrThrow({ where: { appointmentId: id } })).id;
-    const response = await request(app).post(`/api/job-carts/${id}/confirm`).set(auth(w.token.receptionist)).send({ usage: [{ appointmentServiceId: lineId, productId: w.gloves.id, quantity: 1 }] });
+    const response = await request(app).post(`/api/job-carts/${id}/confirm`).set(auth(w.token.receptionist)).send({ usage: [{ appointmentServiceId: lineId, productId: retailOnly.id, quantity: 1 }] });
     expect(response.status).toBe(400);
+  }, LONG);
+
+  it("books any service product picked on a line and suggests it on that service next time", async () => {
+    const w = await world();
+    await stocked(w);
+    expect((await purchase(w, w.gloves.id, 10, "SERVICE")).status).toBe(201);
+    await openBottle(w, w.token.receptionist).expect(201);
+    const id = await cartWithWash(w);
+    const plan = await request(app).get(`/api/inventory/usage-plan/${id}`).set(auth(w.token.receptionist));
+    const line = plan.body.data.lines[0];
+    expect(line.suggestedProductIds).toEqual([]);
+    expect(plan.body.data.products.map((product: { id: string }) => product.id)).toContain(w.gloves.id);
+    await request(app).post(`/api/job-carts/${id}/confirm`).set(auth(w.token.receptionist)).send({ usage: [{ appointmentServiceId: line.appointmentServiceId, productId: w.gloves.id, quantity: 3 }] }).expect(200);
+    const used = await prisma.productStockMovement.findFirstOrThrow({ where: { referenceId: id, productId: w.gloves.id, type: "USED_IN_SERVICE" } });
+    expect([Number(used.quantity), used.expectedQuantity]).toEqual([3, null]);
+
+    const next = await booking(w, [w.hairWash.id]);
+    const nextPlan = await request(app).get(`/api/inventory/usage-plan/${next.id}`).set(auth(w.token.receptionist));
+    expect(nextPlan.body.data.lines[0].suggestedProductIds).toEqual(expect.arrayContaining([w.gloves.id, w.shampoo.id]));
   }, LONG);
 
   it("leaves an active job cart cancellation free of stock movements", async () => {

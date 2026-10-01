@@ -28,7 +28,7 @@ const PERIODS = [
 ];
 
 /** Round icon, headline number, label and a soft footnote — the dashboard tile. */
-const StatCard = ({ icon, color, value, label, note }) => (
+export const StatCard = ({ icon, color, value, label, note }) => (
   <div className="card card-bordered dash-card h-100">
     <div className="card-inner d-flex dash-gap-3 align-items-start">
       <div className={`dash-icon bg-${color}-dim text-${color}`}>

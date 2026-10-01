@@ -94,8 +94,10 @@ const fixture = async () => {
       name: "Walk-in Stylist",
       email: `walk-in-stylist-${marker}@test.com`,
       jobRole: "Stylist",
-      workingFrom: "09:00",
-      workingTo: "20:00",
+      // Carts start "now" and must start inside the shift, so the suite
+      // passes whatever time it runs.
+      workingFrom: "00:00",
+      workingTo: "23:59",
       weekOff: "NEVER",
       salonId: salon.id,
       branchId: branch.id,
@@ -177,6 +179,43 @@ const createCart = (
       serviceIds: [f.service.id],
       ...overrides,
     });
+
+// A booked (non job cart) appointment for one haircut with the fixture stylist.
+const bookedAppointment = async (
+  f: Awaited<ReturnType<typeof fixture>>,
+  startTime: Date,
+  minutes = 45
+) => {
+  const phone = `97${Math.floor(Math.random() * 1e8)}`;
+  const customer = await prisma.customer.create({
+    data: {
+      customerCode: `JC-${randomUUID()}`,
+      name: "Booked Customer",
+      phone,
+      salonId: f.salon.id,
+      branchId: f.branch.id,
+    },
+  });
+  const appointment = await prisma.appointment.create({
+    data: {
+      appointmentCode: `APT-${randomUUID()}`,
+      salonId: f.salon.id,
+      branchId: f.branch.id,
+      customerId: customer.id,
+      staffId: f.stylist.id,
+      startTime,
+      endTime: new Date(startTime.getTime() + minutes * 60_000),
+      totalDurationMinutes: minutes,
+      estimatedAmount: 500,
+      services: {
+        create: [
+          { serviceId: f.service.id, serviceName: f.service.name, price: 500 },
+        ],
+      },
+    },
+  });
+  return { phone, appointment };
+};
 
 describe("Walk-in job carts", () => {
   it("creates or reuses a customer and creates a walk-in appointment with a draft invoice", async () => {
@@ -400,6 +439,168 @@ describe("Walk-in job carts", () => {
         select: { status: true },
       })
     ).toEqual({ status: "COMPLETED" });
+    // One haircut uses 2 of the 10 on the shelf: booked by the cart only,
+    // not again when its appointment completes alongside it.
+    expect(
+      Number(
+        (
+          await prisma.product.findUniqueOrThrow({
+            where: { id: f.product.id },
+            select: { currentStock: true },
+          })
+        ).currentStock
+      )
+    ).toBe(8);
+  });
+
+  it("hands the appointment back when its job cart is cancelled", async () => {
+    const f = await fixture();
+    const booked = await bookedAppointment(f, new Date());
+    const cart = await createCart(f, f.adminToken, {
+      customerName: "Booked Customer",
+      phone: booked.phone,
+      staffId: f.stylist.id,
+      sourceAppointmentId: booked.appointment.id,
+    }).expect(201);
+
+    await request(app)
+      .patch(`/api/appointments/${booked.appointment.id}/status`)
+      .set(auth(f.adminToken))
+      .send({ status: "COMPLETED" })
+      .expect(409);
+
+    await request(app)
+      .post(`/api/job-carts/${cart.body.data.id}/cancel`)
+      .set(auth(f.adminToken))
+      .expect(200);
+
+    expect(
+      await prisma.appointment.findUniqueOrThrow({
+        where: { id: booked.appointment.id },
+        select: { status: true, generatedJobCart: { select: { id: true } } },
+      })
+    ).toEqual({ status: "SCHEDULED", generatedJobCart: null });
+    await createCart(f, f.adminToken, {
+      customerName: "Booked Customer",
+      phone: booked.phone,
+      staffId: f.stylist.id,
+      sourceAppointmentId: booked.appointment.id,
+    }).expect(201);
+  });
+
+  it("auto no-shows and cancels late bookings, never job carts", async () => {
+    const f = await fixture();
+    const hour = 60 * 60_000;
+    const late = await bookedAppointment(f, new Date(Date.now() - hour - 60_000));
+    const stale = await bookedAppointment(f, new Date(Date.now() - 48 * hour));
+    const upcoming = await bookedAppointment(f, new Date(Date.now() + 2 * hour));
+    const cart = await createCart(f).expect(201);
+    await prisma.appointment.update({
+      where: { id: cart.body.data.id },
+      data: { startTime: new Date(Date.now() - 48 * hour) },
+    });
+
+    await request(app)
+      .get("/api/appointments")
+      .set(auth(f.adminToken))
+      .expect(200);
+
+    const statusOf = async (id: string) =>
+      (
+        await prisma.appointment.findUniqueOrThrow({
+          where: { id },
+          select: { status: true },
+        })
+      ).status;
+    // An hour late is a no-show, unless that hour crossed the salon's midnight.
+    const dayOf = (date: Date) =>
+      date.toLocaleDateString("en-CA", { timeZone: f.salon.timezone ?? "Asia/Kolkata" });
+    expect(await statusOf(late.appointment.id)).toBe(
+      dayOf(late.appointment.startTime) === dayOf(new Date()) ? "NO_SHOW" : "CANCELLED"
+    );
+    expect(await statusOf(stale.appointment.id)).toBe("CANCELLED");
+    expect(await statusOf(upcoming.appointment.id)).toBe("SCHEDULED");
+    expect(await statusOf(cart.body.data.id)).toBe("SCHEDULED");
+    expect(
+      await prisma.appointmentStatusHistory.count({
+        where: { appointmentId: stale.appointment.id, newStatus: "CANCELLED" },
+      })
+    ).toBe(1);
+  });
+
+  it("frees a stylist once their booking is an hour late, before any sweep runs", async () => {
+    const minute = 60_000;
+    const cartFor = (f: Awaited<ReturnType<typeof fixture>>) =>
+      createCart(f, f.adminToken, {
+        serviceItems: [{ serviceId: f.service.id, staffId: f.stylist.id }],
+      });
+
+    // Two-hour bookings still running now: one 70 minutes late, one 30.
+    const lateSalon = await fixture();
+    const late = await bookedAppointment(
+      lateSalon,
+      new Date(Date.now() - 70 * minute),
+      120
+    );
+    const cart = await cartFor(lateSalon).expect(201);
+    expect(
+      (
+        await prisma.appointment.findUniqueOrThrow({
+          where: { id: late.appointment.id },
+          select: { status: true },
+        })
+      ).status
+    ).toBe("SCHEDULED");
+
+    const onTimeSalon = await fixture();
+    await bookedAppointment(onTimeSalon, new Date(Date.now() - 30 * minute), 120);
+    await cartFor(onTimeSalon).expect(409);
+
+    // An open job cart keeps its stylist however long it has been running.
+    await prisma.appointment.update({
+      where: { id: cart.body.data.id },
+      data: {
+        startTime: new Date(Date.now() - 120 * minute),
+        endTime: new Date(Date.now() + 30 * minute),
+      },
+    });
+    await cartFor(lateSalon).expect(409);
+  });
+
+  it("edits a booking's services until its job cart starts", async () => {
+    const f = await fixture();
+    // Inside the stylist's shift whatever time the suite runs.
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60_000).toLocaleDateString(
+      "en-CA",
+      { timeZone: "Asia/Kolkata" }
+    );
+    const booked = await bookedAppointment(f, new Date(`${tomorrow}T12:00:00+05:30`));
+    const edit = () =>
+      request(app)
+        .put(`/api/appointments/${booked.appointment.id}/services`)
+        .set(auth(f.adminToken))
+        .send({
+          staffId: f.stylist.id,
+          serviceIds: [f.service.id, f.secondService.id],
+          serviceItems: [{ serviceId: f.secondService.id, price: 250, quantity: 2 }],
+        });
+
+    const updated = await edit().expect(200);
+    expect(Number(updated.body.data.estimatedAmount)).toBe(500 + 250 * 2);
+    expect(updated.body.data.totalDurationMinutes).toBe(75);
+    expect(
+      await prisma.appointmentService.count({
+        where: { appointmentId: booked.appointment.id },
+      })
+    ).toBe(2);
+
+    await createCart(f, f.adminToken, {
+      customerName: "Booked Customer",
+      phone: booked.phone,
+      staffId: f.stylist.id,
+      sourceAppointmentId: booked.appointment.id,
+    }).expect(201);
+    await edit().expect(409);
   });
 
   it("completes first, then issues and pays without fulfilling twice", async () => {

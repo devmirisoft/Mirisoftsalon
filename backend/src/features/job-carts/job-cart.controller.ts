@@ -16,6 +16,7 @@ import {
   listJobCarts,
   removeJobCartItem,
   removeJobCartPackageRedemption,
+  setJobCartServiceDone,
   updateJobCart,
   updateJobCartItem,
   type JobCartActor,
@@ -302,6 +303,26 @@ export const patchJobCartItem = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       message: "Job cart service updated",
+      data,
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+export const patchJobCartItemDone = async (req: Request, res: Response) => {
+  try {
+    const { done } = z.object({ done: z.boolean() }).parse(req.body);
+    const data = await setJobCartServiceDone(
+      actorFrom(req),
+      param(req, "id"),
+      param(req, "itemId"),
+      done,
+      requestAuditContext(req)
+    );
+    return res.status(200).json({
+      success: true,
+      message: done ? "Service marked done" : "Service reopened",
       data,
     });
   } catch (error) {

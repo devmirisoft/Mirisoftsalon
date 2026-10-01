@@ -20,6 +20,29 @@ export const BOOKING_BLOCKING_APPOINTMENT_STATUSES: AppointmentStatus[] = [
   "CHECKED_IN",
 ];
 
+// A booking nobody checked in within this long of its start is a no-show.
+export const LATE_NO_SHOW_MS = 60 * 60 * 1000;
+
+// What holds a stylist's time: a visit under way, an open job cart, or a
+// booking not yet an hour late. Past that hour a booking is a no-show and its
+// stylist is free, whether or not the sweep has stamped NO_SHOW on it yet. A
+// booking already running as a job cart is held by the cart instead.
+export const staffBlockingAppointmentWhere = (
+  now = new Date()
+): Prisma.AppointmentWhereInput => ({
+  status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+  generatedJobCart: { is: null },
+  AND: [
+    {
+      OR: [
+        { status: "CHECKED_IN" },
+        { walkInJobCart: true },
+        { startTime: { gte: new Date(now.getTime() - LATE_NO_SHOW_MS) } },
+      ],
+    },
+  ],
+});
+
 type DurationUnit = "MINUTES" | "HOURS";
 type TransactionClient = Prisma.TransactionClient;
 
@@ -55,11 +78,27 @@ export type AppointmentListFilters = {
   dateTo?: Date;
 };
 
+// "me" is the caller's own staff profile (the "My jobs" filter). A user with
+// no staff profile matches nothing rather than everything.
+export const resolveStaffIdFilter = async (staffId?: string, userId?: string) => {
+  if (staffId !== "me") return staffId;
+  const staff = userId
+    ? await prisma.staff.findUnique({ where: { userId }, select: { id: true } })
+    : null;
+  return staff?.id ?? "__none__";
+};
+
+// A staff member's appointments include ones where they only do some of the
+// services, not just the ones they lead.
+export const appointmentStaffWhere = (staffId: string): Prisma.AppointmentWhereInput => ({
+  OR: [{ staffId }, { services: { some: { staffId } } }],
+});
+
 export const appointmentListWhere = (
   filters?: AppointmentListFilters
 ): Prisma.AppointmentWhereInput => ({
   ...(filters?.branchId ? { branchId: filters.branchId } : {}),
-  ...(filters?.staffId ? { staffId: filters.staffId } : {}),
+  ...(filters?.staffId ? appointmentStaffWhere(filters.staffId) : {}),
   ...(filters?.customerId ? { customerId: filters.customerId } : {}),
   ...(filters?.status ? { status: filters.status } : {}),
   ...(filters?.dateFrom || filters?.dateTo
@@ -71,6 +110,33 @@ export const appointmentListWhere = (
       }
     : {}),
 });
+
+export type AppointmentServiceLine = {
+  serviceId: string;
+  serviceName: string;
+  price: number;
+  quantity?: number;
+  staffId?: string;
+  durationValue?: number;
+  durationUnit?: DurationUnit;
+};
+
+const serviceLineRows = (
+  appointmentId: string,
+  services: AppointmentServiceLine[]
+) =>
+  services.map((service) => ({
+    appointmentId,
+    serviceId: service.serviceId,
+    serviceName: service.serviceName,
+    price: service.price,
+    ...(service.quantity ? { quantity: service.quantity } : {}),
+    ...(service.staffId ? { staffId: service.staffId } : {}),
+    ...(service.durationValue !== undefined
+      ? { durationValue: service.durationValue }
+      : {}),
+    ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
+  }));
 
 export const AppointmentModel = {
   create: async (data: {
@@ -90,15 +156,7 @@ export const AppointmentModel = {
     bookingNote?: string;
     internalNote?: string;
     sourceAppointmentId?: string;
-    services: {
-      serviceId: string;
-      serviceName: string;
-      price: number;
-      quantity?: number;
-      staffId?: string;
-      durationValue?: number;
-      durationUnit?: DurationUnit;
-    }[];
+    services: AppointmentServiceLine[];
   }, tx?: TransactionClient) => {
     // Prisma 7.8 nested `services: { create }` drops rows at 7-8 services and
     // throws a bogus appointmentId FK error at 9+, so insert them separately.
@@ -125,18 +183,7 @@ export const AppointmentModel = {
         },
       });
       await db.appointmentService.createMany({
-        data: data.services.map((service) => ({
-          appointmentId: id,
-          serviceId: service.serviceId,
-          serviceName: service.serviceName,
-          price: service.price,
-          ...(service.quantity ? { quantity: service.quantity } : {}),
-          ...(service.staffId ? { staffId: service.staffId } : {}),
-          ...(service.durationValue !== undefined
-            ? { durationValue: service.durationValue }
-            : {}),
-          ...(service.durationUnit ? { durationUnit: service.durationUnit } : {}),
-        })),
+        data: serviceLineRows(id, data.services),
       });
       return db.appointment.findUniqueOrThrow({
         where: { id },
@@ -380,6 +427,13 @@ export const AppointmentModel = {
         ...(branchId ? { branchId } : {}),
       },
       include: {
+        generatedJobCart: {
+          select: {
+            id: true,
+            status: true,
+            invoice: { select: { paymentStatus: true } },
+          },
+        },
         ...soldProductsInclude,
         branch: {
           select: {
@@ -432,36 +486,6 @@ export const AppointmentModel = {
       },
     });
   },
-
-  findConflict: async (data: {
-  staffId: string;
-  startTime: Date;
-  endTime: Date;
-  excludeAppointmentId?: string;
-   }) => {
-  return prisma.appointment.findFirst({
-    where: {
-      status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
-      OR: [
-        { staffId: data.staffId },
-        { services: { some: { staffId: data.staffId } } },
-      ],
-      startTime: {
-        lt: data.endTime,
-      },
-      endTime: {
-        gt: data.startTime,
-      },
-      ...(data.excludeAppointmentId
-        ? {
-            id: {
-              not: data.excludeAppointmentId,
-            },
-          }
-        : {}),
-    },
-  });
- },
 
   updateStatus: async (id: string, status: AppointmentStatus) => {
     return prisma.appointment.update({
@@ -527,6 +551,9 @@ export const AppointmentModel = {
   data: {
     startTime: Date;
     endTime: Date;
+    staffId?: string;
+    totalDurationMinutes?: number;
+    estimatedAmount?: number;
   },
   tx?: TransactionClient
 ) => {
@@ -534,10 +561,7 @@ export const AppointmentModel = {
     where: {
       id,
     },
-    data: {
-      startTime: data.startTime,
-      endTime: data.endTime,
-    },
+    data,
     include: {
       customer: {
         select: {
@@ -580,6 +604,24 @@ export const AppointmentModel = {
       },
     },
   });
+},
+// Swaps a booked appointment's service lines and re-times it to match.
+replaceServices: async (
+  id: string,
+  data: {
+    startTime: Date;
+    endTime: Date;
+    staffId: string;
+    totalDurationMinutes: number;
+    estimatedAmount: number;
+    services: AppointmentServiceLine[];
+  },
+  tx: TransactionClient
+) => {
+  const { services, ...schedule } = data;
+  await tx.appointmentService.deleteMany({ where: { appointmentId: id } });
+  await tx.appointmentService.createMany({ data: serviceLineRows(id, services) });
+  return AppointmentModel.updateSchedule(id, schedule, tx);
 },
 findInvoiceSourceById: async (id: string) => {
   return prisma.appointment.findUnique({
@@ -728,6 +770,8 @@ updateStatusWithHistory: async (
     changedById?: string;
     /** Actual consumable use confirmed at completion; defaults otherwise. */
     usage?: ServiceUsageEntry[] | undefined;
+    /** false when another record (the job cart) already booked the usage. */
+    bookUsage?: boolean;
   },
   tx?: TransactionClient
 ) => {
@@ -762,7 +806,7 @@ updateStatusWithHistory: async (
       );
     }
 
-    if (data.newStatus === "COMPLETED") {
+    if (data.newStatus === "COMPLETED" && data.bookUsage !== false) {
       try {
         await recordServiceUsage({
           tx: client,

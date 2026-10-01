@@ -1278,6 +1278,10 @@ model AppointmentService {
   durationValue Int?
   durationUnit  DurationUnit?
 
+  // Set when the stylist marks this service done on an open job cart; frees
+  // them for other work before the cart itself is completed.
+  doneAt DateTime?
+
   customerPackageUsageItemId String?
   customerPackageUsageItem   CustomerPackageUsageItem? @relation(fields: [customerPackageUsageItemId], references: [id], onDelete: SetNull)
 

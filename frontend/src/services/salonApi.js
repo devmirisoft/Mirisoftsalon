@@ -81,6 +81,7 @@ export const salonApi = {
     remove: (id) =>
       request(`/api/staff-availability/${id}`, { method: "DELETE" }),
     slots: (query) => request("/api/staff-availability/slots", { query }),
+    status: (query) => request("/api/staff-availability/status", { query }),
   },
   staffTimeBlocks: {
     list: (query) => request("/api/staff-time-blocks", { query }),
@@ -262,6 +263,8 @@ export const salonApi = {
     create: (body) => request("/api/appointments", { method: "POST", body }),
     update: (id, body) =>
       request(`/api/appointments/${id}`, { method: "PUT", body }),
+    updateServices: (id, body) =>
+      request(`/api/appointments/${id}/services`, { method: "PUT", body }),
     setStatus: (id, body) =>
       request(`/api/appointments/${id}/status`, { method: "PATCH", body }),
     reschedule: (id, startTime) =>
@@ -299,6 +302,11 @@ export const salonApi = {
     removeItem: (id, itemId) =>
       request(`/api/job-carts/${id}/items/${itemId}`, {
         method: "DELETE",
+      }),
+    setItemDone: (id, itemId, done) =>
+      request(`/api/job-carts/${id}/items/${itemId}/done`, {
+        method: "PATCH",
+        body: { done },
       }),
     redemptions: (id) =>
       request(`/api/job-carts/${id}/package-redemptions`),
@@ -493,6 +501,7 @@ export const salonApi = {
     salonReport: (query) => request("/api/reports/salon-report", { query }),
     salesDashboard: (query) => request("/api/reports/sales-dashboard", { query }),
     eod: (query) => request("/api/reports/eod", { query }),
+    memberships: (query) => request("/api/reports/memberships", { query }),
     staffPerformance: (query) => request("/api/reports/staff-performance", { query }),
     exportFile: (reportType, format, query = {}) =>
       downloadFile(`/api/reports/${reportType}/export`, {

@@ -7,6 +7,8 @@ import {
 import { getSalonMonthRange, parseSalonDateRange } from "../../utils/timezone.js";
 import { transactionError, validateBranch } from "../products/inventory-access.js";
 import { eodInvoiceFilters } from "./salon-report.controller.js";
+import { appointmentStaffWhere, resolveStaffIdFilter } from "../appointments/appointment.model.js";
+import { membershipSaleMethod } from "../customer-memberships/customer-membership.service.js";
 
 export const EXPORT_REPORT_TYPES = [
   "revenue",
@@ -19,6 +21,7 @@ export const EXPORT_REPORT_TYPES = [
   "customer-outstanding",
   "appointments",
   "eod",
+  "memberships",
 ] as const;
 export type ExportReportType = (typeof EXPORT_REPORT_TYPES)[number];
 
@@ -33,6 +36,7 @@ const allowedRoles: Record<ExportReportType, string[]> = {
   "customer-outstanding": ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   appointments: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST", "STAFF"],
   eod: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"],
+  memberships: ["SUPER_ADMIN", "SALON_ADMIN", "BRANCH_MANAGER", "RECEPTIONIST"],
 };
 
 const clean = (value: unknown) =>
@@ -287,9 +291,9 @@ const buildRows = async (
   }
   if (reportType === "appointments") {
     const status = clean(req.query.status);
-    const staffId = clean(req.query.staffId);
+    const staffId = await resolveStaffIdFilter(clean(req.query.staffId), req.user?.userId);
     const appointments = limited(await prisma.appointment.findMany({
-      where: { ...common, ...(context.range ? { startTime: context.range } : {}), ...(status ? { status: status as never } : {}), ...(staffId ? { staffId } : {}) },
+      where: { ...common, ...(context.range ? { startTime: context.range } : {}), ...(status ? { status: status as never } : {}), ...(staffId ? appointmentStaffWhere(staffId) : {}) },
       include: { customer: { select: { name: true, phone: true } }, staff: { select: { name: true } }, branch: { select: { name: true } }, services: { select: { serviceName: true } } },
       orderBy: { startTime: "asc" }, take: MAX_EXPORT_ROWS + 1,
     }));
@@ -328,6 +332,26 @@ const buildRows = async (
       comment: row.billingNote ?? "",
     })),
     totals: { code: "TOTAL", serviceCost: invoices.reduce((s, r) => s + sum(pick(r.items, "SERVICE")), 0), productCost: invoices.reduce((s, r) => s + sum(pick(r.items, "PRODUCT")), 0), salesCost: invoices.reduce((s, r) => s + numberValue(r.totalAmount), 0) } };
+  }
+
+  if (reportType === "memberships") {
+    const plan = clean(req.query.plan);
+    const method = clean(req.query.method);
+    const sold = limited(await prisma.customerMembership.findMany({
+      where: { ...common, ...(context.range ? { createdAt: context.range } : {}), ...(plan ? { membershipNameSnapshot: plan } : {}) },
+      include: { customer: { select: { name: true, phone: true } }, soldByStaff: { select: { name: true } }, invoice: { select: { invoiceCode: true, payments: { select: { method: true } } } } },
+      orderBy: { createdAt: "desc" }, take: MAX_EXPORT_ROWS + 1,
+    }));
+    const rows = sold
+      .map((m) => ({ date: m.createdAt, customer: m.customer.name, phone: m.customer.phone ?? "", plan: m.membershipNameSnapshot, amount: Number(m.amountPaid ?? m.priceSnapshot), method: membershipSaleMethod(m), bill: m.invoice?.invoiceCode ?? "", soldBy: m.soldByStaff?.name ?? "", expires: m.expiresAt, status: m.status }))
+      .filter((row) => !method || row.method === method);
+    return { title: "Membership Report", columns: [
+      { key: "date", label: "Sold On", type: "date", width: 17 }, { key: "customer", label: "Customer", width: 20 },
+      { key: "phone", label: "Phone", width: 16 }, { key: "plan", label: "Membership", width: 18 },
+      { key: "amount", label: "Amount", type: "currency" }, { key: "method", label: "Payment Method", width: 18 },
+      { key: "bill", label: "Bill" }, { key: "soldBy", label: "Sold By", width: 18 },
+      { key: "expires", label: "Expires", type: "date", width: 17 }, { key: "status", label: "Status" },
+    ], rows, totals: { date: "TOTAL", amount: rows.reduce((s, r) => s + r.amount, 0) } };
   }
 
   const month = Number(req.query.month);

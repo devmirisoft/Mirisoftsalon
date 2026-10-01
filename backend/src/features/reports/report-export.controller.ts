@@ -30,6 +30,7 @@ const reportFilename: Record<ExportReportType, string> = {
   "customer-outstanding": "customer-report",
   appointments: "appointment-report",
   eod: "end-of-day-report",
+  memberships: "membership-report",
 };
 
 export const exportReport = async (req: Request, res: Response) => {

@@ -11,7 +11,7 @@ import {
 } from "../../utils/timezone.js";
 import { createAuditLog } from "../audit-logs/audit-log.service.js";
 import { actorBranchWhere } from "../../utils/branch-scope.js";
-import { BOOKING_BLOCKING_APPOINTMENT_STATUSES } from "../appointments/appointment.model.js";
+import { staffBlockingAppointmentWhere } from "../appointments/appointment.model.js";
 
 type DbClient = typeof prisma | Prisma.TransactionClient;
 type AuditContext = { ipAddress?: string; userAgent?: string };
@@ -386,6 +386,123 @@ const availabilityWindows = async (
   return fallbackWindows(staff, date);
 };
 
+export type StaffBusyInterval = {
+  appointmentId: string;
+  appointmentCode: string;
+  kind: "JOB_CART" | "APPOINTMENT";
+  start: Date;
+  end: Date;
+  runningLate: boolean;
+};
+
+type BusyRow = {
+  staffId: string | null;
+  services: Array<{ staffId: string | null; doneAt: Date | null }>;
+};
+
+// Whether a booking still holds this stylist: they have a service on it not
+// yet marked done, or they are its lead and some service has no stylist of
+// its own (or there are no service rows at all).
+export const holdsStaff = (row: BusyRow, staffId: string) =>
+  row.services.some((item) => item.staffId === staffId && !item.doneAt) ||
+  (row.staffId === staffId &&
+    (row.services.length === 0 ||
+      row.services.some((item) => !item.staffId && !item.doneAt)));
+
+/**
+ * When each stylist is busy between `from` and `to`. A booking holds them
+ * from its start to its planned end. An open job cart or a checked-in visit
+ * that overruns keeps holding them until now (capped at the end of that
+ * salon day, so a cart left open overnight does not block tomorrow); once it
+ * is completed, or their services on it are marked done, it lets them go.
+ */
+export const staffBusyIntervals = async (
+  client: DbClient,
+  input: {
+    staffIds: string[];
+    from: Date;
+    to: Date;
+    timezone: string;
+    now?: Date;
+    excludeAppointmentId?: string;
+  }
+) => {
+  const now = input.now ?? new Date();
+  const byStaff = new Map<string, StaffBusyInterval[]>(
+    input.staffIds.map((id) => [id, []])
+  );
+  if (!input.staffIds.length) return byStaff;
+  const rows = await client.appointment.findMany({
+    where: {
+      AND: [
+        staffBlockingAppointmentWhere(now),
+        {
+          OR: [
+            { staffId: { in: input.staffIds } },
+            {
+              services: {
+                some: { staffId: { in: input.staffIds }, doneAt: null },
+              },
+            },
+          ],
+        },
+        { startTime: { lt: input.to } },
+        {
+          OR: [
+            { endTime: { gt: input.from } },
+            // Possibly still running past its planned end (same-day cap).
+            {
+              OR: [{ walkInJobCart: true }, { status: "CHECKED_IN" }],
+              startTime: { gt: new Date(input.from.getTime() - 86_400_000) },
+            },
+          ],
+        },
+        ...(input.excludeAppointmentId
+          ? [{ id: { not: input.excludeAppointmentId } }]
+          : []),
+      ],
+    },
+    select: {
+      id: true,
+      appointmentCode: true,
+      walkInJobCart: true,
+      status: true,
+      staffId: true,
+      startTime: true,
+      endTime: true,
+      services: { select: { staffId: true, doneAt: true } },
+    },
+    orderBy: { startTime: "asc" },
+  });
+  for (const row of rows) {
+    let end = row.endTime;
+    const inProgress = row.walkInJobCart || row.status === "CHECKED_IN";
+    if (inProgress && now > row.endTime) {
+      const day = dateStringInTimezone(row.startTime, input.timezone);
+      const dayEnd = parseSalonDateRange(day, day, input.timezone).end!;
+      end = new Date(
+        Math.max(
+          row.endTime.getTime(),
+          Math.min(now.getTime(), dayEnd.getTime())
+        )
+      );
+    }
+    if (end <= input.from) continue;
+    const interval: StaffBusyInterval = {
+      appointmentId: row.id,
+      appointmentCode: row.appointmentCode,
+      kind: row.walkInJobCart ? "JOB_CART" : "APPOINTMENT",
+      start: row.startTime,
+      end,
+      runningLate: end > row.endTime,
+    };
+    for (const staffId of input.staffIds) {
+      if (holdsStaff(row, staffId)) byStaff.get(staffId)!.push(interval);
+    }
+  }
+  return byStaff;
+};
+
 export type StaffAvailabilityCheck = {
   available: boolean;
   reason:
@@ -409,9 +526,11 @@ export const checkStaffAvailabilityForSlot = async (input: {
   branchId?: string;
   excludeAppointmentId?: string;
   client?: DbClient;
-  // Job carts are walk-ins: a service may legitimately run past the shift and
-  // is banked as overtime (see syncStaffOvertime) instead of being rejected.
-  allowOutsideAvailability?: boolean;
+  // STRICT (public booking): the whole visit fits inside a shift window.
+  // START_IN_SHIFT (staff-made appointments, job carts): only the start must;
+  // a long service may run past the shift and is banked as overtime (see
+  // syncStaffOvertime).
+  shiftRule?: "STRICT" | "START_IN_SHIFT";
 }): Promise<StaffAvailabilityCheck> => {
   const client = input.client ?? prisma;
   if (
@@ -473,24 +592,21 @@ export const checkStaffAvailabilityForSlot = async (input: {
     startLocal.month === endLocal.month &&
     startLocal.day === endLocal.day;
   const windows = await availabilityWindows(client, staff, date);
-  if (
-    !input.allowOutsideAvailability &&
-    (!sameDay ||
-      !windows.some(
-        (window) =>
-          startMinutes >= window.startTimeMinutes &&
-          endMinutes <= window.endTimeMinutes
-      ))
-  ) {
-    return {
-      available: false,
-      reason: "OUTSIDE_AVAILABILITY",
-      message: "Appointment is outside staff availability",
-    };
-  }
-
+  const fits =
+    input.shiftRule === "START_IN_SHIFT"
+      ? windows.some(
+          (window) =>
+            startMinutes >= window.startTimeMinutes &&
+            startMinutes < window.endTimeMinutes
+        )
+      : sameDay &&
+        windows.some(
+          (window) =>
+            startMinutes >= window.startTimeMinutes &&
+            endMinutes <= window.endTimeMinutes
+        );
   const day = parseDateOnly(date);
-  const [leave, block, conflict] = await Promise.all([
+  const [leave, block, busy] = await Promise.all([
     client.staffLeave.findFirst({
       where: {
         staffId: staff.id,
@@ -508,27 +624,30 @@ export const checkStaffAvailabilityForSlot = async (input: {
       },
       select: { id: true },
     }),
-    client.appointment.findFirst({
-      where: {
-        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
-        OR: [
-          { staffId: staff.id },
-          { services: { some: { staffId: staff.id } } },
-        ],
-        startTime: { lt: input.endTime },
-        endTime: { gt: input.startTime },
-        ...(input.excludeAppointmentId
-          ? { id: { not: input.excludeAppointmentId } }
-          : {}),
-      },
-      select: { id: true },
+    staffBusyIntervals(client, {
+      staffIds: [staff.id],
+      from: input.startTime,
+      to: input.endTime,
+      timezone,
+      ...(input.excludeAppointmentId
+        ? { excludeAppointmentId: input.excludeAppointmentId }
+        : {}),
     }),
   ]);
+  const conflict = busy.get(staff.id)?.[0];
+  // Leave first: it is the reason the shift is empty, and says so plainly.
   if (leave) {
     return {
       available: false,
       reason: "APPROVED_LEAVE",
       message: "Staff is on approved leave",
+    };
+  }
+  if (!fits) {
+    return {
+      available: false,
+      reason: "OUTSIDE_AVAILABILITY",
+      message: "Appointment is outside staff availability",
     };
   }
   if (block) {
@@ -542,7 +661,9 @@ export const checkStaffAvailabilityForSlot = async (input: {
     return {
       available: false,
       reason: "APPOINTMENT_CONFLICT",
-      message: "Staff is already booked for this time slot",
+      message: `Staff is already booked for this time slot (${
+        conflict.kind === "JOB_CART" ? "job cart" : "appointment"
+      } ${conflict.appointmentCode})`,
     };
   }
   return {
@@ -605,9 +726,9 @@ export const syncStaffOvertime = async (
   const date = dateStringInTimezone(input.endTime, timezone);
   const range = parseSalonDateRange(date, date, timezone);
   if (!range.start || !range.end) return 0;
-  const [windows, latest, attendance] = await Promise.all([
+  const [windows, dayBookings, attendance] = await Promise.all([
     availabilityWindows(client, staff, date),
-    client.appointment.findFirst({
+    client.appointment.findMany({
       where: {
         status: { notIn: ["CANCELLED", "NO_SHOW"] },
         startTime: { gte: range.start, lt: range.end },
@@ -619,8 +740,10 @@ export const syncStaffOvertime = async (
           ? { id: { not: input.excludeAppointmentId } }
           : {}),
       },
-      orderBy: { endTime: "desc" },
-      select: { endTime: true },
+      select: {
+        endTime: true,
+        services: { select: { staffId: true, doneAt: true } },
+      },
     }),
     client.staffAttendance.findFirst({
       // ponytail: attendance rows are keyed on the salon-local day; a salon
@@ -629,6 +752,17 @@ export const syncStaffOvertime = async (
       select: { id: true, checkInTime: true, checkOutTime: true },
     }),
   ]);
+  // A booking ends for this stylist when they mark their last service on it
+  // done; until then, at its planned end.
+  const bookingEnds = dayBookings.map((booking) => {
+    const own = booking.services.filter((item) => item.staffId === staff.id);
+    return own.length && own.every((item) => item.doneAt)
+      ? Math.max(...own.map((item) => item.doneAt!.getTime()))
+      : booking.endTime.getTime();
+  });
+  const latest = bookingEnds.length
+    ? { endTime: new Date(Math.max(...bookingEnds)) }
+    : null;
   const overtimeMinutes = overtimeMinutesFor({
     shiftEnd: windows.length
       ? new Date(
@@ -697,7 +831,7 @@ export const getStaffAvailabilityForDate = async (
       }),
       client.appointment.findMany({
         where: {
-          status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
+          ...staffBlockingAppointmentWhere(),
           OR: [
             { staffId },
             { services: { some: { staffId } } },
@@ -748,6 +882,8 @@ export const calculateAvailableSlots = async (input: {
   slotIntervalMinutes: number;
   notBefore?: Date;
   notAfter?: Date;
+  // See checkStaffAvailabilityForSlot; STRICT unless staff are booking.
+  shiftRule?: "STRICT" | "START_IN_SHIFT";
 }) => {
   const client = input.client ?? prisma;
   const day = parseDateOnly(input.date);
@@ -757,7 +893,7 @@ export const calculateAvailableSlots = async (input: {
   }
   const staffIds = input.staff.map((member) => member.id);
   if (!staffIds.length) return [];
-  const [rules, blocks, leaves, appointments] = await Promise.all([
+  const [rules, blocks, leaves, busy] = await Promise.all([
     client.staffAvailabilityRule.findMany({
       where: {
         staffId: { in: staffIds },
@@ -791,25 +927,12 @@ export const calculateAvailableSlots = async (input: {
       },
       select: { staffId: true },
     }),
-    client.appointment.findMany({
-      where: {
-        status: { in: BOOKING_BLOCKING_APPOINTMENT_STATUSES },
-        OR: [
-          { staffId: { in: staffIds } },
-          { services: { some: { staffId: { in: staffIds } } } },
-        ],
-        startTime: { lt: range.end },
-        endTime: { gt: range.start },
-      },
-      select: {
-        staffId: true,
-        startTime: true,
-        endTime: true,
-        services: {
-          where: { staffId: { in: staffIds } },
-          select: { staffId: true },
-        },
-      },
+    // Through the next day: a START_IN_SHIFT slot may run past midnight.
+    staffBusyIntervals(client, {
+      staffIds,
+      from: range.start,
+      to: new Date(range.end.getTime() + 86_400_000),
+      timezone: input.timezone,
     }),
   ]);
   const leaveStaff = new Set(leaves.map((leave) => leave.staffId));
@@ -837,7 +960,9 @@ export const calculateAvailableSlots = async (input: {
         input.slotIntervalMinutes;
       for (
         let minute = first;
-        minute + input.totalDurationMinutes <= window.endTimeMinutes;
+        input.shiftRule === "START_IN_SHIFT"
+          ? minute < window.endTimeMinutes
+          : minute + input.totalDurationMinutes <= window.endTimeMinutes;
         minute += input.slotIntervalMinutes
       ) {
         const startTime = salonLocalDateTimeToUtc(
@@ -860,15 +985,12 @@ export const calculateAvailableSlots = async (input: {
             block.startTime < endTime &&
             block.endTime > startTime
         );
-        const occupied = appointments.some(
-          (appointment) =>
-            (appointment.staffId === member.id ||
-              appointment.services.some(
-                (service) => service.staffId === member.id
-              )) &&
-            appointment.startTime < endTime &&
-            appointment.endTime > startTime
-        );
+        const occupied = busy
+          .get(member.id)!
+          .some(
+            (interval) =>
+              interval.start < endTime && interval.end > startTime
+          );
         if (!blocked && !occupied) {
           slots.push({
             startTime: startTime.toISOString(),
@@ -980,6 +1102,7 @@ export const getAvailableSlots = async (
       timezone: branch.salon.timezone,
       totalDurationMinutes,
       slotIntervalMinutes: 15,
+      shiftRule: "START_IN_SHIFT",
     }),
   };
 };
@@ -1002,6 +1125,180 @@ export const getAvailableStaffForService = async (
   return [...seen.values()].sort((left, right) =>
     left.name.localeCompare(right.name)
   );
+};
+
+export type StaffStatus = {
+  staffId: string;
+  name: string;
+  state: "FREE" | "BOOKED" | "BLOCKED" | "IN_AT" | "SHIFT_ENDED" | "OFF";
+  // FREE: when the next booking/block starts (null = nothing later today).
+  // BOOKED/BLOCKED: when it ends. IN_AT: when the shift starts.
+  until: Date | null;
+  booking?: Omit<StaffBusyInterval, "start" | "end">;
+  blockType?: StaffTimeBlockType;
+  onLeave?: boolean;
+};
+
+/**
+ * What each stylist of a branch is doing at `at` (default now), for the
+ * staff pickers: free (and until when), booked on which cart/appointment,
+ * on a break, not in yet, shift over, or off for the day.
+ */
+export const getStaffStatuses = async (
+  actor: StaffAvailabilityActor,
+  input: { branchId: string; at?: Date }
+) => {
+  const scope = await scopeForActor(prisma, actor);
+  if (scope.branchId && scope.branchId !== input.branchId) {
+    throw new StaffAvailabilityError(404, "Branch not found");
+  }
+  const branch = await prisma.branch.findFirst({
+    where: {
+      id: input.branchId,
+      status: true,
+      ...(scope.salonId ? { salonId: scope.salonId } : {}),
+    },
+    include: { salon: { select: { timezone: true } } },
+  });
+  if (!branch) {
+    throw new StaffAvailabilityError(404, "Branch not found");
+  }
+  const timezone = branch.salon.timezone;
+  const at = input.at ?? new Date();
+  const date = dateStringInTimezone(at, timezone);
+  const day = parseDateOnly(date);
+  const range = parseSalonDateRange(date, date, timezone);
+  const local = getSalonLocalParts(at, timezone);
+  const atMinutes = local.hour * 60 + local.minute;
+  const staff = await prisma.staff.findMany({
+    where: {
+      salonId: branch.salonId,
+      status: true,
+      ...(scope.staffId ? { id: scope.staffId } : {}),
+      OR: [{ branchId: null }, { branchId: branch.id }],
+    },
+    select: {
+      id: true,
+      name: true,
+      workingFrom: true,
+      workingTo: true,
+      weekOff: true,
+    },
+    orderBy: { name: "asc" },
+  });
+  const staffIds = staff.map((member) => member.id);
+  const [rules, blocks, leaves, busy] = await Promise.all([
+    prisma.staffAvailabilityRule.findMany({
+      where: {
+        staffId: { in: staffIds },
+        dayOfWeek: day.getUTCDay(),
+        status: "ACTIVE",
+        AND: [
+          { OR: [{ effectiveFrom: null }, { effectiveFrom: { lte: day } }] },
+          { OR: [{ effectiveUntil: null }, { effectiveUntil: { gte: day } }] },
+        ],
+      },
+      orderBy: { startTimeMinutes: "asc" },
+    }),
+    prisma.staffTimeBlock.findMany({
+      where: {
+        staffId: { in: staffIds },
+        startTime: { lt: range.end! },
+        endTime: { gt: range.start! },
+      },
+      orderBy: { startTime: "asc" },
+    }),
+    prisma.staffLeave.findMany({
+      where: {
+        staffId: { in: staffIds },
+        status: "APPROVED",
+        startDate: { lte: day },
+        endDate: { gte: day },
+      },
+      select: { staffId: true },
+    }),
+    staffBusyIntervals(prisma, {
+      staffIds,
+      from: range.start!,
+      to: range.end!,
+      timezone,
+    }),
+  ]);
+  const onLeave = new Set(leaves.map((leave) => leave.staffId));
+
+  const statuses = staff.map((member): StaffStatus => {
+    const base = { staffId: member.id, name: member.name };
+    if (onLeave.has(member.id)) {
+      return { ...base, state: "OFF", until: null, onLeave: true };
+    }
+    const intervals = busy.get(member.id)!;
+    const current = intervals.find(
+      (interval) => interval.start <= at && interval.end > at
+    );
+    // Actually working beats any shift rule: they may be on overtime.
+    if (current) {
+      return {
+        ...base,
+        state: "BOOKED",
+        until: current.end,
+        booking: {
+          appointmentId: current.appointmentId,
+          appointmentCode: current.appointmentCode,
+          kind: current.kind,
+          runningLate: current.runningLate,
+        },
+      };
+    }
+    const memberBlocks = blocks.filter((block) => block.staffId === member.id);
+    const block = memberBlocks.find(
+      (item) => item.startTime <= at && item.endTime > at
+    );
+    if (block) {
+      return {
+        ...base,
+        state: "BLOCKED",
+        until: block.endTime,
+        blockType: block.type,
+      };
+    }
+    const memberRules = rules.filter((rule) => rule.staffId === member.id);
+    const windows = memberRules.length
+      ? memberRules.map((rule) => ({
+          startTimeMinutes: rule.startTimeMinutes,
+          endTimeMinutes: rule.endTimeMinutes,
+        }))
+      : fallbackWindows(member, date);
+    if (!windows.length) return { ...base, state: "OFF", until: null };
+    const inShift = windows.some(
+      (window) =>
+        atMinutes >= window.startTimeMinutes &&
+        atMinutes < window.endTimeMinutes
+    );
+    if (!inShift) {
+      const next = windows.find(
+        (window) => window.startTimeMinutes > atMinutes
+      );
+      return next
+        ? {
+            ...base,
+            state: "IN_AT",
+            until: salonLocalDateTimeToUtc(
+              date,
+              minutesToTime(next.startTimeMinutes),
+              timezone
+            ),
+          }
+        : { ...base, state: "SHIFT_ENDED", until: null };
+    }
+    const nextStarts = [
+      ...intervals.map((interval) => interval.start),
+      ...memberBlocks.map((item) => item.startTime),
+    ]
+      .filter((start) => start > at)
+      .sort((left, right) => left.getTime() - right.getTime());
+    return { ...base, state: "FREE", until: nextStarts[0] ?? null };
+  });
+  return { at, date, timezone, staff: statuses };
 };
 
 export const listAvailabilityRules = async (

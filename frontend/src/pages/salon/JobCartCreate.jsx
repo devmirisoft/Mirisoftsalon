@@ -19,6 +19,10 @@ import {
 import { Button, Icon } from "@/components/Component";
 import PageShell from "@/components/salon/PageShell";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
+import {
+  StaffOptionLabel,
+  useStaffStatus,
+} from "@/components/salon/StaffAvailabilityLabel";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
 import {
@@ -422,31 +426,14 @@ const JobCartCreate = () => {
   // Carts start at the chosen date and the current clock, so availability is
   // looked up for that date.
   const selectedStartKey = `${form.date}T${currentInputTime()}`;
-  // Slots are generated on a fixed grid (15-minute steps), so the form's
-  // live "current time" default almost never lands on a boundary exactly.
-  // Match each staff member's slot nearest to (at or before) the selected
-  // time instead of requiring an exact string match.
-  const slotsAtSelectedTime = useMemo(() => {
-    const bestByStaff = new Map();
-    availableSlots.forEach((slot) => {
-      const slotKey = toLocalInput(slot.startTime);
-      if (slotKey > selectedStartKey) return;
-      const current = bestByStaff.get(slot.staffId);
-      if (!current || slotKey > toLocalInput(current.startTime)) {
-        bestByStaff.set(slot.staffId, slot);
-      }
-    });
-    return [...bestByStaff.values()];
-  }, [availableSlots, selectedStartKey]);
-  const availableStaffAtSelectedTime = useMemo(() => {
-    const staffById = new Map(refs.staff.map((member) => [member.id, member]));
-    const seen = new Map();
-    slotsAtSelectedTime.forEach((slot) => {
-      const member = staffById.get(slot.staffId);
-      if (member) seen.set(member.id, member);
-    });
-    return [...seen.values()];
-  }, [refs.staff, slotsAtSelectedTime]);
+  // What each stylist is doing now (carts start now), refreshed whenever
+  // the service picker opens.
+  const staffStatus = useStaffStatus(form.branchId, undefined, pickerOpen);
+  const staffSelectOptions = refs.staff.map((member) => ({
+    value: member.id,
+    label: `${member.name} - ${member.jobRole}`,
+    status: staffStatus?.get(member.id) ?? null,
+  }));
   // Availability slots are only fetched once the cart has services (the API
   // needs a duration). Before that, offer all branch staff so a staff member
   // can be chosen up front; the per-row dropdown still enforces real
@@ -705,7 +692,9 @@ const JobCartCreate = () => {
             : {}),
         });
       }
-      navigate(`/job-carts/${response.data.id}`);
+      // Straight into editing: services get worked and marked done there;
+      // payment comes later, when the cart is completed.
+      navigate(`/job-carts/${response.data.id}/edit`);
     } catch (saveError) {
       setError(saveError.message);
     } finally {
@@ -1209,27 +1198,42 @@ const JobCartCreate = () => {
                                 />
                               </td>
                               <td>
-                                <Input
-                                  type="select"
-                                  value={row.staffId}
-                                  disabled={
+                                <Select
+                                  className="react-select-container"
+                                  classNamePrefix="react-select"
+                                  isClearable
+                                  isDisabled={
                                     !form.branchId ||
                                     !row.serviceId ||
                                     saving
                                   }
-                                  onChange={(event) =>
+                                  options={staffSelectOptions}
+                                  value={
+                                    staffSelectOptions.find(
+                                      (option) => option.value === row.staffId
+                                    ) || null
+                                  }
+                                  placeholder="Select staff"
+                                  formatOptionLabel={(option, { context }) => (
+                                    <StaffOptionLabel
+                                      name={option.label}
+                                      status={option.status}
+                                      compact={context === "value"}
+                                    />
+                                  )}
+                                  styles={{
+                                    menu: (base) => ({
+                                      ...base,
+                                      width: "max-content",
+                                      minWidth: "100%",
+                                    }),
+                                  }}
+                                  onChange={(option) =>
                                     updateServiceRow(row.rowId, {
-                                      staffId: event.target.value,
+                                      staffId: option?.value || "",
                                     })
                                   }
-                                >
-                                  <option value="">Select staff</option>
-                                  {refs.staff.map((member) => (
-                                    <option key={member.id} value={member.id}>
-                                      {member.name} - {member.jobRole}
-                                    </option>
-                                  ))}
-                                </Input>
+                                />
                               </td>
                               <td>
                                 <Input
@@ -1741,6 +1745,7 @@ const JobCartCreate = () => {
         disabled={saving}
         requireStaff
         staffPlaceholder="Select staff first"
+        staffStatus={staffStatus}
       />
       <Modal
         isOpen={packageModalOpen}

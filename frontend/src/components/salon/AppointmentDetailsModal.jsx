@@ -38,6 +38,7 @@ const AppointmentDetailsModal = ({
   onStatus,
   onReschedule,
   onNotes,
+  onEditServices,
   onTracking,
   onMakeBill,
   onDelete,
@@ -59,6 +60,12 @@ const AppointmentDetailsModal = ({
     toLocalInput(appointment.startTime).slice(0, 10) === todayInputDate();
   const jobCartPaymentComplete =
     appointment.generatedJobCart?.invoice?.paymentStatus === "PAID";
+  const jobCartOpen =
+    Boolean(resolvedJobCartId) &&
+    !["COMPLETED", "CANCELLED"].includes(appointment.generatedJobCart?.status);
+  // Services stay editable until the visit starts as a job cart.
+  const canEditServices =
+    ["SCHEDULED", "CONFIRMED"].includes(appointment.status) && !resolvedJobCartId;
   const services = appointment.services || [];
   const serviceTotal = services.reduce(
     (total, item) => total + Number(item.price || 0),
@@ -322,6 +329,11 @@ const AppointmentDetailsModal = ({
           <Button color="light" onClick={() => onNotes(appointment)}>
             <Icon name="edit" /> Notes
           </Button>
+          {canEditServices && onEditServices && (
+            <Button color="light" onClick={() => onEditServices(appointment)}>
+              <Icon name="cart-fill" /> Edit services
+            </Button>
+          )}
           {!isCompleted && (
             <>
               <Button color="info" outline onClick={() => onStatus(appointment)}>
@@ -341,19 +353,29 @@ const AppointmentDetailsModal = ({
             appointment.status !== "NO_SHOW" &&
             ((isAppointmentToday && !isCompleted) || resolvedJobCartId) && (
             resolvedJobCartId && onViewJobCart ? (
-              <Button
-                color={isCompleted && !jobCartPaymentComplete ? "success" : "primary"}
-                onClick={() =>
-                  onViewJobCart(resolvedJobCartId, {
-                    openPayment: isCompleted && !jobCartPaymentComplete,
-                  })
-                }
-              >
-                <Icon name={isCompleted && !jobCartPaymentComplete ? "wallet" : "eye"} />{" "}
-                {isCompleted && !jobCartPaymentComplete
-                  ? "Make Payment"
-                  : "View Job Cart"}
-              </Button>
+              <>
+                <Button
+                  color="light"
+                  onClick={() => onViewJobCart(resolvedJobCartId, "view")}
+                >
+                  <Icon name="eye" /> View Job Cart
+                </Button>
+                {jobCartOpen ? (
+                  <Button
+                    color="primary"
+                    onClick={() => onViewJobCart(resolvedJobCartId, "edit")}
+                  >
+                    <Icon name="edit" /> Edit Job Cart
+                  </Button>
+                ) : isCompleted && !jobCartPaymentComplete ? (
+                  <Button
+                    color="success"
+                    onClick={() => onViewJobCart(resolvedJobCartId, "pay")}
+                  >
+                    <Icon name="wallet" /> Make Payment
+                  </Button>
+                ) : null}
+              </>
             ) : !appointment.walkInJobCart && onCreateJobCart ? (
               <Button
                 color="primary"

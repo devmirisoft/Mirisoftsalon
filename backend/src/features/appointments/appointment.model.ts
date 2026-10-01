@@ -78,11 +78,27 @@ export type AppointmentListFilters = {
   dateTo?: Date;
 };
 
+// "me" is the caller's own staff profile (the "My jobs" filter). A user with
+// no staff profile matches nothing rather than everything.
+export const resolveStaffIdFilter = async (staffId?: string, userId?: string) => {
+  if (staffId !== "me") return staffId;
+  const staff = userId
+    ? await prisma.staff.findUnique({ where: { userId }, select: { id: true } })
+    : null;
+  return staff?.id ?? "__none__";
+};
+
+// A staff member's appointments include ones where they only do some of the
+// services, not just the ones they lead.
+export const appointmentStaffWhere = (staffId: string): Prisma.AppointmentWhereInput => ({
+  OR: [{ staffId }, { services: { some: { staffId } } }],
+});
+
 export const appointmentListWhere = (
   filters?: AppointmentListFilters
 ): Prisma.AppointmentWhereInput => ({
   ...(filters?.branchId ? { branchId: filters.branchId } : {}),
-  ...(filters?.staffId ? { staffId: filters.staffId } : {}),
+  ...(filters?.staffId ? appointmentStaffWhere(filters.staffId) : {}),
   ...(filters?.customerId ? { customerId: filters.customerId } : {}),
   ...(filters?.status ? { status: filters.status } : {}),
   ...(filters?.dateFrom || filters?.dateTo

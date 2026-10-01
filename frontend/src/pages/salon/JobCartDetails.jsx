@@ -18,6 +18,7 @@ import Head from "@/layout/head/Head";
 import Content from "@/layout/content/Content";
 import StatusBadge from "@/components/salon/StatusBadge";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
+import { useStaffStatus } from "@/components/salon/StaffAvailabilityLabel";
 import {
   ProductUsageModal,
   TransferStockModal,
@@ -169,6 +170,9 @@ const JobCartDetails = () => {
   // booked until the cart is actually confirmed.
   const [usageOpen, setUsageOpen] = useState(false);
   const [usage, setUsage] = useState(null);
+  // "Record Usage" on the edit page only stores the entries; they ride along
+  // with "Confirm Job Cart" instead of prompting again.
+  const [recordingUsage, setRecordingUsage] = useState(false);
   const [shelfTransfer, setShelfTransfer] = useState(false);
   // "+ Product / Membership / Package" picker: which kind is open, the picked
   // id and quantity. Reference lists load once, on the first open.
@@ -177,6 +181,8 @@ const JobCartDetails = () => {
   const [addRefs, setAddRefs] = useState(null);
   const [servicePickerOpen, setServicePickerOpen] = useState(false);
   const [pickerStaffId, setPickerStaffId] = useState("");
+  // Who is free right now, fetched only while the service picker is open.
+  const staffStatus = useStaffStatus(servicePickerOpen ? cart?.branchId : "");
   const [serviceEdits, setServiceEdits] = useState({});
   const serviceSaveTimers = useRef({});
   const serviceSaveRequests = useRef({});
@@ -792,6 +798,10 @@ const JobCartDetails = () => {
       setConfirmOpen(true);
       return;
     }
+    if (usage) {
+      confirmJobCartOnly(usage);
+      return;
+    }
     setConfirmingJobOnly(true);
     setUsageOpen(true);
   };
@@ -1041,6 +1051,24 @@ const JobCartDetails = () => {
                             <span>Service</span>
                           </Button>
                         )}
+                        {editingCart &&
+                          cart.appointmentStatus !== "COMPLETED" && (
+                            <Button
+                              color="primary"
+                              outline={!usage}
+                              size="sm"
+                              disabled={working || !cart.items.length}
+                              onClick={() => {
+                                setRecordingUsage(true);
+                                setUsageOpen(true);
+                              }}
+                            >
+                              <Icon name={usage ? "check" : "package"} />
+                              <span>
+                                {usage ? "Usage Recorded" : "Record Usage"}
+                              </span>
+                            </Button>
+                          )}
                         {active &&
                           [
                             ["PRODUCT", "Product"],
@@ -1094,28 +1122,57 @@ const JobCartDetails = () => {
                                   </span>
                                   {item.itemType === "SERVICE" &&
                                     (editingCart ? (
-                                      <Input
-                                        type="select"
-                                        bsSize="sm"
-                                        className="mt-1"
-                                        value={serviceEditFor(item).staffId}
-                                        disabled={working}
-                                        onChange={(event) =>
-                                          updateServiceEdit(item.id, {
-                                            staffId: event.target.value,
-                                          })
-                                        }
-                                      >
-                                        <option value="">Assign staff</option>
-                                        {(addRefs?.staff || []).map((member) => (
-                                          <option key={member.id} value={member.id}>
-                                            {member.name}
-                                          </option>
-                                        ))}
-                                      </Input>
+                                      <div className="d-flex align-items-center gap-1 mt-1">
+                                        <Input
+                                          type="select"
+                                          bsSize="sm"
+                                          value={serviceEditFor(item).staffId}
+                                          disabled={working}
+                                          onChange={(event) =>
+                                            updateServiceEdit(item.id, {
+                                              staffId: event.target.value,
+                                            })
+                                          }
+                                        >
+                                          <option value="">Assign staff</option>
+                                          {(addRefs?.staff || []).map((member) => (
+                                            <option key={member.id} value={member.id}>
+                                              {member.name}
+                                            </option>
+                                          ))}
+                                        </Input>
+                                        {/* Done frees the stylist for other
+                                            work before the cart is completed. */}
+                                        {item.staffId && (
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            color={item.doneAt ? "success" : "light"}
+                                            className="text-nowrap"
+                                            disabled={working}
+                                            title={
+                                              item.doneAt
+                                                ? "Undo: the stylist is still working on this"
+                                                : "Mark done: frees the stylist for other work"
+                                            }
+                                            onClick={() =>
+                                              run(() =>
+                                                salonApi.jobCarts.setItemDone(
+                                                  id,
+                                                  item.id,
+                                                  !item.doneAt
+                                                )
+                                              )
+                                            }
+                                          >
+                                            {item.doneAt ? "✓ Done · Undo" : "Done"}
+                                          </Button>
+                                        )}
+                                      </div>
                                     ) : item.staff?.name ? (
                                       <span className="jcp-item-sub">
                                         {item.staff.name}
+                                        {item.doneAt ? " • Done" : ""}
                                       </span>
                                     ) : null)}
                                   {item.itemType === "PACKAGE" && (
@@ -1889,6 +1946,7 @@ const JobCartDetails = () => {
           disabled={working}
           requireStaff
           staffPlaceholder="Select staff first"
+          staffStatus={staffStatus}
         />
 
         <ProductUsageModal
@@ -1897,10 +1955,16 @@ const JobCartDetails = () => {
           onCancel={() => {
             setUsageOpen(false);
             setConfirmingJobOnly(false);
+            setRecordingUsage(false);
           }}
           onConfirm={(entries) => {
             setUsage(entries);
             setUsageOpen(false);
+            if (recordingUsage) {
+              setRecordingUsage(false);
+              toast.success("Product usage recorded.");
+              return;
+            }
             if (confirmingJobOnly) {
               setConfirmingJobOnly(false);
               confirmJobCartOnly(entries);

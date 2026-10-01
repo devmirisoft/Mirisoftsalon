@@ -182,9 +182,9 @@ $fw-bold: 				$fw-700;
 $fw-light: 				$fw-300;
 $fw-medium: 			$fw-500;
 
-$fs-base-dsk:            16px;
-$fs-base-tab:            16px;
-$fs-base-mob:            16px;
+$fs-base-dsk:            13.6px; // 85% scale (was 16px)
+$fs-base-tab:            13.6px; // 85% scale (was 16px)
+$fs-base-mob:            13.6px; // 85% scale (was 16px)
 
 $fs-base:				0.875rem; // $fs-base-px is `16px`
 $fs-lg:					1.25rem;
@@ -718,13 +718,13 @@ $modal-footer-custom-padding-xy-sm:     0.75rem $modal-body-custom-padding-x-sm;
 $min-body-width:                    320px;
 
 // Logo
-$logo-height:                       36px;
+$logo-height:                       31px;
 $logo-height-sm:                    28px;
 $logo-height-lg:                    60px;
 $logo-height-icon:                  33px;
 
 // Sidebar
-$sidebar-width-normal:              290px;
+$sidebar-width-normal:              247px;
 $sidebar-width-compact:             74px;
 $sidebar-gap-x:                     24px;
 
@@ -762,7 +762,7 @@ $sidebar-toogle-btn-color:			$base-500;
 // Content
 $content-gap-x:                     20px - math.div($gutter-width,2);
 $content-gap-x-sm:                  36px - math.div($gutter-width,2);
-$content-gap-y:                     24px;
+$content-gap-y:                     20px;
 $content-sidebar-width:             280px;
 
 $content-sidebar-bg-color:			$white;
@@ -773,7 +773,7 @@ $content-sidebar-border-color:		$border-light;
 // // Headers
 $header-main-gap-x:                 $content-gap-x;
 $header-main-gap-x-sm:              $content-gap-x-sm; 
-$header-main-gap-y:                 14px;
+$header-main-gap-y:                 12px;
 $header-main-border-width:          1px;
 $header-height:                     ($header-main-gap-y*2 + $logo-height + $header-main-border-width);
 $header-min-width:                  $min-body-width; 

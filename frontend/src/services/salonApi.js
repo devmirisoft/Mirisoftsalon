@@ -81,6 +81,7 @@ export const salonApi = {
     remove: (id) =>
       request(`/api/staff-availability/${id}`, { method: "DELETE" }),
     slots: (query) => request("/api/staff-availability/slots", { query }),
+    status: (query) => request("/api/staff-availability/status", { query }),
   },
   staffTimeBlocks: {
     list: (query) => request("/api/staff-time-blocks", { query }),
@@ -301,6 +302,11 @@ export const salonApi = {
     removeItem: (id, itemId) =>
       request(`/api/job-carts/${id}/items/${itemId}`, {
         method: "DELETE",
+      }),
+    setItemDone: (id, itemId, done) =>
+      request(`/api/job-carts/${id}/items/${itemId}/done`, {
+        method: "PATCH",
+        body: { done },
       }),
     redemptions: (id) =>
       request(`/api/job-carts/${id}/package-redemptions`),

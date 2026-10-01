@@ -28,6 +28,14 @@ const toISODate = (date) =>
     date.getDate()
   ).padStart(2, "0")}`;
 
+const initials = (name) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
+
 const AppointmentCalendar = ({
   appointments,
   onAppointmentClick,
@@ -99,6 +107,12 @@ const AppointmentCalendar = ({
   useEffect(() => {
     if (focusDate) calendarRef.current?.getApi()?.gotoDate(focusDate);
   }, [focusDate]);
+
+  // Empty upcoming week days get an "Add Appointment" card instead of a blank column.
+  const bookedDays = useMemo(
+    () => new Set(appointments.map((item) => toISODate(new Date(item.startTime)))),
+    [appointments]
+  );
 
   const events = useMemo(
     () =>
@@ -245,6 +259,7 @@ const AppointmentCalendar = ({
                 >
                   <span className="appt-dayhead-name">
                     {arg.date.toLocaleDateString(undefined, { weekday: "short" })}
+                    {arg.isToday && <span className="appt-dayhead-today">Today</span>}
                   </span>
                   <span className="appt-dayhead-date">
                     {arg.date.toLocaleDateString(undefined, {
@@ -267,7 +282,22 @@ const AppointmentCalendar = ({
             slotLabelInterval="01:00:00"
             slotLabelFormat={TIME_FORMAT}
             eventTimeFormat={TIME_FORMAT}
+            dayCellContent={(arg) =>
+              arg.view.type === "timeGridWeek" ? (
+                !arg.isPast && !bookedDays.has(toISODate(arg.date)) ? (
+                  <button
+                    type="button"
+                    className="appt-add-slot"
+                    onClick={() => onDateSelect?.({ date: arg.date, allDay: true })}
+                  >
+                    <Icon name="plus" />
+                    <span>Add Appointment</span>
+                  </button>
+                ) : null
+              ) : true
+            }
             dateClick={(info) => {
+              if (info.jsEvent.target.closest(".appt-add-slot")) return;
               if (info.view.type === "timeGridWeek") {
                 expandWeekDay(info.date);
                 return;
@@ -280,7 +310,26 @@ const AppointmentCalendar = ({
                 ? ["appointment-calendar-selected-day"]
                 : ["appointment-calendar-bookable-day"];
             }}
-            eventContent={(arg) => (
+            eventContent={(arg) =>
+              arg.view.type === "timeGridWeek" ? (
+                <div className="appt-ev appt-ev-card">
+                  <span className="appt-ev-time">
+                    <Icon name="clock" />
+                    {arg.timeText}
+                  </span>
+                  <span className="appt-ev-title">{arg.event.title}</span>
+                  <span className="appt-ev-service">
+                    {arg.event.extendedProps.services}
+                  </span>
+                  <span className="appt-ev-staff">
+                    <Icon name="user-alt" />
+                    {arg.event.extendedProps.staff}
+                  </span>
+                  <span className="appt-ev-avatar" aria-hidden="true">
+                    {initials(arg.event.extendedProps.staff)}
+                  </span>
+                </div>
+              ) : (
               <div className="appt-ev">
                 <span className="appt-ev-time">
                   <span className="appt-ev-dot" />
@@ -297,7 +346,8 @@ const AppointmentCalendar = ({
                   </span>
                 </span>
               </div>
-          )}
+          )
+          }
           eventClick={(info) => {
             const appointment = appointments.find(
               (item) => item.id === info.event.id

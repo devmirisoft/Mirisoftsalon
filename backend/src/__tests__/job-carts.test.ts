@@ -94,8 +94,10 @@ const fixture = async () => {
       name: "Walk-in Stylist",
       email: `walk-in-stylist-${marker}@test.com`,
       jobRole: "Stylist",
-      workingFrom: "09:00",
-      workingTo: "20:00",
+      // Carts start "now" and must start inside the shift, so the suite
+      // passes whatever time it runs.
+      workingFrom: "00:00",
+      workingTo: "23:59",
       weekOff: "NEVER",
       salonId: salon.id,
       branchId: branch.id,
@@ -567,7 +569,7 @@ describe("Walk-in job carts", () => {
 
   it("edits a booking's services until its job cart starts", async () => {
     const f = await fixture();
-    // Inside the stylist's 09:00-20:00 shift whatever time the suite runs.
+    // Inside the stylist's shift whatever time the suite runs.
     const tomorrow = new Date(Date.now() + 24 * 60 * 60_000).toLocaleDateString(
       "en-CA",
       { timeZone: "Asia/Kolkata" }

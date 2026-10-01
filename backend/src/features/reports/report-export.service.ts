@@ -7,6 +7,7 @@ import {
 import { getSalonMonthRange, parseSalonDateRange } from "../../utils/timezone.js";
 import { transactionError, validateBranch } from "../products/inventory-access.js";
 import { eodInvoiceFilters } from "./salon-report.controller.js";
+import { appointmentStaffWhere, resolveStaffIdFilter } from "../appointments/appointment.model.js";
 
 export const EXPORT_REPORT_TYPES = [
   "revenue",
@@ -287,9 +288,9 @@ const buildRows = async (
   }
   if (reportType === "appointments") {
     const status = clean(req.query.status);
-    const staffId = clean(req.query.staffId);
+    const staffId = await resolveStaffIdFilter(clean(req.query.staffId), req.user?.userId);
     const appointments = limited(await prisma.appointment.findMany({
-      where: { ...common, ...(context.range ? { startTime: context.range } : {}), ...(status ? { status: status as never } : {}), ...(staffId ? { staffId } : {}) },
+      where: { ...common, ...(context.range ? { startTime: context.range } : {}), ...(status ? { status: status as never } : {}), ...(staffId ? appointmentStaffWhere(staffId) : {}) },
       include: { customer: { select: { name: true, phone: true } }, staff: { select: { name: true } }, branch: { select: { name: true } }, services: { select: { serviceName: true } } },
       orderBy: { startTime: "asc" }, take: MAX_EXPORT_ROWS + 1,
     }));

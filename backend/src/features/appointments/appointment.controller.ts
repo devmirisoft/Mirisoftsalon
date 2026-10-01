@@ -1,6 +1,6 @@
 import { type Request, type Response } from "express";
 
-import { AppointmentModel, LATE_NO_SHOW_MS } from "./appointment.model.js";
+import { AppointmentModel, LATE_NO_SHOW_MS, resolveStaffIdFilter } from "./appointment.model.js";
 import { CustomerModel } from "../customers/customer.model.js";
 import { StaffModel } from "../staff/staff.model.js";
 import { BranchModel } from "../branches/branch.model.js";
@@ -278,6 +278,7 @@ const assertStaffFree = async (
             startTime: input.startTime,
             endTime: input.endTime,
             salonId: input.salonId,
+            shiftRule: "START_IN_SHIFT",
             ...(input.branchId ? { branchId: input.branchId } : {}),
             ...(input.excludeAppointmentId
                 ? { excludeAppointmentId: input.excludeAppointmentId }
@@ -517,8 +518,12 @@ export const getAppointments = async (req: Request, res: Response) => {
             });
         }
 
+        const listStaffId = await resolveStaffIdFilter(
+            staffId ? String(staffId) : undefined,
+            req.user?.userId
+        );
         const listFilters = {
-            ...(staffId ? { staffId: String(staffId) } : {}),
+            ...(listStaffId ? { staffId: listStaffId } : {}),
             ...(customerId ? { customerId: String(customerId) } : {}),
             ...(status ? { status: String(status) as AppointmentStatus } : {}),
         };
@@ -928,6 +933,7 @@ export const rescheduleAppointment = async (
                 staffId: existingAppointment.staffId,
                 startTime: finalStartTime,
                 endTime: finalEndTime,
+                shiftRule: "START_IN_SHIFT",
                 excludeAppointmentId: id,
                 salonId: existingAppointment.salonId,
                 ...(existingAppointment.branchId

@@ -284,7 +284,8 @@ const Appointments = () => {
   // The toolbar's staff filter doubles as the staff board's column picker.
   const boardStaff = useMemo(
     () =>
-      filters.staffId
+      // "My jobs" has already narrowed the fetch; show whoever leads those.
+      filters.staffId && filters.staffId !== "me"
         ? availableStaff.filter((member) => member.id === filters.staffId)
         : availableStaff,
     [availableStaff, filters.staffId]
@@ -480,7 +481,8 @@ const Appointments = () => {
               <Input
                 id="appt-filter-staff"
                 type="select"
-                value={filters.staffId}
+                value={filters.staffId === "me" ? "" : filters.staffId}
+                disabled={filters.staffId === "me"}
                 onChange={(event) =>
                   setFilters((current) => ({ ...current, staffId: event.target.value }))
                 }
@@ -491,6 +493,21 @@ const Appointments = () => {
                 ))}
               </Input>
             </div>
+            {user?.role === "STAFF" && (
+              <Button
+                color={filters.staffId === "me" ? "primary" : "light"}
+                aria-pressed={filters.staffId === "me"}
+                onClick={() =>
+                  setFilters((current) => ({
+                    ...current,
+                    staffId: current.staffId === "me" ? "" : "me",
+                  }))
+                }
+              >
+                <Icon name="user-check" />
+                <span>My jobs</span>
+              </Button>
+            )}
             <div className="filter-bar-item is-grow">
               <div className="form-control-wrap">
                 <div className="form-icon form-icon-left">

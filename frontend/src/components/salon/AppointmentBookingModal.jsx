@@ -17,6 +17,7 @@ import {
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import ServicePickerModal from "@/components/salon/ServicePickerModal";
+import { useStaffStatus } from "@/components/salon/StaffAvailabilityLabel";
 import { salonApi } from "@/services/salonApi";
 import { serviceMinutes } from "@/utils/appointmentTotals";
 import {
@@ -371,6 +372,13 @@ const AppointmentBookingModal = ({
         (m) => !form.branchId || !m.branchId || m.branchId === form.branchId
       ),
     [refs.staff, form.branchId]
+  );
+
+  // Free/booked label per staff member at the appointment's start time.
+  const staffStatus = useStaffStatus(
+    form.startTime ? form.branchId : "",
+    form.startTime,
+    pickerOpen
   );
 
   const cart = useMemo(
@@ -922,6 +930,7 @@ const AppointmentBookingModal = ({
         disabled={saving}
         requireStaff
         staffPlaceholder="Select staff"
+        staffStatus={staffStatus}
       />
     </>
   );

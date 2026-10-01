@@ -9,6 +9,7 @@ import {
   getAvailabilityRule,
   getAvailableSlots,
   getStaffRoster,
+  getStaffStatuses,
   getTimeBlock,
   listAvailabilityRules,
   listTimeBlocks,
@@ -338,6 +339,24 @@ export const getSlots = async (req: Request, res: Response) => {
         serviceIds,
         date,
         ...(staffIdValue ? { staffId: uuid.parse(staffIdValue) } : {}),
+      }),
+    });
+  } catch (error) {
+    return sendError(res, error);
+  }
+};
+
+export const getStatuses = async (req: Request, res: Response) => {
+  try {
+    const branchId = uuid.parse(stringQuery(req.query.branchId));
+    const atValue = stringQuery(req.query.at);
+    return res.json({
+      success: true,
+      data: await getStaffStatuses(actorFrom(req), {
+        branchId,
+        ...(atValue
+          ? { at: new Date(z.string().datetime().parse(atValue)) }
+          : {}),
       }),
     });
   } catch (error) {

@@ -507,8 +507,7 @@ describe("Staff availability and shift roster", () => {
     ).toContain(`${date}T09:00:00.000Z`);
   });
 
-  // A walk-in cart is always served now, so a roster window does not bind it;
-  // leave, time blocks and a clashing appointment still do.
+  // Leave is reported as leave, whatever the shift says at the time of the run.
   it("validates Job Cart staff against leave but allows carts without staff", async () => {
     const f = await fixture();
     const today = dateAfter(0);
@@ -657,5 +656,259 @@ describe("Staff availability and shift roster", () => {
         `DROP FUNCTION IF EXISTS fail_roster_block_audit()`
       );
     }
+  });
+});
+
+// Carts always start "now", so these stylists work all day.
+const allDayStylist = (f: Awaited<ReturnType<typeof fixture>>, name: string) =>
+  prisma.staff.create({
+    data: {
+      salonId: f.salon.id,
+      branchId: f.branch.id,
+      name,
+      email: `${name.toLowerCase()}-${randomUUID()}@test.com`,
+      jobRole: "Stylist",
+      workingFrom: "00:00",
+      workingTo: "23:59",
+      weekOff: "NEVER",
+    },
+  });
+
+const walkIn = (
+  f: Awaited<ReturnType<typeof fixture>>,
+  serviceItems: Array<{ serviceId: string; staffId: string }>
+) =>
+  request(app)
+    .post("/api/job-carts")
+    .set(auth(f.managerToken))
+    .send({
+      branchId: f.branch.id,
+      customerName: "Busy Walk In",
+      phone: `97${String(Math.floor(Math.random() * 1e8)).padStart(8, "0")}`,
+      serviceItems,
+    });
+
+const serviceRow = (cart: { items: any[] }, staffId: string) =>
+  cart.items.find(
+    (item) => item.itemType === "SERVICE" && item.staffId === staffId
+  );
+
+const markDone = (
+  f: Awaited<ReturnType<typeof fixture>>,
+  cartId: string,
+  itemId: string,
+  done: boolean
+) =>
+  request(app)
+    .patch(`/api/job-carts/${cartId}/items/${itemId}/done`)
+    .set(auth(f.managerToken))
+    .send({ done });
+
+const statusAt = async (
+  f: Awaited<ReturnType<typeof fixture>>,
+  at?: string,
+  token = f.adminToken
+) => {
+  const response = await request(app)
+    .get("/api/staff-availability/status")
+    .query({ branchId: f.branch.id, ...(at ? { at } : {}) })
+    .set(auth(token))
+    .expect(200);
+  return new Map(
+    response.body.data.staff.map((row: { staffId: string }) => [
+      row.staffId,
+      row,
+    ])
+  ) as Map<string, any>;
+};
+
+describe("Staff busy rules", () => {
+  it("frees a stylist when their service is marked done and holds them again on undo", async () => {
+    const f = await fixture();
+    const ravi = await allDayStylist(f, "Ravi");
+    const item = { serviceId: f.service.id, staffId: ravi.id };
+    const first = (await walkIn(f, [item]).expect(201)).body.data;
+    const clash = await walkIn(f, [item]).expect(409);
+    expect(clash.body.message).toMatch(/already booked/i);
+
+    const row = serviceRow(first, ravi.id);
+    const done = await markDone(f, first.id, row.id, true).expect(200);
+    expect(serviceRow(done.body.data, ravi.id).doneAt).toBeTruthy();
+    expect((await statusAt(f)).get(ravi.id).state).toBe("FREE");
+    await walkIn(f, [item]).expect(201);
+
+    // He took on the second cart, so reopening the first would double-book.
+    const undo = await markDone(f, first.id, row.id, false).expect(409);
+    expect(undo.body.message).toMatch(/already booked on job cart/i);
+  });
+
+  it("frees only the stylist who is done on a cart with several staff", async () => {
+    const f = await fixture();
+    const [ravi, priya] = await Promise.all([
+      allDayStylist(f, "Ravi"),
+      allDayStylist(f, "Priya"),
+    ]);
+    const colour = await prisma.service.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        mainServiceId: f.service.mainServiceId,
+        name: `Colour ${randomUUID()}`,
+        price: 900,
+        durationValue: 120,
+        durationUnit: "MINUTES",
+      },
+    });
+    const cart = (
+      await walkIn(f, [
+        { serviceId: f.service.id, staffId: ravi.id },
+        { serviceId: colour.id, staffId: priya.id },
+      ]).expect(201)
+    ).body.data;
+    await markDone(f, cart.id, serviceRow(cart, ravi.id).id, true).expect(200);
+
+    const status = await statusAt(f);
+    expect(status.get(ravi.id).state).toBe("FREE");
+    expect(status.get(priya.id)).toMatchObject({
+      state: "BOOKED",
+      booking: { kind: "JOB_CART", appointmentCode: cart.appointmentCode },
+    });
+    await walkIn(f, [{ serviceId: f.service.id, staffId: ravi.id }]).expect(201);
+    await walkIn(f, [{ serviceId: f.service.id, staffId: priya.id }]).expect(409);
+  });
+
+  it("keeps an overrunning open cart busy until now, but never past its own day", async () => {
+    const f = await fixture();
+    const ravi = await allDayStylist(f, "Ravi");
+    const item = { serviceId: f.service.id, staffId: ravi.id };
+    const cart = (await walkIn(f, [item]).expect(201)).body.data;
+    const now = Date.now();
+    const todayStart = new Date(`${new Date(now).toISOString().slice(0, 10)}T00:00:00.000Z`);
+    // Planned to end a minute ago, still open. (Within a salon day: the
+    // first couple of minutes after UTC midnight cannot fit this setup.)
+    const start = new Date(Math.max(now - 90 * 60_000, todayStart.getTime()));
+    await prisma.appointment.update({
+      where: { id: cart.id },
+      data: { startTime: start, endTime: new Date(now - 60_000) },
+    });
+    expect((await statusAt(f)).get(ravi.id)).toMatchObject({
+      state: "BOOKED",
+      booking: { runningLate: true },
+    });
+    await walkIn(f, [item]).expect(409);
+
+    // Left open since yesterday: it no longer holds him today.
+    await prisma.appointment.update({
+      where: { id: cart.id },
+      data: {
+        startTime: new Date(todayStart.getTime() - 2 * 3_600_000),
+        endTime: new Date(todayStart.getTime() - 3_600_000),
+      },
+    });
+    await walkIn(f, [item]).expect(201);
+  });
+
+  it("lets a staff-made booking start in the shift and run past it", async () => {
+    const f = await fixture();
+    const date = dateAfter(25);
+    await createRule(f, date).expect(201); // 10:00-12:00
+    const long = await prisma.service.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        mainServiceId: f.service.mainServiceId,
+        name: `Long Treatment ${randomUUID()}`,
+        price: 3000,
+        durationValue: 3,
+        durationUnit: "HOURS",
+      },
+    });
+    const book = (startTime: string) =>
+      request(app)
+        .post("/api/appointments")
+        .set(auth(f.adminToken))
+        .send({
+          branchId: f.branch.id,
+          customerId: f.customer.id,
+          staffId: f.staff.id,
+          serviceIds: [long.id],
+          startTime,
+        });
+    await book(`${date}T12:00:00.000Z`).expect(400);
+    const booked = await book(`${date}T11:00:00.000Z`).expect(201);
+    expect(booked.body.data.endTime).toBe(`${date}T14:00:00.000Z`);
+
+    // Online booking stays strict: three hours never fit a two-hour shift.
+    const publicSlots = await request(app)
+      .get(`/api/public-booking/${f.setting.slug}/available-slots`)
+      .query({
+        branchId: f.branch.id,
+        serviceIds: long.id,
+        staffId: f.staff.id,
+        date,
+      })
+      .expect(200);
+    expect(publicSlots.body.data.slots).toHaveLength(0);
+  });
+
+  it("reports what each stylist is doing at a given time", async () => {
+    const f = await fixture();
+    const date = dateAfter(26);
+    await createRule(f, date, { endTimeMinutes: 780 }).expect(201); // 10-13
+    await createAppointment(f, `${date}T10:00:00.000Z`).expect(201);
+    await createAppointment(f, `${date}T12:00:00.000Z`).expect(201);
+    await prisma.staffTimeBlock.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        staffId: f.staff.id,
+        date: new Date(`${date}T00:00:00.000Z`),
+        startTime: new Date(`${date}T11:00:00.000Z`),
+        endTime: new Date(`${date}T11:30:00.000Z`),
+        type: "BREAK",
+      },
+    });
+    const away = await allDayStylist(f, "Away");
+    await prisma.staffLeave.create({
+      data: {
+        salonId: f.salon.id,
+        branchId: f.branch.id,
+        staffId: away.id,
+        leaveType: "PAID_LEAVE",
+        startDate: new Date(`${date}T00:00:00.000Z`),
+        endDate: new Date(`${date}T00:00:00.000Z`),
+        totalDays: 1,
+        status: "APPROVED",
+      },
+    });
+    const at = async (time: string) =>
+      (await statusAt(f, `${date}T${time}:00.000Z`)).get(f.staff.id);
+
+    expect(await at("09:00")).toMatchObject({
+      state: "IN_AT",
+      until: `${date}T10:00:00.000Z`,
+    });
+    expect(await at("10:30")).toMatchObject({
+      state: "BOOKED",
+      until: `${date}T11:00:00.000Z`,
+      booking: { kind: "APPOINTMENT" },
+    });
+    expect(await at("11:15")).toMatchObject({
+      state: "BLOCKED",
+      blockType: "BREAK",
+      until: `${date}T11:30:00.000Z`,
+    });
+    expect(await at("11:40")).toMatchObject({
+      state: "FREE",
+      until: `${date}T12:00:00.000Z`,
+    });
+    expect(await at("13:30")).toMatchObject({ state: "SHIFT_ENDED" });
+    expect(
+      (await statusAt(f, `${date}T11:40:00.000Z`)).get(away.id)
+    ).toMatchObject({ state: "OFF", onLeave: true });
+
+    // A stylist only sees themselves.
+    const own = await statusAt(f, `${date}T11:40:00.000Z`, f.staffToken);
+    expect([...own.keys()]).toEqual([f.staff.id]);
   });
 });

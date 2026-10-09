@@ -164,8 +164,9 @@ export const PaymentModel = {
             };
         });
     },
-    findAll: async () => {
+    findAll: async (branchId) => {
         return prisma.payment.findMany({
+            ...(branchId ? { where: { branchId } } : {}),
             include: {
                 salon: {
                     select: {

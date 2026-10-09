@@ -290,3 +290,109 @@ describe("Report exports", () => {
     expect(response.body.message).toContain("row limit");
   });
 });
+
+// The Inventory and Customer pages send no ?branchId=, so the export has to
+// follow the admin's open branch session (X-Branch-Id) to match the screen.
+describe("Report exports inside an admin branch session", () => {
+  const xlsx = (path: string, headers: Record<string, string>) =>
+    request(app)
+      .get(path)
+      .set(headers)
+      .buffer(true)
+      .parse((res, callback) => {
+        const chunks: Buffer[] = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => callback(null, Buffer.concat(chunks)));
+      });
+  const session = (token: string, branchId?: string) => ({
+    ...auth(token),
+    ...(branchId ? { "X-Branch-Id": branchId } : {}),
+  });
+
+  const sessionFixture = async () => {
+    const f = await fixture();
+    await prisma.customer.create({
+      data: {
+        customerCode: `SECOND-${randomUUID()}`,
+        name: "Second Branch Customer",
+        phone: "9876509999",
+        salonId: f.salon.id,
+        branchId: f.secondBranch.id,
+      },
+    });
+    return f;
+  };
+
+  it("exports only the open branch's inventory and customers", async () => {
+    const f = await sessionFixture();
+
+    const first = await xlsx(
+      "/api/reports/inventory/export?format=xlsx",
+      session(f.adminToken, f.branch.id)
+    );
+    expect(first.status).toBe(200);
+    const firstValues = await readSheetValues(first.body);
+    expect(firstValues).toContain("Own Product");
+    expect(firstValues).not.toContain("Other Branch Product");
+    expect(firstValues).toContain(`Branch: ${f.branch.name}`);
+
+    const second = await xlsx(
+      "/api/reports/inventory/export?format=xlsx",
+      session(f.adminToken, f.secondBranch.id)
+    );
+    const secondValues = await readSheetValues(second.body);
+    expect(secondValues).toContain("Other Branch Product");
+    expect(secondValues).not.toContain("Own Product");
+
+    const customers = await xlsx(
+      "/api/reports/customer-outstanding/export?format=xlsx",
+      session(f.adminToken, f.secondBranch.id)
+    );
+    const customerValues = await readSheetValues(customers.body);
+    expect(customerValues).toContain("Second Branch Customer");
+    expect(customerValues).not.toContain("Wallet Customer");
+  });
+
+  it("lets the branch session win over a stale ?branchId=", async () => {
+    const f = await sessionFixture();
+    const res = await xlsx(
+      `/api/reports/inventory/export?format=xlsx&branchId=${f.branch.id}`,
+      session(f.adminToken, f.secondBranch.id)
+    );
+    const values = await readSheetValues(res.body);
+    expect(values).toContain("Other Branch Product");
+    expect(values).not.toContain("Own Product");
+  });
+
+  it("keeps the salon-wide export under All Branches", async () => {
+    const f = await sessionFixture();
+    const inventory = await readSheetValues(
+      (await xlsx("/api/reports/inventory/export?format=xlsx", session(f.adminToken))).body
+    );
+    expect(inventory).toContain("Own Product");
+    expect(inventory).toContain("Other Branch Product");
+
+    const customers = await readSheetValues(
+      (await xlsx("/api/reports/customer-outstanding/export?format=xlsx", session(f.adminToken))).body
+    );
+    expect(customers).toContain("Wallet Customer");
+    expect(customers).toContain("Second Branch Customer");
+  });
+
+  it("rejects a branch from another salon", async () => {
+    const f = await sessionFixture();
+    const foreign = await prisma.branch.create({
+      data: { name: `Foreign ${randomUUID()}`, salonId: f.otherSalon.id },
+    });
+
+    const viaHeader = await request(app)
+      .get("/api/reports/inventory/export?format=xlsx")
+      .set(session(f.adminToken, foreign.id));
+    expect(viaHeader.status).toBe(403);
+
+    const viaQuery = await request(app)
+      .get(`/api/reports/inventory/export?format=xlsx&branchId=${foreign.id}`)
+      .set(session(f.adminToken));
+    expect(viaQuery.status).toBe(403);
+  });
+});

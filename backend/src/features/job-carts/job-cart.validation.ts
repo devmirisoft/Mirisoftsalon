@@ -27,6 +27,7 @@ export const createJobCartSchema = z.object({
         serviceId: uuid,
         staffId: uuid.optional(),
         price: z.coerce.number().min(0).max(10_000_000).optional(),
+        unitDiscount: z.coerce.number().min(0).max(10_000_000).optional(),
         quantity: z.coerce.number().int().positive().max(999).optional(),
       })
     )
@@ -104,6 +105,7 @@ export const addJobCartItemSchema = z
 export const updateJobCartItemSchema = z
   .object({
     price: z.coerce.number().min(0).max(10_000_000).optional(),
+    unitDiscount: z.coerce.number().min(0).max(10_000_000).optional(),
     quantity: z.coerce.number().int().positive().max(999).optional(),
     staffId: uuid.nullable().optional(),
   })

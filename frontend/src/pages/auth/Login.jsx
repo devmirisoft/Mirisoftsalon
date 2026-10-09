@@ -106,6 +106,7 @@ const Login = () => {
                     <input
                       id="password"
                       type={passState ? "text" : "password"}
+                      data-allow-special
                       autoComplete="current-password"
                       disabled={loading}
                       placeholder="Enter your passcode"

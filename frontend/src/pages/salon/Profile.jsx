@@ -219,7 +219,7 @@ const Profile = () => {
                   <Field label="Full name" value={profile.fullName} onChange={(fullName) => setProfile({ ...profile, fullName })} />
                 </Col>
                 <Col md="6">
-                  <Field label="Phone" value={profile.phone} onChange={(phone) => setProfile({ ...profile, phone })} />
+                  <Field label="Phone" type="tel" value={profile.phone} onChange={(phone) => setProfile({ ...profile, phone })} />
                 </Col>
                 <Col md="6"><Field label="Email" value={profile.email} readOnly /></Col>
                 <Col md="6"><Field label="Role" value={profile.role} readOnly /></Col>
@@ -247,8 +247,8 @@ const Profile = () => {
                 <Row className="g-3">
                   <Col md="6"><Field label="Salon name" value={salon.name} readOnly={!canEditSalon} onChange={(name) => setSalon({ ...salon, name })} /></Col>
                   <Col md="6"><Field label="Legal/business name" value={salon.legalName} readOnly={!canEditSalon} onChange={(legalName) => setSalon({ ...salon, legalName })} /></Col>
-                  <Col md="6"><Field label="Email" value={salon.email} readOnly={!canEditSalon} onChange={(email) => setSalon({ ...salon, email })} /></Col>
-                  <Col md="6"><Field label="Phone" value={salon.phone} readOnly={!canEditSalon} onChange={(phone) => setSalon({ ...salon, phone })} /></Col>
+                  <Col md="6"><Field label="Email" type="email" value={salon.email} readOnly={!canEditSalon} onChange={(email) => setSalon({ ...salon, email })} /></Col>
+                  <Col md="6"><Field label="Phone" type="tel" value={salon.phone} readOnly={!canEditSalon} onChange={(phone) => setSalon({ ...salon, phone })} /></Col>
                   <Col md="6"><Field label="Address" value={salon.addressLine1} readOnly={!canEditSalon} onChange={(addressLine1) => setSalon({ ...salon, addressLine1 })} /></Col>
                   <Col md="6"><Field label="City" value={salon.city} readOnly={!canEditSalon} onChange={(city) => setSalon({ ...salon, city })} /></Col>
                   <Col md="4"><Field label="State" value={salon.state} readOnly={!canEditSalon} onChange={(state) => setSalon({ ...salon, state })} /></Col>
@@ -277,8 +277,8 @@ const Profile = () => {
                 <Row className="g-3">
                   <Col md="6"><Field label="Branch name" value={branch.name} readOnly={!canEditBranch} onChange={(name) => setBranch({ ...branch, name })} /></Col>
                   <Col md="6"><Field label="Branch code" value={branch.branchCode} readOnly={!canEditBranch} onChange={(branchCode) => setBranch({ ...branch, branchCode })} /></Col>
-                  <Col md="6"><Field label="Phone" value={branch.phone} readOnly={!canEditBranch} onChange={(phone) => setBranch({ ...branch, phone })} /></Col>
-                  <Col md="6"><Field label="Email" value={branch.email} readOnly={!canEditBranch} onChange={(email) => setBranch({ ...branch, email })} /></Col>
+                  <Col md="6"><Field label="Phone" type="tel" value={branch.phone} readOnly={!canEditBranch} onChange={(phone) => setBranch({ ...branch, phone })} /></Col>
+                  <Col md="6"><Field label="Email" type="email" value={branch.email} readOnly={!canEditBranch} onChange={(email) => setBranch({ ...branch, email })} /></Col>
                   <Col md="6"><Field label="Address" value={branch.addressLine1} readOnly={!canEditBranch} onChange={(addressLine1) => setBranch({ ...branch, addressLine1 })} /></Col>
                   <Col md="6"><Field label="City" value={branch.city} readOnly={!canEditBranch} onChange={(city) => setBranch({ ...branch, city })} /></Col>
                   <Col md="4"><Field label="State" value={branch.state} readOnly={!canEditBranch} onChange={(state) => setBranch({ ...branch, state })} /></Col>

@@ -648,6 +648,62 @@ describe("Walk-in job carts", () => {
     ).toBe(8);
   });
 
+  it("keeps the counter discount and sells add-ons on the payment step, booking them once", async () => {
+    const f = await fixture();
+    const membership = await prisma.membership.create({
+      data: {
+        name: `Payment Step ${randomUUID()}`,
+        salonId: f.salon.id,
+        price: 1000,
+        discountPercentage: 0,
+        durationMonths: 12,
+      },
+    });
+    const created = await createCart(f, f.adminToken, {
+      staffId: f.stylist.id,
+      serviceItems: [{ serviceId: f.service.id, price: 400, unitDiscount: 100 }],
+    });
+    const id = created.body.data.id as string;
+    expect(Number(created.body.data.items[0].unitDiscount)).toBe(100);
+
+    await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ status: "DRAFT" })
+      .expect(200);
+    const added = await request(app)
+      .post(`/api/job-carts/${id}/items`)
+      .set(auth(f.adminToken))
+      .send({ itemType: "MEMBERSHIP", membershipId: membership.id })
+      .expect(200);
+    const enrolled = () =>
+      prisma.customerMembership.count({ where: { jobCartAppointmentId: id } });
+    expect(await enrolled()).toBe(0);
+    // Services stay locked once the job is done.
+    await request(app)
+      .post(`/api/job-carts/${id}/items`)
+      .set(auth(f.adminToken))
+      .send({ itemType: "SERVICE", serviceId: f.secondService.id })
+      .expect(409);
+
+    const paid = await request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH" } })
+      .expect(200);
+    expect(paid.body.data.invoice).toMatchObject({
+      status: "ISSUED",
+      paymentStatus: "PAID",
+    });
+    expect(Number(paid.body.data.invoice.subtotalAmount)).toBe(1400);
+    expect(await enrolled()).toBe(1);
+    expect(
+      added.body.data.items.some(
+        (item: { itemType: string }) => item.itemType === "MEMBERSHIP"
+      )
+    ).toBe(true);
+  });
+
   it("confirms transactionally through appointment completion and invoice issue", async () => {
     const f = await fixture();
     const created = await createCart(f, f.adminToken, {
@@ -1313,5 +1369,83 @@ describe("Walk-in job carts", () => {
         `DROP FUNCTION IF EXISTS fail_job_cart_audit()`
       );
     }
+  });
+});
+
+// An offline confirm is replayed later, possibly after the admin switched
+// branch and possibly after the first attempt landed but its response was
+// lost. The queue sends it under the branch it was pressed in.
+describe("Replaying a queued job-cart confirm", () => {
+  const replay = (
+    token: string,
+    id: string,
+    key: string,
+    branchId?: string
+  ) =>
+    request(app)
+      .post(`/api/job-carts/${id}/confirm`)
+      .set({ ...auth(token), ...(branchId ? { "X-Branch-Id": branchId } : {}) })
+      .send({
+        idempotencyKey: key,
+        confirmedAt: "2037-12-31T10:00:00.000Z",
+        payment: { method: "CASH" },
+      });
+
+  it("answers a repeated idempotencyKey with the billed cart, billing once", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    const id = created.body.data.id as string;
+    const key = randomUUID();
+
+    const first = await replay(f.adminToken, id, key, f.branch.id);
+    expect(first.status).toBe(200);
+    const again = await replay(f.adminToken, id, key, f.branch.id);
+    expect(again.status).toBe(200);
+    expect(again.body.data.invoice.id).toBe(first.body.data.invoice.id);
+    expect(again.body.data.invoice.paymentStatus).toBe("PAID");
+
+    expect(
+      await prisma.payment.count({ where: { invoiceId: first.body.data.invoice.id } })
+    ).toBe(1);
+    expect(
+      await prisma.customerTransaction.count({
+        where: { invoiceId: first.body.data.invoice.id, type: "PAYMENT" },
+      })
+    ).toBe(1);
+
+    // A different key on a billed cart is still a real conflict.
+    const fresh = await replay(f.adminToken, id, randomUUID(), f.branch.id);
+    expect(fresh.status).toBe(409);
+  });
+
+  it("succeeds under the captured branch and not under one switched to since", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    const id = created.body.data.id as string;
+    const key = randomUUID();
+
+    const switched = await replay(f.adminToken, id, key, f.otherBranch.id);
+    expect(switched.status).toBe(404);
+
+    const captured = await replay(f.adminToken, id, key, f.branch.id);
+    expect(captured.status).toBe(200);
+    expect(captured.body.data.invoice.paymentStatus).toBe("PAID");
+  });
+
+  it("does not let a replay reach a branch the caller cannot", async () => {
+    const f = await fixture();
+    const created = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    const id = created.body.data.id as string;
+    const key = randomUUID();
+
+    const foreign = await replay(f.adminToken, id, key, f.foreignBranch.id);
+    expect(foreign.status).toBe(403);
+
+    // The idempotency shortcut sits behind the scoped lookup: another
+    // branch's receptionist replaying a billed cart's key gets nothing back.
+    expect((await replay(f.adminToken, id, key, f.branch.id)).status).toBe(200);
+    const otherCounter = await replay(f.otherReceptionistToken, id, key);
+    expect(otherCounter.status).toBe(404);
+    expect(otherCounter.body.data).toBeUndefined();
   });
 });

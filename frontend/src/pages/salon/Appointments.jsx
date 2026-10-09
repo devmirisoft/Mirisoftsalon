@@ -71,7 +71,7 @@ const nextAvailableTime = (dateInfo) => {
 };
 
 const Appointments = () => {
-  const { user } = useAuth();
+  const { user, activeBranch } = useAuth();
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [refs, setRefs] = useState({
@@ -574,7 +574,9 @@ const Appointments = () => {
         toggle={() => setAction(null)}
         isSuper={isSuper}
         lockBranch={isBranchLocked}
-        defaultBranchId={isBranchLocked ? user?.branchId || "" : ""}
+        defaultBranchId={
+          (isBranchLocked ? user?.branchId : activeBranch?.id) || ""
+        }
         statuses={STATUSES}
         refs={{ ...refs, staff: availableStaff }}
         defaults={appointmentDefaults}

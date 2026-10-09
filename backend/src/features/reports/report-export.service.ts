@@ -58,11 +58,14 @@ const resolveContext = async (req: Request) => {
   const requestedSalonId = clean(req.query.salonId);
   let salonId =
     req.user.role === "SUPER_ADMIN" ? requestedSalonId : req.user.salonId;
+  // Same order as report.controller's resolveScope: a counter role's own
+  // branch, then an admin's open branch session, then the page's filter, so
+  // the file covers the branch the screen shows.
   let branchId =
     (req.user.role === "BRANCH_MANAGER" || req.user.role === "RECEPTIONIST") &&
     req.user.branchId
       ? req.user.branchId
-      : clean(req.query.branchId);
+      : req.user.activeBranchId ?? clean(req.query.branchId);
   if (!salonId && branchId) {
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },

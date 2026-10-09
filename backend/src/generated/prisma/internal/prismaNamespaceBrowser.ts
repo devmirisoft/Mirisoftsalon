@@ -730,6 +730,7 @@ export const AppointmentServiceScalarFieldEnum = {
   serviceName: 'serviceName',
   price: 'price',
   quantity: 'quantity',
+  unitDiscount: 'unitDiscount',
   staffId: 'staffId',
   durationValue: 'durationValue',
   durationUnit: 'durationUnit',

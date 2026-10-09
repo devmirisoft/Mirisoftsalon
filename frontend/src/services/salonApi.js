@@ -319,8 +319,8 @@ export const salonApi = {
       request(`/api/job-carts/${id}/package-redemptions/${usageId}`, {
         method: "DELETE",
       }),
-    confirm: (id, body = {}) =>
-      request(`/api/job-carts/${id}/confirm`, { method: "POST", body }),
+    confirm: (id, body = {}, headers) =>
+      request(`/api/job-carts/${id}/confirm`, { method: "POST", body, headers }),
     cancel: (id) =>
       request(`/api/job-carts/${id}/cancel`, { method: "POST" }),
   },

@@ -115,6 +115,7 @@ export type AppointmentServiceLine = {
   serviceId: string;
   serviceName: string;
   price: number;
+  unitDiscount?: number;
   quantity?: number;
   staffId?: string;
   durationValue?: number;
@@ -130,6 +131,7 @@ const serviceLineRows = (
     serviceId: service.serviceId,
     serviceName: service.serviceName,
     price: service.price,
+    ...(service.unitDiscount ? { unitDiscount: service.unitDiscount } : {}),
     ...(service.quantity ? { quantity: service.quantity } : {}),
     ...(service.staffId ? { staffId: service.staffId } : {}),
     ...(service.durationValue !== undefined

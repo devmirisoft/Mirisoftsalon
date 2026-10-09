@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { chatWithAiAssistant } from "./ai-assistant.service.js";
 import { isAiRole, type SalonAiUiContext } from "./ai-tool.types.js";
+import { pinnedBranchId } from "../../utils/branch-scope.js";
 
 const MAX_MESSAGE_LENGTH = 1_000;
 const UI_MODULES = new Set<SalonAiUiContext["module"]>([
@@ -28,6 +29,14 @@ const ENTITY_TYPES = new Set([
   "MEMBERSHIP",
   "PACKAGE",
 ]);
+
+// The branch every tool query is scoped to: a branch-locked role's own branch,
+// or the branch session (X-Branch-Id, already checked against the caller's
+// salon by authenticate) an admin has open. None means the whole salon.
+const branchContext = (user: NonNullable<Request["user"]>) => {
+  const branchId = pinnedBranchId(user);
+  return branchId ? { branchId } : {};
+};
 
 const safeString = (value: unknown, max = 200) =>
   typeof value === "string" ? value.slice(0, max) : undefined;
@@ -122,7 +131,7 @@ export async function chat(req: Request, res: Response) {
       userId: user.userId,
       role: user.role,
       ...(user.salonId ? { salonId: user.salonId } : {}),
-      ...(user.branchId ? { branchId: user.branchId } : {}),
+      ...branchContext(user),
     },
   });
 
@@ -185,7 +194,7 @@ export async function chatStream(req: Request, res: Response) {
         userId: user.userId,
         role: user.role,
         ...(user.salonId ? { salonId: user.salonId } : {}),
-        ...(user.branchId ? { branchId: user.branchId } : {}),
+        ...branchContext(user),
       },
     });
 

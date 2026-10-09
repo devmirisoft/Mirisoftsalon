@@ -56,8 +56,15 @@ export function aiSharedBranchScope(context: AiToolContext) {
     };
   }
 
+  // An admin with a branch session open sees that branch plus salon-wide rows,
+  // the same as everywhere else; with none, the whole salon.
   if (context.role === "SALON_ADMIN") {
-    return aiSalonScope(context);
+    return {
+      ...aiSalonScope(context),
+      ...(context.branchId
+        ? { OR: [{ branchId: null }, { branchId: context.branchId }] }
+        : {}),
+    };
   }
 
   if (!context.salonId || !context.branchId) {

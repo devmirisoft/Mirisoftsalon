@@ -3911,6 +3911,230 @@ body.dark-mode .vendors-page {
   color: var(--jcp-ink);
 }
 
+/* Services & Package table on the job cart page. */
+.jcp-items-wrap {
+  border-radius: 0.75rem;
+}
+
+.jcp-items-table {
+  min-width: 780px;
+}
+
+.jcp-items-table thead th {
+  padding: 1rem 0.5rem;
+  border-bottom: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--jcp-soft);
+}
+
+.jcp-items-table thead th:first-child {
+  border-radius: 0.625rem 0 0 0.625rem;
+}
+
+.jcp-items-table thead th:last-child {
+  border-radius: 0 0.625rem 0.625rem 0;
+}
+
+.jcp-items-table thead .icon {
+  font-size: 1rem;
+  vertical-align: -0.15em;
+  margin-right: 0.25rem;
+}
+
+.jcp-items-table tbody td {
+  padding: 1rem 0.5rem;
+  vertical-align: middle;
+}
+
+.jcp-items-table .jcp-col-num { width: 2rem; }
+.jcp-items-table .jcp-col-staff { width: 10rem; }
+.jcp-items-table .jcp-col-duration { width: 6rem; }
+.jcp-items-table .jcp-col-qty { width: 4.5rem; }
+.jcp-items-table .jcp-col-price { width: 7.5rem; }
+.jcp-items-table .jcp-col-discount { width: 6.5rem; }
+.jcp-items-table .jcp-col-total { width: 7.5rem; }
+.jcp-items-table .jcp-col-action { width: 5.5rem; }
+
+.jcp-items-table .form-control {
+  height: 2.375rem;
+  font-size: 0.875rem;
+}
+
+/* Staff: initials avatar beside the name. */
+.jcp-person {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.jcp-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(90, 111, 240, 0.12);
+  color: var(--jcp-navy);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.jcp-avatar.is-empty {
+  background: var(--jcp-panel);
+  color: var(--jcp-soft);
+}
+
+.jcp-person-text {
+  min-width: 0;
+}
+
+.jcp-person-name {
+  display: block;
+  color: var(--jcp-ink);
+}
+
+/* Reads as a name; the native caret shows it can be changed. */
+.jcp-items-table .jcp-person-select {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  padding: 0 1.25rem 0 0;
+  border: 0;
+  background-color: transparent;
+  background-position: right center;
+  box-shadow: none;
+  color: var(--jcp-ink);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/* Service: soft tile with the category beneath the name. */
+.jcp-service-box {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--jcp-panel);
+}
+
+.jcp-duration {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  color: var(--jcp-ink);
+}
+
+.jcp-duration > .icon {
+  font-size: 1.25rem;
+  color: var(--jcp-soft);
+}
+
+.jcp-duration strong {
+  display: block;
+  font-weight: 500;
+}
+
+.jcp-duration small {
+  display: block;
+  color: var(--jcp-soft);
+}
+
+.jcp-price-field .form-control {
+  padding-left: 1.5rem;
+  border-color: transparent;
+  background: var(--jcp-panel);
+}
+
+.jcp-price-field .form-control:focus {
+  border-color: var(--jcp-accent);
+  background: #fff;
+}
+
+.jcp-price-prefix {
+  position: absolute;
+  top: 50%;
+  left: 0.625rem;
+  z-index: 1;
+  transform: translateY(-50%);
+  color: var(--jcp-ink);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.jcp-discount-unit {
+  width: 2.25rem;
+  justify-content: center;
+  padding-inline: 0;
+  background: #fff;
+  color: var(--jcp-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+.jcp-discount-group .form-control {
+  border-right: 0;
+}
+
+.jcp-row-total {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--jcp-ink);
+}
+
+.jcp-pending-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: rgba(244, 189, 14, 0.12);
+  color: var(--jcp-ink);
+  font-size: 0.8125rem;
+}
+
+.jcp-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.jcp-row-actions > .btn {
+  min-width: 4.5rem;
+  justify-content: center;
+}
+
+.jcp-row-actions .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.jcp-type-tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.0625rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  vertical-align: middle;
+  color: var(--jcp-accent);
+  background: rgba(90, 111, 240, 0.1);
+}
+
+.jcp-type-tag.is-product {
+  color: #0b8fb3;
+  background: rgba(11, 143, 179, 0.1);
+}
+
+.jcp-type-tag.is-membership {
+  color: #1a9f62;
+  background: rgba(26, 159, 98, 0.1);
+}
+
 .jcp-item-name {
   display: block;
   font-weight: 600;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createAppointment, getAppointments, getAppointmentById, updateAppointmentBasicDetails, updateAppointmentStatus, deleteAppointment, rescheduleAppointment, getAppointmentTracking, } from "./appointment.controller.js";
+import { createAppointment, getAppointments, getAppointmentById, updateAppointmentBasicDetails, updateAppointmentStatus, deleteAppointment, rescheduleAppointment, updateAppointmentServices, getAppointmentTracking, } from "./appointment.controller.js";
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { requireRole } from "../../middlewares/rbac.middleware.js";
 import { validateUuidParam } from "../../middlewares/uuid.middleware.js";
@@ -10,6 +10,7 @@ router.post("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAF
 router.get("/", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), getAppointments);
 router.patch("/:id/status", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), updateAppointmentStatus);
 router.patch("/:id/reschedule", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), rescheduleAppointment);
+router.put("/:id/services", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), updateAppointmentServices);
 router.get("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), getAppointmentById);
 router.put("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN", "RECEPTIONIST", "STAFF"), updateAppointmentBasicDetails);
 router.delete("/:id", requireRole("SUPER_ADMIN", "SALON_ADMIN"), deleteAppointment);

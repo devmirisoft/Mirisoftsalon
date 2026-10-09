@@ -295,6 +295,9 @@ export const patchJobCartItem = async (req: Request, res: Response) => {
       param(req, "itemId"),
       {
         ...(parsed.price === undefined ? {} : { price: parsed.price }),
+        ...(parsed.unitDiscount === undefined
+          ? {}
+          : { unitDiscount: parsed.unitDiscount }),
         ...(parsed.quantity === undefined ? {} : { quantity: parsed.quantity }),
         ...(parsed.staffId === undefined ? {} : { staffId: parsed.staffId }),
       },

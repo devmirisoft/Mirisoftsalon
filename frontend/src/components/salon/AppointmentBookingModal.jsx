@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
+import { createFilter } from "react-select";
 import { CreatableSelect } from "@/components/select/PortalSelect";
 import {
   Alert,
@@ -48,6 +49,18 @@ const emptyForm = {
 };
 
 const digitsOf = (value) => String(value || "").replace(/\D/g, "");
+
+// Customer suggestions stay hidden until there's something to match:
+// any name text, or at least 3 digits of a phone number.
+const MIN_PHONE_DIGITS = 3;
+const suggestReady = (input) => {
+  const text = String(input || "").trim();
+  if (!text) return false;
+  return /^[\d\s+()-]+$/.test(text)
+    ? digitsOf(text).length >= MIN_PHONE_DIGITS
+    : true;
+};
+const defaultCustomerFilter = createFilter();
 
 // One place that keeps price / discount / qty / total consistent.
 // Editing total back-solves price; editing anything else re-derives total.
@@ -281,9 +294,7 @@ const AppointmentBookingModal = ({
       setForm({
         ...emptyForm,
         ...defaults,
-        ...(lockBranch
-          ? { branchId: defaultBranchId || defaults?.branchId || "" }
-          : {}),
+        branchId: defaultBranchId || defaults?.branchId || "",
       });
       setRows([]);
     }
@@ -635,13 +646,15 @@ const AppointmentBookingModal = ({
                         onChange={(e) => selectCustomerByPhone(e.target.value)}
                       />
                       <datalist id="appointment-customer-phones">
-                        {customerOptions
-                          .filter((option) => option.phone)
-                          .map((option) => (
-                            <option key={option.value} value={option.phone}>
-                              {option.label}
-                            </option>
-                          ))}
+                        {digitsOf(form.customerPhone).length >=
+                          MIN_PHONE_DIGITS &&
+                          customerOptions
+                            .filter((option) => option.phone)
+                            .map((option) => (
+                              <option key={option.value} value={option.phone}>
+                                {option.label}
+                              </option>
+                            ))}
                       </datalist>
                     </FormGroup>
                   </Col>
@@ -660,6 +673,23 @@ const AppointmentBookingModal = ({
                         }
                         placeholder="Search by name or phone"
                         isDisabled={editing}
+                        filterOption={(option, input) =>
+                          suggestReady(input) &&
+                          defaultCustomerFilter(option, input)
+                        }
+                        noOptionsMessage={({ inputValue }) =>
+                          suggestReady(inputValue) ? "No customers" : null
+                        }
+                        onInputChange={(value, { action }) => {
+                          // Typing a name means a different customer: drop the stale phone.
+                          if (action === "input-change" && value) {
+                            setForm((current) =>
+                              current.customerPhone
+                                ? { ...current, customerPhone: "", customerId: "" }
+                                : current
+                            );
+                          }
+                        }}
                         onChange={(option) =>
                           setForm((current) => ({
                             ...current,

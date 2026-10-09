@@ -337,6 +337,7 @@ export default function FloatingAiAssistant() {
 
           <footer style={styles.composer}>
             <textarea
+              data-allow-special
               value={message}
               onChange={(event) => setMessage(event.target.value)}
               onKeyDown={(event) => {

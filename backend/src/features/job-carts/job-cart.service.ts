@@ -658,6 +658,34 @@ const requireMutable = (cart: JobCartRecord) => {
   }
 };
 
+/**
+ * A walk-in job cart whose work is done but whose bill is still an unpaid
+ * draft: the payment step. Products, packages and memberships can still be
+ * sold there; services cannot change.
+ */
+const awaitingPayment = (cart: JobCartRecord) =>
+  cart.walkInJobCart &&
+  cart.status === "COMPLETED" &&
+  cart.invoice?.status === "DRAFT" &&
+  cart.invoice.paymentStatus === "UNPAID" &&
+  !cart.invoice.paidAmount.gt(0);
+
+/**
+ * Completing the job books the add-ons on the cart at that moment (stock,
+ * packages, memberships). Anything created later was added on the payment
+ * step and is booked when the bill is issued. Without a history row every
+ * line counts as booked, so nothing is booked twice.
+ */
+const bookedAtCompletion = async (tx: TransactionClient, appointmentId: string) => {
+  const completed = await tx.appointmentStatusHistory.findFirst({
+    where: { appointmentId, newStatus: "COMPLETED" },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+  const completedAt = completed?.createdAt ?? new Date();
+  return (item: { createdAt: Date }) => item.createdAt <= completedAt;
+};
+
 const decimalOrZero = (value: unknown) => {
   try {
     return new Prisma.Decimal(
@@ -1530,6 +1558,7 @@ export const createJobCart = async (
       serviceId: string;
       staffId?: string | undefined;
       price?: number | undefined;
+      unitDiscount?: number | undefined;
       quantity?: number | undefined;
     }>;
     bookingNote?: string;
@@ -1655,6 +1684,7 @@ export const createJobCart = async (
             serviceId: service.id,
             serviceName: service.name,
             price: Number(line.price),
+            unitDiscount: itemByServiceId.get(service.id)?.unitDiscount ?? 0,
             quantity: line.quantity,
             ...(serviceStaffId ? { staffId: serviceStaffId } : {}),
             ...(service.durationValue !== null
@@ -1923,7 +1953,9 @@ export const addJobCartItem = async (
   prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
     const existing = await requireCart(tx, id, actor);
-    requireMutable(existing);
+    if (input.itemType === "SERVICE" || !awaitingPayment(existing)) {
+      requireMutable(existing);
+    }
     if (input.itemType === "PRODUCT") {
       const product = await tx.product.findFirst({
         where: {
@@ -2273,7 +2305,12 @@ export const updateJobCartItem = async (
   actor: JobCartActor,
   id: string,
   itemId: string,
-  input: { price?: number; quantity?: number; staffId?: string | null },
+  input: {
+    price?: number;
+    unitDiscount?: number;
+    quantity?: number;
+    staffId?: string | null;
+  },
   audit: AuditContext
 ) =>
   prisma.$transaction(async (tx) => {
@@ -2304,6 +2341,9 @@ export const updateJobCartItem = async (
         ...(input.price === undefined
           ? {}
           : { price: new Prisma.Decimal(input.price) }),
+        ...(input.unitDiscount === undefined
+          ? {}
+          : { unitDiscount: new Prisma.Decimal(input.unitDiscount) }),
         ...(input.quantity === undefined ? {} : { quantity: input.quantity }),
         ...(input.staffId === undefined
           ? {}
@@ -2329,12 +2369,14 @@ export const updateJobCartItem = async (
       oldData: {
         itemId,
         price: serviceItem.price,
+        unitDiscount: serviceItem.unitDiscount,
         quantity: serviceItem.quantity,
         staffId: serviceItem.staffId,
       },
       newData: {
         itemId,
         price: input.price,
+        unitDiscount: input.unitDiscount,
         quantity: input.quantity,
         staffId: input.staffId,
       },
@@ -2439,17 +2481,28 @@ export const removeJobCartItem = async (
   prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
     const existing = await requireCart(tx, id, actor);
-    requireMutable(existing);
     const serviceItem = existing.services.find(
       (service) => service.id === itemId
     );
-    const packageItem = existing.invoice!.items.find(
+    const packageItem = existing.invoice?.items.find(
       (item) =>
         item.id === itemId &&
         (item.itemType === "PACKAGE" ||
           item.itemType === "PRODUCT" ||
           item.itemType === "MEMBERSHIP")
     );
+    if (packageItem && awaitingPayment(existing)) {
+      // Booked when the job was completed: stock has left, the package or
+      // membership exists. Only lines added on the payment step can go.
+      if ((await bookedAtCompletion(tx, id))(packageItem)) {
+        throw new JobCartError(
+          409,
+          "This item was booked when the job was completed and cannot be removed"
+        );
+      }
+    } else {
+      requireMutable(existing);
+    }
     if (!serviceItem && !packageItem) {
       throw new JobCartError(404, "Job cart item not found");
     }
@@ -2851,14 +2904,20 @@ export const confirmJobCart = async (
   prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
     const existing = await requireCart(tx, id, actor);
+    // A replay of a confirm that already landed (an offline confirm whose
+    // response was lost) answers with the billed cart instead of a 409, so the
+    // queue can tell "already done" from a real rejection. requireCart above
+    // has already checked the caller may reach this cart.
+    if (
+      billing.idempotencyKey &&
+      existing.invoice?.idempotencyKey === billing.idempotencyKey
+    ) {
+      return present(existing);
+    }
     // Completing the work leaves its invoice in DRAFT. The next confirmation
     // is the normal payment/issue step and must remain available even though
     // the appointment itself is already COMPLETED.
-    const finalizingCompletedDraft =
-      existing.walkInJobCart &&
-      existing.status === "COMPLETED" &&
-      existing.invoice?.status === "DRAFT" &&
-      existing.invoice.paymentStatus === "UNPAID";
+    const finalizingCompletedDraft = awaitingPayment(existing);
     if (!finalizingCompletedDraft) requireMutable(existing);
     if (!existing.invoice?.items.length) {
       throw new JobCartError(
@@ -3034,14 +3093,19 @@ export const confirmJobCart = async (
         "Issue the invoice to record a payment; a draft cannot be paid"
       );
     }
-    if (finalizingCompletedDraft) {
-      return present(await requireCart(tx, id, actor));
-    }
+    // On the payment step only lines added after the job was completed are
+    // still unbooked; the rest were booked by that completion.
+    const alreadyBooked = finalizingCompletedDraft
+      ? await bookedAtCompletion(tx, id)
+      : () => false;
     // Stock leaves the shelf here, inside the confirm transaction, so a
     // shortfall or any later failure rolls the whole bill back. Ordered by id
     // to keep the row-lock order stable between concurrent confirms.
     const productItems = existing.invoice.items
-      .filter((item) => item.itemType === "PRODUCT" && item.productId)
+      .filter(
+        (item) =>
+          item.itemType === "PRODUCT" && item.productId && !alreadyBooked(item)
+      )
       .sort((left, right) => left.productId!.localeCompare(right.productId!));
     for (const item of productItems) {
       try {
@@ -3069,7 +3133,8 @@ export const confirmJobCart = async (
       }
     }
     const packageItems = existing.invoice.items.filter(
-      (item) => item.itemType === "PACKAGE" && item.packageId
+      (item) =>
+        item.itemType === "PACKAGE" && item.packageId && !alreadyBooked(item)
     );
     for (const item of packageItems) {
       const servicePackage = await tx.servicePackage.findUnique({
@@ -3136,7 +3201,13 @@ export const confirmJobCart = async (
     // Enrollment happens last, after the bill is settled, so the wallet it
     // credits cannot be spent on the very bill that bought it.
     for (const [index, item] of existing.invoice.items.entries()) {
-      if (item.itemType !== "MEMBERSHIP" || !item.membershipId) continue;
+      if (
+        item.itemType !== "MEMBERSHIP" ||
+        !item.membershipId ||
+        alreadyBooked(item)
+      ) {
+        continue;
+      }
       try {
         await assignCustomerMembershipInTransaction(
           tx,
@@ -3165,6 +3236,9 @@ export const confirmJobCart = async (
         }
         throw error;
       }
+    }
+    if (finalizingCompletedDraft) {
+      return present(await requireCart(tx, id, actor));
     }
     await createAuditLog({
       tx,

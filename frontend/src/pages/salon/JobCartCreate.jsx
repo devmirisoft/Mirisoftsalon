@@ -653,7 +653,13 @@ const JobCartCreate = () => {
           ...(row.staffId ? { staffId: row.staffId } : {}),
           ...(row.price === ""
             ? {}
-            : { price: netPrice(row.price, row.discount, row.discountType) }),
+            : {
+                price: netPrice(row.price, row.discount, row.discountType),
+                unitDiscount: round2(
+                  Number(row.price || 0) -
+                    netPrice(row.price, row.discount, row.discountType)
+                ),
+              }),
           quantity: qtyOf(row.qty),
         }));
       const response = await salonApi.jobCarts.create({

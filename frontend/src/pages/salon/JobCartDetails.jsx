@@ -5,6 +5,9 @@ import { toast } from "react-toastify";
 import {
   Alert,
   Col,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   FormGroup,
   Input,
   Label,
@@ -12,6 +15,7 @@ import {
   ModalBody,
   Row,
   Spinner,
+  UncontrolledDropdown,
 } from "reactstrap";
 import { Button, Icon } from "@/components/Component";
 import Head from "@/layout/head/Head";
@@ -25,7 +29,14 @@ import {
 } from "@/components/salon/InventoryModals";
 import { useAuth } from "@/auth/AuthContext";
 import { salonApi } from "@/services/salonApi";
-import { enqueueConfirm, startConfirmQueue } from "@/services/offlineQueue";
+import {
+  drainConfirms,
+  enqueueConfirm,
+  failedConfirms,
+  removeConfirm,
+  retryConfirm,
+  startConfirmQueue,
+} from "@/services/offlineQueue";
 import {
   formatDate,
   formatMoney,
@@ -51,6 +62,22 @@ const cappedDiscount = (price, discount, type) => {
   const maximum = type === "PCT" ? 100 : Math.max(0, Number(price) || 0);
   return String(round2(Math.min(amount, maximum)));
 };
+const qtyOf = (qty) => Math.max(1, Math.floor(Number(qty) || 1));
+// A service's price is stored net of its counter discount (unitDiscount).
+const listPriceOf = (item) =>
+  round2(Number(item.price || 0) + Number(item.unitDiscount || 0));
+const itemDiscountOf = (item) =>
+  round2(Number(item.unitDiscount || 0) * Number(item.quantity ?? 1));
+// Counter discount plus the line's share of the bill discount.
+const discountGivenOf = (item) =>
+  round2(itemDiscountOf(item) + Number(item.discountAmount || 0));
+const initialsOf = (name = "") =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join("");
 const netServicePrice = (price, discount, type) => {
   const base = Math.max(0, Number(price) || 0);
   const reduction =
@@ -115,6 +142,10 @@ const InsightStat = ({ icon, label, value, note, noteTone }) => (
   </div>
 );
 
+// How the offline queue replays a confirm, under the branch it was queued in.
+const sendQueuedConfirm = (jobCartId, body, headers) =>
+  salonApi.jobCarts.confirm(jobCartId, body, headers);
+
 // "0 days ago" reads better than a bare date on the last-visit tile.
 const daysAgo = (value) => {
   if (!value) return "";
@@ -128,7 +159,7 @@ const JobCartDetails = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, activeBranch } = useAuth();
   const [cart, setCart] = useState(null);
   const [customerSummary, setCustomerSummary] = useState(null);
   const [form, setForm] = useState({
@@ -184,11 +215,11 @@ const JobCartDetails = () => {
   // Who is free right now, fetched only while the service picker is open.
   const staffStatus = useStaffStatus(servicePickerOpen ? cart?.branchId : "");
   const [serviceEdits, setServiceEdits] = useState({});
-  const serviceSaveTimers = useRef({});
   const serviceSaveRequests = useRef({});
   const [confirmingJobOnly, setConfirmingJobOnly] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [queuedNotice, setQueuedNotice] = useState("");
+  const [failedQueue, setFailedQueue] = useState(failedConfirms);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState("");
@@ -265,14 +296,45 @@ const JobCartDetails = () => {
   }, [cart, searchParams, setSearchParams]);
 
   // Push any bill confirmed while offline as soon as the connection is back.
-  useEffect(
-    () =>
-      startConfirmQueue(({ pushed }) => {
+  // Bills the server rejects stay listed below until retried or discarded.
+  const onQueueDrained = useCallback(
+    ({ pushed, failed }) => {
+      if (pushed) {
         setQueuedNotice(`${pushed} queued bill${pushed === 1 ? "" : "s"} sent.`);
-        load();
-      }),
+      }
+      if (failed) {
+        toast.error(
+          `${failed} queued bill${failed === 1 ? "" : "s"} could not be sent. Review below.`
+        );
+      }
+      setFailedQueue(failedConfirms());
+      load();
+    },
     [load]
   );
+
+  useEffect(
+    () => startConfirmQueue(sendQueuedConfirm, onQueueDrained),
+    [onQueueDrained]
+  );
+
+  const retryQueuedConfirm = async (idempotencyKey) => {
+    retryConfirm(idempotencyKey, activeBranch?.id);
+    setFailedQueue(failedConfirms());
+    onQueueDrained(await drainConfirms(sendQueuedConfirm));
+  };
+
+  const discardQueuedConfirm = (idempotencyKey) => {
+    if (
+      !window.confirm(
+        "Discard this queued bill? It was never recorded and will be lost."
+      )
+    ) {
+      return;
+    }
+    removeConfirm(idempotencyKey);
+    setFailedQueue(failedConfirms());
+  };
 
   const run = async (action) => {
     setWorking(true);
@@ -403,6 +465,14 @@ const JobCartDetails = () => {
     user?.role
   );
   const active = cart?.status === "ACTIVE";
+  // Job done, bill not yet paid: products, packages and memberships can still
+  // be sold on the payment step.
+  const awaitingPayment =
+    cart?.isJobCart &&
+    cart?.status === "COMPLETED" &&
+    cart?.invoice?.status === "DRAFT" &&
+    cart?.invoice?.paymentStatus === "UNPAID";
+  const canSellAddOns = active || awaitingPayment;
   const editingCart = active && (searchParams.get("edit") === "1" || location.pathname.endsWith("/edit"));
   const serviceAssignments = useMemo(
     () =>
@@ -422,52 +492,84 @@ const JobCartDetails = () => {
       .catch((refError) => setError(refError.message));
   }, [addRefs, cart?.branchId, cart?.salonId, editingCart]);
 
+  // Price is stored net of the counter discount, so the edit starts from the
+  // list price with that discount filled in.
+  const freshServiceEdit = (item) => ({
+    price: String(listPriceOf(item)),
+    quantity: String(item.quantity ?? 1),
+    staffId: item.staffId || "",
+    discount: Number(item.unitDiscount || 0) > 0 ? String(Number(item.unitDiscount)) : "",
+    discountType: "AMT",
+  });
+  const unitDiscountOf = (edit) =>
+    round2(
+      Math.max(0, Number(edit.price) || 0) -
+        netServicePrice(edit.price, edit.discount, edit.discountType)
+    );
+
   useEffect(() => {
     if (!cart) return;
-    setServiceEdits(
+    // Price, quantity and discount stay local until Confirm Job Cart, so a
+    // reload (staff change, added product) keeps what was typed. Staff follows
+    // the server unless its own save is still in flight.
+    setServiceEdits((current) =>
       Object.fromEntries(
         (cart.items || [])
           .filter((item) => item.itemType === "SERVICE")
-          .map((item) => [
-            item.id,
-            {
-              price: String(item.price ?? ""),
-              quantity: String(item.quantity ?? 1),
-              staffId: item.staffId || "",
-              discount: "",
-              discountType: "AMT",
-            },
-          ])
+          .map((item) => {
+            const edit = current[item.id];
+            return [
+              item.id,
+              edit
+                ? {
+                    ...edit,
+                    staffId: serviceSaveRequests.current[item.id]
+                      ? edit.staffId
+                      : item.staffId || "",
+                  }
+                : freshServiceEdit(item),
+            ];
+          })
       )
     );
   }, [cart]);
 
-  const serviceEditFor = (item) =>
-    serviceEdits[item.id] || {
-      price: String(item.price ?? ""),
-      quantity: String(item.quantity ?? 1),
-      staffId: item.staffId || "",
-      discount: "",
-      discountType: "AMT",
-    };
+  const serviceEditFor = (item) => serviceEdits[item.id] || freshServiceEdit(item);
 
   const updateServiceEdit = (itemId, updates) =>
-    setServiceEdits((current) => {
-      const nextEdit = { ...current[itemId], ...updates };
-      clearTimeout(serviceSaveTimers.current[itemId]);
-      serviceSaveTimers.current[itemId] = setTimeout(() => {
-        const item = (cart?.items || []).find((row) => row.id === itemId);
-        if (item) saveServiceEdit(item, nextEdit);
-      }, 500);
-      return { ...current, [itemId]: nextEdit };
-    });
+    setServiceEdits((current) => ({
+      ...current,
+      [itemId]: { ...current[itemId], ...updates },
+    }));
 
-  const saveServiceEdit = async (item, edit) => {
-    const discount = cappedDiscount(edit.price, edit.discount, edit.discountType);
+  // How much a service row's pre-tax amount moves once its pending price,
+  // quantity and discount are applied.
+  const serviceGrossChange = (item) => {
+    const edit = serviceEdits[item.id];
+    if (!edit) return 0;
+    return (
+      netServicePrice(edit.price, edit.discount, edit.discountType) *
+        qtyOf(edit.quantity) -
+      Number(item.price || 0) * Number(item.quantity ?? 1)
+    );
+  };
+  const isServiceEditPending = (item) => {
+    const edit = serviceEdits[item.id];
+    return Boolean(
+      edit &&
+        (netServicePrice(edit.price, edit.discount, edit.discountType) !==
+          Number(item.price || 0) ||
+          unitDiscountOf(edit) !== Number(item.unitDiscount || 0) ||
+          qtyOf(edit.quantity) !== Number(item.quantity ?? 1))
+    );
+  };
+
+  // Staff is assigned straight away: availability and the Done button
+  // depend on it.
+  const saveServiceStaff = async (item, staffId) => {
+    updateServiceEdit(item.id, { staffId });
     const request = salonApi.jobCarts.updateItem(id, item.id, {
-      price: netServicePrice(edit.price, discount, edit.discountType),
-      quantity: Math.max(1, Math.floor(Number(edit.quantity) || 1)),
-      staffId: edit.staffId || null,
+      staffId: staffId || null,
     });
     serviceSaveRequests.current[item.id] = request;
     setWorking(true);
@@ -488,6 +590,34 @@ const JobCartDetails = () => {
     }
   };
 
+  // Pending price, quantity and discount edits are only previewed in the
+  // table; they reach the server here, when the job cart is confirmed.
+  const applyServiceEdits = async () => {
+    const pending = (cart?.items || []).filter(
+      (item) => item.itemType === "SERVICE" && isServiceEditPending(item)
+    );
+    if (!pending.length) return true;
+    setWorking(true);
+    setError("");
+    try {
+      for (const item of pending) {
+        const edit = serviceEdits[item.id];
+        const response = await salonApi.jobCarts.updateItem(id, item.id, {
+          price: netServicePrice(edit.price, edit.discount, edit.discountType),
+          unitDiscount: unitDiscountOf(edit),
+          quantity: qtyOf(edit.quantity),
+        });
+        setCart(response.data);
+      }
+      return true;
+    } catch (saveError) {
+      setError(saveError.message);
+      return false;
+    } finally {
+      setWorking(false);
+    }
+  };
+
   const togglePickedService = (serviceId) => {
     const existing = (cart.items || []).find(
       (item) => item.itemType === "SERVICE" && item.serviceId === serviceId
@@ -505,7 +635,18 @@ const JobCartDetails = () => {
     );
   };
   const invoice = cart?.invoice;
-  const subtotalAmount = Number(invoice?.subtotalAmount || 0);
+  // Unconfirmed service edits already count in the summary and the table, so
+  // the cashier sees the bill they will get on Confirm Job Cart.
+  const pendingServiceChange = editingCart
+    ? round2(
+        (cart?.items || [])
+          .filter((item) => item.itemType === "SERVICE")
+          .reduce((total, item) => total + serviceGrossChange(item), 0)
+      )
+    : 0;
+  const subtotalAmount = round2(
+    Number(invoice?.subtotalAmount || 0) + pendingServiceChange
+  );
   const discountInput = Number(billingForm.discountAmount || 0);
   const manualDiscount = !active
     ? 0
@@ -523,6 +664,9 @@ const JobCartDetails = () => {
     ? Number(billingForm.processingFeeAmount || 0)
     : Number(invoice?.processingFeeAmount || 0);
   const taxableAmount = Math.max(subtotalAmount - discountTotal, 0);
+  const itemDiscountTotal = round2(
+    (cart?.items || []).reduce((total, item) => total + itemDiscountOf(item), 0)
+  );
   const taxAmount =
     active && billingForm.invoiceType === "GST_INVOICE"
       ? taxableAmount * (Number(billingForm.taxPercent || 0) / 100)
@@ -550,13 +694,20 @@ const JobCartDetails = () => {
   // and a row only repeats a rate that differs from it.
   // While the cart is open, preview how confirming will split the discount and
   // tax across lines - same pro-rata split as calculateInvoiceGst on the server.
-  const round2 = (value) => Math.round(value * 100) / 100;
   const previewTaxRate =
     billingForm.invoiceType === "GST_INVOICE"
       ? Number(billingForm.taxPercent || 0)
       : 0;
   const lineGross = (item) =>
-    Number(item.price || 0) * Number(item.quantity ?? 1);
+    item.itemType === "SERVICE" &&
+    editingCart &&
+    serviceEdits[item.id]
+      ? netServicePrice(
+          serviceEdits[item.id].price,
+          serviceEdits[item.id].discount,
+          serviceEdits[item.id].discountType
+        ) * qtyOf(serviceEdits[item.id].quantity)
+      : Number(item.price || 0) * Number(item.quantity ?? 1);
   const discountableGross = (cart?.items || [])
     .filter(isDiscountableLine)
     .reduce((total, item) => total + lineGross(item), 0);
@@ -596,10 +747,6 @@ const JobCartDetails = () => {
       lineTotal: round2(Math.max(gross - discountAmount, 0) + taxAmount),
     };
   });
-  const headerTaxPercent = Number(
-    tableItems.find((item) => Number(item.gstPercent) > 0)
-      ?.gstPercent || 0
-  );
 
   // A member pays from the wallet first; whatever the balance cannot cover is
   // split onto a second tender below.
@@ -759,7 +906,7 @@ const JobCartDetails = () => {
       // confirm is queued rather than retried blindly: the idempotency key
       // makes the replay safe either way.
       if (!navigator.onLine || actionError.status === 0) {
-        enqueueConfirm(id, body);
+        enqueueConfirm(id, body, activeBranch?.id);
         setQueuedNotice(
           "No connection. This bill is saved and will be sent automatically when you are back online."
         );
@@ -793,7 +940,8 @@ const JobCartDetails = () => {
     }
   };
 
-  const completeEditedCart = () => {
+  const completeEditedCart = async () => {
+    if (!(await applyServiceEdits())) return;
     if (cart?.appointmentStatus === "COMPLETED") {
       setConfirmOpen(true);
       return;
@@ -872,6 +1020,35 @@ const JobCartDetails = () => {
                 </Button>
               </Alert>
             )}
+            {failedQueue.map((entry) => (
+              <Alert
+                key={entry.body?.idempotencyKey}
+                color="warning"
+                className="d-flex justify-content-between align-items-center gap-2"
+              >
+                <span>
+                  A bill confirmed offline for{" "}
+                  <Link to={`/job-carts/${entry.jobCartId}`}>this job cart</Link>{" "}
+                  could not be sent: {entry.failed?.message}
+                </span>
+                <span className="d-flex gap-1">
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={() => retryQueuedConfirm(entry.body?.idempotencyKey)}
+                  >
+                    Retry
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="light"
+                    onClick={() => discardQueuedConfirm(entry.body?.idempotencyKey)}
+                  >
+                    Discard
+                  </Button>
+                </span>
+              </Alert>
+            ))}
 
             <Row className="g-4">
               <Col xl="8">
@@ -1069,7 +1246,7 @@ const JobCartDetails = () => {
                               </span>
                             </Button>
                           )}
-                        {active &&
+                        {canSellAddOns &&
                           [
                             ["PRODUCT", "Product"],
                             ["MEMBERSHIP", "Membership"],
@@ -1093,61 +1270,317 @@ const JobCartDetails = () => {
                         </span>
                       </div>
                     </SectionHead>
-                    <div className="table-responsive">
-                      <table className="table jcp-table">
+                    <div className="table-responsive jcp-items-wrap">
+                      <table className="table jcp-table jcp-items-table">
                         <thead>
                           <tr>
-                            <th style={{ width: 44 }}>#</th>
-                            <th>Service</th>
-                            <th>Duration</th>
-                            <th className="text-end">Qty</th>
-                            <th className="text-end">Price</th>
-                            <th className="text-end">Discount</th>
-                            <th className="text-end">
-                              Tax
-                              {headerTaxPercent ? ` (${headerTaxPercent}%)` : ""}
+                            <th className="jcp-col-num">#</th>
+                            <th className="jcp-col-staff">
+                              <Icon name="user" /> Staff
                             </th>
-                            <th className="text-end">Total</th>
-                            {active && <th style={{ width: 44 }} />}
+                            <th>Service</th>
+                            <th className="jcp-col-duration">Duration</th>
+                            <th className="jcp-col-qty">Qty</th>
+                            <th className="jcp-col-price">Price</th>
+                            <th className="jcp-col-discount">Discount</th>
+                            <th className="jcp-col-total">Total</th>
+                            {canSellAddOns && <th className="jcp-col-action">Action</th>}
                           </tr>
                         </thead>
                         <tbody>
                           {cart.items.length ? (
-                            tableItems.map((item, index) => (
-                              <tr key={item.id}>
-                                <td className="text-soft">{index + 1}</td>
-                                <td>
-                                  <span className="jcp-item-name">
-                                    {item.serviceName}
-                                  </span>
-                                  {item.itemType === "SERVICE" &&
-                                    (editingCart ? (
-                                      <div className="d-flex align-items-center gap-1 mt-1">
+                            tableItems.map((item, index) => {
+                              const isService = item.itemType === "SERVICE";
+                              const editable = editingCart && isService;
+                              const edit = serviceEditFor(item);
+                              // Shown faded inside the price box, as on Create
+                              // Job Cart, so the cashier sees what the row bills at.
+                              const discountedPrice =
+                                editable && Number(edit.discount) > 0
+                                  ? netServicePrice(
+                                      edit.price,
+                                      edit.discount,
+                                      edit.discountType
+                                    )
+                                  : null;
+                              // The total above already includes pending edits;
+                              // this flags how far they move it before tax split.
+                              const change = editable
+                                ? round2(
+                                    serviceGrossChange(item) *
+                                      (1 + Number(item.gstPercent || 0) / 100)
+                                  )
+                                : 0;
+                              const staffId = editable ? edit.staffId : item.staffId;
+                              const person = isService
+                                ? (addRefs?.staff || []).find(
+                                    (member) => member.id === staffId
+                                  ) || (staffId && staffId === item.staffId ? item.staff : null)
+                                : item.soldByStaff;
+                              // Services can't be removed; add-ons can be dropped
+                              // while the cart is open.
+                              const canRemove = !isService && canSellAddOns;
+                              const category = isService
+                                ? (addRefs?.services || []).find(
+                                    (service) => service.id === item.serviceId
+                                  )?.mainService?.name
+                                : null;
+                              return (
+                                <tr key={item.id}>
+                                  <td className="text-soft">{index + 1}</td>
+                                  <td>
+                                    <div className="jcp-person">
+                                      <span
+                                        className={`jcp-avatar${person ? "" : " is-empty"}`}
+                                      >
+                                        {person ? (
+                                          initialsOf(person.name)
+                                        ) : (
+                                          <Icon name="user" />
+                                        )}
+                                      </span>
+                                      <div className="jcp-person-text">
+                                        {editable ? (
+                                          <Input
+                                            type="select"
+                                            className="jcp-person-select"
+                                            value={edit.staffId}
+                                            disabled={working}
+                                            aria-label={`Staff for ${item.serviceName}`}
+                                            onChange={(event) =>
+                                              saveServiceStaff(item, event.target.value)
+                                            }
+                                          >
+                                            <option value="">Assign staff</option>
+                                            {(addRefs?.staff || []).map((member) => (
+                                              <option key={member.id} value={member.id}>
+                                                {member.name}
+                                              </option>
+                                            ))}
+                                          </Input>
+                                        ) : (
+                                          <span className="jcp-person-name">
+                                            {person?.name || "Unassigned"}
+                                          </span>
+                                        )}
+                                        <span className="jcp-item-sub">
+                                          {isService
+                                            ? person
+                                              ? person.jobRole || "Staff"
+                                              : "No staff yet"
+                                            : person
+                                              ? "Sold by"
+                                              : "—"}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div className="jcp-service-box">
+                                      <span className="jcp-item-name">
+                                        {item.serviceName}
+                                        {!isService && (
+                                          <span
+                                            className={`jcp-type-tag is-${item.itemType.toLowerCase()}`}
+                                          >
+                                            {item.itemType === "PACKAGE"
+                                              ? "Package"
+                                              : item.itemType === "PRODUCT"
+                                                ? "Product"
+                                                : "Membership"}
+                                          </span>
+                                        )}
+                                      </span>
+                                      <span className="jcp-item-sub">
+                                        {isService
+                                          ? [category, !editingCart && item.doneAt ? "Done" : null]
+                                              .filter(Boolean)
+                                              .join(" • ") || "Service"
+                                          : item.itemType === "PRODUCT"
+                                            ? "Not covered by membership"
+                                            : item.itemType === "MEMBERSHIP"
+                                              ? "Starts when the bill is confirmed"
+                                              : "Prepaid package"}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td>
+                                    {item.itemType === "PRODUCT" ? (
+                                      <span className="text-soft">—</span>
+                                    ) : (
+                                      <div className="jcp-duration">
+                                        <Icon name="clock" />
+                                        <span>
+                                          <strong>
+                                            {item.itemType === "PACKAGE"
+                                              ? item.package?.validityDays || 0
+                                              : item.itemType === "MEMBERSHIP"
+                                                ? item.membership?.durationMonths || 0
+                                                : item.durationValue || 0}
+                                          </strong>
+                                          <small>
+                                            {item.itemType === "PACKAGE"
+                                              ? "days validity"
+                                              : item.itemType === "MEMBERSHIP"
+                                                ? "months"
+                                                : (item.durationUnit || "MINUTES").toLowerCase()}
+                                          </small>
+                                        </span>
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {editable ? (
+                                      <Input
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        value={edit.quantity}
+                                        aria-label={`Quantity for ${item.serviceName}`}
+                                        onChange={(event) =>
+                                          updateServiceEdit(item.id, {
+                                            quantity: event.target.value,
+                                          })
+                                        }
+                                      />
+                                    ) : (
+                                      item.quantity ?? 1
+                                    )}
+                                  </td>
+                                  <td>
+                                    {editable ? (
+                                      <div className="jobcart-price-field jcp-price-field">
+                                        <span className="jcp-price-prefix">&#8377;</span>
                                         <Input
-                                          type="select"
-                                          bsSize="sm"
-                                          value={serviceEditFor(item).staffId}
-                                          disabled={working}
+                                          type="number"
+                                          min="0"
+                                          step="0.01"
+                                          value={edit.price}
+                                          aria-label={`Price for ${item.serviceName}`}
                                           onChange={(event) =>
                                             updateServiceEdit(item.id, {
-                                              staffId: event.target.value,
+                                              price: event.target.value,
+                                              discount: cappedDiscount(
+                                                event.target.value,
+                                                edit.discount,
+                                                edit.discountType
+                                              ),
                                             })
                                           }
+                                        />
+                                      </div>
+                                    ) : (
+                                      <>
+                                        {formatMoney(
+                                          item.itemType === "PRODUCT"
+                                            ? item.lineTotal
+                                            : listPriceOf(item)
+                                        )}
+                                        {item.itemType === "PRODUCT" &&
+                                        item.quantity > 1 ? (
+                                          <span className="jcp-item-sub">
+                                            {item.quantity} x {formatMoney(item.price)}
+                                          </span>
+                                        ) : null}
+                                      </>
+                                    )}
+                                    {discountedPrice !== null && (
+                                      <span
+                                        className="jcp-item-sub"
+                                        title="Price after discount"
+                                      >
+                                        Net {formatMoney(discountedPrice)}
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {editable ? (
+                                      <div className="input-group flex-nowrap jcp-discount-group">
+                                        <Input
+                                          type="number"
+                                          min="0"
+                                          step="0.01"
+                                          max={
+                                            edit.discountType === "PCT"
+                                              ? "100"
+                                              : String(Math.max(0, Number(edit.price || 0)))
+                                          }
+                                          value={edit.discount}
+                                          placeholder="0"
+                                          aria-label={`Discount for ${item.serviceName}`}
+                                          style={{ minWidth: 0 }}
+                                          onChange={(event) =>
+                                            updateServiceEdit(item.id, {
+                                              discount: cappedDiscount(
+                                                edit.price,
+                                                event.target.value,
+                                                edit.discountType
+                                              ),
+                                            })
+                                          }
+                                        />
+                                        <button
+                                          type="button"
+                                          className="input-group-text jcp-discount-unit"
+                                          title="Switch discount type"
+                                          onClick={() => {
+                                            const discountType =
+                                              edit.discountType === "PCT" ? "AMT" : "PCT";
+                                            updateServiceEdit(item.id, {
+                                              discountType,
+                                              discount: cappedDiscount(
+                                                edit.price,
+                                                edit.discount,
+                                                discountType
+                                              ),
+                                            });
+                                          }}
                                         >
-                                          <option value="">Assign staff</option>
-                                          {(addRefs?.staff || []).map((member) => (
-                                            <option key={member.id} value={member.id}>
-                                              {member.name}
-                                            </option>
-                                          ))}
-                                        </Input>
+                                          {edit.discountType === "PCT" ? "%" : <>&#8377;</>}
+                                        </button>
+                                      </div>
+                                    ) : discountGivenOf(item) > 0 ? (
+                                      <span className="text-success">
+                                        - {formatMoney(discountGivenOf(item))}
+                                      </span>
+                                    ) : (
+                                      <span className="text-soft">—</span>
+                                    )}
+                                  </td>
+                                  <td className="text-nowrap">
+                                    <span className="jcp-row-total">
+                                      {item.lineTotal === null ||
+                                      item.lineTotal === undefined
+                                        ? "—"
+                                        : formatMoney(item.lineTotal)}
+                                    </span>
+                                    {change ? (
+                                      <span
+                                        className={`jcp-item-sub ${change > 0 ? "text-warning" : "text-success"}`}
+                                        title="Applied when the job cart is confirmed"
+                                      >
+                                        {change > 0 ? "▲" : "▼"} {formatMoney(Math.abs(change))} on confirm
+                                      </span>
+                                    ) : Number(item.taxAmount) > 0 && (
+                                      <span className="jcp-item-sub">
+                                        incl. {formatMoney(item.taxAmount)} tax
+                                        {Number(item.gstPercent) > 0
+                                          ? ` (${Number(item.gstPercent)}%)`
+                                          : ""}
+                                      </span>
+                                    )}
+                                  </td>
+                                  {canSellAddOns && (
+                                    <td>
+                                      <div className="jcp-row-actions">
                                         {/* Done frees the stylist for other
                                             work before the cart is completed. */}
-                                        {item.staffId && (
+                                        {editable && item.staffId && (
                                           <Button
                                             type="button"
                                             size="sm"
-                                            color={item.doneAt ? "success" : "light"}
+                                            color={item.doneAt ? "success" : "primary"}
+                                            outline={Boolean(item.doneAt)}
                                             className="text-nowrap"
                                             disabled={working}
                                             title={
@@ -1165,191 +1598,47 @@ const JobCartDetails = () => {
                                               )
                                             }
                                           >
-                                            {item.doneAt ? "✓ Done · Undo" : "Done"}
+                                            {item.doneAt ? "✓ Done" : "Done"}
                                           </Button>
                                         )}
+                                        {canRemove && (
+                                          <UncontrolledDropdown>
+                                            <DropdownToggle
+                                              tag="button"
+                                              type="button"
+                                              className="btn btn-icon btn-sm btn-trigger"
+                                              disabled={working}
+                                              aria-label={`More actions for ${item.serviceName}`}
+                                            >
+                                              <Icon name="more-v" />
+                                            </DropdownToggle>
+                                            <DropdownMenu end>
+                                              <DropdownItem
+                                                tag="button"
+                                                type="button"
+                                                className="text-danger"
+                                                onClick={() =>
+                                                  run(() =>
+                                                    salonApi.jobCarts.removeItem(id, item.id)
+                                                  )
+                                                }
+                                              >
+                                                <Icon name="trash" />
+                                                <span>Remove</span>
+                                              </DropdownItem>
+                                            </DropdownMenu>
+                                          </UncontrolledDropdown>
+                                        )}
                                       </div>
-                                    ) : item.staff?.name ? (
-                                      <span className="jcp-item-sub">
-                                        {item.staff.name}
-                                        {item.doneAt ? " • Done" : ""}
-                                      </span>
-                                    ) : null)}
-                                  {item.itemType === "PACKAGE" && (
-                                    <span className="jcp-item-sub text-primary">
-                                      Package
-                                      {item.soldByStaff?.name
-                                        ? ` • Sold by ${item.soldByStaff.name}`
-                                        : ""}
-                                    </span>
+                                    </td>
                                   )}
-                                  {item.itemType === "PRODUCT" && (
-                                    <span className="jcp-item-sub text-info">
-                                      Product x{item.quantity}
-                                      {item.soldByStaff?.name
-                                        ? ` • Sold by ${item.soldByStaff.name}`
-                                        : ""}{" "}
-                                      • not covered by membership
-                                    </span>
-                                  )}
-                                  {item.itemType === "MEMBERSHIP" && (
-                                    <span className="jcp-item-sub text-success">
-                                      Membership
-                                      {item.membership?.durationMonths
-                                        ? ` • ${item.membership.durationMonths} months`
-                                        : ""}
-                                      {item.soldByStaff?.name
-                                        ? ` • Sold by ${item.soldByStaff.name}`
-                                        : ""}{" "}
-                                      • starts when the bill is confirmed
-                                    </span>
-                                  )}
-                                </td>
-                                <td>
-                                  {item.itemType === "PACKAGE"
-                                    ? `${item.package?.validityDays || 0} days validity`
-                                    : item.itemType === "PRODUCT" ||
-                                        item.itemType === "MEMBERSHIP"
-                                      ? "—"
-                                      : `${item.durationValue || 0} ${(
-                                          item.durationUnit || "MINUTES"
-                                        ).toLowerCase()}`}
-                                </td>
-                                <td className="text-end">
-                                  {editingCart && item.itemType === "SERVICE" ? (
-                                    <Input
-                                      type="number"
-                                      bsSize="sm"
-                                      min="1"
-                                      step="1"
-                                      value={serviceEditFor(item).quantity}
-                                      disabled={working}
-                                      onChange={(event) =>
-                                        updateServiceEdit(item.id, {
-                                          quantity: event.target.value,
-                                        })
-                                      }
-                                    />
-                                  ) : (
-                                    item.quantity ?? 1
-                                  )}
-                                </td>
-                                <td className="text-end">
-                                  {editingCart && item.itemType === "SERVICE" ? (
-                                    <Input
-                                      type="number"
-                                      bsSize="sm"
-                                      min="0"
-                                      step="0.01"
-                                      value={serviceEditFor(item).price}
-                                      disabled={working}
-                                      onChange={(event) =>
-                                        updateServiceEdit(item.id, {
-                                          price: event.target.value,
-                                          discount: cappedDiscount(
-                                            event.target.value,
-                                            serviceEditFor(item).discount,
-                                            serviceEditFor(item).discountType
-                                          ),
-                                        })
-                                      }
-                                    />
-                                  ) : (
-                                    <>
-                                      {formatMoney(
-                                        item.itemType === "PRODUCT"
-                                          ? item.lineTotal
-                                          : item.price
-                                      )}
-                                      {item.itemType === "PRODUCT" &&
-                                      item.quantity > 1 ? (
-                                        <span className="jcp-item-sub">
-                                          {item.quantity} x {formatMoney(item.price)}
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </td>
-                                <td className="text-end">
-                                  {editingCart && item.itemType === "SERVICE" ? (
-                                    <div className="input-group input-group-sm">
-                                      <Input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={serviceEditFor(item).discount}
-                                        disabled={working}
-                                        onChange={(event) =>
-                                          updateServiceEdit(item.id, {
-                                            discount: cappedDiscount(
-                                              serviceEditFor(item).price,
-                                              event.target.value,
-                                              serviceEditFor(item).discountType
-                                            ),
-                                          })
-                                        }
-                                      />
-                                      <button
-                                        type="button"
-                                        className="input-group-text"
-                                        disabled={working}
-                                        title="Switch discount type"
-                                        onClick={() => {
-                                          const edit = serviceEditFor(item);
-                                          const discountType =
-                                            edit.discountType === "PCT" ? "AMT" : "PCT";
-                                          updateServiceEdit(item.id, {
-                                            discountType,
-                                            discount: cappedDiscount(
-                                              edit.price,
-                                              edit.discount,
-                                              discountType
-                                            ),
-                                          });
-                                        }}
-                                      >
-                                        {serviceEditFor(item).discountType === "PCT"
-                                          ? "%"
-                                          : "Rs"}
-                                      </button>
-                                    </div>
-                                  ) : Number(item.discountAmount || 0) > 0 ? (
-                                    <span className="text-success">
-                                      - {formatMoney(item.discountAmount)}
-                                    </span>
-                                  ) : (
-                                    "-"
-                                  )}
-                                </td>
-                                <td className="text-end">
-                                  {item.taxAmount === null ||
-                                  item.taxAmount === undefined ? (
-                                    "—"
-                                  ) : (
-                                    <>
-                                      {formatMoney(item.taxAmount)}
-                                      {Number(item.gstPercent) > 0 &&
-                                      Number(item.gstPercent) !==
-                                        headerTaxPercent ? (
-                                        <span className="jcp-item-sub">
-                                          {Number(item.gstPercent)}%
-                                        </span>
-                                      ) : null}
-                                    </>
-                                  )}
-                                </td>
-                                <td className="text-end fw-bold">
-                                  {item.lineTotal === null ||
-                                  item.lineTotal === undefined
-                                    ? "—"
-                                    : formatMoney(item.lineTotal)}
-                                </td>
                                 </tr>
-                            ))
+                              );
+                            })
                           ) : (
                             <tr>
                               <td
-                                colSpan={active ? 9 : 8}
+                                colSpan={canSellAddOns ? 9 : 8}
                                 className="text-center text-soft py-4"
                               >
                                 No services or packages on this job cart.
@@ -1359,6 +1648,15 @@ const JobCartDetails = () => {
                         </tbody>
                       </table>
                     </div>
+                    {editingCart && tableItems.some(isServiceEditPending) && (
+                      <div className="jcp-pending-note">
+                        <Icon name="info" />
+                        <span>
+                          Price, quantity and discount changes are a preview.
+                          They apply when you confirm the job cart.
+                        </span>
+                      </div>
+                    )}
 
                     {(cart.packageRedemptions || []).length > 0 && (
                       <div className="mt-3">
@@ -1723,7 +2021,17 @@ const JobCartDetails = () => {
                       </span>
                     </div>
                     <div className="jcp-line">
-                      <span>Paid services / packages</span>
+                      <span>
+                        Paid services / packages
+                        {pendingServiceChange ? (
+                          <small
+                            className={`d-block ${pendingServiceChange > 0 ? "text-warning" : "text-success"}`}
+                          >
+                            {pendingServiceChange > 0 ? "▲" : "▼"}{" "}
+                            {formatMoney(Math.abs(pendingServiceChange))} applies on confirm
+                          </small>
+                        ) : null}
+                      </span>
                       <strong>{formatMoney(subtotalAmount)}</strong>
                     </div>
                     {packageCoveredAmount > 0 && (
@@ -1732,8 +2040,21 @@ const JobCartDetails = () => {
                         <strong>{formatMoney(packageCoveredAmount)}</strong>
                       </div>
                     )}
+                    {itemDiscountTotal > 0 && (
+                      <div className="jcp-line">
+                        <span>
+                          Item discounts
+                          <small className="d-block text-soft">
+                            Already taken off the prices above
+                          </small>
+                        </span>
+                        <strong className="text-success">
+                          -{formatMoney(itemDiscountTotal)}
+                        </strong>
+                      </div>
+                    )}
                     <div className="jcp-line">
-                      <span>Membership / discount</span>
+                      <span>Bill discount</span>
                       <strong>-{formatMoney(discountTotal)}</strong>
                     </div>
                     {processingFee > 0 && (

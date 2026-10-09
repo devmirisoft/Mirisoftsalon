@@ -1138,3 +1138,105 @@ describe("AI assistant integration", () => {
     expect(response.body.data.answer).not.toContain("boom secret");
   });
 });
+
+// The assistant used to take the user's own branch only, so an admin with a
+// branch session open (X-Branch-Id) got whole-salon answers.
+describe("AI assistant inside an admin branch session", () => {
+  const ask = (token: string, message: string, branchId?: string) =>
+    request(app)
+      .post("/api/ai-assistant/chat")
+      .set({ ...auth(token), ...(branchId ? { "X-Branch-Id": branchId } : {}) })
+      .send({ message })
+      .expect(200);
+  const rowNames = (res: request.Response) =>
+    (res.body.data.table.rows as Array<{ name: string }>)
+      .map((row) => row.name)
+      .sort();
+
+  it("scopes low stock to the open branch and keeps salon-wide products", async () => {
+    const f = await fixture();
+    const marker = f.salon.name.replace("AI Salon ", "");
+
+    const main = await ask(f.adminToken, "Show low stock", f.branch.id);
+    expect(rowNames(main)).toEqual(
+      [`Own Product ${marker}`, `Shared Product ${marker}`].sort()
+    );
+
+    const other = await ask(f.adminToken, "Show low stock", f.otherBranch.id);
+    expect(rowNames(other)).toEqual(
+      [`Other Branch Product ${marker}`, `Shared Product ${marker}`].sort()
+    );
+
+    const all = await ask(f.adminToken, "Show low stock");
+    expect(rowNames(all)).toEqual(
+      [
+        `Own Product ${marker}`,
+        `Other Branch Product ${marker}`,
+        `Shared Product ${marker}`,
+      ].sort()
+    );
+  });
+
+  it("scopes exact-branch tools to the open branch", async () => {
+    const f = await fixture();
+    const message = "Which customers have outstanding balance?";
+
+    const other = await ask(f.adminToken, message, f.otherBranch.id);
+    expect(rowNames(other)).toEqual(["Other Branch Customer"]);
+
+    const all = await ask(f.adminToken, message);
+    expect(rowNames(all)).toEqual(["AI Customer", "Other Branch Customer"]);
+  });
+
+  it("ignores a receptionist's attempt to pick another branch", async () => {
+    const f = await fixture();
+    const res = await ask(
+      f.receptionistToken,
+      "Which customers have outstanding balance?",
+      f.otherBranch.id
+    );
+    expect(rowNames(res)).toEqual(["AI Customer"]);
+  });
+
+  it("refuses a branch outside the admin's salon", async () => {
+    const f = await fixture();
+    const foreign = await prisma.branch.findFirstOrThrow({
+      where: { name: { startsWith: "AI Foreign" }, salon: { name: { not: f.salon.name } } },
+      orderBy: { createdAt: "desc" },
+    });
+    await request(app)
+      .post("/api/ai-assistant/chat")
+      .set({ ...auth(f.adminToken), "X-Branch-Id": foreign.id })
+      .send({ message: "Show low stock" })
+      .expect(403);
+  });
+
+  it("changes no data for write-like prompts inside a branch session", async () => {
+    const f = await fixture();
+    const before = await prisma.appointment.findMany({
+      where: { salonId: f.salon.id },
+      select: { id: true, status: true },
+      orderBy: { id: "asc" },
+    });
+
+    const res = await ask(f.adminToken, "Cancel all appointments", f.otherBranch.id);
+    expect(res.body.data.usedTools).toEqual([]);
+    expect(res.body.data.responseMode).toBe("ACTION_PREVIEW");
+
+    const after = await prisma.appointment.findMany({
+      where: { salonId: f.salon.id },
+      select: { id: true, status: true },
+      orderBy: { id: "asc" },
+    });
+    expect(after).toEqual(before);
+  });
+
+  it("filters shared scope for a salon admin only when a branch is open", () => {
+    const context = makeContext({ salonId: "salon-1" });
+    expect(aiSharedBranchScope(context)).toEqual({ salonId: "salon-1" });
+    expect(aiSharedBranchScope({ ...context, branchId: "branch-1" })).toEqual({
+      salonId: "salon-1",
+      OR: [{ branchId: null }, { branchId: "branch-1" }],
+    });
+  });
+});

@@ -4,6 +4,10 @@ import { PaymentConflictError, PaymentModel } from "./payment.model.js";
 import { InvoiceModel } from "../Invoices/invoice.model.js";
 import { requestAuditContext } from "../audit-logs/audit-log.service.js";
 import { PaymentMethod } from "../../generated/prisma/client.js";
+import {
+  pinnedBranchId,
+  resolveBranchFilter,
+} from "../../utils/branch-scope.js";
 
 const isValidPaymentMethod = (method: string): method is PaymentMethod =>
   method in PaymentMethod;
@@ -20,9 +24,19 @@ const getPaymentIdParam = (req: Request) => {
   return typeof id === "string" ? id : null;
 };
 
+// A row outside the caller's branch (their own, or the branch session an admin
+// has open) reads as not found, the same as invoice access does.
+const inPinnedBranch = <T extends { branchId: string | null }>(
+  req: Request,
+  row: T | null
+) => {
+  const pinnedBranch = pinnedBranchId(req.user);
+  return row && pinnedBranch && row.branchId !== pinnedBranch ? null : row;
+};
+
 const getExistingPaymentByAccess = async (req: Request, paymentId: string) => {
   if (req.user?.role === "SUPER_ADMIN") {
-    return PaymentModel.findById(paymentId);
+    return inPinnedBranch(req, await PaymentModel.findById(paymentId));
   }
 
   const salonId = req.user?.salonId;
@@ -31,7 +45,10 @@ const getExistingPaymentByAccess = async (req: Request, paymentId: string) => {
     return null;
   }
 
-  return PaymentModel.findByIdAndSalon(paymentId, salonId);
+  return inPinnedBranch(
+    req,
+    await PaymentModel.findByIdAndSalon(paymentId, salonId)
+  );
 };
 
 export const createPayment = async (req: Request, res: Response) => {
@@ -72,12 +89,14 @@ export const createPayment = async (req: Request, res: Response) => {
       });
     }
 
-    const invoice =
+    const invoice = inPinnedBranch(
+      req,
       req.user?.role === "SUPER_ADMIN"
         ? await InvoiceModel.findById(invoiceId)
         : req.user?.salonId
           ? await InvoiceModel.findByIdAndSalon(invoiceId, req.user.salonId)
-          : null;
+          : null
+    );
 
     if (!invoice) {
       return res.status(404).json({
@@ -173,8 +192,19 @@ export const getPayments = async (req: Request, res: Response) => {
       });
     }
 
+    // A branch-locked caller is held to their own branch, and an admin's open
+    // branch session wins over ?branchId=, so the filter can only narrow.
+    const branchFilter = resolveBranchFilter(req, branchId);
+
+    if (!branchFilter.ok) {
+      return res.status(403).json({
+        success: false,
+        message: branchFilter.message,
+      });
+    }
+
     if (req.user?.role === "SUPER_ADMIN") {
-      const payments = await PaymentModel.findAll();
+      const payments = await PaymentModel.findAll(branchFilter.branchId);
 
       return res.status(200).json({
         success: true,
@@ -191,7 +221,7 @@ export const getPayments = async (req: Request, res: Response) => {
     }
 
     const payments = await PaymentModel.findBySalon(req.user.salonId, {
-      ...(branchId ? { branchId: String(branchId) } : {}),
+      ...(branchFilter.branchId ? { branchId: branchFilter.branchId } : {}),
       ...(customerId ? { customerId: String(customerId) } : {}),
       ...(invoiceId ? { invoiceId: String(invoiceId) } : {}),
       ...(method ? { method: String(method) as PaymentMethod } : {}),

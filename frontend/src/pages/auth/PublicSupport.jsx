@@ -121,7 +121,7 @@ const PublicSupport = () => {
                   </div>
                   <div className="col-md-6">
                     <Label>Phone</Label>
-                    <Input value={values.reporterPhone || ""} onChange={update("reporterPhone")} />
+                    <Input type="tel" value={values.reporterPhone || ""} onChange={update("reporterPhone")} />
                   </div>
                 </div>
               </>

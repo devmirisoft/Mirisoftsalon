@@ -1271,6 +1271,8 @@ model AppointmentService {
   serviceName String
   price       Decimal @db.Decimal(10, 2)
   quantity    Int     @default(1)
+  // Taken off each unit at the counter; price above is already net of it.
+  unitDiscount Decimal @default(0) @db.Decimal(10, 2)
 
   staffId String?
   staff   Staff?  @relation(fields: [staffId], references: [id])

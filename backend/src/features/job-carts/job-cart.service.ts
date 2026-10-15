@@ -38,6 +38,8 @@ import { getSpendableWalletForCustomer } from "../membership-wallets/membership-
 
 type TransactionClient = Prisma.TransactionClient;
 
+const zero = new Prisma.Decimal(0);
+
 export type JobCartActor = {
   userId: string;
   role: string;
@@ -1072,8 +1074,36 @@ export const listJobCarts = async (
   };
 };
 
-export const getJobCart = async (actor: JobCartActor, id: string) =>
-  present(await requireCart(prisma, id, actor));
+/**
+ * The customer's earlier issued bills still owing, oldest first. They ride on
+ * the next bill: collecting more than it settles pays these off. Kept to the
+ * cart's branch so the cash lands in the till that took it.
+ */
+const previousDueInvoices = (
+  client: typeof prisma | TransactionClient,
+  cart: JobCartRecord
+) =>
+  client.invoice.findMany({
+    where: {
+      customerId: cart.customerId,
+      salonId: cart.salonId,
+      branchId: cart.branchId,
+      status: "ISSUED",
+      balanceAmount: { gt: 0 },
+      ...(cart.invoice ? { id: { not: cart.invoice.id } } : {}),
+    },
+    select: { id: true, balanceAmount: true },
+    orderBy: [{ invoiceDate: "asc" }, { createdAt: "asc" }],
+  });
+
+export const getJobCart = async (actor: JobCartActor, id: string) => {
+  const cart = await requireCart(prisma, id, actor);
+  const dues = await previousDueInvoices(prisma, cart);
+  return {
+    ...present(cart),
+    previousDue: dues.reduce((sum, due) => sum.plus(due.balanceAmount), zero),
+  };
+};
 
 export const getJobCartReferences = async (
   actor: JobCartActor,
@@ -3062,29 +3092,85 @@ export const confirmJobCart = async (
         : billing.payment
           ? [billing.payment]
           : [];
-      if (tenders.length && issued.totalAmount.gt(0)) {
-        for (const tender of tenders) {
-          try {
-            await settleInvoiceInTransaction(
-              tx,
-              actor,
-              existing.invoice.id,
-              {
-                method: tender.method,
-                amount: tender.amount,
-                referenceNo: tender.referenceNo,
-                note: tender.note,
-                customerMembershipId: tender.customerMembershipId,
-                jobCartAppointmentId: existing.id,
-              },
-              audit
-            );
-          } catch (error) {
-            if (error instanceof SettleInvoiceError) {
-              throw new JobCartError(error.status, error.message);
-            }
-            throw error;
+      // Whatever a tender holds beyond this bill pays the customer's earlier
+      // dues, oldest first. The wallet only ever pays this bill's services,
+      // so wallet tenders go first and never carry over.
+      const dues = await previousDueInvoices(tx, existing);
+      let billBalance = issued.balanceAmount;
+      const ordered = [...tenders].sort(
+        (left, right) =>
+          Number(right.method === "MEMBERSHIP_WALLET") -
+          Number(left.method === "MEMBERSHIP_WALLET")
+      );
+      const settle = async (
+        invoiceId: string,
+        tender: (typeof tenders)[number],
+        amount: Prisma.Decimal | undefined,
+        note = tender.note
+      ) => {
+        try {
+          return await settleInvoiceInTransaction(
+            tx,
+            actor,
+            invoiceId,
+            {
+              method: tender.method,
+              amount,
+              referenceNo: tender.referenceNo,
+              note,
+              customerMembershipId: tender.customerMembershipId,
+              jobCartAppointmentId: existing.id,
+            },
+            audit
+          );
+        } catch (error) {
+          if (error instanceof SettleInvoiceError) {
+            throw new JobCartError(error.status, error.message);
           }
+          throw error;
+        }
+      };
+      for (const tender of ordered) {
+        const wallet = tender.method === "MEMBERSHIP_WALLET";
+        if (tender.amount === undefined || wallet) {
+          if (billBalance.gt(0)) {
+            const result = await settle(
+              existing.invoice.id,
+              tender,
+              tender.amount === undefined
+                ? undefined
+                : new Prisma.Decimal(tender.amount)
+            );
+            billBalance = result.invoice.balanceAmount;
+          }
+          continue;
+        }
+        let left = new Prisma.Decimal(tender.amount).toDecimalPlaces(2);
+        const onBill = Prisma.Decimal.min(left, billBalance);
+        if (onBill.gt(0)) {
+          billBalance = (await settle(existing.invoice.id, tender, onBill))
+            .invoice.balanceAmount;
+          left = left.minus(onBill);
+        }
+        for (const due of dues) {
+          if (left.lte(0)) break;
+          if (due.balanceAmount.lte(0)) continue;
+          await tx.$queryRaw`SELECT "id" FROM "Invoice" WHERE "id" = ${due.id} FOR UPDATE`;
+          const take = Prisma.Decimal.min(left, due.balanceAmount);
+          await settle(
+            due.id,
+            tender,
+            take,
+            tender.note ?? `Collected with ${existing.appointmentCode}`
+          );
+          due.balanceAmount = due.balanceAmount.minus(take);
+          left = left.minus(take);
+        }
+        if (left.gt(0)) {
+          throw new JobCartError(
+            400,
+            "Payment is more than this bill plus the customer's previous outstanding"
+          );
         }
       }
     } else if (billing.payment || billing.payments?.length) {

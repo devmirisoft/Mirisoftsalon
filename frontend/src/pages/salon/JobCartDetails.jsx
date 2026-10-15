@@ -473,6 +473,10 @@ const JobCartDetails = () => {
     cart?.invoice?.status === "DRAFT" &&
     cart?.invoice?.paymentStatus === "UNPAID";
   const canSellAddOns = active || awaitingPayment;
+  // Mirrors the server's open statuses for "Done".
+  const stillOpen = ["SCHEDULED", "CONFIRMED", "CHECKED_IN"].includes(
+    cart?.appointmentStatus
+  );
   const editingCart = active && (searchParams.get("edit") === "1" || location.pathname.endsWith("/edit"));
   const serviceAssignments = useMemo(
     () =>
@@ -679,6 +683,11 @@ const JobCartDetails = () => {
   const roundOffAmount = active
     ? payableAmount - exactPayable
     : Number(invoice?.roundOffAmount || 0);
+  // The customer's earlier unpaid bills ride on this one. Anything collected
+  // beyond this bill settles them on the server, oldest first.
+  const previousDue =
+    invoice?.status === "DRAFT" ? Number(cart?.previousDue || 0) : 0;
+  const totalDue = payableAmount + previousDue;
   const membershipWalletBalance = Number(
     customerSummary?.membershipWalletBalance || 0
   );
@@ -769,7 +778,7 @@ const JobCartDetails = () => {
   const splitRowsTotal = tenders
     .slice(1)
     .reduce((sum, tender) => sum + Number(tender.amount || 0), 0);
-  const firstTenderAmount = Math.max(payableAmount - splitRowsTotal, 0);
+  const firstTenderAmount = Math.max(totalDue - splitRowsTotal, 0);
   const activeTenders = (
     collecting ? tenders.filter((tender) => tender.method) : []
   ).map((tender, index) =>
@@ -797,10 +806,10 @@ const JobCartDetails = () => {
     ? 0
     : activeTenders[0].method === "MEMBERSHIP_WALLET"
       ? Math.min(membershipWalletBalance, walletCap)
-      : payableAmount;
+      : totalDue;
   const collectedAmount = singleFullTender ? singleFullAmount : tenderTotal;
-  const outstandingAfter = Math.max(payableAmount - collectedAmount, 0);
-  const overpaying = collectedAmount - payableAmount > 0.004;
+  const outstandingAfter = Math.max(totalDue - collectedAmount, 0);
+  const overpaying = collectedAmount - totalDue > 0.004;
   const walletTender = activeTenders.find(
     (tender) => tender.method === "MEMBERSHIP_WALLET"
   );
@@ -822,7 +831,7 @@ const JobCartDetails = () => {
   const serviceLinesTotal = walletCap;
   const walletOnServices = Math.min(walletPaid, serviceLinesTotal);
   const serviceShortfall = serviceLinesTotal - walletOnServices;
-  const restAmount = Math.max(payableAmount - walletOnServices, 0);
+  const restAmount = Math.max(totalDue - walletOnServices, 0);
   const hasProducts = nonServiceTotal > 0.004;
   const restMethods = activeTenders
     .filter(
@@ -1574,8 +1583,10 @@ const JobCartDetails = () => {
                                     <td>
                                       <div className="jcp-row-actions">
                                         {/* Done frees the stylist for other
-                                            work before the cart is completed. */}
-                                        {editable && item.staffId && (
+                                            work before the cart is completed.
+                                            A completed or no-show booking
+                                            already holds nobody. */}
+                                        {editable && item.staffId && stillOpen && (
                                           <Button
                                             type="button"
                                             size="sm"
@@ -2088,6 +2099,20 @@ const JobCartDetails = () => {
                       <span>Payable amount</span>
                       <strong>{formatMoney(payableAmount)}</strong>
                     </div>
+                    {previousDue > 0 && (
+                      <>
+                        <div className="jcp-line">
+                          <span>Previous outstanding</span>
+                          <strong className="text-danger">
+                            {formatMoney(previousDue)}
+                          </strong>
+                        </div>
+                        <div className="jcp-line jcp-line-total">
+                          <span>Total due</span>
+                          <strong>{formatMoney(totalDue)}</strong>
+                        </div>
+                      </>
+                    )}
 
                     {active ? (
                       <div className="jcp-cta">
@@ -2107,7 +2132,7 @@ const JobCartDetails = () => {
                             onClick={openPayment}
                           >
                             {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
-                            <span>Pay Now {formatMoney(payableAmount)}</span>
+                            <span>Pay Now {formatMoney(totalDue)}</span>
                           </Button>
                         )}
                         {cart.isJobCart !== false && (
@@ -2130,7 +2155,7 @@ const JobCartDetails = () => {
                               disabled={working}
                             >
                               {working ? <Spinner size="sm" /> : <Icon name="lock-alt" />}
-                              <span>Pay Now {formatMoney(payableAmount)}</span>
+                              <span>Pay Now {formatMoney(totalDue)}</span>
                             </Button>
                           )}
                         <Link
@@ -2324,8 +2349,12 @@ const JobCartDetails = () => {
             <div className="jcp-pay-amount">
               <div>
                 <span className="jcp-field-label">Amount to Pay</span>
-                <strong>{formatMoney(payableAmount)}</strong>
-                <span className="jcp-amount-note">Inclusive of all taxes</span>
+                <strong>{formatMoney(totalDue)}</strong>
+                <span className="jcp-amount-note">
+                  {previousDue > 0
+                    ? `This bill ${formatMoney(payableAmount)} + previous outstanding ${formatMoney(previousDue)}`
+                    : "Inclusive of all taxes"}
+                </span>
               </div>
               <div className="jcp-pay-code">
                 <span>Job Cart</span>
@@ -2575,7 +2604,7 @@ const JobCartDetails = () => {
             ) : overpaying ? (
               <Alert color="danger" className="py-2">
                 Collecting {formatMoney(collectedAmount)} exceeds the{" "}
-                {formatMoney(payableAmount)} payable.
+                {formatMoney(totalDue)} payable.
               </Alert>
             ) : (
               <small className="text-soft d-block">
@@ -2634,7 +2663,7 @@ const JobCartDetails = () => {
                 <div className="jcp-line">
                   <span>Total</span>
                   <strong>
-                    {formatMoney(payableAmount + packageCoveredAmount)}
+                    {formatMoney(totalDue + packageCoveredAmount)}
                   </strong>
                 </div>
               </div>

@@ -875,6 +875,46 @@ describe("Walk-in job carts", () => {
     ).toBe(0);
   });
 
+  it("carries a previous outstanding onto the next bill and settles it with that payment", async () => {
+    const f = await fixture();
+    const first = await createCart(f, f.adminToken, { staffId: f.stylist.id });
+    await request(app)
+      .post(`/api/job-carts/${first.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payment: { method: "CASH", amount: 200 } })
+      .expect(200);
+
+    const second = await createCart(f, f.adminToken, {});
+    const opened = await request(app)
+      .get(`/api/job-carts/${second.body.data.id}`)
+      .set(auth(f.adminToken))
+      .expect(200);
+    expect(Number(opened.body.data.previousDue)).toBe(300);
+
+    // 500 for this bill + 300 left on the first one.
+    const confirmed = await request(app)
+      .post(`/api/job-carts/${second.body.data.id}/confirm`)
+      .set(auth(f.adminToken))
+      .send({ payments: [{ method: "CASH", amount: 800 }] });
+
+    expect(confirmed.status).toBe(200);
+    expect(confirmed.body.data.invoice.paymentStatus).toBe("PAID");
+    const firstInvoice = await prisma.invoice.findUniqueOrThrow({
+      where: { id: first.body.data.invoice.id },
+    });
+    expect(firstInvoice.paymentStatus).toBe("PAID");
+    expect(Number(firstInvoice.balanceAmount)).toBe(0);
+    expect(
+      Number(
+        (
+          await prisma.customer.findUniqueOrThrow({
+            where: { id: confirmed.body.data.customerId },
+          })
+        ).outstandingAmount
+      )
+    ).toBe(0);
+  });
+
   // "Make bill" on an appointment hands over to this same confirm. The
   // appointment is already COMPLETED by then and its consumables are already
   // booked, so neither may happen a second time.

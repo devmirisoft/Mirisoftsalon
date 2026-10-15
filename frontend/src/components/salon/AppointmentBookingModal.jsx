@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from "react";
 import { createFilter } from "react-select";
+import { toast } from "react-toastify";
 import { CreatableSelect } from "@/components/select/PortalSelect";
 import {
-  Alert,
   Col,
   Form,
   FormGroup,
@@ -250,7 +250,6 @@ const AppointmentBookingModal = ({
   const [pickerStaffId, setPickerStaffId] = useState("");
   const [gst, setGst] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
@@ -300,7 +299,6 @@ const AppointmentBookingModal = ({
     }
     setPickerStaffId(appointment ? "" : defaults?.staffId || "");
     setPickerOpen(false);
-    setError("");
     // gstPercent is left out on purpose: its own effect reprices the rows.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, appointment, defaults, defaultBranchId, lockBranch]);
@@ -511,13 +509,12 @@ const AppointmentBookingModal = ({
 
   const submit = async (event) => {
     event.preventDefault();
-    setError("");
-    if (!form.customerId) return setError("Select a customer.");
-    if (!cart.length) return setError("Add at least one service.");
+    if (!form.customerId) return toast.error("Select a customer.");
+    if (!cart.length) return toast.error("Add at least one service.");
     const unpriced = cart.find((item) => item.price === "");
-    if (unpriced) return setError(`Enter a price for ${unpriced.name}.`);
+    if (unpriced) return toast.error(`Enter a price for ${unpriced.name}.`);
     if (!primaryStaffId) {
-      return setError("Assign staff to at least one service.");
+      return toast.error("Assign staff to at least one service.");
     }
     const startTime = new Date(form.startTime);
     // An edit keeps the booked slot, which may already have begun today.
@@ -525,7 +522,7 @@ const AppointmentBookingModal = ({
       Number.isNaN(startTime.getTime()) ||
       (!editing && startTime < new Date())
     ) {
-      return setError(
+      return toast.error(
         "Choose a start time from now onward. Past appointments are not allowed."
       );
     }
@@ -551,7 +548,7 @@ const AppointmentBookingModal = ({
       });
       toggle();
     } catch (submitError) {
-      setError(
+      toast.error(
         submitError.message ||
           (editing ? "Unable to update services." : "Unable to book appointment.")
       );
@@ -596,12 +593,6 @@ const AppointmentBookingModal = ({
             </span>
           </ModalHeader>
           <ModalBody>
-            {error && (
-              <Alert color="danger">
-                <Icon name="alert-circle" className="me-1" />
-                {error}
-              </Alert>
-            )}
             <Row className="g-4">
               <Col lg="8">
                 <fieldset disabled={editing}>

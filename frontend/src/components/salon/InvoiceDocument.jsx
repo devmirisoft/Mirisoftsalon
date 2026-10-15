@@ -240,6 +240,18 @@ const InvoiceDocument = ({ invoice, printable = false }) => {
                 <td colSpan="2">Balance</td>
                 <td className="text-danger">{formatMoney(invoice.balanceAmount)}</td>
               </tr>
+              {/* Earlier unpaid bills, so the customer sees the whole account. */}
+              {Number(invoice.customer?.outstandingAmount || 0) -
+                Number(invoice.balanceAmount || 0) >
+                0.004 && (
+                <tr>
+                  <td colSpan="5" />
+                  <td colSpan="2">Total outstanding (all bills)</td>
+                  <td className="text-danger">
+                    {formatMoney(invoice.customer.outstandingAmount)}
+                  </td>
+                </tr>
+              )}
               {packageCovered > 0 && (
                 <tr>
                   <td colSpan="5" />

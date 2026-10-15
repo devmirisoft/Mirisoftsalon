@@ -257,8 +257,9 @@ const resolveBookingServices = async (
     };
 };
 
-// Every stylist on the cart is checked, not just the primary one, or a
-// per-service assignment could quietly double-book someone.
+// Every stylist on the cart is checked, not just the primary one. A clash
+// with another booking is allowed (front desk may double-book) and comes back
+// as one warning; leave, blocks and shift problems still reject.
 const assertStaffFree = async (
     tx: Prisma.TransactionClient,
     input: {
@@ -270,6 +271,7 @@ const assertStaffFree = async (
         excludeAppointmentId?: string;
     }
 ) => {
+    const warnings: string[] = [];
     for (const bookedStaffId of input.staffIds) {
         await tx.$queryRaw`SELECT "id" FROM "Staff" WHERE "id" = ${bookedStaffId} FOR UPDATE`;
         const availability = await checkStaffAvailabilityForSlot({
@@ -284,13 +286,13 @@ const assertStaffFree = async (
                 ? { excludeAppointmentId: input.excludeAppointmentId }
                 : {}),
         });
-        if (!availability.available) {
-            throw new StaffAvailabilityError(
-                availability.reason === "APPOINTMENT_CONFLICT" ? 409 : 400,
-                availability.message
-            );
+        if (availability.reason === "APPOINTMENT_CONFLICT") {
+            warnings.push(availability.message);
+        } else if (!availability.available) {
+            throw new StaffAvailabilityError(400, availability.message);
         }
     }
+    return warnings.length ? warnings.join("; ") : undefined;
 };
 
 const getExistingAppointmentByAccess = async (
@@ -432,8 +434,9 @@ export const createAppointment = async (req: Request, res: Response) => {
         if (!salon) {
             return res.status(400).json({ success: false, message: "Salon not found" });
         }
+        let warning: string | undefined;
         const appointment = await prisma.$transaction(async (tx) => {
-          await assertStaffFree(tx, {
+          warning = await assertStaffFree(tx, {
             staffIds: booking.staffIds,
             startTime: finalStartTime,
             endTime: finalEndTime,
@@ -484,6 +487,7 @@ export const createAppointment = async (req: Request, res: Response) => {
             success: true,
             message: "Appointment created successfully",
             data: appointment,
+            ...(warning ? { warning } : {}),
         });
     } catch (error) {
         if (error instanceof StaffAvailabilityError || error instanceof AppointmentInputError) {
@@ -1062,6 +1066,7 @@ export const updateAppointmentServices = async (
             booking.totalDurationMinutes * 60 * 1000
         );
 
+        let warning: string | undefined;
         const updatedAppointment = await prisma.$transaction(async (tx) => {
           await tx.$queryRaw`SELECT "id" FROM "Appointment" WHERE "id" = ${id} FOR UPDATE`;
           const current = await tx.appointment.findUniqueOrThrow({
@@ -1077,7 +1082,7 @@ export const updateAppointmentServices = async (
               "Services can only change before the job cart is started"
             );
           }
-          await assertStaffFree(tx, {
+          warning = await assertStaffFree(tx, {
             staffIds: booking.staffIds,
             startTime: existingAppointment.startTime,
             endTime,
@@ -1121,6 +1126,7 @@ export const updateAppointmentServices = async (
             success: true,
             message: "Appointment services updated successfully",
             data: updatedAppointment,
+            ...(warning ? { warning } : {}),
         });
     } catch (error) {
         if (error instanceof StaffAvailabilityError || error instanceof AppointmentInputError) {

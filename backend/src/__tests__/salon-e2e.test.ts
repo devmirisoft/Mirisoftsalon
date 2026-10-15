@@ -390,6 +390,7 @@ describe("Salon SaaS backend E2E flow", () => {
       .send({ invoiceType: "BILL_OF_SUPPLY" });
     expectFailure(notCompletedInvoice, 400);
 
+    // Double-booking is allowed with a warning; cancel it so it can't clash later.
     const conflict = await request(app)
       .post("/api/appointments")
       .set(auth(salonAdminToken))
@@ -400,7 +401,15 @@ describe("Salon SaaS backend E2E flow", () => {
         serviceIds: [serviceAId],
         startTime: "2030-01-01T10:30:00.000Z",
       });
-    expectFailure(conflict, 409);
+    expectSuccess(conflict, 201);
+    expect(conflict.body.warning).toMatch(/already booked/i);
+    expectSuccess(
+      await request(app)
+        .patch(`/api/appointments/${conflict.body.data.id}/status`)
+        .set(auth(salonAdminToken))
+        .send({ status: "CANCELLED", note: "Double booked" }),
+      200
+    );
 
     const appointmentBRes = await request(app)
       .post("/api/appointments")

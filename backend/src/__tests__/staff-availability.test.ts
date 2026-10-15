@@ -455,7 +455,8 @@ describe("Staff availability and shift roster", () => {
     };
 
     expect(await slotStarts()).not.toContain(`${date}T10:00:00.000Z`);
-    await request(app)
+    // Staff may double-book with a warning; cancel it so the slot frees below.
+    const doubleBooked = await request(app)
       .post("/api/appointments")
       .set(auth(f.adminToken))
       .send({
@@ -465,7 +466,13 @@ describe("Staff availability and shift roster", () => {
         serviceIds: [f.service.id],
         startTime: `${date}T10:00:00.000Z`,
       })
-      .expect(409);
+      .expect(201);
+    expect(doubleBooked.body.warning).toMatch(/already booked/i);
+    await request(app)
+      .patch(`/api/appointments/${doubleBooked.body.data.id}/status`)
+      .set(auth(f.adminToken))
+      .send({ status: "CANCELLED" })
+      .expect(200);
 
     for (const status of ["CONFIRMED", "CHECKED_IN", "COMPLETED"]) {
       await request(app)
@@ -486,7 +493,8 @@ describe("Staff availability and shift roster", () => {
         serviceIds: [f.service.id],
         startTime: `${date}T10:00:00.000Z`,
       })
-      .expect(201);
+      .expect(201)
+      .expect((response) => expect(response.body.warning).toBeUndefined());
   });
   it("public slots fall back to legacy working hours without rules", async () => {
     const f = await fixture();

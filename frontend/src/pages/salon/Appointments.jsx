@@ -591,16 +591,18 @@ const Appointments = () => {
           })
         }
         onSubmit={async (payload) => {
+          let response;
           if (action === "services") {
-            await salonApi.appointments.updateServices(selected.id, {
+            response = await salonApi.appointments.updateServices(selected.id, {
               staffId: payload.staffId,
               serviceIds: payload.serviceIds,
               serviceItems: payload.serviceItems,
             });
             toast.success("Appointment services updated.");
           } else {
-            await salonApi.appointments.create(payload);
+            response = await salonApi.appointments.create(payload);
           }
+          if (response?.warning) toast.warning(response.warning);
           await load();
         }}
       />
